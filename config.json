@@ -1,0 +1,59 @@
+{
+  "operator": {
+    "operator_list": ["creator","evaluator","selector","crossover","mutation","generator"]
+  },
+  "creator": {
+    "comment": "type可选bingo或gplearn",
+    "pop_size": 128,
+    "operators": ["+","-","*","/"],
+    "type": "bingo",
+    "bingo": {
+      "stack_size": 10
+    }
+  },
+  "evaluator": {
+    "comment": "type可选bingo或gplearn",
+    "component": ["+","-","*","/"],
+    "type": "bingo",
+    "bingo": {
+      "comment": "method可选CG或BFGS或L-BFGS-B或TNC或SLSQP或lm",
+      "optimizer_method": "lm"
+    }
+  },
+  "selector": {
+    "comment": "type可选bingo或gplearn",
+    "type": "bingo",
+    "bingo": {
+      "comment": "method可选或age_fitness或tournament或deterministic_crowding",
+      "method":"tournament"
+    }
+
+  },
+  "crossover": {
+    "comment": "type可选bingo或gplearn",
+    "type": "bingo",
+    "crossover_p": 0.4,
+    "bingo":{
+    "random_seed": 0
+}
+  },
+  "mutation": {
+    "comment":"type可选bingo或gplearn",
+    "type": "bingo",
+    "bingo": {
+      "command_probability": 0.2,
+      "node_probability": 0.2,
+      "parameter_probability":0.2,
+      "prune_probability":0.2,
+      "fork_probability": 0.2
+    }
+  },
+  "generator": {
+    "comment": "type可选bingo或gplearn",
+    "generation_pop_size": 128,
+    "max_generation": 100,
+    "error_tolerance": 1e-5,
+    "type": "gp_tree"
+  }
+
+}
