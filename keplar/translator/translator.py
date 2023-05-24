@@ -46,6 +46,8 @@ def infix_to_prefix(infix, len1, s2, top2):
         s2[++top2] = s1[top1]
 
 
+
+
 class Stacks(object):  # 用列表实现栈
     def __init__(self):  # 实例化栈
         self.list = []
