@@ -12,7 +12,7 @@ from keplar.operator.dsr_Evo import uDsrEvoCompositOp
 from dsr.dso.core import DeepSymbolicOptimizer
 from keplar.operator.creator import Creator,uDSRCreator
 from copy import deepcopy
-from dsr.dso.program import Program
+# from dsr.dso.program import Program
 from dsr.dso.train import Trainer
 from dsr.dso.program import Program, from_tokens
 
@@ -28,16 +28,44 @@ class uDsrAlgorithm:
         prepare_env = pre_env(self.csv_filename,self.config_filename)
         config = prepare_env.do()
 
+
+
+        
+
         # 进行深度学习,并对model进行setup
-        dsr_model = uDsrDeeplearning(deepcopy(config))
-        dsr_model.do()
+        # dsr_model = uDsrDeeplearning(deepcopy(config))
+        # dsr_model.do()
+
+        model  =  DeepSymbolicOptimizer(deepcopy(config))
+
+        model.setup()
+
+
+
+        warm_start = 50
+        actions, obs, priors =model.policy.sample(warm_start)
+        programs = [from_tokens(a) for a in actions]
+        r = np.array([p.r for p in programs])
+        l = np.array([len(p.traversal) for p in programs])
+
+        print[l[0]]
+
+        # self.traversal = [Program.library[t] for t in tokens]
+
+
+        # config['task']['data']['train']['x'] = model.data['train']['x']
+
+        
 
         # self.mytrain=model.trainer
 
         # population = uDSRCreator(30)
         # population.do()
-        programs=Program
+
+
+
         
+
         # print("done!\n")
 
         # 进行演化算法
