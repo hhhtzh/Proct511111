@@ -18,3 +18,6 @@ class Operator:
 
     def set_parameters(self, para_dict):
         pass
+
+    def __init_config__(self, config):
+        pass

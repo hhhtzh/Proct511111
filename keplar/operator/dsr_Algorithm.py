@@ -34,8 +34,10 @@ class uDsrAlgorithm:
 
         # self.mytrain=model.trainer
 
-        population = uDSRCreator(30)
-        population.do()
+        # population = uDSRCreator(30)
+        # population.do()
+        programs=Program
+        
         # print("done!\n")
 
         # 进行演化算法
