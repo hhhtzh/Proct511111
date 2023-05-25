@@ -112,6 +112,16 @@ def trans_gp(gp_equ):
     strx_ = re.sub(r'.(\d{3})(\d{1})', r'.\1 \2', strx_)
     return str(strx_)
 
+class trans_Dsr():
+    def __init__(self):
+        pass
+
+    def pop2Dsr(self,poplation,programs):
+        pass
+
+    def Dsr2pop(self,poplation,programs):
+        pass
+
 
 def to_gp(equ):
     strx = re.sub(r'.(\d{3}) (\d{1})', r'.\1\2', equ)
