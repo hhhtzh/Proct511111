@@ -60,8 +60,12 @@ class GpCreator(Creator):
 
 
 class OperonCreator(Creator):
-    def __init__(self, minL=1, maxL=50, maxD=10):
+    def __init__(self, tree_type,minL=1, maxL=50, maxD=10):
         super().__init__()
+        if tree_type=="balanced" or tree_type=="probabilistic":
+            self.tree_type=tree_type
+        else:
+            raise ValueError("创建树的类型错误")
         self.maxD = maxD
         self.minL = minL
         self.maxL = maxL
@@ -69,3 +73,6 @@ class OperonCreator(Creator):
     def do(self, population=None):
         pset = Operon.PrimitiveSet()
         pset.SetConfig(Operon.PrimitiveSet.TypeCoherent)
+        if self.tree_type=="balanced":
+            tree_creator=Operon.BalancedTreeCreator(pset,inputs,bias=0.0)
+
