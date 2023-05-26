@@ -51,10 +51,10 @@ class Data:
         self.x = np.array(self.pd_data.drop(lables=str_y, axis=1))
 
     def display_data(self):
-        self.pd_data.head()
+        print(self.pd_data.head())
 
     def data_check(self):
         self.pd_data.info()
 
     def data_describe(self):
-        self.pd_data.describe()
+        print(self.pd_data.describe())

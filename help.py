@@ -4,6 +4,7 @@ from pmlb import fetch_data
 from gplearn.genetic import SymbolicRegressor
 
 from bingo.symbolic_regression import AGraph, AGraphCrossover
+from keplar.data.data import Data
 from keplar.operator.creator import GpCreator, BingoCreator
 
 # bingo_parent_1 = AGraph(use_simplification=True,equation="(X_0 + X_0 - (X_0 + X_0) - (X_0) - (X_0))/(X_0 + X_0 - (X_0 + X_0) - (X_0)) - ((X_0 + X_0 - (X_0 + X_0) - (X_0))/(X_0 + X_0 + X_0 - (X_0 + X_0) - (X_0)))")
@@ -20,10 +21,12 @@ from keplar.operator.creator import GpCreator, BingoCreator
 # gpc.do()
 # gpc=GpCreator(50,x,y)
 # gpc.do()
-dt = pandas.DataFrame([
-    [1, 2, 3],
-    [1, 1, 1],
-    [1, 2, 3]
-])
-x = dt.columns[2:3]
-print(dt[x])
+# dt = pandas.DataFrame([
+#     [1, 2, 3],
+#     [1, 1, 1],
+#     [1, 2, 3]
+# ])
+# dt.head()
+dt = Data("pmlb", "1027_ESL")
+dt.read_file()
+dt.display_data()
