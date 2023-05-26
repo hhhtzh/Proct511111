@@ -34,21 +34,21 @@ class Data:
     def get_col(self, str):
         return self.pd_data.loc[str]
 
-    def get_x(self, int_x):
-        d = self.pd_data.columns[int_x:int_x + 1]
-        return np.array(self.pd_data[d])
+    def get_x(self):
+        if self.x is not None:
+            return self.x
+        else:
+            raise ValueError("数据集xy未设置")
 
-    def get_y(self, int_y):
-        d = self.pd_data.columns[int_y:int_y + 1]
-        return np.array(self.pd_data[d])
+    def get_y(self):
+        if self.y is not None:
+            return self.y
+        else:
+            raise ValueError("数据集xy未设置")
 
-    def get_pd_x(self, int_x):
-        d = self.pd_data.columns[int_x:int_x + 1]
-        return self.pd_data[d]
-
-    def get_pd_y(self, int_y):
-        d = self.pd_data.columns[int_y:int_y + 1]
-        return self.pd_data[d]
+    def set_xy(self, str_y):
+        self.y = np.array(self.pd_data.loc[str_y])
+        self.x = np.array(self.pd_data.drop(lables=str_y, axis=1))
 
     def display_data(self):
         self.pd_data.head()
