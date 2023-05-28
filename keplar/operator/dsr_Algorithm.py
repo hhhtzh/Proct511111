@@ -16,6 +16,26 @@ from copy import deepcopy
 from dsr.dso.train import Trainer
 from dsr.dso.program import Program, from_tokens
 
+from  keplar.translator.translator import pop2Dsr,Dsr2pop
+
+
+class uDsrStep:
+    def __init__(self):
+        super().__init__()
+
+    def do(self, pragrams,iter_num):
+        if iter_num == 0:
+            pragrams = 
+            pragrams = Dsr2pop(poplation)
+        elif 
+
+
+        poplation =  pop2Dsr(pragrams)
+
+
+
+
+
 class uDsrAlgorithm:
     def __init__(self,csv_filename,config_filename):
         # 读入数据
@@ -33,23 +53,28 @@ class uDsrAlgorithm:
         
 
         # 进行深度学习,并对model进行setup
-        # dsr_model = uDsrDeeplearning(deepcopy(config))
-        # dsr_model.do()
+        dsr_model = uDsrDeeplearning(deepcopy(config))
+        dsr_model.do()
 
-        model  =  DeepSymbolicOptimizer(deepcopy(config))
+        # model  =  DeepSymbolicOptimizer(deepcopy(config))
 
-        model.setup()
+        # programs = model.setup()
+
+        # programs
+        # uDsr_step =  
+        # model.programs = [Program.random() for _ in range(100)]
 
 
 
 
-        warm_start = 50
-        actions, obs, priors =model.policy.sample(warm_start)
-        programs = [from_tokens(a) for a in actions]
-        r = np.array([p.r for p in programs])
-        l = np.array([len(p.traversal) for p in programs])
+        # warm_start = 50
+        # actions, obs, priors =model.policy.sample(warm_start)
+        # programs = [from_tokens(a) for a in actions]
+        # r = np.array([p.r for p in programs])
+        # l = np.array([len(p.traversal) for p in programs])
 
-        print[l[0]]
+
+        # print[l[0]]
 
         # self.traversal = [Program.library[t] for t in tokens]
 

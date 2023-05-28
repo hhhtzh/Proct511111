@@ -22,6 +22,11 @@ class uDsrDeeplearning:
         # self.config = self.set_config(DeepSymbolicOptimizer,config)
         self.set_config(config)
         self.sess  = None
+        self.prior= None
+        self.state_manager = None
+        self.policy = None
+        self.policy_optimizer = None
+        self.trainer = None
 
 
     def do(self):
@@ -50,11 +55,11 @@ class uDsrDeeplearning:
         self.policy = make_policy
         self.policy_optimizer = make_policy_optimizer
         self.trainer = Trainer()
-        self.checkpoint = Checkpoint()
+        # self.checkpoint = Checkpoint()
 
         print("model already setup!\n")
 
-        return self.trainer
+        # return self.trainer
         
 
         
