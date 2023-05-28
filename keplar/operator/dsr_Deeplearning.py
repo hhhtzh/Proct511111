@@ -14,20 +14,36 @@ from dsr.dso.tf_state_manager import make_state_manager
 
 from dsr.dso.policy.policy import make_policy
 from dsr.dso.policy_optimizer import make_policy_optimizer
-from dsr.dso.core import DeepSymbolicOptimizer
+# from dsr.dso.core import 
+from collections import defaultdict
+
 
 
 class uDsrDeeplearning:
     def __init__(self,config=None):
         # self.config = self.set_config(DeepSymbolicOptimizer,config)
-        self.set_config(config)
         self.sess  = None
         self.prior= None
         self.state_manager = None
         self.policy = None
         self.policy_optimizer = None
         self.trainer = None
+        self.set_config(config)
+        
+    def set_config(self, config):
+        config = load_config(config)
 
+        self.config = defaultdict(dict, config)
+        self.config_task = self.config["task"]
+        self.config_prior = self.config["prior"]
+        self.config_logger = self.config["logging"]
+        self.config_training = self.config["training"]
+        self.config_state_manager = self.config["state_manager"]
+        self.config_policy = self.config["policy"]
+        self.config_policy_optimizer = self.config["policy_optimizer"]
+        self.config_gp_meld = self.config["gp_meld"]
+        self.config_experiment = self.config["experiment"]
+        self.config_checkpoint = self.config["checkpoint"]
 
     def do(self):
 
@@ -54,7 +70,7 @@ class uDsrDeeplearning:
         self.state_manager = make_state_manager
         self.policy = make_policy
         self.policy_optimizer = make_policy_optimizer
-        self.trainer = Trainer()
+        # self.trainer = 
         # self.checkpoint = Checkpoint()
 
         print("model already setup!\n")

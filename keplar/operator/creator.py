@@ -6,7 +6,7 @@ from keplar.operator.operator import Operator
 
 from keplar.population.population import Population
 from keplar.translator.translator import trans_gp
-import pyoperon as Operon
+# import pyoperon as Operon
 
 
 class Creator(Operator):
@@ -59,13 +59,13 @@ class GpCreator(Creator):
         return pop
 
 
-class OperonCreator(Creator):
-    def __init__(self, minL=1, maxL=50, maxD=10):
-        super().__init__()
-        self.maxD = maxD
-        self.minL = minL
-        self.maxL = maxL
+# class OperonCreator(Creator):
+#     def __init__(self, minL=1, maxL=50, maxD=10):
+#         super().__init__()
+#         self.maxD = maxD
+#         self.minL = minL
+#         self.maxL = maxL
 
-    def do(self, population=None):
-        pset = Operon.PrimitiveSet()
-        pset.SetConfig(Operon.PrimitiveSet.TypeCoherent)
+#     def do(self, population=None):
+#         pset = Operon.PrimitiveSet()
+#         pset.SetConfig(Operon.PrimitiveSet.TypeCoherent)

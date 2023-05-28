@@ -6,14 +6,14 @@ from keplar.operator.operator import Operator
 from keplar.operator.composite_operator import CompositeOp
 from keplar.operator.dsr_prework import pre_env
 from keplar.operator.dsr_Deeplearning import uDsrDeeplearning
-from keplar.operator.dsr_Evo import uDsrEvo
-from keplar.operator.dsr_RL import uDsrRL
+# from keplar.operator.dsr_Evo import uDsrEvo
+# from keplar.operator.dsr_RL import uDsrRL
 from keplar.operator.dsr_Evo import uDsrEvoCompositOp
-from dsr.dso.core import DeepSymbolicOptimizer
-from keplar.operator.creator import Creator,uDSRCreator
+# from dsr.dso.core import DeepSymbolicOptimizer
+# from keplar.operator.creator import Creator,uDSRCreator
 from copy import deepcopy
 # from dsr.dso.program import Program
-from dsr.dso.train import Trainer
+# from dsr.dso.train import Trainer
 from dsr.dso.program import Program, from_tokens
 
 from  keplar.translator.translator import pop2Dsr,Dsr2pop
@@ -25,12 +25,10 @@ class uDsrStep:
 
     def do(self, pragrams,iter_num):
         if iter_num == 0:
-            pragrams = Dsr2pop(pragrams)
+            # pragrams = Dsr2pop(pragrams)
             pragrams = Dsr2pop(poplation)
-        elif i
-
-
-        poplation =  pop2Dsr(pragrams)
+        elif iter_num != 0:
+            poplation =  pop2Dsr(pragrams)
 
 
 
