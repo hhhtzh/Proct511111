@@ -121,9 +121,11 @@ def pop2Dsr(pop_expr):
     
 
 def Dsr2pop(program_expr):
-    strx_ = re.sub(r'x(\d{1})', r'X_\1', program_expr)
-    strx_ = re.sub(r'x(\d{2})', r'X_\2', strx_)
-    strx_ = re.sub(r'-', r' - ', strx_)
+    # strx_ = re.sub(r'x(\d{1})', r'X_\1', program_expr)
+    # strx_ = re.sub(r'x(\d{2})', r'X_\2', strx_)
+    strx_ = re.sub(r'-', r' - ', program_expr)
+    strx_ = re.sub(r'x', r'X_', strx_)
+
 
 
 
