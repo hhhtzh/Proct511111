@@ -1,5 +1,7 @@
 import re
-
+import numpy as np
+from keplar.population.population import Population
+from keplar.population.individual import Individual
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix
 
 
@@ -114,11 +116,21 @@ def trans_gp(gp_equ):
 
 
 
-def pop2Dsr(self,poplation,programs):
-        pass
+def pop2Dsr(pop_expr):
+    pass
+    
 
-def Dsr2pop(self,poplation,programs):
-        pass
+def Dsr2pop(program_expr):
+    strx_ = re.sub(r'x(\d{1})', r'X_\1', program_expr)
+    strx_ = re.sub(r'x(\d{2})', r'X_\2', strx_)
+    strx_ = re.sub(r'-', r' - ', strx_)
+
+
+
+
+    
+
+    return str(strx_)
 
 
 def to_gp(equ):

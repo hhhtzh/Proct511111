@@ -5,8 +5,9 @@ from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 
 from keplar.population.population import Population
-from keplar.translator.translator import trans_gp
+from keplar.translator.translator import trans_gp, Dsr2pop
 # import pyoperon as Operon
+import numpy as np
 
 
 class Creator(Operator):
@@ -59,6 +60,32 @@ class GpCreator(Creator):
             ind = Individual(str(equ))
             pop.append(ind)
         return pop
+    
+class DsrCreator(Creator):
+    def __init__(self, programs):
+        super().__init__()
+        self.programs = programs
+    def do(self, population=None):
+        r = np.array([p.r for p in self.programs])
+        l = np.array([len(p.traversal) for p in self.programs])
+        expr = np.array([p.sympy_expr for p in self.programs])
+        T = np.array([p.traversal for p in self.programs])
+        # print(T[0])
+        # print(l[0])
+        # print(expr[0])
+        pop_size = len(expr)
+        population=Population(pop_size)
+        express = {}
+        for i in range(pop_size):
+            print(expr[i])
+            express[i]= Dsr2pop(expr[i])
+            print(express[i])
+            ind = Individual(str(express[i]))
+            population.append(ind)
+
+        population.set_pop_size(pop_size)
+
+        return population
 
 
 # class OperonCreator(Creator):

@@ -67,7 +67,7 @@ class dsr_Train():
         task = make_task(**config_task)
         Program.set_task(task)
 
-        print(Program.task.task_type+"xxx\n")
+        # print(Program.task.task_type+"xxx\n")
 
         # print("??????????????????????!!!!!")
 
@@ -169,6 +169,7 @@ class dsr_Train():
         # that were geneated during the attempt to get
         # batch_size new samples for expensive reward evaluation
         if self.policy.valid_extended_batch:
+            print("node 1.1")
             self.policy.valid_extended_batch = False
             n_extra = self.policy.extended_batch[0]
             if n_extra > 0:
@@ -187,6 +188,7 @@ class dsr_Train():
 
         # Run GP seeded with the current batch, returning elite samples
         if self.gp_controller is not None:
+            print("node 1.5")
             deap_programs, deap_actions, deap_obs, deap_priors = self.gp_controller(actions)
             self.nevals += self.gp_controller.nevals
 
@@ -209,6 +211,7 @@ class dsr_Train():
 
         # Compute rewards in parallel
         if self.pool is not None:
+            print("node 3.1")
             # Filter programs that need reward computing
             programs_to_optimize = list(set([p for p in programs if "r" not in p.__dict__]))
             pool_p_dict = { p.str : p for p in self.pool.map(work, programs_to_optimize) }
@@ -231,9 +234,11 @@ class dsr_Train():
         invalid     = np.array([p.invalid for p in programs], dtype=bool)
 
         if self.logger.save_positional_entropy:
+            print("node 4")
             positional_entropy = np.apply_along_axis(empirical_entropy, 0, actions)
 
         if self.logger.save_top_samples_per_batch > 0:
+            print("node 4.1")
             # sort in descending order: larger rewards -> better solutions
             sorted_idx = np.argsort(r)[::-1]
             top_perc = int(len(programs) * float(self.logger.save_top_samples_per_batch))
@@ -253,8 +258,10 @@ class dsr_Train():
         rewards and filter out programs with lesser reward.
         """
         if self.epsilon is not None and self.epsilon < 1.0:
+            print("node 4.2")
             # Compute reward quantile estimate
             if self.use_memory: # Memory-augmented quantile
+                print("node 4.3")
                 # Get subset of Programs not in buffer
                 unique_programs = [p for p in programs \
                                    if p.str not in self.memory_queue.unique_items]
@@ -328,11 +335,13 @@ class dsr_Train():
 
         # Update and sample from the priority queue
         if self.priority_queue is not None:
+            print("node 6")
             self.priority_queue.push_best(sampled_batch, programs)
             pqt_batch = self.priority_queue.sample_batch(self.policy_optimizer.pqt_batch_size)
             # Train the policy
             summaries = self.policy_optimizer.train_step(b, sampled_batch, pqt_batch)
         else:
+            print("node 7")
             pqt_batch = None
             # Train the policy
             summaries = self.policy_optimizer.train_step(b, sampled_batch)
@@ -358,12 +367,12 @@ class dsr_Train():
                 self.p_r_best.print_stats()
 
         # Collect sub-batch statistics and write output
-        self.logger.save_stats(r_full, l_full, actions_full, s_full,
-                               invalid_full, r, l, actions, s, s_history,
-                               invalid, self.r_best, r_max, ewma, summaries,
-                               self.iteration, b, iteration_walltime,
-                               self.nevals, controller_programs,
-                               positional_entropy, top_samples_per_batch)
+        # self.logger.save_stats(r_full, l_full, actions_full, s_full,
+        #                        invalid_full, r, l, actions, s, s_history,
+        #                        invalid, self.r_best, r_max, ewma, summaries,
+        #                        self.iteration, b, iteration_walltime,
+        #                        self.nevals, controller_programs,
+        #                        positional_entropy, top_samples_per_batch)
 
 
         # Stop if early stopping criteria is met
@@ -389,46 +398,6 @@ class dsr_Train():
         # Increment the iteration counter
         self.iteration += 1
 
-    def save(self, save_path):
-        """
-        Save the state of the Trainer.
-        """
-
-        state_dict = {
-            "nevals" : self.nevals,
-            "iteration" : self.iteration,
-            "r_best" : self.r_best,
-            "p_r_best_tokens" : self.p_r_best.tokens.tolist() if self.p_r_best is not None else None
-        }
-        with open(save_path, 'w') as f:
-            json.dump(state_dict, f)
-
-        print("Saved Trainer state to {}.".format(save_path))
-
-    def load(self, load_path):
-        """
-        Load the state of the Trainer.
-        """
-
-        with open(load_path, 'r') as f:
-            state_dict = json.load(f)
-
-        # Load nevals and iteration from savestate
-        self.nevals = state_dict["nevals"]
-        self.iteration = state_dict["iteration"]
-
-        # Load r_best and p_r_best
-        if state_dict["p_r_best_tokens"] is not None:
-            tokens = np.array(state_dict["p_r_best_tokens"], dtype=np.int32)
-            self.p_r_best = from_tokens(tokens)
-        else:
-            self.p_r_best = None
-
-        print("Loaded Trainer state from {}.".format(load_path))
-
-        # print(Program.task.task_type+"29\n")
-        pass
-
     def run_step(self, override=None):
             
         # if override is None:
@@ -442,6 +411,22 @@ class dsr_Train():
         #     actions, obs, priors = self.policy.sample(self.batch_size)
         #     programs = [from_tokens(a) for a in actions]     
         self.two_step()
+
+    def dsr_sample(self, override=None):
+        if override is None:
+            # Sample batch of Programs from the Controller
+            actions, obs, priors = self.policy.sample(self.batch_size)
+            programs = [from_tokens(a) for a in actions]   
+            r = np.array([p.r for p in programs])
+            l = np.array([len(p.traversal) for p in programs])
+            expr = np.array([p.sympy_expr for p in programs])
+
+        return programs,r,l,expr
+    
+    
+    
+    def loop_one_step(self, override=None):
+        pass
 
     def T_step(self, override=None):
             
@@ -490,42 +475,3 @@ class dsr_Train():
 
 
         
-
-    def one_step(self,override=None):
-        # print(Program.task.task_type+"4\n")
-        
-        self.run_one_step()
-        # pass
-    def get_program(self, override=None):
-        pass
-
-        # positional_entropy = None
-        # top_samples_per_batch = list()
-        # if self.debug >= 1:
-        #     print("\nDEBUG: Policy parameter means:")
-        #     self.print_var_means()
-        # ewma = None if self.b_jumpstart else 0.0 # EWMA portion of baseline
-        # start_time = time.time()
-        # if self.verbose:
-        #     print("-- RUNNING ITERATIONS START -------------")
-        # # Number of extra samples generated during attempt to get
-        # # batch_size new samples
-        # n_extra = 0
-        # # Record previous cache before new samples are added by from_tokens
-        # s_history = list(Program.cache.keys())
-
-        # if override is None:
-        #     # Sample batch of Programs from the Controller
-        #     actions, obs, priors = Trainer.policy.sample(Trainer.batch_size)
-        #     programs = [from_tokens(a) for a in actions]   
-        # return programs  
-
-
-        # return Trainer.get_program(self, override=None)
-        # pass
-
-        
-
-    
-
-    

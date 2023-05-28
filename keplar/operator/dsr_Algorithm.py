@@ -23,21 +23,7 @@ from dsr.dso.train import Trainer
 
 from keplar.operator.dsr_train import dsr_Train
 
-
-class uDsrStep:
-    def __init__(self):
-        super().__init__()
-
-    def do(self, pragrams,iter_num):
-        if iter_num == 0:
-            # pragrams = Dsr2pop(pragrams)
-            pragrams = Dsr2pop(poplation)
-        elif iter_num != 0:
-            poplation =  pop2Dsr(pragrams)
-
-
-
-
+from keplar.operator.creator import DsrCreator
 
 class uDsrAlgorithm:
     def __init__(self,csv_filename,config_filename):
@@ -82,9 +68,28 @@ class uDsrAlgorithm:
                             ,gp_controller=dsr_model.gp_controller,logger=dsr_model.logger,
                             pool=dsr_model.pool,**dsr_model.config_training, **dsr_model.config_task)
         
+
+
         # while not dsr_train.done:
         #     dsr_train.run_one_step()
-        dsr_train.T_step()
+
+        programs,r,l,expr =dsr_train.dsr_sample()
+        dsr_creator = DsrCreator(programs)
+        population = dsr_creator.do()
+
+        
+
+
+
+
+        # iter_num = 0
+        # while iter_num < 20:
+        #     programs,r,l,expr =dsr_train.dsr_sample()
+        #     population = Dsr2pop(programs)
+        #     iter_num += 1
+
+
+        # dsr_train.T_step()
         
         # dsr_train.T_step()
         # actions, obs, priors = dsr_train.policy.sample(dsr_train.batch_size)
