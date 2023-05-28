@@ -53,6 +53,8 @@ class GpCreator(Creator):
         for i in range(self.pop_size):
             reg = SymbolicRegressor(generations=1, population_size=1)
             reg.fit(self.x, self.y)
+            print(str(reg))
+
             equ = trans_gp(str(reg))
             ind = Individual(str(equ))
             pop.append(ind)

@@ -157,7 +157,9 @@ class dsr_Train():
         if override is None:
             # Sample batch of Programs from the Controller
             actions, obs, priors = self.policy.sample(self.batch_size)
-            programs = [from_tokens(a) for a in actions]            
+            programs = [from_tokens(a) for a in actions]    
+            print("node 0")
+
         else:
             # Train on the given batch of Programs
             actions, obs, priors, programs = override
@@ -170,6 +172,7 @@ class dsr_Train():
             self.policy.valid_extended_batch = False
             n_extra = self.policy.extended_batch[0]
             if n_extra > 0:
+                print("node 1")
                 extra_programs = [from_tokens(a) for a in
                                   self.policy.extended_batch[1]]
                 # Concatenation is fine because rnn_policy.sample_novel()
@@ -197,6 +200,7 @@ class dsr_Train():
                 pad_length = actions.shape[1] - deap_actions.shape[1]
                 deap_actions, deap_obs, deap_priors = pad_action_obs_priors(deap_actions, deap_obs, deap_priors, pad_length)
 
+            print("node 2")
             # Combine RNN and deap programs, actions, obs, and priors
             programs = programs + deap_programs
             actions = np.append(actions, deap_actions, axis=0)
@@ -209,6 +213,8 @@ class dsr_Train():
             programs_to_optimize = list(set([p for p in programs if "r" not in p.__dict__]))
             pool_p_dict = { p.str : p for p in self.pool.map(work, programs_to_optimize) }
             programs = [pool_p_dict[p.str] if "r" not in p.__dict__  else p for p in programs]
+            print("node 3")
+
             # Make sure to update cache with new programs
             Program.cache.update(pool_p_dict)
 
@@ -256,6 +262,8 @@ class dsr_Train():
 
                 # Get rewards
                 memory_r = self.memory_queue.get_rewards()
+                print("node 5")
+
                 sample_r = [p.r for p in unique_programs]
                 combined_r = np.concatenate([memory_r, sample_r])
 
@@ -373,6 +381,11 @@ class dsr_Train():
         if self.nevals >= self.n_samples:
             self.done = True
 
+        if self.iteration==self.n_samples/self.batch_size-1:
+            print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time), self.iteration + 1, self.r_best))
+            print("\n\t** New best")
+            self.p_r_best.print_stats()
+
         # Increment the iteration counter
         self.iteration += 1
 
@@ -442,7 +455,36 @@ class dsr_Train():
 
 
             actions, obs, priors = self.policy.sample(self.batch_size)
-            programs = [from_tokens(a) for a in actions]     
+            programs = [from_tokens(a) for a in actions]  
+
+            r = np.array([p.r for p in programs])
+            l = np.array([len(p.traversal) for p in programs])
+            R= np.array([p.sympy_expr for p in programs])
+
+            # print(Program.library)
+            # print(programs.library)
+            # print(l)
+            T = np.array([p.traversal for p in programs])
+            print(T)
+            # print(T[0])
+            # print(l[0])
+            # print(R[0])
+
+            # print(len(T))
+            # print(len(l))
+            # print(len(R))
+
+            # print(p.traversal)
+
+
+            
+            # r.__repr__()
+            # print(r)
+            # print(R)
+
+
+
+            # programs.__str__()
         # self.two_step()
 
 

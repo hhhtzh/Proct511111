@@ -234,7 +234,7 @@ class Trainer():
         start_time = time.time()
         if self.verbose:
             print("-- RUNNING ITERATIONS START -------------")
-            print(Program.task.task_type+"\n")
+            # print(Program.task.task_type+"\n")
 
 
         # Number of extra samples generated during attempt to get
@@ -249,8 +249,8 @@ class Trainer():
         # Shape of priors: (batch_size, max_length, n_choices)
         if override is None:
             # Sample batch of Programs from the Controller
-            print("xxxxxxxxxxxxx\n")
-            print(Program.task.task_type+"\n")
+            # print("xxxxxxxxxxxxx\n")
+            # print(Program.task.task_type+"\n")
 
             actions, obs, priors = self.policy.sample(self.batch_size)
             programs = [from_tokens(a) for a in actions]            
