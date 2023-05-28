@@ -129,9 +129,6 @@ def Dsr2pop(program_expr):
     strx_ = re.sub(r'x(\d{3})', r'X_\3', strx_)
     strx_ = re.sub(r'x(\d{4})', r'X_\4', strx_)
 
-
-
-
     
 
     return str(strx_)

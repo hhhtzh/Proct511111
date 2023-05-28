@@ -77,9 +77,9 @@ class DsrCreator(Creator):
         population=Population(pop_size)
         express = {}
         for i in range(pop_size):
-            print(expr[i])
+            # print(expr[i])
             express[i]= Dsr2pop(str(expr[i]))
-            print(express[i])
+            # print(express[i])
             ind = Individual(str(express[i]))
             population.append(ind)
 
