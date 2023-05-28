@@ -1,7 +1,9 @@
-import dsr.dso.core as core
+# import dsr.dso.core as core
 import tensorflow as tf
 from dsr.dso.core import Program
-from dsr.dso.core import DeepSymbolicOptimizer
+# from dsr.dso.core import DeepSymbolicOptimizer
+import os
+from datetime import datetime
 
 from dsr.dso.config import load_config 
 from multiprocessing import Pool, cpu_count
@@ -27,9 +29,11 @@ from dsr.dso.policy_optimizer import make_policy_optimizer
 from collections import defaultdict
 from dsr.dso.gp.gp_controller import GPController
 
+from keplar.operator.dsr_train import dsr_Train
 
 
-class uDsrDeeplearning:
+
+class uDsrDeeplearning():
     def __init__(self,config=None):
         # self.config = self.set_config(DeepSymbolicOptimizer,config)
         # self.sess  = None
@@ -72,7 +76,7 @@ class uDsrDeeplearning:
         self.sess = tf.compat.v1.Session(config=session_config)
 
         # Setup logdirs and output files
-        self.output_file = DeepSymbolicOptimizer().make_output_file()
+        self.output_file = self.make_output_file()
         # DeepSymbolicOptimizer.save_config(DeepSymbolicOptimizer)
 
         # Prepare training parameters
@@ -90,12 +94,21 @@ class uDsrDeeplearning:
             self.gp_controller = None
         # self.logger = self.make_logger()
         self.logger=StatsLogger(self.sess,self.output_file,**self.config_logger)
+
+        # self.trainer = dsr_Train(self.sess, self.policy, self.policy_optimizer, self.gp_controller, self.logger,self.pool, **self.config_training)
         # self.trainer = 
 
         # self.trainer = 
         # self.checkpoint = Checkpoint()
 
         print("model already setup!\n")
+        # print(Program.task.task_type+' 1hhh\n')
+
+        # return Program
+        
+        # print(Program.task.task_type+' hhh\n')
+
+        # return self.trainer
 
 
     # def train_one_step(self, override=None):
@@ -206,6 +219,46 @@ class uDsrDeeplearning:
         set_task(self.config_task)
 
         return pool
+    
+
+    def make_output_file(self):
+        """Generates an output filename"""
+
+        # If logdir is not provided (e.g. for pytest), results are not saved
+        if self.config_experiment.get("logdir") is None:
+            self.save_path = None
+            print("WARNING: logdir not provided. Results will not be saved to file.")
+            return None
+
+        # When using run.py, timestamp is already generated
+        timestamp = self.config_experiment.get("timestamp")
+        if timestamp is None:
+            timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
+            self.config_experiment["timestamp"] = timestamp
+
+        # Generate save path
+        task_name = Program.task.name
+        if self.config_experiment["exp_name"] is None:
+            save_path = os.path.join(
+                self.config_experiment["logdir"],
+                '_'.join([task_name, timestamp]))
+        else:
+            save_path = os.path.join(
+                self.config_experiment["logdir"],
+                self.config_experiment["exp_name"])
+
+        self.config_experiment["task_name"] = task_name
+        self.config_experiment["save_path"] = save_path
+        os.makedirs(save_path, exist_ok=True)
+
+        seed = self.config_experiment["seed"]
+        output_file = os.path.join(save_path,
+                                   "dso_{}_{}.csv".format(task_name, seed))
+
+        self.save_path = save_path
+
+        return output_file
+
 
         
         

@@ -194,6 +194,22 @@ class Trainer():
         self.p_r_best = None
         self.done = False
 
+    def two_step(self,override=None):
+        """
+        Train one iteration.
+        """
+        if override is None:
+            # Sample batch of Programs from the Controller
+            print("xxxxxxxxxxxxx\n")
+            # Program.task.task_type='regression'
+            # print(self.programs.task.task_type+"\n")
+            print(Program.task.task_type+"xxx\n")
+
+
+            actions, obs, priors = self.policy.sample(self.batch_size)
+            programs = [from_tokens(a) for a in actions]     
+
+       
     def run_one_step(self, override=None):
         """
         Executes one step of main training loop. If override is given,
@@ -205,6 +221,8 @@ class Trainer():
             Tuple of (actions, obs, priors, programs) to train on offline
             samples instead of sampled
         """
+        print(Program.task.task_type+"1\n")
+
         positional_entropy = None
         top_samples_per_batch = list()
         if self.debug >= 1:
@@ -216,6 +234,7 @@ class Trainer():
         start_time = time.time()
         if self.verbose:
             print("-- RUNNING ITERATIONS START -------------")
+            print(Program.task.task_type+"\n")
 
 
         # Number of extra samples generated during attempt to get
@@ -230,6 +249,9 @@ class Trainer():
         # Shape of priors: (batch_size, max_length, n_choices)
         if override is None:
             # Sample batch of Programs from the Controller
+            print("xxxxxxxxxxxxx\n")
+            print(Program.task.task_type+"\n")
+
             actions, obs, priors = self.policy.sample(self.batch_size)
             programs = [from_tokens(a) for a in actions]            
         else:

@@ -17,10 +17,10 @@ PyYAML
 prettytable
 
 [all]
-mpi4py
-stable-baselines[mpi]==2.10.0
 gym[box2d]==0.15.4
+mpi4py
 pybullet
+stable-baselines[mpi]==2.10.0
 
 [control]
 mpi4py

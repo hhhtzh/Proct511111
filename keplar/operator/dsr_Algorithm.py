@@ -12,6 +12,7 @@ from keplar.operator.dsr_Evo import uDsrEvoCompositOp
 # from dsr.dso.core import DeepSymbolicOptimizer
 # from keplar.operator.creator import Creator,uDSRCreator
 from copy import deepcopy
+from dsr.dso.task import set_task
 # from dsr.dso.program import Program
 # from dsr.dso.train import Trainer
 from dsr.dso.program import Program, from_tokens
@@ -43,6 +44,7 @@ class uDsrAlgorithm:
         # 读入数据
         self.csv_filename = csv_filename
         self.config_filename = config_filename
+        
 
     def run(self):
 
@@ -56,15 +58,55 @@ class uDsrAlgorithm:
 
         # 进行深度学习,并对model进行setup
         dsr_model = uDsrDeeplearning(deepcopy(config))
+        # programs=dsr_model.do()
         dsr_model.do()
+
+        # set_task(dsr_model.config_task)
+
+        
+        
+
+        # dsr_model.trainer.run_one_step()
+
+        # while not dsr_model.trainer.done:
+        # dsr_model.trainer.run_step()
+        # print(programs.task.task_type+"kkk\n")
+
+        
+
+
+
+
 
         dsr_train = dsr_Train(sess=dsr_model.sess,policy=dsr_model.policy,policy_optimizer=dsr_model.policy_optimizer
                             ,gp_controller=dsr_model.gp_controller,logger=dsr_model.logger,
-                            pool=dsr_model.pool,**dsr_model.config_training)
-    
+                            pool=dsr_model.pool,**dsr_model.config_training, **dsr_model.config_task)
         
-        while not dsr_train.done:
-            result = dsr_train.run_one_step()
+        # while not dsr_train.done:
+        #     dsr_train.run_one_step()
+        dsr_train.T_step()
+        
+        # dsr_train.T_step()
+        # actions, obs, priors = dsr_train.policy.sample(dsr_train.batch_size)
+        # programs = [from_tokens(a) for a in actions]    
+        
+        # if dsr_model.sess is None:
+        #     dsr_model.do()
+    
+        # dsr_train.get_program()
+        # dsr_train.programs[0].__repr__()
+
+        # print(Program.task.task_type)
+        # dsr_train.re_P()
+        # print(Program.task.task_type)
+        
+
+
+        # dsr_train.run_step()
+
+
+        # while not dsr_train.done:
+        #     result = dsr_train.one_step()
         
 
         # model  =  DeepSymbolicOptimizer(deepcopy(config))
