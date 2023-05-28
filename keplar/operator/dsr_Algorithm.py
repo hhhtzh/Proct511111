@@ -25,9 +25,9 @@ class uDsrStep:
 
     def do(self, pragrams,iter_num):
         if iter_num == 0:
-            pragrams = 
+            pragrams = Dsr2pop(pragrams)
             pragrams = Dsr2pop(poplation)
-        elif 
+        elif i
 
 
         poplation =  pop2Dsr(pragrams)
@@ -94,19 +94,19 @@ class uDsrAlgorithm:
 
         # print("done!\n")
 
-        # 进行演化算法
-        dsr_Evo = uDsrEvo()
+        # # 进行演化算法
+        # dsr_Evo = uDsrEvo()
 
-        # 进行强化学习
-        dsr_RL =uDsrRL()
+        # # 进行强化学习
+        # dsr_RL =uDsrRL()
 
-        # 进行组合
-        dsr_2 =CompositeOp([dsr_Evo,dsr_RL]) 
-        # 这里的dsr_Evo和dsr_RL都是CompositeOp类型的，可以演化多次再做一次强化学习（当前是一次演化一次强化学习）
+        # # 进行组合
+        # dsr_2 =CompositeOp([dsr_Evo,dsr_RL]) 
+        # # 这里的dsr_Evo和dsr_RL都是CompositeOp类型的，可以演化多次再做一次强化学习（当前是一次演化一次强化学习）
 
-        # 进行组合
-        uDsr = uDsrEvoCompositOp([dsr_2],iter_num=20)
-        uDsr.do()
+        # # 进行组合
+        # uDsr = uDsrEvoCompositOp([dsr_2],iter_num=20)
+        # uDsr.do()
         
 
 
