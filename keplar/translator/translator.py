@@ -150,24 +150,28 @@ def to_gp(equ):
     strx = re.sub(r' / ', r'/', strx)
 
 
-def trans_op(tree):
-    equ = []
-    for j in tree.Nodes:
-        if str(j.Name) == "variable":
-            equ.append("X_1")
-        elif str(j.Name) == "constant":
-            equ.append("1")
-        elif str(j.Name) == "square":
-            equ.append("sqrt")
-        elif str(j.Name) == "pow":
-            equ.append("^")
-        else:
-            equ.append(str(j.Name))
-    a, b = postfix_to_command_array_and_constants(equ)
-    ind = AGraph()
-    ind.command_array = a
-    ind._update()
-    return str(ind)
+# def trans_op(tree):
+#     equ = []
+#     for j in tree.Nodes:
+#         if str(j.Name) == "variable":
+#             equ.append("X_1")
+#         elif str(j.Name) == "constant":
+#             equ.append("1")
+#         elif str(j.Name) == "square":
+#             equ.append("sqrt")
+#         elif str(j.Name) == "pow":
+#             equ.append("^")
+#         else:
+#             equ.append(str(j.Name))
+#     a, b = postfix_to_command_array_and_constants(equ)
+#     ind = AGraph()
+#     ind.command_array = a
+#     ind._update()
+#     return str(ind)
+def trans_op(equ):
+    strx_ = re.sub(r'X(\d{1})', r'X_\1', equ)
+    return strx_
+
 
 
 def to_op(ind):
@@ -185,15 +189,19 @@ def to_op(ind):
                 list_infix.append(op_al)
                 op_al=""
                 op_start=False
+                if token!=" ":
+                    list_infix.append(token)
         elif x_start:
             if token=="_":
                 x_al=x_al+"_"
-            elif token.isnum():
+            elif token.isdigit():
                 x_al=x_al+str(token)
             else:
                 list_infix.append(x_al)
                 x_al=""
                 x_start=False
+                if token!=" ":
+                    list_infix.append(token)
         else:
             if token.isalnum() and token!="X":
                 op_start = True
@@ -206,5 +214,5 @@ def to_op(ind):
             else:
                 list_infix.append(str(token))
     print(list_infix)
-    # post_equ = infix_to_postfix(list_infix)
-    # print(post_equ)
+    post_equ = infix_to_postfix(list_infix)
+    print(post_equ)

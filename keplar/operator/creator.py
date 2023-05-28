@@ -65,7 +65,7 @@ class GpCreator(Creator):
 
 
 class OperonCreator(Creator):
-    def __init__(self, tree_type, np_x, np_y, pop_size, minL=1, maxL=50, maxD=10):
+    def __init__(self, tree_type, np_x, np_y, pop_size, minL=1, maxL=50, maxD=10,decimalPrecision=5):
         super().__init__()
         if tree_type == "balanced" or tree_type == "probabilistic":
             self.tree_type = tree_type
@@ -75,6 +75,7 @@ class OperonCreator(Creator):
         self.minL = minL
         self.maxL = maxL
         self.pop_size = pop_size
+        self.decimalPrecision=decimalPrecision
         np_y=np_y.reshape([-1,1])
         self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
         self.target = self.ds.Variables[-1]
@@ -93,13 +94,18 @@ class OperonCreator(Creator):
         tree_initializer.ParameterizeDistribution(self.minL, self.maxL)
         tree_initializer.MaxDepth = self.maxD
         rng = Operon.RomuTrio(random.randint(1, 1000000))
+        coeff_initializer = Operon.NormalCoefficientInitializer()
+        coeff_initializer.ParameterizeDistribution(0, 1)
         tree_list = []
         pop=Population(self.pop_size)
         for i in range(self.pop_size):
             tree = tree_initializer(rng)
+            coeff_initializer(rng,tree)
             tree_list.append(tree)
         for i in tree_list:
-            equ=trans_op(i)
+            equ=Operon.InfixFormatter.Format(i, self.ds, self.decimalPrecision)
+            equ=trans_op(equ)
+            print(equ)
             ind_new=Individual(equation=equ)
             pop.append(ind_new)
         return pop

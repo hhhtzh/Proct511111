@@ -58,13 +58,12 @@ tree_initializer.MaxDepth = maxD
 rng = Operon.RomuTrio(random.randint(1, 1000000))
 a = tree_initializer(rng)
 
-print(len(a.Nodes))
-for v in a.Nodes:
-    print(str(v.Value)+"  "+v.Name+"  "+str(v.IsEnabled))
-
 # define a coefficient initializer (this will initialize the coefficients in the tree)
 coeff_initializer = Operon.NormalCoefficientInitializer()
 coeff_initializer.ParameterizeDistribution(0, 1)
+coeff_initializer(rng, a)
+str=Operon.InfixFormatter.Format(a, ds, 5)
+print(str)
 
 # define several kinds of mutation
 mut_onepoint = Operon.NormalOnePointMutation()
