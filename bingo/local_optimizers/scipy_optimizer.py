@@ -184,6 +184,7 @@ class ScipyOptimizer(LocalOptimizer):
 
         if self.options["method"] in ROOT_SET:
             return self.objective_fn.evaluate_fitness_vector(individual)
+        print(str(individual))
         return self.objective_fn(individual)
 
     def _run_method_for_optimization(self, sub_routine, individual, params):

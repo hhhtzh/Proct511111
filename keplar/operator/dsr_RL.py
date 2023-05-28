@@ -25,7 +25,7 @@ class uDsrRL():
                  epsilon=0.05, verbose=True, baseline="R_e",
                  b_jumpstart=False, early_stopping=True, debug=0,
                  use_memory=False, memory_capacity=1e3,  warm_start=None, memory_threshold=None,
-                 complexity="token", const_optimizer="scipy", const_params=None,  n_cores_batch=1)
+                 complexity="token", const_optimizer="scipy", const_params=None,  n_cores_batch=1):
         self.sess = sess
         self.policy = policy
         self.policy_optimizer = policy_optimizer
