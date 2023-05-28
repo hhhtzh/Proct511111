@@ -1,11 +1,16 @@
+import random
+
+import numpy as np
+
+from bingo.symbolic_regression.agraph.string_parsing import postfix_to_command_array_and_constants
 from gplearn.genetic import SymbolicRegressor
 
-from bingo.symbolic_regression import ComponentGenerator, AGraphGenerator
+from bingo.symbolic_regression import ComponentGenerator, AGraphGenerator, AGraph
 from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 
 from keplar.population.population import Population
-from keplar.translator.translator import trans_gp
+from keplar.translator.translator import trans_gp, trans_op
 import pyoperon as Operon
 
 
@@ -60,19 +65,42 @@ class GpCreator(Creator):
 
 
 class OperonCreator(Creator):
-    def __init__(self, tree_type,minL=1, maxL=50, maxD=10):
+    def __init__(self, tree_type, np_x, np_y, pop_size, minL=1, maxL=50, maxD=10):
         super().__init__()
-        if tree_type=="balanced" or tree_type=="probabilistic":
-            self.tree_type=tree_type
+        if tree_type == "balanced" or tree_type == "probabilistic":
+            self.tree_type = tree_type
         else:
             raise ValueError("创建树的类型错误")
         self.maxD = maxD
         self.minL = minL
         self.maxL = maxL
+        self.pop_size = pop_size
+        np_y=np_y.reshape([-1,1])
+        self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
+        self.target = self.ds.Variables[-1]
+        self.inputs = Operon.VariableCollection(v for v in self.ds.Variables if v.Name != self.target.Name)
 
     def do(self, population=None):
         pset = Operon.PrimitiveSet()
         pset.SetConfig(Operon.PrimitiveSet.TypeCoherent)
-        if self.tree_type=="balanced":
-            tree_creator=Operon.BalancedTreeCreator(pset,inputs,bias=0.0)
+        if self.tree_type == "balanced":
+            tree_creator = Operon.BalancedTreeCreator(pset, self.inputs, bias=0.0)
+        elif self.tree_type == "probabilistic":
+            tree_creator = Operon.ProbabilisticTreeCreator(pset, self.inputs, bias=0.0)
+        else:
+            raise ValueError("Operon创建树的类型名称错误")
+        tree_initializer = Operon.UniformLengthTreeInitializer(tree_creator)
+        tree_initializer.ParameterizeDistribution(self.minL, self.maxL)
+        tree_initializer.MaxDepth = self.maxD
+        rng = Operon.RomuTrio(random.randint(1, 1000000))
+        tree_list = []
+        pop=Population(self.pop_size)
+        for i in range(self.pop_size):
+            tree = tree_initializer(rng)
+            tree_list.append(tree)
+        for i in tree_list:
+            equ=trans_op(i)
+            ind_new=Individual(equation=equ)
+            pop.append(ind_new)
+        return pop
 

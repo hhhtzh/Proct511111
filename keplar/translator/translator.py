@@ -1,6 +1,7 @@
 import re
 
-from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix
+from bingo.symbolic_regression import AGraph
+from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
 
 
 def get_priority(op):
@@ -44,8 +45,6 @@ def infix_to_prefix(infix, len1, s2, top2):
 
     while top1 != -1:
         s2[++top2] = s1[top1]
-
-
 
 
 class Stacks(object):  # 用列表实现栈
@@ -112,15 +111,31 @@ def trans_gp(gp_equ):
     strx_ = re.sub(r'.(\d{3})(\d{1})', r'.\1 \2', strx_)
     return str(strx_)
 
+
 class trans_Dsr():
     def __init__(self):
         pass
 
-    def pop2Dsr(self,poplation,programs):
+    def pop2Dsr(self, poplation, programs):
         pass
 
-    def Dsr2pop(self,poplation,programs):
+    def Dsr2pop(self, poplation, programs):
         pass
+
+
+def postfix_to_infix(expression):
+    stack = []
+
+    for token in expression:
+        if token.isalnum():  # 操作数，直接入栈
+            stack.append(token)
+        else:  # 运算符，弹出两个操作数并生成中缀表达式
+            operand2 = stack.pop()
+            operand1 = stack.pop()
+            infix = "(" + operand1 + token + operand2 + ")"
+            stack.append(infix)
+
+    return stack.pop()  # 返回最终中缀表达式
 
 
 def to_gp(equ):
@@ -133,3 +148,28 @@ def to_gp(equ):
     strx = re.sub(r' - ', r'-', strx)
     strx = re.sub(r' \* ', r'*', strx)
     strx = re.sub(r' / ', r'/', strx)
+
+
+def trans_op(tree):
+    equ = []
+    for j in tree.Nodes:
+        if str(j.Name) == "variable":
+            equ.append("X_1")
+        elif str(j.Name) == "constant":
+            equ.append("1")
+        elif str(j.Name) == "square":
+            equ.append("sqrt")
+        elif str(j.Name) == "pow":
+            equ.append("^")
+        else:
+            equ.append(str(j.Name))
+    a, b = postfix_to_command_array_and_constants(equ)
+    ind = AGraph()
+    ind.command_array = a
+    ind._update()
+    return str(ind)
+
+def to_op(ind):
+    equ=ind.equation
+    post_equ=
+
