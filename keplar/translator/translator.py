@@ -169,7 +169,42 @@ def trans_op(tree):
     ind._update()
     return str(ind)
 
-def to_op(ind):
-    equ=ind.equation
-    post_equ=
 
+def to_op(ind):
+    equ = ind.equation
+    list_infix = []
+    op_al = ""
+    x_al=""
+    op_start = False
+    x_start=False
+    for token in equ:
+        if op_start:
+            if token.isalnum():
+                op_al = op_al + str(token)
+            else:
+                list_infix.append(op_al)
+                op_al=""
+                op_start=False
+        elif x_start:
+            if token=="_":
+                x_al=x_al+"_"
+            elif token.isnum():
+                x_al=x_al+str(token)
+            else:
+                list_infix.append(x_al)
+                x_al=""
+                x_start=False
+        else:
+            if token.isalnum() and token!="X":
+                op_start = True
+                op_al = str(token)
+            elif token==" ":
+                pass
+            elif token=="X":
+                x_start=True
+                x_al="X"
+            else:
+                list_infix.append(str(token))
+    print(list_infix)
+    # post_equ = infix_to_postfix(list_infix)
+    # print(post_equ)
