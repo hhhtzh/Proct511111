@@ -17,8 +17,7 @@ from dsr.dso.task import set_task
 # from dsr.dso.train import Trainer
 from dsr.dso.program import Program, from_tokens
 
-from  keplar.translator.translator import pop2Dsr,Dsr2pop,DSRTransPOP,POPTransDSR
-
+from  keplar.translator.translator import pop2Dsr,Dsr2pop,DSRTransPOP,POPTransPOP
 from dsr.dso.train import Trainer
 
 from keplar.operator.dsr_train import dsr_Train
@@ -78,6 +77,10 @@ class uDsrAlgorithm:
             programs, r,l,expr =dsr_train.dsr_sample()
             dsr_creator = DsrCreator(programs)
             population = dsr_creator.do()
+
+            popChange = POPTransPOP()
+            population = popChange.do(population)
+
 
 
             proG = DSRTransPOP(population)

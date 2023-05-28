@@ -157,12 +157,23 @@ class DSRTransPOP():
 
         return programs
     
-class POPTransDSR():
+class POPTransPOP():
     def __init__(self):
         pass
 
     def do(self, population=None):
-        pass
+        popsize=population.get_pop_size()
+        express = {}
+        for i in range(popsize):
+            equ=population.pop_list[i].equation
+            # print(equ)
+            express[i]= Dsr2pop(str(equ))
+
+            population.pop_list[i].equation=express[i]
+
+        return population
+    
+            # print(population.pop_list[i].equation)
         # pop = Population(population.get_pop_size())
         # for i in range(population.get_pop_size()):
         #     ind = Individual(population.pop_list[i].equation)

@@ -121,6 +121,79 @@ class dsr_Train():
         # print("??????????????????????")
 
         # self.programs = self.get_program()
+    def run_step(self, override=None):
+            
+        # if override is None:
+        #     # Sample batch of Programs from the Controller
+        #     print("xxxxxxxxxxxxx\n")
+        #     # Program.task.task_type='regression'
+        #     # print(self.programs.task.task_type+"\n")
+        #     print(Program.task.task_type+"xxx\n")
+
+
+        #     actions, obs, priors = self.policy.sample(self.batch_size)
+        #     programs = [from_tokens(a) for a in actions]     
+        self.two_step()
+
+    def dsr_sample(self, override=None):
+        if override is None:
+            # Sample batch of Programs from the Controller
+            actions, obs, priors = self.policy.sample(self.batch_size)
+            programs = [from_tokens(a) for a in actions]   
+            r = np.array([p.r for p in programs])
+            l = np.array([len(p.traversal) for p in programs])
+            expr = np.array([p.sympy_expr for p in programs])
+
+        return programs,r,l,expr
+    
+    
+    
+    # def loop_one_step(self, override=None):
+    #     pass
+
+    def T_step(self, override=None):
+            
+        if override is None:
+            # Sample batch of Programs from the Controller
+            print("xxxxxxxxxxxxx\n")
+            # Program.task.task_type='regression'
+            # print(self.programs.task.task_type+"\n")
+            print(Program.task.task_type+"xxx\n")
+            
+
+
+            actions, obs, priors = self.policy.sample(self.batch_size)
+            programs = [from_tokens(a) for a in actions]  
+
+            r = np.array([p.r for p in programs])
+            l = np.array([len(p.traversal) for p in programs])
+            R= np.array([p.sympy_expr for p in programs])
+
+            # print(Program.library)
+            # print(programs.library)
+            # print(l)
+            T = np.array([p.traversal for p in programs])
+            print(T)
+            # print(T[0])
+            # print(l[0])
+            # print(R[0])
+
+            # print(len(T))
+            # print(len(l))
+            # print(len(R))
+
+            # print(p.traversal)
+
+
+            
+            # r.__repr__()
+            # print(r)
+            # print(R)
+
+
+
+            # programs.__str__()
+        # self.two_step()
 
     def loop_one_step(self,programs=None):
         # print("node 0.1")
@@ -402,79 +475,7 @@ class dsr_Train():
         # Increment the iteration counter
         self.iteration += 1
 
-    def run_step(self, override=None):
-            
-        # if override is None:
-        #     # Sample batch of Programs from the Controller
-        #     print("xxxxxxxxxxxxx\n")
-        #     # Program.task.task_type='regression'
-        #     # print(self.programs.task.task_type+"\n")
-        #     print(Program.task.task_type+"xxx\n")
 
-
-        #     actions, obs, priors = self.policy.sample(self.batch_size)
-        #     programs = [from_tokens(a) for a in actions]     
-        self.two_step()
-
-    def dsr_sample(self, override=None):
-        if override is None:
-            # Sample batch of Programs from the Controller
-            actions, obs, priors = self.policy.sample(self.batch_size)
-            programs = [from_tokens(a) for a in actions]   
-            r = np.array([p.r for p in programs])
-            l = np.array([len(p.traversal) for p in programs])
-            expr = np.array([p.sympy_expr for p in programs])
-
-        return programs,r,l,expr
-    
-    
-    
-    # def loop_one_step(self, override=None):
-    #     pass
-
-    def T_step(self, override=None):
-            
-        if override is None:
-            # Sample batch of Programs from the Controller
-            print("xxxxxxxxxxxxx\n")
-            # Program.task.task_type='regression'
-            # print(self.programs.task.task_type+"\n")
-            print(Program.task.task_type+"xxx\n")
-            
-
-
-            actions, obs, priors = self.policy.sample(self.batch_size)
-            programs = [from_tokens(a) for a in actions]  
-
-            r = np.array([p.r for p in programs])
-            l = np.array([len(p.traversal) for p in programs])
-            R= np.array([p.sympy_expr for p in programs])
-
-            # print(Program.library)
-            # print(programs.library)
-            # print(l)
-            T = np.array([p.traversal for p in programs])
-            print(T)
-            # print(T[0])
-            # print(l[0])
-            # print(R[0])
-
-            # print(len(T))
-            # print(len(l))
-            # print(len(R))
-
-            # print(p.traversal)
-
-
-            
-            # r.__repr__()
-            # print(r)
-            # print(R)
-
-
-
-            # programs.__str__()
-        # self.two_step()
 
 
 
