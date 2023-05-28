@@ -69,7 +69,7 @@ class DsrCreator(Creator):
         r = np.array([p.r for p in self.programs])
         l = np.array([len(p.traversal) for p in self.programs])
         expr = np.array([p.sympy_expr for p in self.programs])
-        T = np.array([p.traversal for p in self.programs])
+        # T = np.array([p.traversal for p in self.programs])
         # print(T[0])
         # print(l[0])
         # print(expr[0])

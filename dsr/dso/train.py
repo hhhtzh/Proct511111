@@ -207,10 +207,10 @@ class Trainer():
 
 
             actions, obs, priors = self.policy.sample(self.batch_size)
-            programs = [from_tokens(a) for a in actions]     
+            programs = [from_tokens(a) for a in actions] 
 
-       
-    def run_one_step(self, override=None):
+    def loop_one_step(self,programs=None):
+    # def run_one_step(self, override=None):
         """
         Executes one step of main training loop. If override is given,
         train on that batch. Otherwise, sample the batch to train on.
@@ -221,7 +221,9 @@ class Trainer():
             Tuple of (actions, obs, priors, programs) to train on offline
             samples instead of sampled
         """
-        print(Program.task.task_type+"1\n")
+        override=None
+        
+        # print(Program.task.task_type+"1\n")
 
         positional_entropy = None
         top_samples_per_batch = list()
@@ -253,7 +255,7 @@ class Trainer():
             # print(Program.task.task_type+"\n")
 
             actions, obs, priors = self.policy.sample(self.batch_size)
-            programs = [from_tokens(a) for a in actions]            
+            # programs = [from_tokens(a) for a in actions]            
         else:
             # Train on the given batch of Programs
             actions, obs, priors, programs = override
@@ -477,7 +479,7 @@ class Trainer():
             self.p_r_best.print_stats()
 
         # Increment the iteration counter
-        self.iteration += 1
+        # self.iteration += 1
 
     def save(self, save_path):
         """
