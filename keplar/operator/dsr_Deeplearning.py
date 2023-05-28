@@ -25,18 +25,19 @@ from dsr.dso.policy.policy import make_policy
 from dsr.dso.policy_optimizer import make_policy_optimizer
 # from dsr.dso.core import 
 from collections import defaultdict
+from dsr.dso.gp.gp_controller import GPController
 
 
 
 class uDsrDeeplearning:
     def __init__(self,config=None):
         # self.config = self.set_config(DeepSymbolicOptimizer,config)
-        self.sess  = None
-        self.prior= None
-        self.state_manager = None
-        self.policy = None
-        self.policy_optimizer = None
-        self.trainer = None
+        # self.sess  = None
+        # self.prior= None
+        # self.state_manager = None
+        # self.policy = None
+        # self.policy_optimizer = None
+        # self.trainer = None
         self.set_config(config)
         
     def set_config(self, config):
@@ -75,12 +76,20 @@ class uDsrDeeplearning:
         # DeepSymbolicOptimizer.save_config(DeepSymbolicOptimizer)
 
         # Prepare training parameters
-        self.prior = self.make_prior()
-        self.state_manager = self.make_state_manager()
-        self.policy = self.make_policy()
-        self.policy_optimizer = self.make_policy_optimizer()
-        self.gp_controller = self.make_gp_controller()
-        self.logger = self.make_logger()
+        # self.prior = self.make_prior()
+        self.prior=make_prior(Program.library, self.config_prior)
+        self.state_manager = make_state_manager(self.config_state_manager)
+        self.policy = make_policy(self.sess,self.prior,self.state_manager,**self.config_policy)
+        self.policy_optimizer = make_policy_optimizer(self.sess, self.policy,**self.config_policy_optimizer)
+        # self.gp_controller = self.make_gp_controller()
+        if self.config_gp_meld.pop("run_gp_meld", False):
+            self.gp_controller = GPController(self.prior,
+                                         self.config_prior,
+                                         **self.config_gp_meld)
+        else:
+            self.gp_controller = None
+        # self.logger = self.make_logger()
+        self.logger=StatsLogger(self.sess,self.output_file,**self.config_logger)
         # self.trainer = 
 
         # self.trainer = 
@@ -109,11 +118,11 @@ class uDsrDeeplearning:
     #     # if self.trainer.done:
     #     #     return self.finish()
         
-    def make_logger(self):
-        logger = StatsLogger(self.sess,
-                             self.output_file,
-                             **self.config_logger)
-        return logger
+    # def make_logger(self):
+    #     logger = StatsLogger(self.sess,
+    #                          self.output_file,
+    #                          **self.config_logger)
+    #     return logger
         # return self.trainer
     def set_seeds(self):
         """
@@ -139,36 +148,35 @@ class uDsrDeeplearning:
         np.random.seed(shifted_seed)
         random.seed(shifted_seed)
 
-    def make_prior(self):
-        prior = make_prior(Program.library, self.config_prior)
-        return prior
+    # def make_prior(self):
+    #     prior = make_prior(Program.library, self.config_prior)
+    #     return prior
 
-    def make_state_manager(self):
-        state_manager = make_state_manager(self.config_state_manager)
-        return state_manager
+    # def make_state_manager(self):
+    #     state_manager = make_state_manager(self.config_state_manager)
+    #     return state_manager
     
-    def make_policy_optimizer(self):
-        policy_optimizer = make_policy_optimizer(self.sess,
-                                                 self.policy,
-                                                 **self.config_policy_optimizer)
-        return policy_optimizer
+    # def make_policy_optimizer(self):
+    #     policy_optimizer = make_policy_optimizer(self.sess,
+    #                                              self.policy,
+    #                                              **self.config_policy_optimizer)
+    #     return policy_optimizer
 
-    def make_policy(self):
-        policy = make_policy(self.sess,
-                             self.prior,
-                             self.state_manager,
-                             **self.config_policy)
-        return policy
+    # def make_policy(self):
+    #     policy = make_policy(self.sess,
+    #                          self.prior,
+    #                          self.state_manager,
+    #                          **self.config_policy)
+    #     return policy
 
-    def make_gp_controller(self):
-        if self.config_gp_meld.pop("run_gp_meld", False):
-            from dsr.dso.gp.gp_controller import GPController
-            gp_controller = GPController(self.prior,
-                                         self.config_prior,
-                                         **self.config_gp_meld)
-        else:
-            gp_controller = None
-        return gp_controller
+    # def make_gp_controller(self):
+    #     if self.config_gp_meld.pop("run_gp_meld", False):
+    #         gp_controller = GPController(self.prior,
+    #                                      self.config_prior,
+    #                                      **self.config_gp_meld)
+    #     else:
+    #         gp_controller = None
+    #     return gp_controller
     
     def make_pool_and_set_task(self):
         # Create the pool and set the Task for each worker

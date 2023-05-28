@@ -20,6 +20,8 @@ from  keplar.translator.translator import pop2Dsr,Dsr2pop
 
 from dsr.dso.train import Trainer
 
+from keplar.operator.dsr_train import dsr_Train
+
 
 class uDsrStep:
     def __init__(self):
@@ -56,7 +58,7 @@ class uDsrAlgorithm:
         dsr_model = uDsrDeeplearning(deepcopy(config))
         dsr_model.do()
 
-        dsr_train = Trainer(sess=dsr_model.sess,policy=dsr_model.policy,policy_optimizer=dsr_model.policy_optimizer
+        dsr_train = dsr_Train(sess=dsr_model.sess,policy=dsr_model.policy,policy_optimizer=dsr_model.policy_optimizer
                             ,gp_controller=dsr_model.gp_controller,logger=dsr_model.logger,
                             pool=dsr_model.pool,**dsr_model.config_training)
     

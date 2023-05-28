@@ -235,6 +235,7 @@ class Trainer():
         else:
             # Train on the given batch of Programs
             actions, obs, priors, programs = override
+            # print("xxxxxxxxxxxxx\n")
             for p in programs:
                 Program.cache[p.str] = p
 
