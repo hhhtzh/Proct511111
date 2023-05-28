@@ -168,49 +168,54 @@ def to_gp(equ):
 #     ind.command_array = a
 #     ind._update()
 #     return str(ind)
-def trans_op(equ):
-    strx_ = re.sub(r'X(\d{1})', r'X_\1', equ)
-    return strx_
 
+
+def trans_op(equ):
+    equ1 = re.sub(r'X(\d{3})', r'X_\1', equ)
+    equ1 = re.sub(r'X(\d{2})', r'X_\1', equ1)
+    equ1 = re.sub(r'X(\d{1})', r'X_\1', equ1)
+    pattern = r'(X_\d+)'
+    output_string = re.sub(pattern, lambda m: m.group(1)[:-1] + str(int(m.group(1)[-1]) - 1), equ1)
+    return output_string
 
 
 def to_op(ind):
     equ = ind.equation
     list_infix = []
     op_al = ""
-    x_al=""
+    x_al = ""
     op_start = False
-    x_start=False
+    x_start = False
     for token in equ:
         if op_start:
             if token.isalnum():
                 op_al = op_al + str(token)
             else:
                 list_infix.append(op_al)
-                op_al=""
-                op_start=False
-                if token!=" ":
+                op_al = ""
+                op_start = False
+                if token != " ":
                     list_infix.append(token)
         elif x_start:
-            if token=="_":
-                x_al=x_al+"_"
+            if token == "_":
+                x_al = x_al + "_"
             elif token.isdigit():
-                x_al=x_al+str(token)
+                x_al = x_al + str(token)
             else:
                 list_infix.append(x_al)
-                x_al=""
-                x_start=False
-                if token!=" ":
+                x_al = ""
+                x_start = False
+                if token != " ":
                     list_infix.append(token)
         else:
-            if token.isalnum() and token!="X":
+            if token.isalnum() and token != "X":
                 op_start = True
                 op_al = str(token)
-            elif token==" ":
+            elif token == " ":
                 pass
-            elif token=="X":
-                x_start=True
-                x_al="X"
+            elif token == "X":
+                x_start = True
+                x_al = "X"
             else:
                 list_infix.append(str(token))
     print(list_infix)

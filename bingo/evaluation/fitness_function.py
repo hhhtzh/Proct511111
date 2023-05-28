@@ -109,7 +109,9 @@ class VectorBasedFunction(FitnessFunction, metaclass=ABCMeta):
         fitness : numeric
             fitness of the individual
         """
+
         fitness_vector = self.evaluate_fitness_vector(individual)
+
         return self._metric(fitness_vector)
 
     @abstractmethod

@@ -175,5 +175,7 @@ def eq_string_to_command_array_and_constants(eq_string):
         corresponding to the expression given by eq_string
     """
     infix_tokens = eq_string_to_infix_tokens(eq_string)
+    # print(infix_tokens)
     postfix_tokens = infix_to_postfix(infix_tokens)
+    # print(postfix_tokens)
     return postfix_to_command_array_and_constants(postfix_tokens)

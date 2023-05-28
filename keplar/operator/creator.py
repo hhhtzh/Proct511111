@@ -105,7 +105,6 @@ class OperonCreator(Creator):
         for i in tree_list:
             equ=Operon.InfixFormatter.Format(i, self.ds, self.decimalPrecision)
             equ=trans_op(equ)
-            print(equ)
             ind_new=Individual(equation=equ)
             pop.append(ind_new)
         return pop

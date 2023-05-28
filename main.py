@@ -1,3 +1,4 @@
+import numpy as np
 from pmlb import fetch_data
 
 from keplar.Algorithm.sralg import BingoSRAlg
@@ -16,8 +17,10 @@ dt = Data("pmlb", "1027_ESL")
 dt.read_file()
 x=dt.get_x()
 y=dt.get_y()
-operators = ["+", "-", "*", "/"]
+x=np.array(x)
+operators = ["+", "-", "*", "/","exp","^","sin"]
 creator = OperonCreator("balanced", x, y, 128)
+# creator=BingoCreator(128,operators,x,10)
 evaluator = BingoEvaluator(x, "exp", "TNC", y)
 crossover = BingoCrossover()
 mutation = BingoMutation(x, operators)

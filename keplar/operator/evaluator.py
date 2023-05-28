@@ -41,6 +41,9 @@ class BingoEvaluator(Operator):
         for i in population.pop_list:
             equation = i.equation
             bingo_ind = AGraph(equation=str(equation))
+            bingo_ind._update()
+            # print("这是equation"+equation)
+            # print("这是直接转化后的array"+str(bingo_ind.command_array))
             bingo_pop.append(bingo_ind)
         evaluator(population=bingo_pop)
         for i in range(len(bingo_pop)):
