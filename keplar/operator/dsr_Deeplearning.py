@@ -4,13 +4,22 @@ from dsr.dso.core import Program
 from dsr.dso.core import DeepSymbolicOptimizer
 
 from dsr.dso.config import load_config 
+from multiprocessing import Pool, cpu_count
+import random
+import zlib
+from time import time
+
+import numpy as np
 from dsr.dso.train import Trainer
-from dsr.dso.checkpoint import Checkpoint
+# from dsr.dso.checkpoint import Checkpoint
 # from dsr.dso.train_stats import StatsLogger
 from dsr.dso.prior import make_prior
 # from dsr.dso.program import Program
 # from dsr.dso.config import load_config
 from dsr.dso.tf_state_manager import make_state_manager
+from dsr.dso.task import set_task
+from dsr.dso.train_stats import StatsLogger
+
 
 from dsr.dso.policy.policy import make_policy
 from dsr.dso.policy_optimizer import make_policy_optimizer
@@ -50,10 +59,10 @@ class uDsrDeeplearning:
         Program.clear_cache()
         tf.compat.v1.reset_default_graph()
 
-        self.pool = DeepSymbolicOptimizer().make_pool_and_set_task()
+        self.pool = self.make_pool_and_set_task()
         # Generate objects needed for training and set seeds
         # DeepSymbolicOptimizer.pool = DeepSymbolicOptimizer.make_pool_and_set_task()
-        DeepSymbolicOptimizer().set_seeds() # Must be called _after_ resetting graph and _after_ setting task
+        self.set_seeds() # Must be called _after_ resetting graph and _after_ setting task
 
         # Limit TF to single thread to prevent "resource not available" errors in parallelized runs
         session_config = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1,
@@ -66,17 +75,129 @@ class uDsrDeeplearning:
         # DeepSymbolicOptimizer.save_config(DeepSymbolicOptimizer)
 
         # Prepare training parameters
-        self.prior = make_prior
-        self.state_manager = make_state_manager
-        self.policy = make_policy
-        self.policy_optimizer = make_policy_optimizer
+        self.prior = self.make_prior()
+        self.state_manager = self.make_state_manager()
+        self.policy = self.make_policy()
+        self.policy_optimizer = self.make_policy_optimizer()
+        self.gp_controller = self.make_gp_controller()
+        self.logger = self.make_logger()
+        # self.trainer = 
+
         # self.trainer = 
         # self.checkpoint = Checkpoint()
 
         print("model already setup!\n")
 
-        # return self.trainer
+
+    # def train_one_step(self, override=None):
+    #     """
+    #     Train one iteration.
+    #     """
+
+    #     # Setup the model
+    #     # if self.sess is None:
+    #     #     self.setup()
+
+    #     # Run one step
+    #     # assert not self.trainer.done, "Training has already completed!"
+    #     self.trainer.run_one_step(override)
         
+    #     # # Maybe save next checkpoint
+    #     # self.checkpoint.update()
+
+    #     # # If complete, return summary
+    #     # if self.trainer.done:
+    #     #     return self.finish()
+        
+    def make_logger(self):
+        logger = StatsLogger(self.sess,
+                             self.output_file,
+                             **self.config_logger)
+        return logger
+        # return self.trainer
+    def set_seeds(self):
+        """
+        Set the tensorflow, numpy, and random module seeds based on the seed
+        specified in config. If there is no seed or it is None, a time-based
+        seed is used instead and is written to config.
+        """
+
+        seed = self.config_experiment.get("seed")
+
+        # Default uses current time in milliseconds, modulo 1e9
+        if seed is None:
+            seed = round(time() * 1000) % int(1e9)
+            self.config_experiment["seed"] = seed
+
+        # Shift the seed based on task name
+        # This ensures a specified seed doesn't have similarities across different task names
+        task_name = Program.task.name
+        shifted_seed = seed + zlib.adler32(task_name.encode("utf-8"))
+
+        # Set the seeds using the shifted seed
+        tf.compat.v1.set_random_seed(shifted_seed)
+        np.random.seed(shifted_seed)
+        random.seed(shifted_seed)
+
+    def make_prior(self):
+        prior = make_prior(Program.library, self.config_prior)
+        return prior
+
+    def make_state_manager(self):
+        state_manager = make_state_manager(self.config_state_manager)
+        return state_manager
+    
+    def make_policy_optimizer(self):
+        policy_optimizer = make_policy_optimizer(self.sess,
+                                                 self.policy,
+                                                 **self.config_policy_optimizer)
+        return policy_optimizer
+
+    def make_policy(self):
+        policy = make_policy(self.sess,
+                             self.prior,
+                             self.state_manager,
+                             **self.config_policy)
+        return policy
+
+    def make_gp_controller(self):
+        if self.config_gp_meld.pop("run_gp_meld", False):
+            from dsr.dso.gp.gp_controller import GPController
+            gp_controller = GPController(self.prior,
+                                         self.config_prior,
+                                         **self.config_gp_meld)
+        else:
+            gp_controller = None
+        return gp_controller
+    
+    def make_pool_and_set_task(self):
+        # Create the pool and set the Task for each worker
+
+        # Set complexity and const optimizer here so pool can access them
+        # Set the complexity function
+        complexity = self.config_training["complexity"]
+        Program.set_complexity(complexity)
+
+        # Set the constant optimizer
+        const_optimizer = self.config_training["const_optimizer"]
+        const_params = self.config_training["const_params"]
+        const_params = const_params if const_params is not None else {}
+        Program.set_const_optimizer(const_optimizer, **const_params)
+
+        pool = None
+        n_cores_batch = self.config_training.get("n_cores_batch")
+        if n_cores_batch is not None:
+            if n_cores_batch == -1:
+                n_cores_batch = cpu_count()
+            if n_cores_batch > 1:
+                pool = Pool(n_cores_batch,
+                            initializer=set_task,
+                            initargs=(self.config_task,))
+
+        # Set the Task for the parent process
+        set_task(self.config_task)
+
+        return pool
 
         
         

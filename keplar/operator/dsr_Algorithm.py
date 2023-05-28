@@ -18,6 +18,8 @@ from dsr.dso.program import Program, from_tokens
 
 from  keplar.translator.translator import pop2Dsr,Dsr2pop
 
+from dsr.dso.train import Trainer
+
 
 class uDsrStep:
     def __init__(self):
@@ -53,6 +55,15 @@ class uDsrAlgorithm:
         # 进行深度学习,并对model进行setup
         dsr_model = uDsrDeeplearning(deepcopy(config))
         dsr_model.do()
+
+        dsr_train = Trainer(sess=dsr_model.sess,policy=dsr_model.policy,policy_optimizer=dsr_model.policy_optimizer
+                            ,gp_controller=dsr_model.gp_controller,logger=dsr_model.logger,
+                            pool=dsr_model.pool,**dsr_model.config_training)
+    
+        
+        while not dsr_train.done:
+            result = dsr_train.run_one_step()
+        
 
         # model  =  DeepSymbolicOptimizer(deepcopy(config))
 
