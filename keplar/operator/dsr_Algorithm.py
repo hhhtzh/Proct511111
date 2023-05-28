@@ -41,7 +41,7 @@ class uDsrAlgorithm:
 
         
 
-        # 进行深度学习,并对model进行setup
+        # 进行深度学习环境配置,并对model进行setup
         dsr_model = uDsrDeeplearning(deepcopy(config))
         # programs=dsr_model.do()
         dsr_model.do()
@@ -57,12 +57,6 @@ class uDsrAlgorithm:
         # dsr_model.trainer.run_step()
         # print(programs.task.task_type+"kkk\n")
 
-        
-
-
-
-
-
         dsr_train = dsr_Train(sess=dsr_model.sess,policy=dsr_model.policy,policy_optimizer=dsr_model.policy_optimizer
                             ,gp_controller=dsr_model.gp_controller,logger=dsr_model.logger,
                             pool=dsr_model.pool,**dsr_model.config_training, **dsr_model.config_task)
@@ -74,7 +68,7 @@ class uDsrAlgorithm:
 
         # iter_num = 0
         while not dsr_train.done:
-            programs, r,l,expr =dsr_train.dsr_sample()
+            programs, r,l,expr,actions,obs,priors =dsr_train.dsr_sample()
             dsr_creator = DsrCreator(programs)
             population = dsr_creator.do()
 
@@ -87,7 +81,7 @@ class uDsrAlgorithm:
             programs2 = proG.do(programs)
             # print("rrrr")
 
-            dsr_train.loop_one_step(programs=programs2)
+            programs,actions,obs,priors=dsr_train.loop_one_step(programs2,actions,obs,priors)
 
             # dsr_train.done = True
 

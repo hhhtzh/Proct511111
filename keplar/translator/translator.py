@@ -118,12 +118,15 @@ def trans_gp(gp_equ):
 
 def pop2Dsr(pop_equ):
     strx_ = re.sub(r'-', r'-', pop_equ)
-    strx_ = re.sub(r'X_', 'x', strx_)
+
+    # strx_ = re.sub(r'X_', 'x', strx_)
+
     # strx_ = re.sub(r'X_\2', 'x(\d{2})', strx_)
     # strx_ = re.sub(r'X_\3', 'x(\d{3})', strx_)
     # strx_ = re.sub(r'X_\4', 'x(\d{4})', strx_)
     # strx_ = re.sub(r'+', r'+', strx_)
 
+    # return str(strx_)
     return str(strx_)
 
     
@@ -132,13 +135,15 @@ def Dsr2pop(program_expr):
     # strx_ = re.sub(r'x(\d{1})', r'X_\1', program_expr)
     # strx_ = re.sub(r'x(\d{2})', r'X_\2', strx_)
     strx_ = re.sub(r'-', '-', program_expr)
-    strx_ = re.sub(r'x(\d{1})', r'X_\1', strx_)
-    strx_ = re.sub(r'x(\d{2})', 'X_\2', strx_)
-    strx_ = re.sub(r'x(\d{3})', 'X_\3', strx_)
-    strx_ = re.sub(r'x(\d{4})', 'X_\4', strx_)
+
+    # strx_ = re.sub(r'x(\d{1})', r'X_\1', strx_)
+    # strx_ = re.sub(r'x(\d{2})', 'X_\2', strx_)
+    # strx_ = re.sub(r'x(\d{3})', 'X_\3', strx_)
+    # strx_ = re.sub(r'x(\d{4})', 'X_\4', strx_)
 
     
 
+    # return str(program_expr)
     return str(strx_)
 
 class DSRTransPOP():
@@ -147,13 +152,13 @@ class DSRTransPOP():
 
     def do(self, programs=None):
         popsize=self.population.get_pop_size()
-        expr = {}
+        # expr = {}
         for i in range(popsize):
             equ=self.population.pop_list[i].equation
-            # print(equ)
-            expr[i]=pop2Dsr(str(equ))
-            # print(expr[i])
-            programs[i].sympy_expr = expr[i]
+            print(equ)
+            expr=pop2Dsr(str(equ))
+            print(expr)
+            programs[i].sympy_expr = str(expr)
 
         return programs
     
@@ -163,13 +168,13 @@ class POPTransPOP():
 
     def do(self, population=None):
         popsize=population.get_pop_size()
-        express = {}
+        # express = {}
         for i in range(popsize):
             equ=population.pop_list[i].equation
             # print(equ)
-            express[i]= Dsr2pop(str(equ))
+            express= Dsr2pop(str(equ))
 
-            population.pop_list[i].equation=express[i]
+            population.pop_list[i].reset_equation(str(express))
 
         return population
     

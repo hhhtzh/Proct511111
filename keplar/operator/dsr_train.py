@@ -144,7 +144,7 @@ class dsr_Train():
             l = np.array([len(p.traversal) for p in programs])
             expr = np.array([p.sympy_expr for p in programs])
 
-        return programs,r,l,expr
+        return programs,r,l,expr,actions, obs, priors
     
     
     
@@ -195,7 +195,7 @@ class dsr_Train():
             # programs.__str__()
         # self.two_step()
 
-    def loop_one_step(self,programs=None):
+    def loop_one_step(self,programs=None,actions=None, obs=None, priors=None):
         # print("node 0.1")
     # def run_one_step(self, override=None):
         """
@@ -231,8 +231,9 @@ class dsr_Train():
         # Shape of obs: (batch_size, obs_dim, max_length)
         # Shape of priors: (batch_size, max_length, n_choices)
         if override is None:
+            pass
             # Sample batch of Programs from the Controller
-            actions, obs, priors = self.policy.sample(self.batch_size)
+            # actions, obs, priors = self.policy.sample(self.batch_size)
             # print("node 0.1")
             # programs = [from_tokens(a) for a in actions]    
             # print("node 0")
@@ -474,6 +475,8 @@ class dsr_Train():
 
         # Increment the iteration counter
         self.iteration += 1
+
+        return programs,actions, obs, priors
 
 
 
