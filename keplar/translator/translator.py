@@ -1,5 +1,7 @@
 import re
 
+import numpy as np
+import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
 
@@ -187,7 +189,8 @@ def trans_op(equ):
     return output_string
 
 
-def to_op(ind):
+def to_op(ind,np_x,np_y):
+    ds = Operon.Dataset(np.hstack([np_x, np_y]))
     equ = ind.equation
     list_infix = []
     op_al = ""
@@ -251,8 +254,69 @@ def to_op(ind):
         list_infix.append(op_al)
     post_equ = infix_to_postfix(list_infix)
     print(post_equ)
+    node_list=[]
+    var_hash=[]
+    variables=ds.Variables
+    for var in variables:
+        hash=var.Hash
+        var_hash.append(hash)
     for token in post_equ:
         if is_float(token):
-            pass
+            node=Operon.Node.Constant(float(token))
+            node_list.append(node)
+        elif token[0]=='X' and token[1]== '_':
+            var_num_str=token[2:]
+            var_num=int(var_num_str)
+            node=Operon.Node.Variable(1)
+            node.HashValue=var_hash[var_num]
+            node_list.append(node)
+        elif token=='+':
+            node=Operon.Node.Add()
+            node_list.append(node)
+        elif token=='-':
+            node=Operon.Node.Sub()
+            node_list.append(node)
+        elif token=='*':
+            node=Operon.Node.Mul()
+            node_list.append(node)
+        elif token=='/':
+            node = Operon.Node.Div()
+            node_list.append(node)
+        elif token=='^':
+            node = Operon.Node.Pow()
+            node_list.append(node)
+        elif token=='exp':
+            node = Operon.Node.Exp()
+            node_list.append(node)
+        elif token=='log':
+            node = Operon.Node.Log()
+            node_list.append(node)
+        elif token=='sin':
+            node = Operon.Node.Sin()
+            node_list.append(node)
+        elif token=='cos':
+            node = Operon.Node.Cos()
+            node_list.append(node)
+        elif token=='tan':
+            node = Operon.Node.Tan()
+            node_list.append(node)
+        elif token=='tanh':
+            node = Operon.Node.Tanh()
+            node_list.append(node)
+        elif token=='sqrt':
+            node = Operon.Node.Sqrt()
+            node_list.append(node)
+        elif token=='cbrt':
+            node = Operon.Node.Cbrt()
+            node_list.append(node)
+        elif token=='dyn':
+            node = Operon.Node.Dyn()
+            node_list.append(node)
         else:
-            print("www")
+            raise ValueError(f"通用个体转换为Operon个体时未识别,未识别字符为{token}")
+    for noe in node_list:
+        print(noe.Name)
+    op_tree=Operon.Tree(node_list)
+    print("xxxxxxxxx")
+    op_tree.UpdateNodes()
+    print(Operon.InfixFormatter.Format(op_tree, ds, 5))

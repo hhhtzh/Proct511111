@@ -62,29 +62,43 @@ x, y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
 # print(x.shape,y.shape)
 # opc = OperonCreator("balanced", x, y, 128)
 # opc.do()
-D = fetch_data('1027_ESL', return_X_y=False, local_cache_dir='./datasets').to_numpy()
-
+# x,y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
+# x=np.array(x)
+# y=np.array(y).reshape(-1,1)
+D=fetch_data('1027_ESL', return_X_y=False, local_cache_dir='./datasets').to_numpy()
 # initialize a dataset from a numpy array
-# ds = Operon.Dataset(D)
-#
+ds = Operon.Dataset(D)
+
 # x1=ds.GetVariable("X1")
-# nd1 = Operon.Node.Constant(11)
+# nd1 = Operon.Node.Constant(111.4449)
 # nd2 = Operon.Node.Variable(1)
-# nd2.HashValue=2673900822390960787
-# nd3 = Operon.Node.Div()
-# nd_list = [nd1,nd2, nd3]
+# nd2.HashValue=3663239364975845540
+# nd3 = Operon.Node.Mul()
+# nd4=Operon.Node.Constant(22.777)
+# nd5=Operon.Node.Add()
+# nd6=Operon.Node.Constant(44.888)
+# nd7=Operon.Node.Exp()
+# nd8=Operon.Node.Add()
+# nd_list = [nd1,nd2, nd3, nd4, nd5, nd6, nd7, nd8]
 # tr = Operon.Tree(nd_list)
+# tr.UpdateNodes()
 # print(Operon.InfixFormatter.Format(tr, ds, 5))
-# variables=ds.Variables
-# for var in variables:
-#     print(var.Hash,var.Name)
+# print(len(tr.Nodes))
+
 # print(x1.Hash)
 # print(ds.VariableNames)
 
 
-equ="(111.4449)*(X_2)+22.777+exp(4444444444)"
-ind=Individual(equation=equ)
-euq=to_op(ind)
+# 143321629840518241 X1
+# 2673900822390960787 X4
+# 3663239364975845540 X2
+# 5467151629817070772 X3
+# 9237141233658495207 X5
+
+
+# equ="(111.4449)*(X_2)+22.777+exp(444444)"
+# ind=Individual(equation=equ)
+# euq=to_op(ind,x,y)
 # print("2".isalpha())
 # bingo_ind=AGraph(equation=equ)
 # bingo_ind._update()
