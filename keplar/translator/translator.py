@@ -11,6 +11,14 @@ def get_priority(op):
         return 1
 
 
+def is_float(num):
+    try:
+        float(num)
+        return True
+    except ValueError:
+        return False
+
+
 def infix_to_prefix(infix, len1, s2, top2):
     s1 = ""
     top1 = -1
@@ -184,18 +192,16 @@ def to_op(ind):
     list_infix = []
     op_al = ""
     x_al = ""
-    num_al=""
+    num_al = ""
     op_start = False
     x_start = False
-    num_start=False
-    i=0
-    while i<len(equ):
-        print("----------")
-        print(equ[i])
+    num_start = False
+    i = 0
+    while i < len(equ):
         if op_start:
             if equ[i].isalnum():
                 op_al = op_al + str(equ[i])
-                i=i+1
+                i = i + 1
             else:
                 list_infix.append(op_al)
                 op_al = ""
@@ -203,48 +209,50 @@ def to_op(ind):
         elif x_start:
             if equ[i] == "_":
                 x_al = x_al + "_"
-                i=i+1
+                i = i + 1
             elif equ[i].isdigit():
                 x_al = x_al + str(equ[i])
-                i=i+1
+                i = i + 1
             else:
                 list_infix.append(x_al)
                 x_al = ""
                 x_start = False
         elif num_start:
-            if equ[i].isdigit()or equ[i]==".":
-                num_al=num_al+str(equ[i])
-                i=i+1
+            if equ[i].isdigit() or equ[i] == ".":
+                num_al = num_al + str(equ[i])
+                i = i + 1
             else:
                 list_infix.append(num_al)
-                num_al=""
-                num_start=False
+                num_al = ""
+                num_start = False
         else:
             if equ[i].isalpha() and equ[i] != "X":
-                print("ssss")
                 op_start = True
                 op_al = str(equ[i])
-                i=i+1
+                i = i + 1
             elif equ[i] == " ":
                 continue
             elif equ[i] == "X":
                 x_start = True
                 x_al = "X"
-                i=i+1
+                i = i + 1
             elif equ[i].isdigit():
-                num_start=True
-                num_al=str(equ[i])
-                i=i+1
+                num_start = True
+                num_al = str(equ[i])
+                i = i + 1
             else:
-                print("sssssss")
                 list_infix.append(str(equ[i]))
-                i=i+1
-    if num_al!="":
+                i = i + 1
+    if num_al != "":
         list_infix.append(num_al)
-    if x_al!="":
+    if x_al != "":
         list_infix.append(x_al)
-    if op_al!="":
+    if op_al != "":
         list_infix.append(op_al)
-    print(list_infix)
     post_equ = infix_to_postfix(list_infix)
     print(post_equ)
+    for token in post_equ:
+        if is_float(token):
+            pass
+        else:
+            print("www")
