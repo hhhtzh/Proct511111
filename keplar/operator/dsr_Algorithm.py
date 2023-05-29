@@ -48,8 +48,6 @@ class uDsrAlgorithm:
 
         # set_task(dsr_model.config_task)
 
-        
-        
 
         # dsr_model.trainer.run_one_step()
 
@@ -57,10 +55,13 @@ class uDsrAlgorithm:
         # dsr_model.trainer.run_step()
         # print(programs.task.task_type+"kkk\n")
 
-        dsr_train = dsr_Train(sess=dsr_model.sess,policy=dsr_model.policy,policy_optimizer=dsr_model.policy_optimizer
-                            ,gp_controller=dsr_model.gp_controller,logger=dsr_model.logger,
-                            pool=dsr_model.pool,**dsr_model.config_training, **dsr_model.config_task)
+        dsr_train = dsr_Train(dsr_model.sess,dsr_model.policy,dsr_model.policy_optimizer
+                            ,dsr_model.gp_controller,dsr_model.logger,
+                            dsr_model.pool,**dsr_model.config_training, **dsr_model.config_task)
         
+            #  dsr_train = dsr_Train(sess=dsr_model.sess,policy=dsr_model.policy,policy_optimizer=dsr_model.policy_optimizer
+            #                 ,gp_controller=dsr_model.gp_controller,logger=dsr_model.logger,
+            #                 pool=dsr_model.pool,**dsr_model.config_training, **dsr_model.config_task)   
 
 
         # while not dsr_train.done:
@@ -68,25 +69,36 @@ class uDsrAlgorithm:
 
         # iter_num = 0
         while not dsr_train.done:
-            programs, r,l,expr,actions,obs,priors =dsr_train.dsr_sample()
-            dsr_creator = DsrCreator(programs)
-            population = dsr_creator.do()
+            # 每次循环采样一次，采样大小为batch_size（默认为1000）
+            programs,r,l,actions,obs,priors =dsr_train.dsr_sample()
+            # programs,actions,obs,priors =dsr_train.dsr_sample()
 
+            #用DsrCreator将programs转化为population
+            dsr_creator = DsrCreator()
+            # print(programs[0].str)
+            # programs[0].__repr__()
+
+            population = dsr_creator.do(programs=programs)
+            # print(expr[0])
+
+            #转化的population内部的equation为uDSR类型，需要转化为统一类型
             popChange = POPTransPOP()
             population = popChange.do(population)
 
 
-
+            #将population转化为programs，并将格式转回uDSR类型
             proG = DSRTransPOP(population)
             programs2 = proG.do(programs)
-            # print("rrrr")
 
+            #用programs2进行训练
+            programs2=programs
             programs,actions,obs,priors=dsr_train.loop_one_step(programs2,actions,obs,priors)
 
+            # programs,actions,obs,priors=dsr_train.loop_one_step(programs,actions,obs,priors)
             # dsr_train.done = True
 
 
-            # dsr_train.loop_one_step(programs2)
+            # dsr_train.loop_one_step(programs,actions,obs,priors)
 
             # iter_num += 1
 

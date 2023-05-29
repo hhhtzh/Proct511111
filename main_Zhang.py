@@ -1,4 +1,4 @@
-from pmlb import fetch_data
+# from pmlb import fetch_data
 
 # from keplar.operator.cleaner import BingoCleaner
 # from keplar.operator.composite_operator import CompositeOp

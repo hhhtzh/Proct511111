@@ -62,25 +62,36 @@ class GpCreator(Creator):
         return pop
     
 class DsrCreator(Creator):
-    def __init__(self, programs):
+    def __init__(self):
         super().__init__()
-        self.programs = programs
-    def do(self, population=None):
-        r = np.array([p.r for p in self.programs])
-        l = np.array([len(p.traversal) for p in self.programs])
-        expr = np.array([p.sympy_expr for p in self.programs])
+        # self.programs = programs
+
+    def do(self, population=None,programs=None):
+        r = np.array([p.r for p in programs])
+        l = np.array([len(p.traversal) for p in programs])
+        # expre = np.array([p.sympy_expr for p in programs],dtype=np.str_)
+        expre = [p.sympy_expr for p in programs]
+        # expre = [repr(p.sympy_expr) for p in programs]
+        # expre = [p.pretty() for p in programs]
+        # expr={}
+        # expr=str(expre)
         # T = np.array([p.traversal for p in self.programs])
         # print(T[0])
         # print(l[0])
         # print(expr[0])
-        pop_size = len(expr)
+
+        pop_size = len(expre)
+        # print(pop_size)
         population=Population(pop_size)
-        # express = {}
+        # # # express = {}
         for i in range(pop_size):
-            # print(expr[i])
-            # express[i]= Dsr2pop(str(expr[i]))
-            # print(express[i])
-            ind = Individual(expr[i])
+
+            # print(expre[i])
+            # print(str(expre[i]),flush=True)
+            print(str(expre[i]))
+            # print
+        #     # print(express[i])
+            ind = Individual(str(expre[i]))
             population.append(ind)
 
         population.set_pop_size(pop_size)

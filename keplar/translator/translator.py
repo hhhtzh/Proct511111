@@ -119,7 +119,7 @@ def trans_gp(gp_equ):
 def pop2Dsr(pop_equ):
     strx_ = re.sub(r'-', r'-', pop_equ)
 
-    # strx_ = re.sub(r'X_', 'x', strx_)
+    strx_ = re.sub(r'X_', 'x', strx_)
 
     # strx_ = re.sub(r'X_\2', 'x(\d{2})', strx_)
     # strx_ = re.sub(r'X_\3', 'x(\d{3})', strx_)
@@ -136,7 +136,7 @@ def Dsr2pop(program_expr):
     # strx_ = re.sub(r'x(\d{2})', r'X_\2', strx_)
     strx_ = re.sub(r'-', '-', program_expr)
 
-    # strx_ = re.sub(r'x(\d{1})', r'X_\1', strx_)
+    strx_ = re.sub(r'x(\d{1})', r'X_\1', strx_)
     # strx_ = re.sub(r'x(\d{2})', 'X_\2', strx_)
     # strx_ = re.sub(r'x(\d{3})', 'X_\3', strx_)
     # strx_ = re.sub(r'x(\d{4})', 'X_\4', strx_)

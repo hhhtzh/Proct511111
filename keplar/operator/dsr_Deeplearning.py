@@ -1,7 +1,7 @@
 # import dsr.dso.core as core
 import tensorflow as tf
 from dsr.dso.core import Program
-# from dsr.dso.core import DeepSymbolicOptimizer
+from dsr.dso.core import DeepSymbolicOptimizer
 import os
 from datetime import datetime
 
@@ -31,6 +31,15 @@ from dsr.dso.gp.gp_controller import GPController
 
 from keplar.operator.dsr_train import dsr_Train
 
+class DsrDeeplearing(DeepSymbolicOptimizer):
+    def __init__(self, config=None):
+        super().__init__(config)
+        self.config = self.set_config(DeepSymbolicOptimizer,config)
+
+        
+    def setup(self):
+        return super().setup()
+    
 
 
 class uDsrDeeplearning():
@@ -44,20 +53,7 @@ class uDsrDeeplearning():
         # self.trainer = None
         self.set_config(config)
         
-    def set_config(self, config):
-        config = load_config(config)
 
-        self.config = defaultdict(dict, config)
-        self.config_task = self.config["task"]
-        self.config_prior = self.config["prior"]
-        self.config_logger = self.config["logging"]
-        self.config_training = self.config["training"]
-        self.config_state_manager = self.config["state_manager"]
-        self.config_policy = self.config["policy"]
-        self.config_policy_optimizer = self.config["policy_optimizer"]
-        self.config_gp_meld = self.config["gp_meld"]
-        self.config_experiment = self.config["experiment"]
-        self.config_checkpoint = self.config["checkpoint"]
 
     def do(self):
 
@@ -93,6 +89,7 @@ class uDsrDeeplearning():
         else:
             self.gp_controller = None
         # self.logger = self.make_logger()
+        # self.logger =None
         self.logger=StatsLogger(self.sess,self.output_file,**self.config_logger)
 
         # self.trainer = dsr_Train(self.sess, self.policy, self.policy_optimizer, self.gp_controller, self.logger,self.pool, **self.config_training)
@@ -110,7 +107,20 @@ class uDsrDeeplearning():
 
         # return self.trainer
 
+    def set_config(self, config):
+        config = load_config(config)
 
+        self.config = defaultdict(dict, config)
+        self.config_task = self.config["task"]
+        self.config_prior = self.config["prior"]
+        self.config_logger = self.config["logging"]
+        self.config_training = self.config["training"]
+        self.config_state_manager = self.config["state_manager"]
+        self.config_policy = self.config["policy"]
+        self.config_policy_optimizer = self.config["policy_optimizer"]
+        self.config_gp_meld = self.config["gp_meld"]
+        self.config_experiment = self.config["experiment"]
+        self.config_checkpoint = self.config["checkpoint"]
     # def train_one_step(self, override=None):
     #     """
     #     Train one iteration.

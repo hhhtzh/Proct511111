@@ -1,7 +1,7 @@
 
 import numpy as np
 import os
-# from dsr.dso.train import Trainer
+from dsr.dso.train import Trainer
 import time
 import tensorflow as tf
 # from dso.program import Program, from_tokens
@@ -12,111 +12,112 @@ from dsr.dso.memory import Batch, make_queue
 from dsr.dso.variance import quantile_variance
 from dsr.dso.task import set_task,make_task
 from itertools import compress
+from textwrap import indent
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 # Set TensorFlow seed
 tf.compat.v1.set_random_seed(0)
-class dsr_Train():
+class dsr_Train(Trainer):
     def __init__(self, sess, policy, policy_optimizer, gp_controller, logger,
                  pool, n_samples=200000, batch_size=1000, alpha=0.5,
                  epsilon=0.05, verbose=True, baseline="R_e",
                  b_jumpstart=False, early_stopping=True, debug=0,
                  use_memory=False, memory_capacity=1e3,  warm_start=None, memory_threshold=None,
                  complexity="token", const_optimizer="scipy", const_params=None,  n_cores_batch=1, **config_task):
-        # Trainer.__init__(self, sess, policy, policy_optimizer, gp_controller, logger,
-        #          pool, n_samples=200000, batch_size=1000, alpha=0.5,
-        #          epsilon=0.05, verbose=True, baseline="R_e",
-        #          b_jumpstart=False, early_stopping=True, debug=0,
-        #          use_memory=False, memory_capacity=1e3,  warm_start=None, memory_threshold=None,
-        #          complexity="token", const_optimizer="scipy", const_params=None,  n_cores_batch=1)
+        Trainer.__init__(self, sess, policy, policy_optimizer, gp_controller, logger,
+                 pool, n_samples=200000, batch_size=1000, alpha=0.5,
+                 epsilon=0.05, verbose=True, baseline="R_e",
+                 b_jumpstart=False, early_stopping=True, debug=0,
+                 use_memory=False, memory_capacity=1e3,  warm_start=None, memory_threshold=None,
+                 complexity="token", const_optimizer="scipy", const_params=None,  n_cores_batch=1)
         # # self.programs = self.get_program()
         # Trainer.batch_size = batch_size
         # Trainer.policy = policy
 
-        self.sess = sess
+        # self.sess = sess
 
-        self.config_task1 = config_task
-        # Programs=Program
+        # self.config_task1 = config_task
+        # # Programs=Program
         
-        # Initialize compute graph
-        self.sess.run(tf.compat.v1.global_variables_initializer())
+        # # Initialize compute graph
+        # self.sess.run(tf.compat.v1.global_variables_initializer())
 
-        self.policy = policy
-        self.policy_optimizer = policy_optimizer
-        self.gp_controller = gp_controller
-        self.logger = logger
-        self.pool = pool
-        self.n_samples = n_samples
-        self.batch_size = batch_size
-        self.alpha = alpha
-        self.epsilon = epsilon
-        self.verbose = verbose
-        self.baseline = baseline
-        self.b_jumpstart = b_jumpstart
-        self.early_stopping = early_stopping
-        self.debug = debug
-        self.use_memory = use_memory
-        self.memory_threshold = memory_threshold
+        # self.policy = policy
+        # self.policy_optimizer = policy_optimizer
+        # self.gp_controller = gp_controller
+        # self.logger = logger
+        # self.pool = pool
+        # self.n_samples = n_samples
+        # self.batch_size = batch_size
+        # self.alpha = alpha
+        # self.epsilon = epsilon
+        # self.verbose = verbose
+        # self.baseline = baseline
+        # self.b_jumpstart = b_jumpstart
+        # self.early_stopping = early_stopping
+        # self.debug = debug
+        # self.use_memory = use_memory
+        # self.memory_threshold = memory_threshold
 
-        # set_task(self.config_task1)
+        # # set_task(self.config_task1)
         protected = config_task["protected"] if "protected" in config_task else False
 
         Program.set_execute(protected)
         task = make_task(**config_task)
         Program.set_task(task)
 
-        # print(Program.task.task_type+"xxx\n")
+        # # print(Program.task.task_type+"xxx\n")
 
-        # print("??????????????????????!!!!!")
+        # # print("??????????????????????!!!!!")
 
-        if self.debug:
-            tvars = tf.trainable_variables()
-            def print_var_means():
-                tvars_vals = self.sess.run(tvars)
-                for var, val in zip(tvars, tvars_vals):
-                    print(var.name, "mean:", val.mean(), "var:", val.var())
-            self.print_var_means = print_var_means
+        # if self.debug:
+        #     tvars = tf.trainable_variables()
+        #     def print_var_means():
+        #         tvars_vals = self.sess.run(tvars)
+        #         for var, val in zip(tvars, tvars_vals):
+        #             print(var.name, "mean:", val.mean(), "var:", val.var())
+        #     self.print_var_means = print_var_means
 
-        # Create the priority_queue if needed
-        if hasattr(self.policy_optimizer, 'pqt_k'):
-            from dsr.dso.policy_optimizer.pqt_policy_optimizer import PQTPolicyOptimizer
-            assert type(self.policy_optimizer) == PQTPolicyOptimizer
-            # Create the priority queue
-            k = self.policy_optimizer.pqt_k
-            if k is not None and k > 0:
-                self.priority_queue = make_queue(priority=True, capacity=k)
-        else:
-            self.priority_queue = None
+        # # Create the priority_queue if needed
+        # if hasattr(self.policy_optimizer, 'pqt_k'):
+        #     from dsr.dso.policy_optimizer.pqt_policy_optimizer import PQTPolicyOptimizer
+        #     assert type(self.policy_optimizer) == PQTPolicyOptimizer
+        #     # Create the priority queue
+        #     k = self.policy_optimizer.pqt_k
+        #     if k is not None and k > 0:
+        #         self.priority_queue = make_queue(priority=True, capacity=k)
+        # else:
+        #     self.priority_queue = None
 
-        # Create the memory queue
-        if self.use_memory:
-            # print("Using memory queue.1111111111111\n")
-            assert self.epsilon is not None and self.epsilon < 1.0, \
-                "Memory queue is only used with risk-seeking."
-            self.memory_queue = make_queue(policy=self.policy, priority=False,
-                                           capacity=int(memory_capacity))
+        # # Create the memory queue
+        # if self.use_memory:
+        #     # print("Using memory queue.1111111111111\n")
+        #     assert self.epsilon is not None and self.epsilon < 1.0, \
+        #         "Memory queue is only used with risk-seeking."
+        #     self.memory_queue = make_queue(policy=self.policy, priority=False,
+        #                                    capacity=int(memory_capacity))
 
-            # Warm start the queue
-            # TBD: Parallelize. Abstract sampling a Batch
-            warm_start = warm_start if warm_start is not None else self.batch_size
-            actions, obs, priors = policy.sample(warm_start)
-            programs = [from_tokens(a) for a in actions]
-            r = np.array([p.r for p in programs])
-            l = np.array([len(p.traversal) for p in programs])
-            on_policy = np.array([p.originally_on_policy for p in programs])
-            sampled_batch = Batch(actions=actions, obs=obs, priors=priors,
-                                  lengths=l, rewards=r, on_policy=on_policy)
-            self.memory_queue.push_batch(sampled_batch, programs)
-        else:
-            self.memory_queue = None
+        #     # Warm start the queue
+        #     # TBD: Parallelize. Abstract sampling a Batch
+        #     warm_start = warm_start if warm_start is not None else self.batch_size
+        #     actions, obs, priors = policy.sample(warm_start)
+        #     programs = [from_tokens(a) for a in actions]
+        #     r = np.array([p.r for p in programs])
+        #     l = np.array([len(p.traversal) for p in programs])
+        #     on_policy = np.array([p.originally_on_policy for p in programs])
+        #     sampled_batch = Batch(actions=actions, obs=obs, priors=priors,
+        #                           lengths=l, rewards=r, on_policy=on_policy)
+        #     self.memory_queue.push_batch(sampled_batch, programs)
+        # else:
+        #     self.memory_queue = None
 
-        self.nevals = 0 # Total number of sampled expressions (from RL or GP)
-        self.iteration = 0 # Iteration counter
-        self.r_best = -np.inf
-        self.p_r_best = None
-        self.done = False
+        # self.nevals = 0 # Total number of sampled expressions (from RL or GP)
+        # self.iteration = 0 # Iteration counter
+        # self.r_best = -np.inf
+        # self.p_r_best = None
+        # self.done = False
 
         # print("??????????????????????")
 
@@ -142,9 +143,16 @@ class dsr_Train():
             programs = [from_tokens(a) for a in actions]   
             r = np.array([p.r for p in programs])
             l = np.array([len(p.traversal) for p in programs])
-            expr = np.array([p.sympy_expr for p in programs])
+            # expr = np.array([repr(p.sympy_expr) for p in programs])
+            # expr ={}
 
-        return programs,r,l,expr,actions, obs, priors
+            # for i in range(len(r)):
+            #     # print(programs[i].pretty())
+            #     print("{}\n".format(indent(programs[i].pretty(), '\t  ')))
+
+                # print(str(expr[i]))/
+
+        return programs,r,l,actions, obs, priors
     
     
     
