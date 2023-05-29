@@ -184,40 +184,67 @@ def to_op(ind):
     list_infix = []
     op_al = ""
     x_al = ""
+    num_al=""
     op_start = False
     x_start = False
-    for token in equ:
+    num_start=False
+    i=0
+    while i<len(equ):
+        print("----------")
+        print(equ[i])
         if op_start:
-            if token.isalnum():
-                op_al = op_al + str(token)
+            if equ[i].isalnum():
+                op_al = op_al + str(equ[i])
+                i=i+1
             else:
                 list_infix.append(op_al)
                 op_al = ""
                 op_start = False
-                if token != " ":
-                    list_infix.append(token)
         elif x_start:
-            if token == "_":
+            if equ[i] == "_":
                 x_al = x_al + "_"
-            elif token.isdigit():
-                x_al = x_al + str(token)
+                i=i+1
+            elif equ[i].isdigit():
+                x_al = x_al + str(equ[i])
+                i=i+1
             else:
                 list_infix.append(x_al)
                 x_al = ""
                 x_start = False
-                if token != " ":
-                    list_infix.append(token)
+        elif num_start:
+            if equ[i].isdigit()or equ[i]==".":
+                num_al=num_al+str(equ[i])
+                i=i+1
+            else:
+                list_infix.append(num_al)
+                num_al=""
+                num_start=False
         else:
-            if token.isalnum() and token != "X":
+            if equ[i].isalpha() and equ[i] != "X":
+                print("ssss")
                 op_start = True
-                op_al = str(token)
-            elif token == " ":
-                pass
-            elif token == "X":
+                op_al = str(equ[i])
+                i=i+1
+            elif equ[i] == " ":
+                continue
+            elif equ[i] == "X":
                 x_start = True
                 x_al = "X"
+                i=i+1
+            elif equ[i].isdigit():
+                num_start=True
+                num_al=str(equ[i])
+                i=i+1
             else:
-                list_infix.append(str(token))
+                print("sssssss")
+                list_infix.append(str(equ[i]))
+                i=i+1
+    if num_al!="":
+        list_infix.append(num_al)
+    if x_al!="":
+        list_infix.append(x_al)
+    if op_al!="":
+        list_infix.append(op_al)
     print(list_infix)
     post_equ = infix_to_postfix(list_infix)
     print(post_equ)

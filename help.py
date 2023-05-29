@@ -64,9 +64,10 @@ x, y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
 # opc.do()
 
 
-equ="cos(((sin(((((1.25458 * X_2) - (0.53392 * X_3)) ^ ((-0.39016) ^ (0.60443 * X_3))) ^ 2)) ^ 2) ^ (log((log((1.83551 * X_1)) ^ cos(((-0.62824) * X_3)))) * (sin(((-2.73215) * X_2)) + (-1.39826)))))"
+equ="(111.4449)*(X_2)+22.777+4444444444"
 ind=Individual(equation=equ)
 euq=to_op(ind)
+# print("2".isalpha())
 # bingo_ind=AGraph(equation=equ)
 # bingo_ind._update()
 # print(bingo_ind.command_array)
