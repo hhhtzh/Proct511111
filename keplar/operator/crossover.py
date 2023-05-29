@@ -49,7 +49,8 @@ class BingoCrossover(Crossover):
 class BingoCross(Crossover):
     def __init__(self):
         super().__init__()
-    def do(self,population):
+
+    def do(self, population):
         population.set_pop_size(len(population.pop_list))
         [parent_1_num, parent_2_num] = np.random.randint(low=0, high=population.get_pop_size() - 1, size=2)
         parent_1 = population.pop_list[parent_1_num]

@@ -314,9 +314,7 @@ def to_op(ind,np_x,np_y):
             node_list.append(node)
         else:
             raise ValueError(f"通用个体转换为Operon个体时未识别,未识别字符为{token}")
-    for noe in node_list:
-        print(noe.Name)
     op_tree=Operon.Tree(node_list)
-    print("xxxxxxxxx")
     op_tree.UpdateNodes()
     print(Operon.InfixFormatter.Format(op_tree, ds, 5))
+    return op_tree

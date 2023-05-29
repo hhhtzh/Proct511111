@@ -62,12 +62,12 @@ x, y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
 # print(x.shape,y.shape)
 # opc = OperonCreator("balanced", x, y, 128)
 # opc.do()
-# x,y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
-# x=np.array(x)
-# y=np.array(y).reshape(-1,1)
-D=fetch_data('1027_ESL', return_X_y=False, local_cache_dir='./datasets').to_numpy()
-# initialize a dataset from a numpy array
-ds = Operon.Dataset(D)
+x,y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
+x=np.array(x)
+y=np.array(y).reshape(-1,1)
+# D=fetch_data('1027_ESL', return_X_y=False, local_cache_dir='./datasets').to_numpy()
+# # initialize a dataset from a numpy array
+# ds = Operon.Dataset(D)
 
 # x1=ds.GetVariable("X1")
 # nd1 = Operon.Node.Constant(111.4449)
@@ -96,9 +96,9 @@ ds = Operon.Dataset(D)
 # 9237141233658495207 X5
 
 
-# equ="(111.4449)*(X_2)+22.777+exp(444444)"
-# ind=Individual(equation=equ)
-# euq=to_op(ind,x,y)
+equ="(111.4449)*(X_2)+22.777+exp(444444)"
+ind=Individual(equation=equ)
+euq=to_op(ind,x,y)
 # print("2".isalpha())
 # bingo_ind=AGraph(equation=equ)
 # bingo_ind._update()
