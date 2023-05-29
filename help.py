@@ -65,26 +65,26 @@ x, y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
 D = fetch_data('1027_ESL', return_X_y=False, local_cache_dir='./datasets').to_numpy()
 
 # initialize a dataset from a numpy array
-ds = Operon.Dataset(D)
-
-x1=ds.GetVariable("X1")
-nd1 = Operon.Node.Constant(11)
-nd2 = Operon.Node.Variable(1)
-nd2.HashValue=2673900822390960787
-nd3 = Operon.Node.Div()
-nd_list = [nd1,nd2, nd3]
-tr = Operon.Tree(nd_list)
-print(Operon.InfixFormatter.Format(tr, ds, 5))
-variables=ds.Variables
-for var in variables:
-    print(var.Hash,var.Name)
-print(x1.Hash)
+# ds = Operon.Dataset(D)
+#
+# x1=ds.GetVariable("X1")
+# nd1 = Operon.Node.Constant(11)
+# nd2 = Operon.Node.Variable(1)
+# nd2.HashValue=2673900822390960787
+# nd3 = Operon.Node.Div()
+# nd_list = [nd1,nd2, nd3]
+# tr = Operon.Tree(nd_list)
+# print(Operon.InfixFormatter.Format(tr, ds, 5))
+# variables=ds.Variables
+# for var in variables:
+#     print(var.Hash,var.Name)
+# print(x1.Hash)
 # print(ds.VariableNames)
 
 
-# equ="(111.4449)*(X_2)+22.777+exp(4444444444)"
-# ind=Individual(equation=equ)
-# euq=to_op(ind)
+equ="(111.4449)*(X_2)+22.777+exp(4444444444)"
+ind=Individual(equation=equ)
+euq=to_op(ind)
 # print("2".isalpha())
 # bingo_ind=AGraph(equation=equ)
 # bingo_ind._update()
