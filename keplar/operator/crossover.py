@@ -1,8 +1,12 @@
+import random
+
 from bingo.symbolic_regression import AGraph
 from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 import numpy as np
 from bingo.symbolic_regression.agraph.crossover import AGraphCrossover
+from keplar.translator.translator import to_op
+import pyoperon as Operon
 
 
 class Crossover(Operator):
@@ -46,8 +50,13 @@ class BingoCrossover(Crossover):
         population.set_pop_size(new_pop_size)
 
 
-class BingoCross(Crossover):
-    def __init__(self):
+class OperonCrossover(Crossover):
+    def __init__(self, internal_probability, depth_limit, length_limit, np_x, np_y):
+        self.internal_probability = internal_probability
+        self.depth_limit = depth_limit
+        self.length_limit = length_limit
+        self.np_x = np_x
+        self.np_y = np_y.reshape([-1, 1])
         super().__init__()
 
     def do(self, population):
@@ -55,3 +64,8 @@ class BingoCross(Crossover):
         [parent_1_num, parent_2_num] = np.random.randint(low=0, high=population.get_pop_size() - 1, size=2)
         parent_1 = population.pop_list[parent_1_num]
         parent_2 = population.pop_list[parent_2_num]
+        op_parent1 = to_op(parent_1,np_x=self.np_x,np_y=self.np_y)
+        op_parent2=to_op(parent_2,np_x=self.np_x,np_y=self.np_y)
+        crossover=Operon.SubtreeCrossover(self.internal_probability,self.depth_limit,self.length_limit)
+        rng = Operon.RomuTrio(random.randint(1, 1000000))
+        crossover
