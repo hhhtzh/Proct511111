@@ -1,3 +1,3 @@
-str="X_11111"
-str1=str[2:]
-print(str1)
+str="c0011"
+str1=str[1:]
+print(int(str1))
