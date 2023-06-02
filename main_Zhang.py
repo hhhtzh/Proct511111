@@ -9,7 +9,7 @@
 # from keplar.operator.mutation import BingoMutation
 # from keplar.operator.selector import BingoSelector
 
-from keplar.operator.dsr_Algorithm import uDsrAlgorithm
+from keplar.Algorithm.dsr_Algorithm import uDsrAlgorithm
 
 
 if __name__ == '__main__':

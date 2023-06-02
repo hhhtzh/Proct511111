@@ -24,7 +24,9 @@ from keplar.operator.dsr_train import dsr_Train
 
 from keplar.operator.creator import DsrCreator
 
-class uDsrAlgorithm:
+from keplar.Algorithm.sralg import SRAlg
+
+class uDsrAlgorithm(SRAlg):
     def __init__(self,csv_filename,config_filename):
         # 读入数据
         self.csv_filename = csv_filename
@@ -53,7 +55,7 @@ class uDsrAlgorithm:
 
         # while not dsr_model.trainer.done:
         # dsr_model.trainer.run_step()
-        # print(programs.task.task_type+"kkk\n")
+        print(programs.task.task_type+"kkk\n")
 
         dsr_train = dsr_Train(dsr_model.sess,dsr_model.policy,dsr_model.policy_optimizer
                             ,dsr_model.gp_controller,dsr_model.logger,
