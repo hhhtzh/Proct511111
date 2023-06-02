@@ -21,7 +21,7 @@ from keplar.translator.translator import to_op, trans_op
 # bingo_parent_2._update()
 # crossover = AGraphCrossover()
 # bingo_child_1, bingo_child_2 = crossover(parent_1=bingo_parent_1, parent_2=bingo_parent_2)
-x, y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
+# x, y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
 # reg=SymbolicRegressor(generations=1,population_size=1)
 # reg.fit(x,y)
 # print(reg)
@@ -62,18 +62,19 @@ x, y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
 # print(x.shape,y.shape)
 # opc = OperonCreator("balanced", x, y, 128)
 # opc.do()
-x,y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
-x=np.array(x)
-y=np.array(y).reshape(-1,1)
-# D=fetch_data('1027_ESL', return_X_y=False, local_cache_dir='./datasets').to_numpy()
+# x,y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
+# x=np.array(x)
+# y=np.array(y).reshape(-1,1)
+D=fetch_data('1027_ESL', return_X_y=False, local_cache_dir='./datasets').to_numpy()
 # # initialize a dataset from a numpy array
-# ds = Operon.Dataset(D)
+ds = Operon.Dataset(D)
 
 # x1=ds.GetVariable("X1")
 # nd1 = Operon.Node.Constant(111.4449)
 # nd2 = Operon.Node.Variable(1)
 # nd2.HashValue=3663239364975845540
 # nd3 = Operon.Node.Mul()
+# print(nd3.IsLeaf())
 # nd4=Operon.Node.Constant(22.777)
 # nd5=Operon.Node.Add()
 # nd6=Operon.Node.Constant(44.888)
@@ -86,7 +87,7 @@ y=np.array(y).reshape(-1,1)
 # print(len(tr.Nodes))
 
 # print(x1.Hash)
-# print(ds.VariableNames)
+print(ds.VariableNames)
 
 
 # 143321629840518241 X1
@@ -96,9 +97,9 @@ y=np.array(y).reshape(-1,1)
 # 9237141233658495207 X5
 
 
-equ="(111.4449)*(X_2)+22.777+exp(444444)"
-ind=Individual(equation=equ)
-euq=to_op(ind,x,y)
+# equ="(111.4449)*(X_2)+22.777+exp(444444)"
+# ind=Individual(equation=equ)
+# euq=to_op(ind,x,y)
 # print("2".isalpha())
 # bingo_ind=AGraph(equation=equ)
 # bingo_ind._update()
