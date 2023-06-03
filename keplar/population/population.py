@@ -16,5 +16,9 @@ class Population:
     def set_pop_size(self, new_pop_size):
         self.pop_size = new_pop_size
 
+    def ddd(self):
+        pass
+
+
 
         现象学现象学
