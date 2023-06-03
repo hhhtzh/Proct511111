@@ -21,3 +21,7 @@ class Population:
 
     def set_pop_size(self, new_pop_size):
         self.pop_size = new_pop_size
+
+
+    def xxx(self):
+        pass
