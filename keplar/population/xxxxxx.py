@@ -16,5 +16,4 @@ class Population:
     def set_pop_size(self, new_pop_size):
         self.pop_size = new_pop_size
 
-
-        现象学现象学
+章自己阿姆河和萨和思考
