@@ -24,7 +24,7 @@ from keplar.operator.dsr_train import dsr_Train
 
 from keplar.operator.creator import DsrCreator
 
-from Kepler.keplar.Algorithm.Alg import Alg
+from keplar.Algorithm.Alg import Alg
 
 
 class uDsrAlgorithm(Alg):

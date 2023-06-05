@@ -13,7 +13,7 @@ from keplar.Algorithm.dsr_Algorithm import uDsrAlgorithm
 
 
 if __name__ == '__main__':
-    csv_filename = "/Users/friday/Documents/lab_work/SR_for_Bozhou/Eight/pythonProjectAR5/datasets/data.csv"
-    config_filename = "/Users/friday/Documents/lab_work/SR_for_Bozhou/Eight/pythonProjectAR5/datasets/config_regression.json"
+    csv_filename = "./datasets/data.csv"
+    config_filename = "./datasets/config_regression.json"
     udsr = uDsrAlgorithm(csv_filename,config_filename)
     udsr.run()
