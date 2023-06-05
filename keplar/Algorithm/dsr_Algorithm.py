@@ -24,7 +24,7 @@ from keplar.operator.dsr_train import dsr_Train
 
 from keplar.operator.creator import DsrCreator
 
-from keplar.Algorithm.sralg import Alg
+from Kepler.keplar.Algorithm.Alg import Alg
 
 
 class uDsrAlgorithm(Alg):
@@ -50,7 +50,7 @@ class uDsrAlgorithm(Alg):
 
         # while not dsr_model.trainer.done:
         # dsr_model.trainer.run_step()
-        print(programs.task.task_type+"kkk\n")
+        # print(programs.task.task_type+"kkk\n")
 
         dsr_train = dsr_Train(dsr_model.sess, dsr_model.policy, dsr_model.policy_optimizer, dsr_model.gp_controller, dsr_model.logger,
                               dsr_model.pool, **dsr_model.config_training, **dsr_model.config_task)

@@ -1,6 +1,6 @@
 from pmlb import fetch_data
 
-from keplar.Algorithm.sralg import BingoSRAlg
+from Kepler.keplar.Algorithm.Alg import BingoSRAlg
 from keplar.operator.cleaner import BingoCleaner
 from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
 from keplar.operator.creator import BingoCreator, GpCreator
