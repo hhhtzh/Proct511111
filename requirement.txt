@@ -3,3 +3,4 @@ joblib
 scipy
 scikit-learn
 sympy
+tensorflow
