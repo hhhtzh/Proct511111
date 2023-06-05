@@ -15,7 +15,3 @@ class Population:
 
     def set_pop_size(self, new_pop_size):
         self.pop_size = new_pop_size
-
-        ssssss
-
-章自己阿姆河和萨和思考

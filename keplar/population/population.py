@@ -18,7 +18,3 @@ class Population:
 
     def ddd(self):
         pass
-
-
-
-        现象学现象学
