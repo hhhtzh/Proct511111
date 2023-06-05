@@ -1004,11 +1004,11 @@ static const char *__pyx_filename;
 static const char *__pyx_f[] = {
   "dso/cyfunc.pyx",
   "__init__.pxd",
-  ".eggs/Cython-0.29.35-py3.9-linux-x86_64.egg/Cython/Includes/cpython/array.pxd",
+  "array.pxd",
   "stringsource",
-  ".eggs/Cython-0.29.35-py3.9-linux-x86_64.egg/Cython/Includes/cpython/type.pxd",
-  ".eggs/Cython-0.29.35-py3.9-linux-x86_64.egg/Cython/Includes/cpython/bool.pxd",
-  ".eggs/Cython-0.29.35-py3.9-linux-x86_64.egg/Cython/Includes/cpython/complex.pxd",
+  "type.pxd",
+  "bool.pxd",
+  "complex.pxd",
 };
 /* MemviewSliceStruct.proto */
 struct __pyx_memoryview_obj;
