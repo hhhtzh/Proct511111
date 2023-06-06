@@ -105,7 +105,6 @@ class OperonCreator(Creator):
             tree_list.append(tree)
         for i in tree_list:
             func=trans_op(i,variable_list)
-            print(func)
             ind_new=Individual(func=func)
             pop.append(ind_new)
         return pop
