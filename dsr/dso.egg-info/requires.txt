@@ -1,7 +1,7 @@
 pytest
 cython
 numpy
-tensorflow_macos
+tensorflow
 numba
 sympy
 pandas
@@ -17,10 +17,10 @@ PyYAML
 prettytable
 
 [all]
-mpi4py
 stable-baselines[mpi]==2.10.0
-gym[box2d]==0.15.4
 pybullet
+mpi4py
+gym[box2d]==0.15.4
 
 [control]
 mpi4py

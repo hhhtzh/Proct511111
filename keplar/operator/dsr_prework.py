@@ -73,7 +73,7 @@ class pre_env:
             config["gp_meld"]["parallel_eval"] = False
 
 
-        # Start training
+
         print_summary(config, runs, messages)
 
         # Generate configs (with incremented seeds) for each run

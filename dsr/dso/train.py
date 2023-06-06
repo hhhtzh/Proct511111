@@ -194,7 +194,23 @@ class Trainer():
         self.p_r_best = None
         self.done = False
 
-    def run_one_step(self, override=None):
+    def two_step(self,override=None):
+        """
+        Train one iteration.
+        """
+        if override is None:
+            # Sample batch of Programs from the Controller
+            print("xxxxxxxxxxxxx\n")
+            # Program.task.task_type='regression'
+            # print(self.programs.task.task_type+"\n")
+            print(Program.task.task_type+"xxx\n")
+
+
+            actions, obs, priors = self.policy.sample(self.batch_size)
+            programs = [from_tokens(a) for a in actions] 
+
+    def loop_one_step(self,programs=None):
+    # def run_one_step(self, override=None):
         """
         Executes one step of main training loop. If override is given,
         train on that batch. Otherwise, sample the batch to train on.
@@ -205,6 +221,10 @@ class Trainer():
             Tuple of (actions, obs, priors, programs) to train on offline
             samples instead of sampled
         """
+        override=None
+        
+        # print(Program.task.task_type+"1\n")
+
         positional_entropy = None
         top_samples_per_batch = list()
         if self.debug >= 1:
@@ -216,6 +236,7 @@ class Trainer():
         start_time = time.time()
         if self.verbose:
             print("-- RUNNING ITERATIONS START -------------")
+            # print(Program.task.task_type+"\n")
 
 
         # Number of extra samples generated during attempt to get
@@ -230,11 +251,15 @@ class Trainer():
         # Shape of priors: (batch_size, max_length, n_choices)
         if override is None:
             # Sample batch of Programs from the Controller
+            # print("xxxxxxxxxxxxx\n")
+            # print(Program.task.task_type+"\n")
+
             actions, obs, priors = self.policy.sample(self.batch_size)
-            programs = [from_tokens(a) for a in actions]            
+            # programs = [from_tokens(a) for a in actions]            
         else:
             # Train on the given batch of Programs
             actions, obs, priors, programs = override
+            # print("xxxxxxxxxxxxx\n")
             for p in programs:
                 Program.cache[p.str] = p
 
@@ -454,7 +479,7 @@ class Trainer():
             self.p_r_best.print_stats()
 
         # Increment the iteration counter
-        self.iteration += 1
+        # self.iteration += 1
 
     def save(self, save_path):
         """

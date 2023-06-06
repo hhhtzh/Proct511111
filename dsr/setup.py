@@ -7,11 +7,31 @@ dist.Distribution().fetch_build_eggs(['Cython', 'numpy'])
 import numpy
 from Cython.Build import cythonize
 
+# required = [
+#     "pytest",
+#     "cython",
+#     "numpy",
+#     "tensorflow_macos",
+#     "numba",
+#     "sympy",
+#     "pandas",
+#     "scikit-learn",
+#     "click",
+#     "deap",
+#     "pathos",
+#     "seaborn",
+#     "progress",
+#     "tqdm",
+#     "commentjson",
+#     "PyYAML",
+#     "prettytable"
+# ]
+
 required = [
     "pytest",
     "cython",
     "numpy",
-    "tensorflow_macos",
+    "tensorflow",
     "numba",
     "sympy",
     "pandas",
