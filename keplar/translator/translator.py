@@ -122,6 +122,7 @@ def trans_gp(gp_equ):
     return str(strx_)
 
 
+
 class trans_Dsr():
     def __init__(self):
         pass
@@ -188,33 +189,101 @@ def to_gp(equ):
 #     output_string = re.sub(pattern, lambda m: m.group(1)[:-1] + str(int(m.group(1)[-1]) - 1), equ1)
 #     return output_string
 
+def op_postfix_to_prefix(node_list):
+    stack=[]
+    operand=[]
+    for node in node_list:
+        if not node.IsLeaf:
+            for i in range(node.Arity):
+                operand.append(stack.pop())
+            stack.append(node)
+            for ope in operand:
+                stack.append(ope)
+        else:
+            stack.append(node)
+    new_node=[]
+    for i in range(len(stack)):
+        new_node.append(stack.pop())
+    return new_node
+
+
 def trans_op(op_tree, variable_list):
     var_dict = {}
     for var in variable_list:
         var_dict[int(var.Hash)]=str(var.Name)
-    postfix_code = []
+    func = []
     const_array = []
+    cv_list=[]
     c_num = 0
+    const_code=2000
+    variable_code=3000
     node_list = op_tree.Nodes
+    node_list=op_postfix_to_prefix(node_list)
     for node in node_list:
-        if node.IsLeaf():
-            if node.IsConstant():
-                token = "C"
+        if node.IsLeaf:
+            if node.IsConstant:
+                token = str(const_code)
                 const_array.append(node.Value)
                 c_num = c_num + 1
-                token = token + str(c_num).zfill(4)
-                postfix_code.append(token)
+                const_code=const_code+1
+                cv_list.append(token)
             else:
-                token = "V"
+                token=variable_code
+                variable_code=variable_code+1
                 var_name=var_dict[node.HashValue]
                 var_name=var_name[1:]
-                var_name.zfill(4)
-                token=token+var_name
-                postfix_code.append(token)
+                token=token+int(var_name)
+                token=str(token)
+                cv_list.append(token)
         else:
             if node.Type==Operon.NodeType.Add:
-                token="00001"
-            elif no
+                token="1001"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Sub:
+                token="1002"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Mul:
+                token="1003"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Aq:
+                token="1016"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Pow:
+                token="1017"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Div:
+                token="1004"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Sqrt:
+                token="1005"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Log:
+                token="1006"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Abs:
+                token="1007"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Fmax:
+                token="1010"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Fmin:
+                token="1011"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Sin:
+                token="1012"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Cos:
+                token="1013"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Tan:
+                token="1014"
+                func.append(token)
+            elif node.Type==Operon.NodeType.Exp:
+                token="1018"
+                func.append(token)
+            else:
+                raise ValueError(f"{node.Name}转换operon节点时未识别")
+            return func
 
 
 

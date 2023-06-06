@@ -98,14 +98,15 @@ class OperonCreator(Creator):
         coeff_initializer.ParameterizeDistribution(0, 1)
         tree_list = []
         pop=Population(self.pop_size)
+        variable_list=self.ds.Variables
         for i in range(self.pop_size):
             tree = tree_initializer(rng)
             coeff_initializer(rng,tree)
             tree_list.append(tree)
         for i in tree_list:
-            equ=Operon.InfixFormatter.Format(i, self.ds, self.decimalPrecision)
-            equ=trans_op(equ)
-            ind_new=Individual(equation=equ)
+            func=trans_op(i,variable_list)
+            print(func)
+            ind_new=Individual(func=func)
             pop.append(ind_new)
         return pop
 

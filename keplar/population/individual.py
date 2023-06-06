@@ -1,7 +1,8 @@
 class Individual:
-    def __init__(self, postfix_code):
+    def __init__(self, func):
         self.equation = None
-        self.post_code = postfix_code
+        #prefix list
+        self.func = func
         self.evaluated = False
         self.fitness = None
 

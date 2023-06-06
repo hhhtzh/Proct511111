@@ -4,7 +4,8 @@ from gplearn.functions import _protected_division, _protected_sqrt, _Function, _
 
 operator_map = {1001: 'add', 1002: 'sub',1003: 'mul', 1004: 'div', 1005:'sqrt', 1006: 'log'
     , 1007: 'abs', 1008: 'neg', 1009: 'inv', 1010: 'max', 1011: 'min', 1012: 'sin',
-                1013: 'cos', 1014: 'tan'}
+                1013: 'cos', 1014: 'tan',1015:'sig',1016:'aq',1017:'pow',1018:'exp',1019:'square'}
+#从2000开始为常量，从3000开始为变量
 
 add2 = _Function(function=np.add, name='add', arity=2)
 sub2 = _Function(function=np.subtract, name='sub', arity=2)
@@ -39,17 +40,8 @@ _function_map = {'add': add2,
 
 
 
-operator_map[1100] = "x0"
 
 
-
-operator_map[1101] = 'x1'
-
-fun=[1001,1100]
-
-for i in range(10):
-
-   str += operator_map[fun[i]]
 
 
 
