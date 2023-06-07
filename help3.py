@@ -16,5 +16,5 @@ y = np.array(y)
 # for var in vr:
 #     var_dict[int(var.Hash)]=str(var.Name)
 # print(var_dict[143321629840518241])
-cr = OperonCreator("balanced", x, y, 128)
+cr = OperonCreator("balanced", x, y, 128,"self")
 pop = cr.do()

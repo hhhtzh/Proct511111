@@ -113,6 +113,7 @@ class OperonCreator(Creator):
                 func=trans_op(i,variable_list)
                 ind_new=Individual(func=func)
                 pop.append(ind_new)
+                pop.self_pop_enable=True
         else:
             pop.target_pop_list=tree_list
         return pop

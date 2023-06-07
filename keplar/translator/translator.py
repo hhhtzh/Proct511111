@@ -218,9 +218,6 @@ def op_postfix_to_prefix(node_list):
             stack1.extend(reversed(item))
         else:
             new_node_list.append(item)
-    print("---------")
-    for i in new_node_list:
-        print(i.Name)
     return new_node_list
 
 
