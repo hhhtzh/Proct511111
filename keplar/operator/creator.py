@@ -100,6 +100,7 @@ class OperonCreator(Creator):
         tree_list = []
         pop=Population(self.pop_size)
         pop.pop_type="Operon"
+
         variable_list=self.ds.Variables
         for i in range(self.pop_size):
             tree = tree_initializer(rng)
@@ -107,14 +108,12 @@ class OperonCreator(Creator):
             tree_list.append(tree)
         pop.check_flag(self.to_type)
         trans_flag=pop.translate_flag
-
+        pop.target_pop_list = tree_list
         if trans_flag:
             for i in tree_list:
                 func=trans_op(i,variable_list)
                 ind_new=Individual(func=func)
                 pop.append(ind_new)
                 pop.self_pop_enable=True
-        else:
-            pop.target_pop_list=tree_list
         return pop
 

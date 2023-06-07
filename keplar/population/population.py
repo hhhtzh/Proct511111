@@ -6,6 +6,7 @@ class Population:
         self.self_pop_enable = None
         self.translate_flag = True
         self.target_pop_list = []
+        self.target_fit_list=[]
 
     def initial(self, pop_list):
         self.pop_list = pop_list
@@ -13,6 +14,7 @@ class Population:
     def check_flag(self, to_type):
         if self.pop_type == to_type:
             self.translate_flag = False
+        return self.translate_flag
 
     def append(self, ind):
         self.pop_list.append(ind)

@@ -16,3 +16,4 @@ class OperonAlg(Alg):
     def run(self):
         self.population = OperonCreator("balanced", self.np_x, self.np_y, self.population.pop_size
                                         , "Operon", self.minL, self.maxL, self.maxD, self.decimalPrecision)
+        self.cr

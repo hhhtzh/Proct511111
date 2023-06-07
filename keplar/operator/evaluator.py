@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 
 from bingo.evaluation.evaluation import Evaluation
@@ -6,6 +8,7 @@ from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
 from bingo.symbolic_regression import ExplicitTrainingData, ExplicitRegression, ImplicitRegression, \
     ImplicitTrainingData, AGraph
 from keplar.operator.operator import Operator
+import pyoperon as Operon
 
 
 class Evaluator(Operator):
@@ -49,3 +52,53 @@ class BingoEvaluator(Operator):
         for i in range(len(bingo_pop)):
             population.pop_list[i].fitness = bingo_pop[i].fitness
             population.pop_list[i].evaluated = True
+
+
+class OperonEvaluator(Operator):
+    def __init__(self, error_metric, np_x, np_y, training_p, if_linear_scaling):
+        super().__init__()
+        self.if_linear_scaling = if_linear_scaling
+        self.training_p = training_p
+        self.error_metric = error_metric
+        np_y = np_y.reshape([-1, 1])
+        self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
+
+    def do(self, population):
+        if not isinstance(self.if_linear_scaling, bool):
+            raise ValueError("if_linear_scaling必须为bool类型")
+        interpreter = Operon.Interpreter()
+        if self.error_metric == "R2":
+            error_metric = Operon.R2()
+        elif self.error_metric == "MSE":
+            error_metric = Operon.MES()
+        elif self.error_metric == "NMSE":
+            error_metric = Operon.NMES()
+        elif self.error_metric == "RMSE":
+            error_metric = Operon.RMES()
+        elif self.error_metric == "MAE":
+            error_metric = Operon.MAE()
+        elif self.error_metric == "C2":
+            error_metric = Operon.C2()
+        else:
+            ValueError("误差矩阵类型错误")
+        target = self.ds.Variables[-1]
+        inputs = Operon.VariableCollection(v for v in self.ds.Variables if v.Name != target.Name)
+        rng = Operon.RomuTrio(random.randint(1, 1000000))
+        training_range = Operon.Range(0, int(self.ds.Rows * self.training_p))
+        test_range = Operon.Range(int(self.ds.Rows * self.training_p), self.ds.Rows)
+        problem = Operon.Problem(self.ds, inputs, target.Name, training_range, test_range)
+        evaluator = Operon.Evaluator(problem, interpreter, error_metric, self.if_linear_scaling)
+        if population.pop_type == "Operon":
+            tree_list = population.target_pop_list
+            ind_list=[]
+            fit_list=[]
+            for i in tree_list:
+                ind=Operon.Individual()
+                ind.Genotype=i
+                ind_list.append(ind)
+            for i in ind_list:
+                ea = evaluator(rng, ind_list[i])
+                fit_list.append(ea[0])
+            population.target_fit_list=fit_list
+        else:
+            pass

@@ -51,7 +51,8 @@ class BingoCrossover(Crossover):
 
 
 class OperonCrossover(Crossover):
-    def __init__(self, internal_probability, depth_limit, length_limit, np_x, np_y):
+    def __init__(self, np_x, np_y, to_type, internal_probability=0.9, depth_limit=10, length_limit=50):
+        self.to_type = to_type
         self.internal_probability = internal_probability
         self.depth_limit = depth_limit
         self.length_limit = length_limit
@@ -60,16 +61,28 @@ class OperonCrossover(Crossover):
         super().__init__()
 
     def do(self, population):
-        population.set_pop_size(len(population.pop_list))
         [parent_1_num, parent_2_num] = np.random.randint(low=0, high=population.get_pop_size() - 1, size=2)
-        parent_1 = population.pop_list[parent_1_num]
-        parent_2 = population.pop_list[parent_2_num]
-        op_parent1 = to_op(parent_1, np_x=self.np_x, np_y=self.np_y)
-        op_parent2 = to_op(parent_2, np_x=self.np_x, np_y=self.np_y)
+        if population.pop_type != "Operon":
+            pass
+            # parent_1 = population.pop_list[parent_1_num]
+            # parent_2 = population.pop_list[parent_2_num]
+            # op_parent1 = to_op(parent_1, np_x=self.np_x, np_y=self.np_y)
+            # op_parent2 = to_op(parent_2, np_x=self.np_x, np_y=self.np_y)
+        else:
+            op_parent1 = population.target_pop_list[parent_1_num]
+            op_parent2 = population.target_pop_list[parent_2_num]
         crossover = Operon.SubtreeCrossover(self.internal_probability, self.depth_limit, self.length_limit)
         rng = Operon.RomuTrio(random.randint(1, 1000000))
         new_tree = crossover(rng, op_parent1, op_parent2)
-        ind = trans_op(new_tree)
-        population.append(ind)
-        new_pop_size = population.get_pop_size() + 1
-        population.set_pop_size(new_pop_size)
+        if self.to_type != "Operon":
+            population.self_pop_enable = True
+            population.pop_type = "self"
+            ind = trans_op(new_tree)
+            population.append(ind)
+            new_pop_size = population.get_pop_size() + 1
+            population.set_pop_size(new_pop_size)
+        else:
+            population.target_pop_list.append(new_tree)
+            new_pop_size = len(population.target_pop_list)
+            population.set_pop_size(new_pop_size)
+            population.self_pop_enable = False
