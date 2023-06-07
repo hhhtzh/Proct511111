@@ -1,6 +1,7 @@
 from pmlb import fetch_data
-
 from keplar.Algorithm.sralg import BingoSRAlg
+
+from keplar.data.data import Data
 from keplar.operator.cleaner import BingoCleaner
 from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
 from keplar.operator.creator import BingoCreator, GpCreator
@@ -10,7 +11,9 @@ from keplar.operator.generator import BingoGenerator
 from keplar.operator.mutation import BingoMutation
 from keplar.operator.selector import BingoSelector
 
-x, y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
+data=Data("pmlb",'1027_ESL')
+data.read_file()
+# x, y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
 operators = ["+", "-", "*", "/"]
 creator = GpCreator(50, x, y)
 evaluator = BingoEvaluator(x, "exp", "TNC", y)

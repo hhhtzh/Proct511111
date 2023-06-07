@@ -3,7 +3,9 @@ class Population:
         self.pop_list = []
         self.pop_size = pop_size
         self.pop_type = None
+        self.pop_enable = None
         self.translate_flag = True
+        self.target_pop_list = []
 
     def initial(self, pop_list):
         self.pop_list = pop_list
@@ -21,4 +23,3 @@ class Population:
 
     def set_pop_size(self, new_pop_size):
         self.pop_size = new_pop_size
-

@@ -211,9 +211,9 @@ def op_postfix_to_prefix(node_list):
         else:
             stack.append(node)
     new_node_list = []
-    stack1=[stack]
+    stack1 = [stack]
     while stack1:
-        item=stack1.pop()
+        item = stack1.pop()
         if isinstance(item, list):
             stack1.extend(reversed(item))
         else:
@@ -304,6 +304,10 @@ def trans_op(op_tree, variable_list):
             else:
                 raise ValueError(f"{node.Name}转换operon节点时未识别")
     return func
+
+
+def to_bingo(ind):
+    code = ind.func
 
 
 def to_op(ind, np_x, np_y):

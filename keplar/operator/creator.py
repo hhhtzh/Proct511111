@@ -65,7 +65,7 @@ class GpCreator(Creator):
 
 
 class OperonCreator(Creator):
-    def __init__(self, tree_type, np_x, np_y, pop_size, minL=1, maxL=50, maxD=10,decimalPrecision=5):
+    def __init__(self, tree_type, np_x, np_y, pop_size,to_type, minL=1, maxL=50, maxD=10,decimalPrecision=5):
         super().__init__()
         if tree_type == "balanced" or tree_type == "probabilistic":
             self.tree_type = tree_type
@@ -74,6 +74,7 @@ class OperonCreator(Creator):
         self.maxD = maxD
         self.minL = minL
         self.maxL = maxL
+        self.to_type=to_type
         self.pop_size = pop_size
         self.decimalPrecision=decimalPrecision
         np_y=np_y.reshape([-1,1])
@@ -98,14 +99,21 @@ class OperonCreator(Creator):
         coeff_initializer.ParameterizeDistribution(0, 1)
         tree_list = []
         pop=Population(self.pop_size)
+        pop.pop_type="Operon"
         variable_list=self.ds.Variables
         for i in range(self.pop_size):
             tree = tree_initializer(rng)
             coeff_initializer(rng,tree)
             tree_list.append(tree)
-        for i in tree_list:
-            func=trans_op(i,variable_list)
-            ind_new=Individual(func=func)
-            pop.append(ind_new)
+        pop.check_flag(self.to_type)
+        trans_flag=pop.translate_flag
+
+        if trans_flag:
+            for i in tree_list:
+                func=trans_op(i,variable_list)
+                ind_new=Individual(func=func)
+                pop.append(ind_new)
+        else:
+            pop.target_pop_list=tree_list
         return pop
 

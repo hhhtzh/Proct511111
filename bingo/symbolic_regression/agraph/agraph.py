@@ -115,7 +115,6 @@ class AGraph(Equation):
     """
     def __init__(self, use_simplification=False, equation=None):
         super().__init__()
-
         self._use_simplification = use_simplification
 
         if use_simplification and not USING_PYTHON_SIMPLIFICATION:
@@ -129,6 +128,7 @@ class AGraph(Equation):
         self._init_command_array_and_const(equation)
 
     # pylint: disable=attribute-defined-outside-init
+
     def _init_command_array_and_const(self, equation):
         if equation is None:
             self._command_array = np.empty([0, 3], dtype=int)
