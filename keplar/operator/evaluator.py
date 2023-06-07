@@ -90,15 +90,17 @@ class OperonEvaluator(Operator):
         evaluator = Operon.Evaluator(problem, interpreter, error_metric, self.if_linear_scaling)
         if population.pop_type == "Operon":
             tree_list = population.target_pop_list
-            ind_list=[]
-            fit_list=[]
+            ind_list = []
+            fit_list = []
             for i in tree_list:
-                ind=Operon.Individual()
-                ind.Genotype=i
+                ind = Operon.Individual()
+                ind.Genotype = i
                 ind_list.append(ind)
             for i in ind_list:
-                ea = evaluator(rng, ind_list[i])
+                ea = evaluator(rng, i)
                 fit_list.append(ea[0])
-            population.target_fit_list=fit_list
+            population.target_fit_list = fit_list
+            population.pop_type="Operon"
+            population.self_pop_enable=False
         else:
             pass
