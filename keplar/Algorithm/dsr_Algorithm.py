@@ -42,13 +42,33 @@ class uDsrAlgorithm(Alg):
     def run(self):
 
         udsr_1=uDsr_deeplearn(self.csv_filename,self.config_filename)
-        
-        # population = None
         udsr_1.exec()
-        # udsr_2=uDSr_loop()
+        # d={**udsr_1.config_training, **udsr_1.config_task}
+
+        udsr_2=uDsr_loop(udsr_1.sess, udsr_1.policy, udsr_1.policy_optimizer, udsr_1.gp_controller, udsr_1.logger,
+                              udsr_1.pool, **udsr_1.d)
+        
+
+        udsr_model =udsr_2.pre_do()
+
+        
+        programs, r, l, actions, obs, priors = udsr_model.dsr_sample()
+
+        print(r[0])
+        print(l[0])
+        # print(programs.)
+
+        print("all done!")
+        
+    
+        # udsr_all = [udsr_2]
+        # udsr_alg=uDsr_CompositeOp(udsr_all)
+
+        # udsr_alg.do()
 
 
-        # uDsr_CompositeOp(udsr_1,udsr_2)
+
+
 
         # 对数据进行预处理
         # prepare_env = pre_env(self.csv_filename, self.config_filename)
@@ -59,13 +79,13 @@ class uDsrAlgorithm(Alg):
         # # programs=dsr_model.do()
         # dsr_model.do()
 
-        # # set_task(dsr_model.config_task)
+        # # # set_task(dsr_model.config_task)
 
-        # # dsr_model.trainer.run_one_step()
+        # # # dsr_model.trainer.run_one_step()
 
-        # # while not dsr_model.trainer.done:
-        # # dsr_model.trainer.run_step()
-        # # print(programs.task.task_type+"kkk\n")
+        # # # while not dsr_model.trainer.done:
+        # # # dsr_model.trainer.run_step()
+        # # # print(programs.task.task_type+"kkk\n")
 
         # dsr_train = dsr_Train(dsr_model.sess, dsr_model.policy, dsr_model.policy_optimizer, dsr_model.gp_controller, dsr_model.logger,
         #                       dsr_model.pool, **dsr_model.config_training, **dsr_model.config_task)
@@ -73,9 +93,15 @@ class uDsrAlgorithm(Alg):
         # #  dsr_train = dsr_Train(sess=dsr_model.sess,policy=dsr_model.policy,policy_optimizer=dsr_model.policy_optimizer
         # #                 ,gp_controller=dsr_model.gp_controller,logger=dsr_model.logger,
         # #                 pool=dsr_model.pool,**dsr_model.config_training, **dsr_model.config_task)
-
-        # # while not dsr_train.done:
-        # #     dsr_train.run_one_step()
+        
+        
+        # programs, actions, obs, priors = dsr_train.loop_one_step(
+        #         programs2, actions, obs, priors)
+        
+        # while not dsr_train.done:
+        #         #     programs, r, l, actions, obs, priors = dsr_train.dsr_sample()
+        # #     # programs,actions,obs,priors =dsr_train.dsr_sample()
+        #     dsr_train.loop_one_step()
 
         # # iter_num = 0
         # while not dsr_train.done:

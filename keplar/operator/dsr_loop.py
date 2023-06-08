@@ -24,8 +24,43 @@ from keplar.operator.operator import Operator
 
 
 class uDsr_loop(Operator):
-    def __init__(self):
+
+    def __init__(self,sess, policy, policy_optimizer, gp_controller, logger,
+                        pool, **config_training):
         super().__init__()
+
+        self.sess =sess
+        self.policy = policy
+        self.policy_optimizer =policy_optimizer
+        self.gp_controller= gp_controller
+        self.logger =logger
+        self.pool =pool 
+        self.config_training =config_training
+        # self.config_task =config_task
+        self.dsr_train =None
+
+        
+
+        
+
+
+
+
+    def pre_do(self):
+        self.dsr_train = dsr_Train(self.sess, self.policy, self.policy_optimizer, self.gp_controller, self.logger,
+                        self.pool, **self.config_training)
+        
+        return self.dsr_train
+        
+        # while not dsr_train.done:
+        
+
+    def do(self, population=None):
+
+        self.dsr_train.loop_one_step()
+    
+    def exec(self, population=None):
+        return super().exec(population)
 
     
 
@@ -251,12 +286,12 @@ class dsr_Train(Trainer):
         # Shape of obs: (batch_size, obs_dim, max_length)
         # Shape of priors: (batch_size, max_length, n_choices)
         if override is None:
-            pass
+            # pass
             # Sample batch of Programs from the Controller
-            # actions, obs, priors = self.policy.sample(self.batch_size)
-            # print("node 0.1")
-            # programs = [from_tokens(a) for a in actions]    
-            # print("node 0")
+            actions, obs, priors = self.policy.sample(self.batch_size)
+            print("node 0.1")
+            programs = [from_tokens(a) for a in actions]    
+            print("node 0")
 
         else:
             # Train on the given batch of Programs

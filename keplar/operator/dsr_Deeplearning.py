@@ -42,6 +42,19 @@ class uDsr_deeplearn(Operator):
         self.config_filename = config_filename
 
         self.data = csv_filename
+
+        self.sess =None
+        self.policy =None
+        self.policy_optimizer = None
+        self.gp_controller=None
+        self.logger= None
+        self.pool =None
+        self.config_training =None
+        self.config_task =None
+        self.d ={}
+
+
+
         # population = None
         # self.config = config_filename
 
@@ -130,6 +143,8 @@ class uDsr_deeplearn(Operator):
         # print(Program.task.task_type+' hhh\n')
 
         # return self.trainer
+
+        self.d={**self.config_training,**self.config_task}
 
     def set_config(self, config):
         config = load_config(config)
