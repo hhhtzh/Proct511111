@@ -53,9 +53,11 @@ class uDsrAlgorithm(Alg):
 
         
         programs, r, l, actions, obs, priors = udsr_model.dsr_sample()
-
+        T =np.array([p.traversal for p in programs])
         print(r[0])
         print(l[0])
+        print(T[0])
+        
         # print(programs.)
 
         print("all done!")
