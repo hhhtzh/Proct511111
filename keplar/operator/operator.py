@@ -1,6 +1,7 @@
 class Operator:
     def __init__(self):
         self.type = None
+        self.config = None
 
     def do(self, population):
         pass
@@ -19,5 +20,5 @@ class Operator:
     def set_parameters(self, para_dict):
         pass
 
-    def __init_config__(self, config):
+    def init_config(self, config):
         pass

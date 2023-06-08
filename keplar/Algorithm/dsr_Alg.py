@@ -27,16 +27,20 @@ from keplar.operator.creator import DsrCreator
 from keplar.Algorithm.Alg import Alg
 
 
-class uDsrAlgorithm(Alg):
-    def __init__(self, csv_filename, config_filename):
-        # 读入数据
-        self.csv_filename = csv_filename
-        self.config_filename = config_filename
+class uDsr_Alg(Alg):
+    # def __init__(self, max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population):
+    #     super().__init__(max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population)
+
+    # def __init__(self, csv_filename, config_filename):
+    #     # 读入数据
+    #     self.csv_filename = csv_filename
+    #     self.config_filename = config_filename
+    #     self.config = " "
 
     def run(self):
 
         # 对数据进行预处理
-        prepare_env = pre_env(self.csv_filename, self.config_filename)
+        prepare_env = pre_env(self.csv_filename, self.config_filename,self.config)
         config = prepare_env.do()
 
         # 进行深度学习环境配置,并对model进行setup
@@ -66,6 +70,7 @@ class uDsrAlgorithm(Alg):
         while not dsr_train.done:
             # 每次循环采样一次，采样大小为batch_size（默认为1000）
             programs, r, l, actions, obs, priors = dsr_train.dsr_sample()
+            
             # programs,actions,obs,priors =dsr_train.dsr_sample()
 
             # 用DsrCreator将programs转化为population

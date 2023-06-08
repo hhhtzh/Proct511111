@@ -1,5 +1,14 @@
 from abc import abstractmethod
+from keplar.operator.composite_operator import CompositeOp
 
+# class SR_Alg(CompositeOp):
+#     def __init__(self,Comop_list):
+#         super().__init__()
+#         self.Comop_list = Comop_list
+
+#     def do(self):
+#         for Comop in self.Comop_list:
+#             Comop.do()
 
 class Alg:
     def __init__(self, max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population):

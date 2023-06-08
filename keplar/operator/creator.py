@@ -116,4 +116,11 @@ class OperonCreator(Creator):
                 pop.append(ind_new)
                 pop.self_pop_enable=True
         return pop
+    
+class DsrCreator(Creator):
+    def __init__(self):
+        super().__init__()
+
+    def do(self, population):
+        return super().do(population)
 
