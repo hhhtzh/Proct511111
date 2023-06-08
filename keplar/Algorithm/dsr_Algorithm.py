@@ -26,6 +26,11 @@ from keplar.operator.creator import DsrCreator
 
 from keplar.Algorithm.Alg import Alg
 
+from keplar.Algorithm.dsr_Alg import uDsr_Alg
+
+from keplar.operator.composite_operator import uDsr_CompositeOp
+
+
 
 class uDsrAlgorithm(Alg):
     def __init__(self, csv_filename, config_filename):
@@ -35,59 +40,64 @@ class uDsrAlgorithm(Alg):
 
     def run(self):
 
+        uDsr_deeplearn()
+
+
+        uDsr_CompositeOp()
+
         # 对数据进行预处理
-        prepare_env = pre_env(self.csv_filename, self.config_filename)
-        config = prepare_env.do()
+        # prepare_env = pre_env(self.csv_filename, self.config_filename)
+        # config = prepare_env.do()
 
-        # 进行深度学习环境配置,并对model进行setup
-        dsr_model = uDsrDeeplearning(deepcopy(config))
-        # programs=dsr_model.do()
-        dsr_model.do()
+        # # 进行深度学习环境配置,并对model进行setup
+        # dsr_model = uDsrDeeplearning(deepcopy(config))
+        # # programs=dsr_model.do()
+        # dsr_model.do()
 
-        # set_task(dsr_model.config_task)
+        # # set_task(dsr_model.config_task)
 
-        # dsr_model.trainer.run_one_step()
+        # # dsr_model.trainer.run_one_step()
 
-        # while not dsr_model.trainer.done:
-        # dsr_model.trainer.run_step()
-        # print(programs.task.task_type+"kkk\n")
+        # # while not dsr_model.trainer.done:
+        # # dsr_model.trainer.run_step()
+        # # print(programs.task.task_type+"kkk\n")
 
-        dsr_train = dsr_Train(dsr_model.sess, dsr_model.policy, dsr_model.policy_optimizer, dsr_model.gp_controller, dsr_model.logger,
-                              dsr_model.pool, **dsr_model.config_training, **dsr_model.config_task)
+        # dsr_train = dsr_Train(dsr_model.sess, dsr_model.policy, dsr_model.policy_optimizer, dsr_model.gp_controller, dsr_model.logger,
+        #                       dsr_model.pool, **dsr_model.config_training, **dsr_model.config_task)
 
-        #  dsr_train = dsr_Train(sess=dsr_model.sess,policy=dsr_model.policy,policy_optimizer=dsr_model.policy_optimizer
-        #                 ,gp_controller=dsr_model.gp_controller,logger=dsr_model.logger,
-        #                 pool=dsr_model.pool,**dsr_model.config_training, **dsr_model.config_task)
+        # #  dsr_train = dsr_Train(sess=dsr_model.sess,policy=dsr_model.policy,policy_optimizer=dsr_model.policy_optimizer
+        # #                 ,gp_controller=dsr_model.gp_controller,logger=dsr_model.logger,
+        # #                 pool=dsr_model.pool,**dsr_model.config_training, **dsr_model.config_task)
 
+        # # while not dsr_train.done:
+        # #     dsr_train.run_one_step()
+
+        # # iter_num = 0
         # while not dsr_train.done:
-        #     dsr_train.run_one_step()
+        #     # 每次循环采样一次，采样大小为batch_size（默认为1000）
+        #     programs, r, l, actions, obs, priors = dsr_train.dsr_sample()
+        #     # programs,actions,obs,priors =dsr_train.dsr_sample()
 
-        # iter_num = 0
-        while not dsr_train.done:
-            # 每次循环采样一次，采样大小为batch_size（默认为1000）
-            programs, r, l, actions, obs, priors = dsr_train.dsr_sample()
-            # programs,actions,obs,priors =dsr_train.dsr_sample()
+        #     # 用DsrCreator将programs转化为population
+        #     dsr_creator = DsrCreator()
+        #     # print(programs[0].str)
+        #     # programs[0].__repr__()
 
-            # 用DsrCreator将programs转化为population
-            dsr_creator = DsrCreator()
-            # print(programs[0].str)
-            # programs[0].__repr__()
+        #     population = dsr_creator.do(programs=programs)
+        #     # print(expr[0])
 
-            population = dsr_creator.do(programs=programs)
-            # print(expr[0])
+        #     # 转化的population内部的equation为uDSR类型，需要转化为统一类型
+        #     popChange = POPTransPOP()
+        #     population = popChange.do(population)
 
-            # 转化的population内部的equation为uDSR类型，需要转化为统一类型
-            popChange = POPTransPOP()
-            population = popChange.do(population)
+        #     # 将population转化为programs，并将格式转回uDSR类型
+        #     proG = DSRTransPOP(population)
+        #     programs2 = proG.do(programs)
 
-            # 将population转化为programs，并将格式转回uDSR类型
-            proG = DSRTransPOP(population)
-            programs2 = proG.do(programs)
-
-            # 用programs2进行训练
-            programs2 = programs
-            programs, actions, obs, priors = dsr_train.loop_one_step(
-                programs2, actions, obs, priors)
+        #     # 用programs2进行训练
+        #     programs2 = programs
+        #     programs, actions, obs, priors = dsr_train.loop_one_step(
+        #         programs2, actions, obs, priors)
 
             # programs,actions,obs,priors=dsr_train.loop_one_step(programs,actions,obs,priors)
             # dsr_train.done = True

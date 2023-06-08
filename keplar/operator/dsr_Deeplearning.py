@@ -30,6 +30,12 @@ from collections import defaultdict
 from dsr.dso.gp.gp_controller import GPController
 
 from keplar.operator.dsr_train import dsr_Train
+from keplar.operator.operator import Operator
+
+
+class uDsr_deeplearn(Operator):
+    def __init__(self):
+        super().__init__()
 
 class DsrDeeplearing(DeepSymbolicOptimizer):
     def __init__(self, config=None):
@@ -42,7 +48,7 @@ class DsrDeeplearing(DeepSymbolicOptimizer):
     
 
 
-class uDsrDeeplearning():
+class uDsrDeeplearning(Operator):
     def __init__(self,config=None):
         # self.config = self.set_config(DeepSymbolicOptimizer,config)
         # self.sess  = None
@@ -53,6 +59,8 @@ class uDsrDeeplearning():
         # self.trainer = None
         self.set_config(config)
         
+    def pre_do(self):
+        return super().pre_do()
 
 
     def do(self):
