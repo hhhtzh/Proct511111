@@ -17,7 +17,7 @@ from dsr.dso.task import set_task
 # from dsr.dso.train import Trainer
 from dsr.dso.program import Program, from_tokens
 
-from keplar.translator.translator import pop2Dsr, Dsr2pop, DSRTransPOP, POPTransPOP
+# from keplar.translator.translator import pop2Dsr, Dsr2pop, DSRTransPOP, POPTransPOP
 from dsr.dso.train import Trainer
 
 from keplar.operator.dsr_train import dsr_Train
@@ -26,10 +26,11 @@ from keplar.operator.creator import DsrCreator
 
 from keplar.Algorithm.Alg import Alg
 
-from keplar.Algorithm.dsr_Alg import uDsr_Alg
+# from keplar.Algorithm.dsr_Alg import uDsr_Alg
 
 from keplar.operator.composite_operator import uDsr_CompositeOp
 
+from keplar.operator.dsr_loop import uDsr_loop
 
 
 class uDsrAlgorithm(Alg):
@@ -41,11 +42,13 @@ class uDsrAlgorithm(Alg):
     def run(self):
 
         udsr_1=uDsr_deeplearn(self.csv_filename,self.config_filename)
+        
+        # population = None
+        udsr_1.exec()
+        # udsr_2=uDSr_loop()
 
-        udsr_2=uDSr_
 
-
-        uDsr_CompositeOp(udsr_1,udsr_2)
+        # uDsr_CompositeOp(udsr_1,udsr_2)
 
         # 对数据进行预处理
         # prepare_env = pre_env(self.csv_filename, self.config_filename)
