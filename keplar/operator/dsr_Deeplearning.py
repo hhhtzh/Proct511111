@@ -37,7 +37,8 @@ class uDsr_deeplearn(Operator):
     def __init__(self):
         super().__init__()
 
-    def 
+    def pre_do(self):
+        
 
 class DsrDeeplearing(DeepSymbolicOptimizer):
     def __init__(self, config=None):

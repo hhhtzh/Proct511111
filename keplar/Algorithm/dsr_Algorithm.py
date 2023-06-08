@@ -5,7 +5,7 @@ import numpy as np
 from keplar.operator.operator import Operator
 from keplar.operator.composite_operator import CompositeOp
 from keplar.operator.dsr_prework import pre_env
-from keplar.operator.dsr_Deeplearning import uDsrDeeplearning
+from keplar.operator.dsr_Deeplearning import uDsrDeeplearning,uDsr_deeplearn
 # from keplar.operator.dsr_Evo import uDsrEvo
 # from keplar.operator.dsr_RL import uDsrRL
 from keplar.operator.dsr_Evo import uDsrEvoCompositOp
@@ -40,10 +40,12 @@ class uDsrAlgorithm(Alg):
 
     def run(self):
 
-        uDsr_deeplearn()
+        udsr_1=uDsr_deeplearn(self.csv_filename,self.config_filename)
+
+        udsr_2=uDSr_
 
 
-        uDsr_CompositeOp()
+        uDsr_CompositeOp(udsr_1,udsr_2)
 
         # 对数据进行预处理
         # prepare_env = pre_env(self.csv_filename, self.config_filename)
