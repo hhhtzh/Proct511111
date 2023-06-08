@@ -40,6 +40,7 @@ class OperonReinserter(Reinserter):
                 ind=Operon.Individual()
                 ind.Genotype=population.target_pop_list[i]
                 ind.Setfitness([population.target_fit_list[i]],0)
+                ind_list.append(ind)
             rein(rng,ind_list,self.pool_list)
             new_target_pop_list=[]
             new_target_fitness_list=[]

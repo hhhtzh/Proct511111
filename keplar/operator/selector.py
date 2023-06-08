@@ -1,3 +1,4 @@
+import random
 from abc import abstractmethod
 
 from bingo.selection.age_fitness import AgeFitness
@@ -56,19 +57,42 @@ class BingoSelector(Operator):
 
 
 class OperonSelector(Selector):
-    def __init__(self, method, select_size):
+    def __init__(self, method, compare_size, to_type):
         super().__init__()
-        self.select_size = select_size
+        self.compare_size = compare_size
+        self.to_type = to_type
         self.method = method
 
     def do(self, population):
-        if self.method=="TournamentSelector":
-            sel=Operon.TournamentSelector()
-        elif self.method=="RankTournamentSelector":
-            sel=Operon.RankTournamentSelector()
-        elif self.method=="ProportionalSelector":
-            sel=Operon.ProportionalSelector()
-        elif self.method=="RandomSelector":
-            sel=Operon.RandomSelector()
+        if self.method == "Tournament":
+            sel = Operon.TournamentSelector(self.compare_size)
+        elif self.method == "RankTournament":
+            sel = Operon.RankTournamentSelector(self.compare_size)
+        elif self.method == "Proportional":
+            sel = Operon.ProportionalSelector(self.compare_size)
+        elif self.method == "Random":
+            sel = Operon.RandomSelector(self.compare_size)
         else:
             raise ValueError("selector方法输入错误")
+        rng = Operon.RomuTrio(random.randint(1, 1000000))
+        if population.pop_type == "Operon":
+            ind_list = []
+            if len(population.target_pop_list) != len(population.target_fit_list):
+                raise ValueError("个体与适应度数量不符")
+            for i in range(len(population.target_pop_list)):
+                ind = Operon.Individual()
+                ind.Genotype = population.target_pop_list[i]
+                ind.SetFitness(population.target_fit_list[i], 0)
+                ind_list.append(ind)
+            print(type(ind_list[0]))
+            sel.Prepare(ind_list)
+            best_num = sel(rng)
+            pool = Population(1)
+        else:
+            pass
+        if self.to_type == "Operon":
+            pool.target_pop_list.append(population.target_pop_list[best_num])
+            pool.pop_type="Operon"
+            return pool
+        else:
+            pass
