@@ -14,18 +14,20 @@ class Individual:
         str_equ=[]
         for i in self.func:
             tk = int(i)
-            if i<2000:
-                str_op=operator_map[str(i)]
-                str_equ.append()
-            elif 2000 <= i < 3000:
-                const=self.const_array[i]
+            if tk<2000:
+                str_op=operator_map[str(tk)]
+                str_equ.append(str_op)
+            elif 2000 <= tk < 3000:
+                const=self.const_array[tk]
                 str_equ.append(str(const))
-            elif i>3000:
-                x_num=i-3000
+            elif tk>3000:
+                x_num=tk-3000
                 x_str="X_"+str(x_num)
                 str_equ.append(x_str)
             else:
-                raise ValueError(f"编码无意义{i}")
+                raise ValueError(f"编码无意义{tk}")
+        return str_equ
+
 
     def reset_equation(self, new_equation):
         self.equation = new_equation
