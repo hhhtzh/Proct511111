@@ -23,7 +23,7 @@ operator_map_dsr2 = {1001: 'add', 1002: 'sub',1003: 'mul', 1004: 'div', 1005:'sq
                 }
 
 #从2000开始为常量，从3000开始为变量
-x1= 
+
 add2 = _Function(function=np.add, name='add', arity=2)
 sub2 = _Function(function=np.subtract, name='sub', arity=2)
 mul2 = _Function(function=np.multiply, name='mul', arity=2)
