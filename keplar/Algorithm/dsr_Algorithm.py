@@ -22,7 +22,7 @@ from dsr.dso.train import Trainer
 
 from keplar.operator.dsr_train import dsr_Train
 
-from keplar.operator.creator import DsrCreator
+# from keplar.operator.creator import DsrCreator
 
 from keplar.Algorithm.Alg import Alg
 
@@ -31,6 +31,7 @@ from keplar.Algorithm.Alg import Alg
 from keplar.operator.composite_operator import uDsr_CompositeOp
 
 from keplar.operator.dsr_loop import uDsr_loop
+from keplar.population.function import operator_map,operator_map1
 
 
 class uDsrAlgorithm(Alg):
@@ -57,6 +58,23 @@ class uDsrAlgorithm(Alg):
         print(r[0])
         print(l[0])
         print(T[0])
+
+        length_T = len(T)
+        print(length_T)
+        print(len(operator_map))
+
+        print(operator_map[1001])
+
+        print(operator_map1['add'])
+
+
+        print(operator_map[1])
+
+        # for i in range(len(operator_map)):
+        #     print(operator_map[i])
+
+        # for i in range(length_T):
+
         
         # print(programs.)
 
