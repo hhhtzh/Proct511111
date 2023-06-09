@@ -396,10 +396,10 @@ class dsr_Train(Trainer):
         if self.nevals >= self.n_samples:
             self.done = True
 
-        if self.iteration==self.n_samples/self.batch_size-1:
-            print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time), self.iteration + 1, self.r_best))
-            print("\n\t** New best")
-            self.p_r_best.print_stats()
+        # if self.iteration==self.n_samples/self.batch_size-1:
+        print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time), self.iteration + 1, self.r_best))
+        print("\n\t** New best")
+        self.p_r_best.print_stats()
 
         # Increment the iteration counter
         self.iteration += 1
