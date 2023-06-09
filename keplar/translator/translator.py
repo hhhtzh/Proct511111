@@ -1,7 +1,7 @@
 import re
 
 import numpy as np
-import pyoperon as Operon
+# import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
 
@@ -305,6 +305,12 @@ def trans_op(op_tree, variable_list):
 
 def to_bingo(ind):
     code = ind.func
+
+def to_dsr(length,*T,**map):
+    f = []
+    for i in range(length):
+        for j in range(len(T[i])):
+            f[i].append(map[T[i][j]])
 
 
 def to_op(ind, np_x, np_y):
