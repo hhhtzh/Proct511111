@@ -1,5 +1,5 @@
 from pmlb import fetch_data
-from keplar.Algorithm.sralg import BingoSRAlg
+from keplar.Algorithm.Alg import BingoAlg
 
 from keplar.data.data import Data
 from keplar.operator.cleaner import BingoCleaner
@@ -11,11 +11,12 @@ from keplar.operator.generator import BingoGenerator
 from keplar.operator.mutation import BingoMutation
 from keplar.operator.selector import BingoSelector
 
-data=Data("pmlb",'1027_ESL')
+data = Data("pmlb", '1027_ESL')
 data.read_file()
-# x, y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
+x = data.get_x()
+y = data.get_y()
 operators = ["+", "-", "*", "/"]
-creator = GpCreator(50, x, y)
+creator = BingoCreator(50, operators, x, 10)
 evaluator = BingoEvaluator(x, "exp", "TNC", y)
 crossover = BingoCrossover()
 mutation = BingoMutation(x, operators)
@@ -25,5 +26,5 @@ gen_down_oplist = CompositeOpReturn([selector])
 gen_eva_oplist = CompositeOp([evaluator])
 population = creator.do()
 
-bgsr = BingoSRAlg(100, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
+bgsr = BingoAlg(100, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
 bgsr.run()

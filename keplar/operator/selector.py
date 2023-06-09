@@ -41,10 +41,10 @@ class BingoSelector(Operator):
         else:
             raise ValueError("选择方法错误")
         bingo_pop = []
-        equation_list=[]
-        if population.pop_type!="Bingo":
+        equation_list = []
+        if population.pop_type != "Bingo":
             for i in population.pop_list:
-                equ=
+                equ_list = i.format()
         for i in population.pop_list:
             equation = i.equation
             bingo_ind = AGraph(equation=str(equation))
@@ -88,7 +88,7 @@ class OperonSelector(Selector):
                 ind = Operon.Individual()
                 ind.Genotype = population.target_pop_list[i]
                 ind.SetFitness(population.target_fit_list[i], 0)
-                ind_list.
+                # ind_list.
             print(type(ind_list[0]))
             sel.Prepare(ind_list)
             best_num = sel(rng)

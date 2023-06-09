@@ -23,8 +23,9 @@ class Creator(Operator):
 
 
 class BingoCreator(Creator):
-    def __init__(self, pop_size, operators, x, stack_size):
+    def __init__(self, pop_size, operators, x, stack_size, to_type):
         super().__init__()
+        self.to_type = to_type
         self.pop_size = pop_size
         self.operators = operators
         self.population = []
@@ -39,10 +40,11 @@ class BingoCreator(Creator):
         self.population = Population(pop_size=self.pop_size)
         pop = [agraph_generator() for _ in range(self.pop_size)]
         pop_list = []
-        for i in pop:
-            ind = Individual(equation=str(i))
-            pop_list.append(ind)
-        self.population.initial(pop_list=pop_list)
+        if self.to_type == "Bingo":
+            self.population.target_pop_list = pop
+            self.population.pop_type = "Bingo"
+        else:
+            pass
         return self.population
 
 
