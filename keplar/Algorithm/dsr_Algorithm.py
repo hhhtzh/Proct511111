@@ -55,9 +55,9 @@ class uDsrAlgorithm(Alg):
         
         programs, r, l, actions, obs, priors = udsr_model.dsr_sample()
         T =np.array([p.traversal for p in programs])
-        print(r[0])
-        print(l[0])
-        print(T[0])
+        # print(r[0])
+        # print(l[0])
+        # print(T[0])
 
         length_T = len(T)
         print(length_T)
@@ -67,8 +67,37 @@ class uDsrAlgorithm(Alg):
 
         print(operator_map1['add'])
 
+        print(len(T[0]))
 
-        print(operator_map[1])
+        #翻译成对应的编码表示
+        f = np.zeros((length_T),dtype=int)
+        for i in range(length_T):
+            f[i]=np.zeros(len(T[i]))
+            for j in range(len(T[i])):
+                # print(T[i][j])
+                # print(int(operator_map1[str(T[i][j])]))
+                f[i][j] =int(operator_map1[str(T[i][j])])
+                # f[i].append(map[T[i][j]])
+            # print(f[i])
+
+
+        # # f = [[0 for j in range(len[T[i]])]for i in range(length_T )]
+        # #翻译成对应的编码表示
+        # f = np.zeros((length_T+1,200),dtype=int)
+        # for i in range(length_T):
+        #     for j in range(len(T[i])):
+        #         # print(T[i][j])
+        #         # print(int(operator_map1[str(T[i][j])]))
+        #         f[i][j] =int(operator_map1[str(T[i][j])])
+        #         # f[i].append(map[T[i][j]])
+        #     # print(f[i])
+
+        
+
+        
+
+
+        # print(operator_map[1])
 
         # for i in range(len(operator_map)):
         #     print(operator_map[i])

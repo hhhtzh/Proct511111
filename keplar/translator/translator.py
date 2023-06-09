@@ -307,7 +307,11 @@ def to_bingo(ind):
     code = ind.func
 
 def to_dsr(length,*T,**map):
-    pass
+    f = []
+    for i in range(length):
+        for j in range(len(T[i])):
+            f[i].append(map[T[i][j]])
+
 
 def to_op(ind, np_x, np_y):
     ds = Operon.Dataset(np.hstack([np_x, np_y]))
