@@ -31,7 +31,7 @@ from keplar.Algorithm.Alg import Alg
 from keplar.operator.composite_operator import uDsr_CompositeOp
 
 from keplar.operator.dsr_loop import uDsr_loop
-from keplar.population.function import operator_map,operator_map1
+from keplar.population.function import operator_map,operator_map_dsr
 
 
 class uDsrAlgorithm(Alg):
@@ -52,9 +52,20 @@ class uDsrAlgorithm(Alg):
 
         udsr_model =udsr_2.pre_do()
 
+
+        all = [udsr_creator, trans_udsr, udsr_trans, udsr_2]
+
+
+
+        iter_num =20
+        uDsr = uDsr_CompositeOp[all, iter_num]
+
+        
+
         
         programs, r, l, actions, obs, priors = udsr_model.dsr_sample()
-        T =np.array([p.traversal for p in programs])
+        T = np.array([p.traversal for p in programs],dtype=object)
+        
         # print(r[0])
         # print(l[0])
         # print(T[0])
@@ -65,32 +76,44 @@ class uDsrAlgorithm(Alg):
 
         print(operator_map[1001])
 
-        print(operator_map1['add'])
+        print(operator_map_dsr['add'])
 
         print(len(T[0]))
 
         #翻译成对应的编码表示
-        f = np.zeros((length_T),dtype=int)
-        for i in range(length_T):
-            f[i]=np.zeros(len(T[i]))
-            for j in range(len(T[i])):
-                # print(T[i][j])
-                # print(int(operator_map1[str(T[i][j])]))
-                f[i][j] =int(operator_map1[str(T[i][j])])
-                # f[i].append(map[T[i][j]])
-            # print(f[i])
+        
+        # f = np.array([[0 for j in range(l[i])] for i in range(length_T)],dtype=int)
+        # f = np.zeros((length_T),dtype=int)
+        # print(f)
+        # for i in range(length_T):
+        #     # f[i]=np.zeros(len(T[i]))
+        #     # for j in range(len(T[i])):
+        # #         # print(T[i][j])
+        # #         # print(int(operator_map_dsr[str(T[i][j])]))
+        # #         f[i][j] =int(operator_map_dsr[str(T[i][j])])
+        # #         # f[i].append(map[T[i][j]])
+        #         print(f[i])
 
 
         # # f = [[0 for j in range(len[T[i]])]for i in range(length_T )]
         # #翻译成对应的编码表示
-        # f = np.zeros((length_T+1,200),dtype=int)
+        f = [[] for i in range(length_T)]
+        for i in range(length_T):
+            for j in range(len(T[i])):
+                f[i].append(int(operator_map_dsr[str(T[i][j])]))
+            print(f[i])
+
+
+
+        # f = np.zeros((length_T,200),dtype=int)
         # for i in range(length_T):
         #     for j in range(len(T[i])):
         #         # print(T[i][j])
-        #         # print(int(operator_map1[str(T[i][j])]))
-        #         f[i][j] =int(operator_map1[str(T[i][j])])
+        #         # print(int(operator_map_dsr[str(T[i][j])]))
+        #         f[i][j] =int(operator_map_dsr[str(T[i][j])])
         #         # f[i].append(map[T[i][j]])
-        #     # print(f[i])
+        #     print(f[i])
+        #     # print(l[i])
 
         
 

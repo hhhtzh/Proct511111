@@ -41,8 +41,9 @@ class CompositeOpReturn(CompositeOp):
         return re
     
 class uDsr_CompositeOp(CompositeOp):
-    def __init__(self, op_list):
+    def __init__(self, op_list,iter_num):
         super().__init__(op_list)
+        self.iter_num=iter_num
         # self.op_list =op_list
 
     def do(self, population=None):

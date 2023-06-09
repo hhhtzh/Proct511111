@@ -306,11 +306,12 @@ def trans_op(op_tree, variable_list):
 def to_bingo(ind):
     code = ind.func
 
-def to_dsr(length,*T,**map):
-    f = []
-    for i in range(length):
-        for j in range(len(T[i])):
-            f[i].append(map[T[i][j]])
+def to_dsr(length_T,*T,**operator_map1):
+        f = [[] for i in range(length_T)]
+        for i in range(length_T):
+            for j in range(len(T[i])):
+                f[i].append(int(operator_map1[str(T[i][j])]))
+            print(f[i])
 
 
 def to_op(ind, np_x, np_y):

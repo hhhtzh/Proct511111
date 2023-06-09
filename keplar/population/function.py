@@ -5,10 +5,10 @@ from gplearn.functions import _protected_division, _protected_sqrt, _Function, _
 operator_map = {1001: 'add', 1002: 'sub',1003: 'mul', 1004: 'div', 1005:'sqrt', 1006: 'log'
     , 1007: 'abs', 1008: 'neg', 1009: 'inv', 1010: 'max', 1011: 'min', 1012: 'sin',
                 1013: 'cos', 1014: 'tan',1015:'sig',1016:'aq',1017:'pow',1018:'exp',1019:'square',
-                3001:'x1', 3002:'x2', 3003:'x3'
+                3001:'X_1', 3002:'X_2', 3003:'X_3'
                 }
 
-operator_map1 = { 'add' : 1001 ,'sub':1002 ,'mul':1003, 'div':1004 ,'sqrt':1005, 'log':1006,'abs':1007,
+operator_map_dsr = { 'add' : 1001 ,'sub':1002 ,'mul':1003, 'div':1004 ,'sqrt':1005, 'log':1006,'abs':1007,
                  'neg':1008, 'inv':1009, 'max':1010,'min':1011 , 'sin':1012, 'cos':1013, 'tan':1014,
                  'sig':1015, 'aq':1016, 'pow':1017, 'exp':1018, 'square':1019 ,
                  'x1':3001, 'x2':3002, 'x3':3003
