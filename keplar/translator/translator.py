@@ -345,7 +345,7 @@ class KeplarToDSR():
         # self.T = T
         # self.operator_map = operator_map
 
-    def to_dsr(self,poplation=None):
+    def do(self,poplation=None):
         self.length_T = poplation.get_pop_size()
         T_new = [[] for i in range(self.length_T)]
         for i in range(self.length_T):
