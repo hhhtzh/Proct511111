@@ -74,12 +74,16 @@ class uDsrAlgorithm(Alg):
 
         T_new = trans_udsr.to_dsr(udsr_poplation)
 
-        # self.programs.traversal = T_new
+
         for i in range(len(self.programs)):
-            for  j in range(len(T_new[i])):
-                # print(eval(T_new[i][j]))
-                self.programs[i].traversal[j] = T_new[i][j]
-            # self.programs[i].traversal = T_new[i]
+            self.programs[i].traversal = Program.library.tokenize(T_new[i])
+
+        # self.programs.traversal = T_new
+        # for i in range(len(self.programs)):
+        #     for  j in range(len(T_new[i])):
+        #         # print(eval(T_new[i][j]))
+        #         self.programs[i].traversal[j] = Program.library.tokenize(T_new[i][j]) 
+        #     # self.programs[i].traversal = T_new[i]
 
         iter_num = 0
         done = False
