@@ -10,8 +10,8 @@ from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 
 from keplar.population.population import Population
-from keplar.translator.translator import trans_gp, trans_op
-import pyoperon as Operon
+# from keplar.translator.translator import trans_gp, trans_op
+# import pyoperon as Operon
 
 
 class Creator(Operator):
@@ -120,9 +120,20 @@ class OperonCreator(Creator):
         return pop
 
 
-class DsrCreator(Creator):
-    def __init__(self):
+class uDSR_Creator(Creator):
+    def __init__(self,T):
         super().__init__()
+        self.T = T
+        self.population = None
 
-    def do(self, population):
-        return super().do(population)
+    def do(self, population=None):
+        if self.T is None:
+            print("T is None")
+        else:
+            length_T = len(self.T)
+            # l = np.array([len(T[i]) for i in range(length_T)])
+            self.population = Population(length_T)
+            self.population.pop_type = "uDSR"
+            self.population.target_pop_list = self.T
+            return self.population
+

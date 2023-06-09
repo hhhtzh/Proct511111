@@ -35,7 +35,7 @@ from dsr.dso.run import print_summary
 from copy import deepcopy
 
 
-class uDsr_deeplearn(Operator):
+class uDSR_Deeplearn(Operator):
     def __init__(self,csv_filename,config_filename):
         super().__init__()
         self.csv_filename = csv_filename
@@ -57,6 +57,7 @@ class uDsr_deeplearn(Operator):
 
         # population = None
         # self.config = config_filename
+  
 
     def pre_do(self):
         messages = []

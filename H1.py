@@ -1,19 +1,17 @@
-# from pmlb import fetch_data
+from keplar.population.function import function_map_dsr, operator_map,operator_map_dsr,operator_map_dsr2
 
-# from keplar.operator.cleaner import BingoCleaner
-# from keplar.operator.composite_operator import CompositeOp
-# from keplar.operator.creator import BingoCreator, GpCreator
-# from keplar.operator.crossover import BingoCrossover
-# from keplar.operator.evaluator import BingoEvaluator
-# from keplar.operator.generator import BingoGenerator
-# from keplar.operator.mutation import BingoMutation
-# from keplar.operator.selector import BingoSelector
+print(operator_map_dsr2)
 
-from keplar.Algorithm.dsr_Algorithm import uDsrAlgorithm
+print(function_map_dsr)
+for i in operator_map_dsr2:
+    # print(operator_map_dsr2[i])
+    if function_map_dsr.get(operator_map_dsr2[i]) != None:
+        operator_map_dsr2[i] = function_map_dsr[operator_map_dsr2[i]]
+#     for j in range(len(function_map_dsr)):
+#         if operator_map_dsr2[i] == str(function_map_dsr[j].keys()):
+#             # operator_map_dsr2[i] = operator_map[j]
+#             print(operator_map_dsr2[i])
 
-
-if __name__ == '__main__':
-    csv_filename = "./datasets/data.csv"
-    config_filename = "./datasets/config_regression.json"
-    udsr = uDsrAlgorithm(csv_filename,config_filename)
-    udsr.run()
+            # print(operator_map_dsr2[i])
+    # if operator_map_dsr2[i]  function_map_dsr.keys():
+        # operator_map_dsr2[i] = function_map_dsr[operator_map_dsr2[i]]

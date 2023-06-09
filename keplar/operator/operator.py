@@ -3,7 +3,7 @@ class Operator:
         self.type = None
         self.config = None
 
-    def do(self, population):
+    def do(self, population=None):
         pass
 
     def pre_do(self):
@@ -22,3 +22,5 @@ class Operator:
 
     def init_config(self, config):
         pass
+
+    
