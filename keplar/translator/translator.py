@@ -333,7 +333,6 @@ class DSRToKeplar():
         for i in range(self.length_T):
             for j in range(len(poplation.pop_list[i])):
                 T_new[i].append(operator_map[int(poplation.pop_list[i][j])])
-                # T_new[i].append(str(operator_map[int(poplation.pop_list[i][j])]))
 
         return T_new
 
@@ -350,10 +349,7 @@ class KeplarToDSR():
         T_new = [[] for i in range(self.length_T)]
         for i in range(self.length_T):
             for j in range(len(poplation.pop_list[i])):
-
                 T_new[i].append(operator_map_dsr2[int(poplation.pop_list[i][j])])
-                # T_new[i].append(str(operator_map[int(poplation.pop_list[i][j])]))
-            # T_new[i] = T_new[i].strip('"')
 
         return T_new
 

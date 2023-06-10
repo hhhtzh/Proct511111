@@ -62,7 +62,10 @@ class uDsrAlgorithm(Alg):
             self.T, self.programs,self.actions, self.obs, self.priors= udsr_sample.do()
             #定义一个新的population
             population = Population(len(self.T))
-            
+
+            print(self.T[0])
+            print(self.T[1])
+
             #创建population
             udsr_creator = uDSR_Creator(self.T)
             #对uDSR类型的编码进行转化population的编码
@@ -74,11 +77,18 @@ class uDsrAlgorithm(Alg):
             udsr_list = [udsr_creator ,udsr_trans ,trans_udsr]
             udsr_comop = uDsr_CompositeOp(udsr_list)
             T_new = udsr_comop.do(population)
+            # print(str(T_new[0]))
+            # print(str(T_new[1]))
 
             #将新的population的编码转化为uDSR类型的编码
             for i in range(len(self.programs)):
-                self.programs[i].traversal = Program.library.tokenize(T_new[i])
-
+                for j in range(len(T_new[i])):
+                    self.programs[i].traversal[j] = str(T_new[i][j])
+                # print(self.programs[i].traversal)
+                # self.programs[i].traversal = Program.library.tokenize(T_new[i])
+                # self.programs[i].traversal = T_new[i]
+            print(self.programs[0].traversal)
+            print(self.programs[1].traversal)
 
             #一次迭代
             udsr_model.dsr_train.one_iter(programs = self.programs,actions=self.actions,obs=self.obs,priors=self.priors)

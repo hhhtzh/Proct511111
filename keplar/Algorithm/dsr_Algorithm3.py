@@ -45,12 +45,16 @@ class uDsrAlgorithm(Alg):
 
         udsr_deeplearn=uDSR_Deeplearn(self.csv_filename,self.config_filename)
         
-        udsr_deeplearn.exec()
-
         udsr_model=uDSR_Model(udsr_deeplearn.sess, udsr_deeplearn.policy, udsr_deeplearn.policy_optimizer, udsr_deeplearn.gp_controller, udsr_deeplearn.logger,
                               udsr_deeplearn.pool, **udsr_deeplearn.d)
         
-        self.model = udsr_model.pre_do()
+        udsr_1 = [udsr_deeplearn,udsr_model]
+
+        udsr_alg=uDsr_CompositeOp(udsr_1)
+
+        re = udsr_alg.do()
+        
+
 
         udsr_sample = uDSR_Sample(self.model)
         self.T, self.programs,self.actions, self.obs, self.priors= udsr_sample.do()
