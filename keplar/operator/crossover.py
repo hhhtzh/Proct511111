@@ -57,8 +57,8 @@ class BingoCrossover(Crossover):
                 else:
                     right = False
         crossover = AGraphCrossover()
-        self.bingo_parent_1._update()
-        self.bingo_parent_2._update()
+        # self.bingo_parent_1._update()
+        # self.bingo_parent_2._update()
         bingo_child_1, bingo_child_2 = crossover(parent_1=self.bingo_parent_1, parent_2=self.bingo_parent_2)
         if self.to_type!="Bingo":
             child_1 = Individual(equation=str(bingo_child_1))

@@ -54,7 +54,7 @@ class BingoMutation(Mutation):
             population.set_pop_size(len(population.target_pop_list))
             parent_num = np.random.randint(low=0, high=population.get_pop_size() - 1)
             parent = population.target_pop_list[parent_num]
-            parent._update()
+            # parent._update()
             bingo_child = mutation(parent)
         if self.to_type != "Bingo":
             child = Individual(str(bingo_child))

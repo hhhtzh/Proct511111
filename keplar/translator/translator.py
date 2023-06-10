@@ -21,6 +21,31 @@ def is_float(num):
         return False
 
 
+
+def prefix_to_postfix(expression):
+    stack = []
+    operators = set(['+', '-', '*', '/'])  # 可用的运算符
+
+    for token in reversed(expression):
+        if token in operators:  # 操作符
+            # 弹出栈顶运算符，直到遇到更低优先级的运算符或左括号
+            while stack and stack[-1] in operators and operators[token] <= operators[stack[-1]]:
+                yield stack.pop()
+            stack.append(token)
+        elif token == ')':  # 右括号
+            stack.append(token)
+        elif token == '(':  # 左括号
+            # 弹出栈顶运算符，直到遇到右括号
+            while stack and stack[-1] != ')':
+                yield stack.pop()
+            stack.pop()  # 弹出右括号
+        else:  # 操作数
+            yield token
+
+    # 弹出栈中剩余的运算符
+    while stack:
+        yield stack.pop()
+
 def infix_to_prefix(infix, len1, s2, top2):
     s1 = ""
     top1 = -1
