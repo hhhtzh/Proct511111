@@ -22,8 +22,9 @@ class Selector(Operator):
 
 
 class BingoSelector(Operator):
-    def __init__(self, select_p, method):
+    def __init__(self, select_p, method, to_type):
         super().__init__()
+        self.to_type = to_type
         self.method = method
         if 0 < select_p < 1:
             self.select_p = select_p
@@ -51,13 +52,19 @@ class BingoSelector(Operator):
             bingo_ind.fitness = i.get_fitness()
             bingo_ind._update()
             bingo_pop.append(bingo_ind)
+        else:
+            bingo_pop = population.target_pop_list
         new_bingo_pop = selector(population=bingo_pop, target_population_size=target_pop_size)
         new_pop = Population(len(new_bingo_pop))
-        new_pop_list = []
-        for i in new_bingo_pop:
-            ind = Individual(equation=str(i))
-            new_pop_list.append(ind)
-        new_pop.initial(new_pop_list)
+        if self.to_type!="Bingo":
+            new_pop_list = []
+            for i in new_bingo_pop:
+                ind = Individual(equation=str(i))
+                new_pop_list.append(ind)
+            new_pop.initial(new_pop_list)
+        else:
+            new_pop.pop_type="Bingo"
+            new_pop.target_pop_list=new_bingo_pop
         return new_pop
 
 

@@ -41,17 +41,27 @@ class BingoEvaluator(Operator):
         local_opt_fitness = LocalOptFitnessFunction(fitness, optimizer)
         evaluator = Evaluation(local_opt_fitness)
         bingo_pop = []
-        for i in population.pop_list:
-            equation = i.equation
-            bingo_ind = AGraph(equation=str(equation))
-            bingo_ind._update()
-            # print("这是equation"+equation)
-            # print("这是直接转化后的array"+str(bingo_ind.command_array))
-            bingo_pop.append(bingo_ind)
-        evaluator(population=bingo_pop)
-        for i in range(len(bingo_pop)):
-            population.pop_list[i].fitness = bingo_pop[i].fitness
-            population.pop_list[i].evaluated = True
+        if population.pop_type != "Bingo":
+            for i in population.pop_list:
+                equation = i.equation
+                bingo_ind = AGraph(equation=str(equation))
+                bingo_ind._update()
+                # print("这是equation"+equation)
+                # print("这是直接转化后的array"+str(bingo_ind.command_array))
+                bingo_pop.append(bingo_ind)
+            evaluator(population=bingo_pop)
+            for i in range(len(bingo_pop)):
+                population.pop_list[i].fitness = bingo_pop[i].fitness
+                population.pop_list[i].evaluated = True
+        else:
+            bingo_pop = population.target_pop_list
+            population.set_pop_size(len(bingo_pop))
+            # for i in bingo_pop:
+            #     print(str(i))
+            evaluator(population=bingo_pop)
+            for i in range(len(bingo_pop)):
+                population.target_fit_list.append(bingo_pop[i].fitness)
+
 
 
 class OperonEvaluator(Operator):
@@ -100,7 +110,7 @@ class OperonEvaluator(Operator):
                 ea = evaluator(rng, i)
                 fit_list.append(ea[0])
             population.target_fit_list = fit_list
-            population.pop_type="Operon"
-            population.self_pop_enable=False
+            population.pop_type = "Operon"
+            population.self_pop_enable = False
         else:
             pass

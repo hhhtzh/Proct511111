@@ -19,5 +19,7 @@
 # postfix_expression = ['2', '3', '4', '*', '+', '5', '-']
 # prefix_expression = postfix_to_prefix(postfix_expression)
 # print("前缀表达式：", prefix_expression)
-dict={"11":2}
-print(dict["11"])
+# dict={"11":2}
+# print(dict["11"])
+str_equ="(X_1)((X_1 - ((X_1)/(X_1)))((X_1)(X_1)) - (X_0 - (X_0)))"
+

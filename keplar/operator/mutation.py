@@ -17,9 +17,10 @@ class Mutation(Operator):
 
 
 class BingoMutation(Mutation):
-    def __init__(self, x, operators, command_probability=0.2, node_probability=0.2, parameter_probability=0.2,
+    def __init__(self, x, operators, to_type, command_probability=0.2, node_probability=0.2, parameter_probability=0.2,
                  prune_probability=0.2, fork_probability=0.2):
         super().__init__()
+        self.to_type = to_type
         self.x = x
         self.operators = operators
         self.command_probability = command_probability
@@ -43,17 +44,30 @@ class BingoMutation(Mutation):
         mutation = AGraphMutation(component_generator, self.command_probability
                                   , self.node_probability, self.parameter_probability
                                   , self.prune_probability, self.fork_probability)
-        population.set_pop_size(len(population.pop_list))
-        parent_num = np.random.randint(low=0, high=population.get_pop_size() - 1)
-        parent = population.pop_list[parent_num]
-        bingo_parent = AGraph(equation=str(parent.equation))
-        bingo_parent._update()
-        bingo_child = mutation(bingo_parent)
+        if population.pop_type != "Bingo":
+            population.set_pop_size(len(population.target_pop_list))
+            parent_num = np.random.randint(low=0, high=population.get_pop_size() - 1)
+            bingo_parent = population.target_pop_list[parent_num]
+            bingo_parent._update()
+            bingo_child = mutation(bingo_parent)
+        else:
+            population.set_pop_size(len(population.target_pop_list))
+            parent_num = np.random.randint(low=0, high=population.get_pop_size() - 1)
+            parent = population.target_pop_list[parent_num]
+            parent._update()
+            bingo_child = mutation(parent)
+        if self.to_type != "Bingo":
+            child = Individual(str(bingo_child))
+            population.append(child)
+            new_pop_size = population.get_pop_size() + 1
+            population.set_pop_size(new_pop_size)
+        else:
+            population.pop_type="Bingo"
+            population.self_pop_enable=False
+            population.target_pop_list.append(bingo_child)
+            new_pop_size = population.get_pop_size() + 1
+            population.set_pop_size(new_pop_size)
 
-        child = Individual(str(bingo_child))
-        population.append(child)
-        new_pop_size = population.get_pop_size() + 1
-        population.set_pop_size(new_pop_size)
 
 
 class OperonMutation(Mutation):

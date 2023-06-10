@@ -1,7 +1,7 @@
 import re
 
 import numpy as np
-# import pyoperon as Operon
+import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
 
@@ -131,6 +131,7 @@ class trans_Dsr():
 
     def Dsr2pop(self, poplation, programs):
         pass
+
 
 
 def postfix_to_infix(expression):
@@ -315,7 +316,7 @@ def to_dsr(length,*T,**map):
 
 def to_op(ind, np_x, np_y):
     ds = Operon.Dataset(np.hstack([np_x, np_y]))
-    equ = ind.equation
+    func = ind.func
     list_infix = []
     op_al = ""
     x_al = ""

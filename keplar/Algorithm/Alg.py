@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from keplar.operator.composite_operator import CompositeOp
 
+
 # class SR_Alg(CompositeOp):
 #     def __init__(self,Comop_list):
 #         super().__init__()
@@ -23,11 +24,11 @@ class Alg:
     @abstractmethod
     def run(self):
         raise NotImplementedError
-    
+
+
 class uDSR_Alg(Alg):
     def __init__(self, max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population):
         super().__init__(max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population)
-        
 
 
 class BingoAlg(Alg):
@@ -37,18 +38,17 @@ class BingoAlg(Alg):
                          eva_op_list, error_tolerance, population)
 
     def get_best_fitness(self):
-        return self.get_best().get_fitness()
+        return self.population.target_fit_list[self.get_best()]
 
     def get_best(self):
-        best_fitness = self.population.pop_list[0].get_fitness()
-        for indv in self.population.pop_list:
-            if indv.get_fitness() > best_fitness:
-                best_fitness = indv.get_fitness()
-        return indv
+        best_fitness = self.population.target_fit_list[0]
+        for j in range(len(self.population.target_fit_list)):
+            if self.population.target_fit_list[j] > best_fitness:
+                best_fitness = self.population.target_fit_list[j]
+        return j
 
     def get_best_individual(self):
-
-        return self.get_best().equation
+        return self.population.target_pop_list[self.get_best()]
 
     def run(self):
         generation_pop_size = self.population.get_pop_size()
