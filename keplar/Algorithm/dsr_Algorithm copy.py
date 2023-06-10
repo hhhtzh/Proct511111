@@ -5,7 +5,7 @@ import numpy as np
 from keplar.operator.operator import Operator
 from keplar.operator.composite_operator import CompositeOp
 from keplar.operator.dsr_prework import pre_env
-from keplar.operator.dsr_Deeplearning import uDsrDeeplearning,uDSR_Deeplearn
+from keplar.operator.dsr_Deeplearning import uDsrDeeplearning,uDsr_deeplearn
 # from keplar.operator.dsr_Evo import uDsrEvo
 # from keplar.operator.dsr_RL import uDsrRL
 from keplar.operator.dsr_Evo import uDsrEvoCompositOp
@@ -22,7 +22,7 @@ from dsr.dso.train import Trainer
 
 from keplar.operator.dsr_train import dsr_Train
 
-from keplar.operator.creator import uDSR_Creator
+from keplar.operator.creator import DsrCreator
 
 from keplar.Algorithm.Alg import Alg
 
@@ -33,9 +33,8 @@ from keplar.operator.composite_operator import uDsr_CompositeOp
 from keplar.operator.dsr_loop import uDsr_loop
 from keplar.population.function import operator_map,operator_map_dsr
 from keplar.translator.translator import KeplarToDSR,DSRToKeplar
-from keplar.population.population import Population
 
-from keplar.operator.dsr_model import uDSR_Model,uDSR_Sample
+
 class uDsrAlgorithm(Alg):
     def __init__(self, csv_filename, config_filename):
         # 读入数据
@@ -44,98 +43,52 @@ class uDsrAlgorithm(Alg):
 
     def run(self):
 
-        #前期的准备工作
         udsr_deeplearn=uDSR_Deeplearn(self.csv_filename,self.config_filename)
-        udsr_deeplearn.exec()
+        # udsr_1.exec()
+        # d={**udsr_1.config_training, **udsr_1.config_task}
 
-        udsr_model=uDSR_Model(udsr_deeplearn.sess, udsr_deeplearn.policy, udsr_deeplearn.policy_optimizer, udsr_deeplearn.gp_controller,
-                            udsr_deeplearn.logger,udsr_deeplearn.pool, **udsr_deeplearn.d)
-        #创建一个新的model（RNN）
-        self.model = udsr_model.pre_do()
+        udsr_model=uDSR_Model(udsr_1.sess, udsr_1.policy, udsr_1.policy_optimizer, udsr_1.gp_controller, udsr_1.logger,
+                              udsr_1.pool, **udsr_1.d)
+        
 
+        # udsr_model =udsr_2.pre_do()
 
-        iter_num = 0
-        done = False
-        while not done:
-            # 采样
-            udsr_sample = uDSR_Sample(self.model)
-            self.T, self.programs,self.actions, self.obs, self.priors= udsr_sample.do()
-            #定义一个新的population
-            population = Population(len(self.T))
-            
-            #创建population
-            udsr_creator = uDSR_Creator(self.T)
-            #对uDSR类型的编码进行转化population的编码
-            udsr_trans = DSRToKeplar(self.T)
+        udsr_sample = uDSR_Sample()
 
-            # 在这一步可以将其他算法的poppulation传入，进行组合
-            trans_udsr = KeplarToDSR()
+        udsr_creator = uDSR_Creator(udsr_model)
 
-            udsr_list = [udsr_creator ,udsr_trans ,trans_udsr]
-            udsr_comop = uDsr_CompositeOp(udsr_list)
-            T_new = udsr_comop.do(population)
+        trans_udsr = KeplarToDSR()
 
-            #将新的population的编码转化为uDSR类型的编码
-            for i in range(len(self.programs)):
-                self.programs[i].traversal = Program.library.tokenize(T_new[i])
+        udsr_trans = DSRToKeplar()
+
+        udsr_1 = [udsr_deeplearn, udsr_model]
 
 
-            #一次迭代
-            udsr_model.dsr_train.one_iter(programs = self.programs,actions=self.actions,obs=self.obs,priors=self.priors)
-            iter_num += 1
-            if iter_num > 20:
-                done = True
+        udsr_2 = [udsr_sample, udsr_creator, trans_udsr, udsr_trans, udsr_2]
 
+        iter_num =20
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # print(T_new[0]) 
-
-        # print("doone!\n")
-
-        # udsr_2 = [udsr_sample, udsr_creator, trans_udsr, udsr_trans, udsr_2]
-
-        # iter_num =20
-
-        # uDsr = uDsr_CompositeOp[udsr_2, iter_num]
+        uDsr = uDsr_CompositeOp[udsr_1, udsr_2, iter_num]
 
         
 
         
-        # programs, r, l, actions, obs, priors = udsr_model.dsr_sample()
-        # T = np.array([p.traversal for p in programs],dtype=object)
+        programs, r, l, actions, obs, priors = udsr_model.dsr_sample()
+        T = np.array([p.traversal for p in programs],dtype=object)
         
-        # # print(r[0])
-        # # print(l[0])
-        # # print(T[0])
+        # print(r[0])
+        # print(l[0])
+        # print(T[0])
 
-        # length_T = len(T)
-        # print(length_T)
-        # print(len(operator_map))
+        length_T = len(T)
+        print(length_T)
+        print(len(operator_map))
 
-        # print(operator_map[1001])
+        print(operator_map[1001])
 
-        # print(operator_map_dsr['add'])
+        print(operator_map_dsr['add'])
 
-        # print(len(T[0]))
+        print(len(T[0]))
 
         #翻译成对应的编码表示
         
@@ -154,11 +107,11 @@ class uDsrAlgorithm(Alg):
 
         # # f = [[0 for j in range(len[T[i]])]for i in range(length_T )]
         # #翻译成对应的编码表示
-        # f = [[] for i in range(length_T)]
-        # for i in range(length_T):
-        #     for j in range(len(T[i])):
-        #         f[i].append(int(operator_map_dsr[str(T[i][j])]))
-        #     print(f[i])
+        f = [[] for i in range(length_T)]
+        for i in range(length_T):
+            for j in range(len(T[i])):
+                f[i].append(int(operator_map_dsr[str(T[i][j])]))
+            print(f[i])
 
 
 
@@ -175,20 +128,6 @@ class uDsrAlgorithm(Alg):
         
 
         
-
-        # self.udsr_deeplearn=uDsr_deeplearn(self.csv_filename,self.config_filename)
-        # # d={**self.udsr_deeplearn.config_training, **self.udsr_deeplearn.config_task}
-
-        # self.udsr_model=uDsr_loop(self.udsr_deeplearn.sess, self.udsr_deeplearn.policy, self.udsr_deeplearn.policy_optimizer, self.udsr_deeplearn.gp_controller, self.udsr_deeplearn.logger,
-        #                       self.udsr_deeplearn.pool, **self.udsr_deeplearn.d)
-        # self.udsr_deeplearn.exec()
-        # self.udsr_model.reinit()
-        
-        # self.udsr_model.exec()
-        # udsr_all = [self.udsr_deeplearn,self.udsr_model]
-        # udsr_alg=uDsr_CompositeOp(udsr_all)
-
-        # udsr_alg.do()
 
 
         # print(operator_map[1])

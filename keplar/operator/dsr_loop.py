@@ -39,6 +39,9 @@ class uDsr_loop(Operator):
         # self.config_task =config_task
         self.dsr_train =None
 
+
+        
+
         
 
         
