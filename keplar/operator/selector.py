@@ -56,55 +56,58 @@ class BingoSelector(Operator):
             bingo_pop = population.target_pop_list
         new_bingo_pop = selector(population=bingo_pop, target_population_size=target_pop_size)
         new_pop = Population(len(new_bingo_pop))
-        if self.to_type!="Bingo":
+        if self.to_type != "Bingo":
             new_pop_list = []
             for i in new_bingo_pop:
                 ind = Individual(equation=str(i))
                 new_pop_list.append(ind)
             new_pop.initial(new_pop_list)
         else:
-            new_pop.pop_type="Bingo"
-            new_pop.target_pop_list=new_bingo_pop
+            new_pop.pop_type = "Bingo"
+            new_pop.target_pop_list = new_bingo_pop
         return new_pop
 
 
 class OperonSelector(Selector):
-    def __init__(self, method, compare_size, to_type):
+    def __init__(self, tour_size):
         super().__init__()
-        self.compare_size = compare_size
-        self.to_type = to_type
-        self.method = method
+        self.selector = None
+        self.tour_size = tour_size
 
-    def do(self, population):
-        if self.method == "Tournament":
-            sel = Operon.TournamentSelector(self.compare_size)
-        elif self.method == "RankTournament":
-            sel = Operon.RankTournamentSelector(self.compare_size)
-        elif self.method == "Proportional":
-            sel = Operon.ProportionalSelector(self.compare_size)
-        elif self.method == "Random":
-            sel = Operon.RandomSelector(self.compare_size)
-        else:
-            raise ValueError("selector方法输入错误")
-        rng = Operon.RomuTrio(random.randint(1, 1000000))
-        if population.pop_type == "Operon":
-            ind_list = {}
-            if len(population.target_pop_list) != len(population.target_fit_list):
-                raise ValueError("个体与适应度数量不符")
-            for i in range(len(population.target_pop_list)):
-                ind = Operon.Individual()
-                ind.Genotype = population.target_pop_list[i]
-                ind.SetFitness(population.target_fit_list[i], 0)
-                # ind_list.
-            print(type(ind_list[0]))
-            sel.Prepare(ind_list)
-            best_num = sel(rng)
-            pool = Population(1)
-        else:
-            pass
-        if self.to_type == "Operon":
-            pool.target_pop_list.append(population.target_pop_list[best_num])
-            pool.pop_type = "Operon"
-            return pool
-        else:
-            pass
+    def do(self, population=None):
+        self.selector = Operon.TournamentSelector(objective_index=0)
+        self.selector.TournamentSize = 5
+        return self.selector
+
+    # def do(self, population):
+    #     if self.method == "Tournament":
+    #         sel = Operon.TournamentSelector(self.compare_size)
+    #     elif self.method == "RankTournament":
+    #         sel = Operon.RankTournamentSelector(self.compare_size)
+    #     elif self.method == "Proportional":
+    #         sel = Operon.ProportionalSelector(self.compare_size)
+    #     elif self.method == "Random":
+    #         sel = Operon.RandomSelector(self.compare_size)
+    #     else:
+    #         raise ValueError("selector方法输入错误")
+    #     rng = Operon.RomuTrio(random.randint(1, 1000000))
+    #     if population.pop_type == "Operon":
+    #         ind_list = []
+    #         if len(population.target_pop_list) != len(population.target_fit_list):
+    #             raise ValueError("个体与适应度数量不符")
+    #         for i in range(len(population.target_pop_list)):
+    #             ind = Operon.Individual()
+    #             ind.Genotype = population.target_pop_list[i]
+    #             ind.SetFitness(population.target_fit_list[i], 0)
+    #             ind_list.append([ind, 10])
+    #         sel.Prepare(ind_list)
+    #         best_num = sel(rng)
+    #         pool = Population(1)
+    #     else:
+    #         pass
+    #     if self.to_type == "Operon":
+    #         pool.target_pop_list.append(population.target_pop_list[best_num])
+    #         pool.pop_type = "Operon"
+    #         return pool
+    #     else:
+    #         pass

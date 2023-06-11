@@ -25,6 +25,5 @@ gen_up_oplist = CompositeOp([crossover, mutation])
 gen_down_oplist = CompositeOpReturn([selector])
 gen_eva_oplist = CompositeOp([evaluator])
 population = creator.do()
-
 bgsr = BingoAlg(100, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
 bgsr.run()

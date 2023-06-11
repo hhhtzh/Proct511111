@@ -25,7 +25,7 @@ cr = OperonCreator("balanced", x, y, 128, "Operon")
 pop = cr.do()
 eva = OperonEvaluator("R2", x, y, 0.5, True)
 eva.do(pop)
-sel = BingoSelector("Proportional", 20, "Operon")
+sel = OperonSelector("Proportional", 20, "Operon")
 pool = sel.do(pop)
 for i in range(50):
     mua = OperonMutation(1, 1, 1, 1, x, y, 10, 50, "balanced", "Operon")

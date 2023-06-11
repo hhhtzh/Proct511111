@@ -62,12 +62,11 @@ class BingoMutation(Mutation):
             new_pop_size = population.get_pop_size() + 1
             population.set_pop_size(new_pop_size)
         else:
-            population.pop_type="Bingo"
-            population.self_pop_enable=False
+            population.pop_type = "Bingo"
+            population.self_pop_enable = False
             population.target_pop_list.append(bingo_child)
             new_pop_size = population.get_pop_size() + 1
             population.set_pop_size(new_pop_size)
-
 
 
 class OperonMutation(Mutation):

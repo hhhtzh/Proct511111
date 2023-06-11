@@ -10,8 +10,8 @@ from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 
 from keplar.population.population import Population
-# from keplar.translator.translator import trans_gp, trans_op
-# import pyoperon as Operon
+from keplar.translator.translator import trans_gp, trans_op
+import pyoperon as Operon
 
 
 class Creator(Operator):

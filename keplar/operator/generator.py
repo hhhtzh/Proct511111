@@ -17,6 +17,14 @@ class Generator(Operator):
         raise NotImplementedError
 
 
+class OperonGenerator(Generator):
+    def __init__(self):
+        super().__init__()
+
+    def do(self, population):
+        pass
+
+
 class BingoGenerator(Generator):
     def __init__(self, max_generation, up_op_list, down_op_list, evaluator, error_tolerance,population):
         super().__init__()
