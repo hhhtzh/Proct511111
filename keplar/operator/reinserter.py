@@ -13,7 +13,7 @@ class Reinserter(Operator):
 
 
 class OperonReinserter(Reinserter):
-    def __init__(self, pool_list, method, comparision_size,to_type):
+    def __init__(self, pool_list, method, comparision_size, to_type):
         super().__init__()
         self.to_type = to_type
         self.pool_list = pool_list
@@ -33,23 +33,23 @@ class OperonReinserter(Reinserter):
         else:
             raise ValueError("reinserter方法选择错误")
         if population.pop_type == "Operon":
-            ind_list=[]
+            ind_list = []
             if len(population.target_pop_list) != len(population.target_fit_list):
                 raise ValueError("个体与适应度数量不符")
             for i in range(len(population.target_pop_list)):
-                ind=Operon.Individual()
-                ind.Genotype=population.target_pop_list[i]
-                ind.Setfitness([population.target_fit_list[i]],0)
+                ind = Operon.Individual()
+                ind.Genotype = population.target_pop_list[i]
+                ind.Setfitness([population.target_fit_list[i]], 0)
                 ind_list.append(ind)
-            rein(rng,ind_list,self.pool_list)
-            new_target_pop_list=[]
-            new_target_fitness_list=[]
+            rein(rng, ind_list, self.pool_list)
+            new_target_pop_list = []
+            new_target_fitness_list = []
             for i in ind_list:
                 new_target_pop_list.append(i.Genotype)
                 new_target_fitness_list.append(i.GetFitness(0)[0])
-            population.target_pop_list=new_target_pop_list
-            population.target_fit_list=new_target_pop_list
-            if self.to_type!="Operon":
+            population.target_pop_list = new_target_pop_list
+            population.target_fit_list = new_target_pop_list
+            if self.to_type != "Operon":
                 pass
 
         else:

@@ -10,6 +10,9 @@ from bingo.symbolic_regression import ExplicitTrainingData, ExplicitRegression, 
 from keplar.operator.operator import Operator
 import pyoperon as Operon
 
+from keplar.population.individual import Individual
+from keplar.translator.translator import trans_op
+
 
 class Evaluator(Operator):
     def __init__(self):
@@ -63,10 +66,10 @@ class BingoEvaluator(Operator):
                 population.target_fit_list.append(bingo_pop[i].fitness)
 
 
-
 class OperonEvaluator(Operator):
-    def __init__(self, error_metric, np_x, np_y, training_p, if_linear_scaling):
+    def __init__(self, error_metric, np_x, np_y, training_p, if_linear_scaling, to_type):
         super().__init__()
+        self.to_type = to_type
         self.if_linear_scaling = if_linear_scaling
         self.training_p = training_p
         self.error_metric = error_metric
@@ -109,8 +112,19 @@ class OperonEvaluator(Operator):
             for i in ind_list:
                 ea = evaluator(rng, i)
                 fit_list.append(ea[0])
-            population.target_fit_list = fit_list
-            population.pop_type = "Operon"
-            population.self_pop_enable = False
+            if self.to_type == "Operon":
+                population.target_fit_list = fit_list
+                population.pop_type = "Operon"
+                population.self_pop_enable = False
+            else:
+                operon_ind_list = population.target_pop_list
+                var_list = self.ds.Variables
+                kep_pop_list = []
+                for i in range(operon_ind_list):
+                    func = trans_op(operon_ind_list[i], var_list)
+                    kep_ind = Individual(func)
+                    kep_ind.set_fitness(fit_list[i])
+                    kep_pop_list.append(kep_ind)
+                population.pop_list = kep_pop_list
         else:
             pass

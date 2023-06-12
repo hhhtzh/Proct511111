@@ -1,3 +1,4 @@
+from keplar.Algorithm.Alg import OperonBingoAlg
 from keplar.data.data import Data
 from keplar.operator.creator import OperonCreator
 from keplar.operator.crossover import OperonCrossover
@@ -17,6 +18,5 @@ eva_op_list = [evaluator]
 select = BingoSelector(0.4, "tournament", "Operon")
 crossover = OperonCrossover()
 mutation = OperonMutation()
-reinsert = OperonReinserter()
 op_up_list = [mutation, crossover]
-op_down_list = [reinsert]
+alg = OperonBingoAlg(1000, op_up_list, None, [eva_op_list], 0.01, population, select)

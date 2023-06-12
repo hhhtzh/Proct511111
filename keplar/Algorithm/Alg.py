@@ -1,5 +1,8 @@
+import random
 from abc import abstractmethod
 from keplar.operator.composite_operator import CompositeOp
+from keplar.operator.reinserter import OperonReinserter
+import pyoperon as Operon
 
 
 # class SR_Alg(CompositeOp):
@@ -43,7 +46,7 @@ class BingoAlg(Alg):
     def get_best(self):
         best_fitness = self.population.target_fit_list[0]
         for j in range(len(self.population.target_fit_list)):
-            if self.population.target_fit_list[j] > best_fitness:
+            if self.population.target_fit_list[j] < best_fitness:
                 best_fitness = self.population.target_fit_list[j]
         return j
 
@@ -71,10 +74,45 @@ class BingoAlg(Alg):
 
 class OperonBingoAlg(Alg):
 
-    def __init__(self, max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population):
+    def __init__(self, max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population,selector):
         super().__init__(max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population)
+        self.selector = selector
+
+    def get_tar_best(self):
+        best_fitness = self.population.target_fit_list[0]
+        for j in range(len(self.population.target_fit_list)):
+            if self.population.target_fit_list[j] < best_fitness:
+                best_fitness = self.population.target_fit_list[j]
+        return j
+
+    def get_best_fitness(self):
+        if self.population.pop_type != "self":
+            best_num = self.get_tar_best()
+            return self.population.target_fit_list[best_num]
+        else:
+            pass
+
+    def get_best_individual(self):
+        if self.population.pop_type != "self":
+            best_num = self.get_tar_best()
+            return self.population.target_pop_list[best_num]
+        else:
+            pass
 
     def run(self):
-        generation_pop_size = self.population.get_pop_size()
         self.eva_op_list.do(self.population)
-
+        now_error = self.get_best_fitness()
+        while self.age < self.max_generation and now_error >= self.error_tolerance or str(now_error) == "nan":
+            pool_list=self.selector.do(self.population)
+            for i in self.up_op_list:
+                i.do(pool_list)
+            reinserter=OperonReinserter(pool_list,"ReplaceWorst")
+            reinserter.do(self.population)
+            now_error = self.get_best_fitness()
+            best_ind = str(self.get_best_individual())
+            self.age += 1
+            print("第" + f"{self.age}代种群，" +
+                  f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+        best_ind = str(self.get_best_individual())
+        print("迭代结束，共迭代" + f"{self.age}代" +
+              f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
