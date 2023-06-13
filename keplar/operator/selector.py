@@ -9,7 +9,7 @@ from bingo.symbolic_regression import AGraph
 from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 from keplar.population.population import Population
-import pyoperon as Operon
+# import pyoperon as Operon
 
 
 class Selector(Operator):

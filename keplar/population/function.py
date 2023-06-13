@@ -13,7 +13,11 @@ operator_map1 = { 'add' : 1001 ,'sub':1002 ,'mul':1003, 'div':1004 ,'sqrt':1005,
                  'sig':1015, 'aq':1016, 'pow':1017, 'exp':1018, 'square':1019 ,
                  'x1':3001, 'x2':3002, 'x3':3003
                  }
+<<<<<<< HEAD
 #从2000开始为常量，从5000开始为变量
+=======
+#从5000开始为常量，从3000开始为变量
+>>>>>>> 0f3da5f (commit)
 
 add2 = _Function(function=np.add, name='add', arity=2)
 sub2 = _Function(function=np.subtract, name='sub', arity=2)
