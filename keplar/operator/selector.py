@@ -46,12 +46,10 @@ class BingoSelector(Operator):
         if population.pop_type != "Bingo":
             for i in population.pop_list:
                 equ_list = i.format()
-        for i in population.pop_list:
-            equation = i.equation
-            bingo_ind = AGraph(equation=str(equation))
-            bingo_ind.fitness = i.get_fitness()
-            bingo_ind._update()
-            bingo_pop.append(bingo_ind)
+                bingo_ind = AGraph(equation=equ_list)
+                bingo_ind.fitness = i.get_fitness()
+                bingo_ind._update()
+                bingo_pop.append(bingo_ind)
         else:
             bingo_pop = population.target_pop_list
         new_bingo_pop = selector(population=bingo_pop, target_population_size=target_pop_size)

@@ -247,6 +247,7 @@ def op_postfix_to_prefix(node_list):
     return new_node_list
 
 
+
 def trans_op(op_tree, variable_list):
     var_dict = {}
     for var in variable_list:
@@ -255,7 +256,7 @@ def trans_op(op_tree, variable_list):
     const_array = []
     c_num = 0
     const_code = 2000
-    variable_code = 3000
+    variable_code = 5000
     node_list = op_tree.Nodes
     node_list = op_postfix_to_prefix(node_list)
     for node in node_list:
@@ -326,7 +327,7 @@ def trans_op(op_tree, variable_list):
 
             else:
                 raise ValueError(f"{node.Name}转换operon节点时未识别")
-    return func
+    return func, const_array
 
 
 def to_bingo(ind):
@@ -357,7 +358,7 @@ def to_op(ind, np_x, np_y):
             list_prefix.append(str_con)
         else:
             raise ValueError("留空")
-    list_postfix=prefix_to_postfix(list_prefix)
+    list_postfix = prefix_to_postfix(list_prefix)
     print(list_postfix)
     node_list = []
     var_hash = []
@@ -423,7 +424,6 @@ def to_op(ind, np_x, np_y):
         op_tree.UpdateNodes()
         print(Operon.InfixFormatter.Format(op_tree, ds, 5))
         return op_tree
-
 
     # op_al = ""
     # x_al = ""
