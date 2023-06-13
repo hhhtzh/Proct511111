@@ -27,9 +27,9 @@ class OperonReinserter(Reinserter):
         if not isinstance(self.comparision_size, int):
             raise ValueError("比较数量必须为int类型")
         if self.method == "ReplaceWorst":
-            rein = Operon.ReplaceWorstReinserter(self.comparision_size)
+            rein = Operon.ReplaceWorstReinserter(objective_index=0)
         elif self.method == "KeepBest":
-            rein = Operon.KeepBestReinserter(self.comparision_size)
+            rein = Operon.KeepBestReinserter(objective_index=0)
         else:
             raise ValueError("reinserter方法选择错误")
         if population.pop_type == "Operon":

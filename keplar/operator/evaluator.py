@@ -120,12 +120,13 @@ class OperonEvaluator(Operator):
                 operon_ind_list = population.target_pop_list
                 var_list = self.ds.Variables
                 kep_pop_list = []
-                for i in range(operon_ind_list):
+                for i in range(len(operon_ind_list)):
                     func, const_array = trans_op(operon_ind_list[i], var_list)
                     kep_ind = Individual(func)
                     kep_ind.const_array = const_array
                     kep_ind.set_fitness(fit_list[i])
                     kep_pop_list.append(kep_ind)
                 population.pop_list = kep_pop_list
+                population.pop_type=self.to_type
         else:
             pass

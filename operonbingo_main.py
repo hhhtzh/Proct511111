@@ -1,3 +1,5 @@
+import numpy as np
+
 from keplar.Algorithm.Alg import OperonBingoAlg
 from keplar.data.data import Data
 from keplar.operator.creator import OperonCreator
@@ -11,12 +13,15 @@ data = Data("pmlb", '1027_ESL')
 data.read_file()
 x = data.get_x()
 y = data.get_y()
-creator = OperonCreator("balanced", x, y, 128, "Operon")
+x = np.array(x)
+y = np.array(y)
+creator = OperonCreator("balanced", x, y, 200, "Operon")
 population = creator.do()
-evaluator = OperonEvaluator("R2", x, y, 0.5, True,"Bingo")
+evaluator = OperonEvaluator("R2", x, y, 0.5, True, "self")
 eva_op_list = [evaluator]
 select = BingoSelector(0.4, "tournament", "Operon")
-crossover = OperonCrossover()
-mutation = OperonMutation()
+crossover = OperonCrossover(x, y, "Operon")
+mutation = OperonMutation(0.6, 0.7, 0.8, 0.8, x, y, 10, 50, "balanced", "Operon")
 op_up_list = [mutation, crossover]
-alg = OperonBingoAlg(1000, op_up_list, None, [eva_op_list], 0.01, population, select)
+alg = OperonBingoAlg(1000, op_up_list, None, eva_op_list, 1e-5, population, select)
+alg.run()

@@ -14,7 +14,9 @@ D = fetch_data('1027_ESL', return_X_y=False, local_cache_dir='./datasets').to_nu
 
 # initialize a dataset from a numpy array
 ds = Operon.Dataset(D)
-
+variables = ds.Variables
+for var in variables:
+    print("=========="+str(var.Name))
 # define the training and test ranges
 training_range = Operon.Range(0, ds.Rows // 2)
 test_range = Operon.Range(ds.Rows // 2, ds.Rows)

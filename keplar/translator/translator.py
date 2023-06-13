@@ -4,7 +4,7 @@ import numpy as np
 import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
-from keplar.population.function import operator_map
+from keplar.population.function import operator_map, arity_map, operator_map3
 
 
 def get_priority(op):
@@ -45,6 +45,110 @@ def prefix_to_postfix(expression):
     # 弹出栈中剩余的运算符
     while stack:
         yield stack.pop()
+
+
+def bingo_infixstr_to_func(equ):
+    equ = re.sub(r"\)\(", r')*(', equ)
+    list_infix = []
+    op_al = ""
+    x_al = ""
+    num_al = ""
+    op_start = False
+    x_start = False
+    num_start = False
+    i = 0
+    equ = re.sub(r"\(-", r'(0-', equ)
+    equ=re.sub(r"-(\d{1})",r"0 - \1",equ)
+    while i < len(equ):
+        if op_start:
+            if equ[i].isalnum():
+                op_al = op_al + str(equ[i])
+                i = i + 1
+            else:
+                list_infix.append(op_al)
+                op_al = ""
+                op_start = False
+        elif x_start:
+            if equ[i] == "_":
+                x_al = x_al + "_"
+                i = i + 1
+            elif equ[i].isdigit():
+                x_al = x_al + str(equ[i])
+                i = i + 1
+            else:
+                list_infix.append(x_al)
+                x_al = ""
+                x_start = False
+        elif num_start:
+            if equ[i].isdigit() or equ[i] == ".":
+                num_al = num_al + str(equ[i])
+                i = i + 1
+            else:
+                list_infix.append(num_al)
+                num_al = ""
+                num_start = False
+        else:
+            if equ[i].isalpha() and equ[i] != "X":
+                op_start = True
+                op_al = str(equ[i])
+                i = i + 1
+            elif equ[i] == " ":
+                i = i + 1
+            elif equ[i] == "X":
+                x_start = True
+                x_al = "X"
+                i = i + 1
+            elif equ[i].isdigit():
+                num_start = True
+                num_al = str(equ[i])
+                i = i + 1
+            else:
+                list_infix.append(str(equ[i]))
+                i = i + 1
+    if num_al != "":
+        list_infix.append(num_al)
+    if x_al != "":
+        list_infix.append(x_al)
+    if op_al != "":
+        list_infix.append(op_al)
+    post_equ = infix_to_postfix(list_infix)
+    stack = []
+    const_array = []
+    for node in post_equ:
+        if node in ["+", "-", "*", "/", "^"] or node.isalpha():
+            arity = arity_map[operator_map3[node]]
+            if arity == 1:
+                operand1 = stack.pop()
+                sub_stack = []
+                sub_stack.append(operator_map3[node])
+                sub_stack.append(operand1)
+                stack.append(sub_stack)
+            elif arity == 2:
+                operand2 = stack.pop()
+                operand1 = stack.pop()
+                sub_stack = []
+                sub_stack.append(operator_map3[node])
+                sub_stack.append(operand1)
+                sub_stack.append(operand2)
+                stack.append(sub_stack)
+            else:
+                raise ValueError("Arity>=3")
+        elif is_float(node):
+            const_code = len(const_array)
+            const_array.append(float(node))
+            stack.append(const_code + 2000)
+        else:
+            var_code = int(node[2:]) + 5000 + 1
+            stack.append(var_code)
+    new_func_list = []
+    stack1 = [stack]
+    while stack1:
+        item = stack1.pop()
+        if isinstance(item, list):
+            stack1.extend(reversed(item))
+        else:
+            new_func_list.append(item)
+    return new_func_list, const_array
 
 
 def infix_to_prefix(infix, len1, s2, top2):
@@ -225,8 +329,8 @@ def op_postfix_to_prefix(node_list):
                 sub_stack.append(operand1)
                 stack.append(sub_stack)
             elif node.Arity == 2:
-                operand1 = stack.pop()
                 operand2 = stack.pop()
+                operand1 = stack.pop()
                 sub_stack = []
                 sub_stack.append(node)
                 sub_stack.append(operand1)
@@ -245,7 +349,6 @@ def op_postfix_to_prefix(node_list):
         else:
             new_node_list.append(item)
     return new_node_list
-
 
 
 def trans_op(op_tree, variable_list):
@@ -268,11 +371,10 @@ def trans_op(op_tree, variable_list):
                 const_code = const_code + 1
                 func.append(token)
             else:
-                token = variable_code
                 variable_code = variable_code + 1
                 var_name = var_dict[node.HashValue]
                 var_name = var_name[1:]
-                token = token + int(var_name)
+                token = 5000 + int(var_name)
                 token = str(token)
                 func.append(token)
         else:
@@ -350,16 +452,16 @@ def to_op(ind, np_x, np_y):
         if int_i < 2000:
             str_op = operator_map[int_i]
             list_prefix.append(str_op)
-        elif 2000 < int_i < 5000:
-            str_x = "x_" + str(int_i - 2000)
-            list_prefix.append(str_x)
-        elif int_i >= 5000:
-            str_con = str(ind.const_array[int_i - 5000])
+        elif 2000 <= int_i < 5000:
+            str_con = str(ind.const_array[int_i - 2000])
             list_prefix.append(str_con)
+        elif int_i > 5000:
+            str_x = "X_" + str(int_i - 5000)
+            list_prefix.append(str_x)
+
         else:
             raise ValueError("留空")
     list_postfix = prefix_to_postfix(list_prefix)
-    print(list_postfix)
     node_list = []
     var_hash = []
     variables = ds.Variables
@@ -370,11 +472,11 @@ def to_op(ind, np_x, np_y):
         if is_float(token):
             node = Operon.Node.Constant(float(token))
             node_list.append(node)
-        elif token[0] == 'x' and token[1] == '_':
+        elif token[0] == 'X' and token[1] == '_':
             var_num_str = token[2:]
             var_num = int(var_num_str)
             node = Operon.Node.Variable(1)
-            node.HashValue = var_hash[var_num]
+            node.HashValue = var_hash[var_num-1]
             node_list.append(node)
         elif token == '+':
             node = Operon.Node.Add()
@@ -422,7 +524,7 @@ def to_op(ind, np_x, np_y):
             raise ValueError(f"通用个体转换为Operon个体时未识别,未识别字符为{token}")
         op_tree = Operon.Tree(node_list)
         op_tree.UpdateNodes()
-        print(Operon.InfixFormatter.Format(op_tree, ds, 5))
+        # print(Operon.InfixFormatter.Format(op_tree, ds, 5))
         return op_tree
 
     # op_al = ""

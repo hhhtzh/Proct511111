@@ -1,3 +1,5 @@
+import re
+
 import pyoperon as Operon
 
 from bingo.symbolic_regression import AGraph
@@ -26,7 +28,7 @@ from keplar.population.individual import Individual
 # dict={"11":2}
 # print(dict["11"])
 # str_equ="(X_1)((X_1 - ((X_1)/(X_1)))((X_1)(X_1)) - (X_0 - (X_0)))"
-from keplar.translator.translator import prefix_to_postfix
+from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_func
 
 # def prefix_to_postfix(expression):
 #     stack = []
@@ -59,8 +61,14 @@ from keplar.translator.translator import prefix_to_postfix
 # postfix_expression = list(prefix_to_postfix(prefix_expression))
 # print("前缀表达式:", prefix_expression)
 # print("后缀表达式:", postfix_expression)
-array = [1001, 5001, 5002]
-ind = Individual(func=array)
-print(ind.format())
-bing_ind = AGraph(True, ind.format())
+# array = [1001, 5001, 5002]
+# ind = Individual(func=array)
+# print(ind.format())
+# bing_ind = AGraph(True, ind.format())
+# x = "((X_2)/((X_1)/(X_1)))(X_1)"
+# y = "* / X_2 / X_1 X_1 X_1"
+node = "1"
+if node.isalnum():
+    print("xx")
+
 # span=Operon.MakeSpan(array)

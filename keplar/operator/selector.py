@@ -11,6 +11,8 @@ from keplar.operator.operator import Operator
 from keplar.population.population import Population
 import pyoperon as Operon
 
+from keplar.translator.translator import bingo_infixstr_to_func
+
 
 class Selector(Operator):
     def __init__(self):
@@ -57,9 +59,13 @@ class BingoSelector(Operator):
         if self.to_type != "Bingo":
             new_pop_list = []
             for i in new_bingo_pop:
-                ind = Individual(equation=str(i))
+                equ=str(i)
+                func,const_array=bingo_infixstr_to_func(equ)
+                ind=Individual(func)
+                ind.const_array=const_array
                 new_pop_list.append(ind)
             new_pop.initial(new_pop_list)
+            new_pop.pop_type="self"
         else:
             new_pop.pop_type = "Bingo"
             new_pop.target_pop_list = new_bingo_pop

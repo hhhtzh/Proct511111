@@ -7,6 +7,8 @@ from keplar.operator.operator import Operator
 import numpy as np
 import pyoperon as Operon
 
+from keplar.translator.translator import to_op
+
 
 class Mutation(Operator):
     def __init__(self):
@@ -83,7 +85,9 @@ class OperonMutation(Mutation):
         self.onepoint_p = onepoint_p
         self.maxL = maxL
         self.maxD = maxD
+        self.np_x=np_x
         np_y = np_y.reshape([-1, 1])
+        self.np_y = np_y
         self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
 
     def do(self, population):
@@ -123,4 +127,15 @@ class OperonMutation(Mutation):
             else:
                 pass
         else:
-            pass
+            new_tree_list = []
+            for i in population.pop_list:
+                op_tree=to_op(i,self.np_x,self.np_y)
+                new_tree_list.append(mutation(rng, op_tree))
+                population.target_pop_list = new_tree_list
+                population.set_pop_size(len(new_tree_list))
+                if self.to_type == "Operon":
+                    population.self_pop_enable = False
+                else:
+                    pass
+
+

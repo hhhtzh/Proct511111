@@ -88,10 +88,10 @@ class OperonCrossover(Crossover):
         [parent_1_num, parent_2_num] = np.random.randint(low=0, high=population.get_pop_size() - 1, size=2)
         if population.pop_type != "Operon":
             pass
-            # parent_1 = population.pop_list[parent_1_num]
-            # parent_2 = population.pop_list[parent_2_num]
-            # op_parent1 = to_op(parent_1, np_x=self.np_x, np_y=self.np_y)
-            # op_parent2 = to_op(parent_2, np_x=self.np_x, np_y=self.np_y)
+            parent_1 = population.pop_list[parent_1_num]
+            parent_2 = population.pop_list[parent_2_num]
+            op_parent1 = to_op(parent_1, np_x=self.np_x, np_y=self.np_y)
+            op_parent2 = to_op(parent_2, np_x=self.np_x, np_y=self.np_y)
         else:
             op_parent1 = population.target_pop_list[parent_1_num]
             op_parent2 = population.target_pop_list[parent_2_num]

@@ -19,9 +19,14 @@ class Individual:
                 str_op = operator_map2[tk]
                 arity = arity_map[tk]
                 if arity == 1:
-                    op1 = stack[stack_i - 1]
-                    equ_str = "(" + str_op + "(" + op1 + ")" + ")"
-                    stack[stack_i - 1] = equ_str
+                    if str_op=="square":
+                        op1 = stack[stack_i - 1]
+                        equ_str="(("+op1+")"+"^2"+")"
+                        stack[stack_i - 1] = equ_str
+                    else:
+                        op1 = stack[stack_i - 1]
+                        equ_str = "(" + str_op + "(" + op1 + ")" + ")"
+                        stack[stack_i - 1] = equ_str
                 if arity == 2:
                     op1 = stack[stack_i - 1]
                     op2 = stack[stack_i - 2]
