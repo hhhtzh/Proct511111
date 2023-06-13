@@ -5,7 +5,7 @@ from bingo.symbolic_regression.agraph.mutation import AGraphMutation
 from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 import numpy as np
-import pyoperon as Operon
+# import pyoperon as Operon
 
 from keplar.translator.translator import to_op
 

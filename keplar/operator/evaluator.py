@@ -8,7 +8,7 @@ from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
 from bingo.symbolic_regression import ExplicitTrainingData, ExplicitRegression, ImplicitRegression, \
     ImplicitTrainingData, AGraph
 from keplar.operator.operator import Operator
-import pyoperon as Operon
+# import pyoperon as Operon
 
 from keplar.population.individual import Individual
 from keplar.translator.translator import trans_op
