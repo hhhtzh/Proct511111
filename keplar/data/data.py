@@ -17,6 +17,8 @@ class Data:
                 self.pd_data = pd.read_csv(self.file_path)
             except:
                 raise ValueError('csv路径错误')
+        elif self.type == "txt":
+            self.pd_data = pd.read_table('path', sep='\t', header=None)
         elif self.type == "pmlb":
             try:
                 self.pd_data = fetch_data(str(self.file_path), local_cache_dir='./datasets', return_X_y=False)

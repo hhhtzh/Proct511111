@@ -8,7 +8,7 @@ from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
 from bingo.symbolic_regression import ExplicitTrainingData, ExplicitRegression, ImplicitRegression, \
     ImplicitTrainingData, AGraph
 from keplar.operator.operator import Operator
-# import pyoperon as Operon
+import pyoperon as Operon
 
 from keplar.population.individual import Individual
 from keplar.translator.translator import trans_op
@@ -124,6 +124,7 @@ class OperonEvaluator(Operator):
                     func, const_array = trans_op(operon_ind_list[i], var_list)
                     kep_ind = Individual(func)
                     kep_ind.const_array = const_array
+                    print(fit_list[i])
                     kep_ind.set_fitness(fit_list[i])
                     kep_pop_list.append(kep_ind)
                 population.pop_list = kep_pop_list

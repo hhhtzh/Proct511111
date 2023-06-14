@@ -67,8 +67,8 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # bing_ind = AGraph(True, ind.format())
 # x = "((X_2)/((X_1)/(X_1)))(X_1)"
 # y = "* / X_2 / X_1 X_1 X_1"
-node = "1"
-if node.isalnum():
-    print("xx")
+# node = "1"
+# if node.isalnum():
+#     print("xx")
 
 # span=Operon.MakeSpan(array)
