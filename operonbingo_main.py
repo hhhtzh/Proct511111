@@ -9,15 +9,16 @@ from keplar.operator.mutation import OperonMutation
 from keplar.operator.reinserter import OperonReinserter
 from keplar.operator.selector import BingoSelector
 
-data = Data("pmlb", '1027_ESL')
+data = Data("txt", "datasets/1.txt",["x","y"])
 data.read_file()
+data.set_xy("y")
 x = data.get_x()
 y = data.get_y()
 x = np.array(x)
 y = np.array(y)
 creator = OperonCreator("balanced", x, y, 200, "Operon")
 population = creator.do()
-evaluator = OperonEvaluator("R2", x, y, 0.5, True, "self")
+evaluator = OperonEvaluator("R2", x, y, 0.01, True, "self")
 eva_op_list = [evaluator]
 select = BingoSelector(0.4, "tournament", "Operon")
 crossover = OperonCrossover(x, y, "Operon")

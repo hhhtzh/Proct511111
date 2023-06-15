@@ -124,7 +124,6 @@ class OperonEvaluator(Operator):
                     func, const_array = trans_op(operon_ind_list[i], var_list)
                     kep_ind = Individual(func)
                     kep_ind.const_array = const_array
-                    print(fit_list[i])
                     kep_ind.set_fitness(fit_list[i])
                     kep_pop_list.append(kep_ind)
                 population.pop_list = kep_pop_list

@@ -1,8 +1,12 @@
 import re
 
+import numpy as np
+import pandas as pd
 import pyoperon as Operon
 
 from bingo.symbolic_regression import AGraph
+from keplar.data.data import Data
+from keplar.operator.feature_engineering import FeatureEngineering
 from keplar.population.individual import Individual
 # def is_operator(char):
 #     operators = ['+', '-', '*', '/']
@@ -72,3 +76,7 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 #     print("xx")
 
 # span=Operon.MakeSpan(array)
+dataset = Data("txt", "datasets/1.txt", ["x", "y"])
+dataset.read_file()
+fea_en=FeatureEngineering(["PCA","filter"],dataset)
+fea_en.do()

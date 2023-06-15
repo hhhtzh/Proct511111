@@ -4,7 +4,8 @@ from pmlb import fetch_data
 
 
 class Data:
-    def __init__(self, type, file_path):
+    def __init__(self, type, file_path,names):
+        self.names = names
         self.pd_data = None
         self.type = type
         self.file_path = file_path
@@ -18,7 +19,7 @@ class Data:
             except:
                 raise ValueError('csv路径错误')
         elif self.type == "txt":
-            self.pd_data = pd.read_table('path', sep='\t', header=None)
+            self.pd_data = pd.DataFrame(pd.read_table(self.file_path, sep='  ', header=None,engine='python',names=self.names))
         elif self.type == "pmlb":
             try:
                 self.pd_data = fetch_data(str(self.file_path), local_cache_dir='./datasets', return_X_y=False)
@@ -49,8 +50,9 @@ class Data:
             raise ValueError("数据集xy未设置")
 
     def set_xy(self, str_y):
-        self.y = np.array(self.pd_data.loc[str_y])
-        self.x = np.array(self.pd_data.drop(lables=str_y, axis=1))
+        self.y = np.array(self.pd_data.loc[:,str_y])
+        dt=pd.DataFrame(self.pd_data)
+        self.x = np.array(dt.drop(labels=str_y,axis=1))
 
     def display_data(self):
         print(self.pd_data.head())

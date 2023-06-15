@@ -11,8 +11,9 @@ from keplar.operator.generator import BingoGenerator
 from keplar.operator.mutation import BingoMutation
 from keplar.operator.selector import BingoSelector
 
-data = Data("pmlb", '1027_ESL')
+data = Data("txt", "datasets/1.txt",["x","y"])
 data.read_file()
+data.set_xy("y")
 x = data.get_x()
 y = data.get_y()
 operators = ["+", "-", "*", "/"]
