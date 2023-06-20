@@ -48,6 +48,7 @@ class BingoSelector(Operator):
         if population.pop_type != "Bingo":
             for i in population.pop_list:
                 equ_list = i.format()
+                # print(equ_list)
                 bingo_ind = AGraph(equation=equ_list)
                 bingo_ind.fitness = i.get_fitness()
                 bingo_ind._update()
@@ -63,6 +64,7 @@ class BingoSelector(Operator):
                 func,const_array=bingo_infixstr_to_func(equ)
                 ind=Individual(func)
                 ind.const_array=const_array
+                ind.set_fitness(i.fitness)
                 new_pop_list.append(ind)
             new_pop.initial(new_pop_list)
             new_pop.pop_type="self"

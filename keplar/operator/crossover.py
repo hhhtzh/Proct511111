@@ -18,7 +18,7 @@ class Crossover(Operator):
 
 
 class BingoCrossover(Crossover):
-    def __init__(self,to_type):
+    def __init__(self, to_type):
         super().__init__()
         self.to_type = to_type
 
@@ -48,8 +48,8 @@ class BingoCrossover(Crossover):
             right = False
             while not right:
                 [parent_1_num, parent_2_num] = np.random.randint(low=0, high=population.get_pop_size() - 1, size=2)
-                self.bingo_parent_1=population.target_pop_list[parent_1_num]
-                self.bingo_parent_2=population.target_pop_list[parent_2_num]
+                self.bingo_parent_1 = population.target_pop_list[parent_1_num]
+                self.bingo_parent_2 = population.target_pop_list[parent_2_num]
                 if self.bingo_parent_2.command_array.shape == self.bingo_parent_1.command_array.shape and \
                         self.bingo_parent_1.command_array.shape[0] > 2 and self.bingo_parent_2.command_array.shape[
                     0] > 2:
@@ -60,7 +60,7 @@ class BingoCrossover(Crossover):
         # self.bingo_parent_1._update()
         # self.bingo_parent_2._update()
         bingo_child_1, bingo_child_2 = crossover(parent_1=self.bingo_parent_1, parent_2=self.bingo_parent_2)
-        if self.to_type!="Bingo":
+        if self.to_type != "Bingo":
             child_1 = Individual(equation=str(bingo_child_1))
             child_2 = Individual(equation=str(bingo_child_2))
             population.append(child_1)
@@ -99,13 +99,15 @@ class OperonCrossover(Crossover):
         rng = Operon.RomuTrio(random.randint(1, 1000000))
         new_tree = crossover(rng, op_parent1, op_parent2)
         if self.to_type != "Operon":
+            print("ttttttttttttttt")
             population.self_pop_enable = True
             population.pop_type = "self"
             ind = trans_op(new_tree)
-            population.append(ind)
+            population.pop_list.append(ind)
             new_pop_size = population.get_pop_size() + 1
             population.set_pop_size(new_pop_size)
         else:
+            population.pop_type = "Operon"
             population.target_pop_list.append(new_tree)
             new_pop_size = len(population.target_pop_list)
             population.set_pop_size(new_pop_size)

@@ -76,7 +76,12 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 #     print("xx")
 
 # span=Operon.MakeSpan(array)
-dataset = Data("txt", "datasets/1.txt", ["x", "y"])
-dataset.read_file()
-fea_en=FeatureEngineering(["PCA","filter"],dataset)
-fea_en.do()
+# dataset = Data("txt", "datasets/1.txt", ["x", "y"])
+# dataset.read_file()
+# fea_en = FeatureEngineering(["PCA", "filter"], dataset)
+# fea_en.do()
+# Operon.MakeSpan()
+a=[1,2,3]
+print(a.pop())
+print("---")
+print(a)
