@@ -65,6 +65,7 @@ class uDsrAlgorithm(Alg):
             gen_up_oplist = CompositeOp([crossover, mutation])
             gen_down_oplist = CompositeOpReturn([selector])
             gen_eva_oplist = CompositeOp([evaluator])
+            
 
             
 
