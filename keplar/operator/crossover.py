@@ -99,7 +99,6 @@ class OperonCrossover(Crossover):
         rng = Operon.RomuTrio(random.randint(1, 1000000))
         new_tree = crossover(rng, op_parent1, op_parent2)
         if self.to_type != "Operon":
-            print("ttttttttttttttt")
             population.self_pop_enable = True
             population.pop_type = "self"
             ind = trans_op(new_tree)

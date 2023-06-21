@@ -49,6 +49,18 @@ class Data:
         else:
             raise ValueError("数据集xy未设置")
 
+    def get_np_x(self):
+        if self.x is not None:
+            return np.array(self.x)
+        else:
+            raise ValueError("数据集xy未设置")
+
+    def get_np_y(self):
+        if self.y is not None:
+            return np.array(self.y)
+        else:
+            raise ValueError("数据集xy未设置")
+
     def set_xy(self, str_y):
         self.y = np.array(self.pd_data.loc[:,str_y])
         dt=pd.DataFrame(self.pd_data)

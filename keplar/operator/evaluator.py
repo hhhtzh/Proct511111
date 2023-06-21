@@ -127,6 +127,8 @@ class OperonEvaluator(Operator):
                     kep_ind.set_fitness(fit_list[i])
                     kep_pop_list.append(kep_ind)
                 population.pop_list = kep_pop_list
-                population.pop_type=self.to_type
+                population.pop_type="self"
+                # for i in population.pop_list:
+                #     print(i.format(),i.get_fitness())
         else:
             pass

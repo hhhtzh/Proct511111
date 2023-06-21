@@ -456,7 +456,7 @@ def to_op(ind, np_x, np_y):
             str_con = str(ind.const_array[int_i - 2000])
             list_prefix.append(str_con)
         elif int_i > 5000:
-            str_x = "X_" + str(int_i - 5000)
+            str_x = "X_" + str(int_i - 5001)
             list_prefix.append(str_x)
 
         else:
