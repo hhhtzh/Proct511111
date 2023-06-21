@@ -12,14 +12,6 @@ from keplar.population.function import operator_map,operator_map_dsr
 from keplar.translator.translator import KeplarToDSR,DSRToKeplar
 from keplar.population.population import Population
 from keplar.operator.dsr_model import uDSR_Model,uDSR_Sample
-
-from keplar.operator.crossover import BingoCrossover
-from keplar.operator.evaluator import BingoEvaluator
-from keplar.operator.generator import BingoGenerator
-from keplar.operator.mutation import BingoMutation
-from keplar.operator.selector import BingoSelector
-from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
-
 class uDsrAlgorithm(Alg):
     def __init__(self, csv_filename, config_filename):
         # 读入数据
@@ -52,23 +44,9 @@ class uDsrAlgorithm(Alg):
             #对uDSR类型的编码进行转化population的编码
             udsr_trans = DSRToKeplar(self.T)
 
-            operators = ["+", "-", "*", "/"]
-            x=None
-            y=None
             
 
-
-            evaluator = BingoEvaluator(x, "exp", "lm", y)
-            crossover = BingoCrossover("Bingo")
-            mutation = BingoMutation(x, operators, "Bingo")
-            selector = BingoSelector(0.5, "tournament", "Bingo")
-            gen_up_oplist = CompositeOp([crossover, mutation])
-            gen_down_oplist = CompositeOpReturn([selector])
-            gen_eva_oplist = CompositeOp([evaluator])
-
             
-
-
 
             # 在这一步可以将其他算法的poppulation传入，进行组合
             trans_udsr = KeplarToDSR()
