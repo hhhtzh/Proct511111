@@ -132,3 +132,10 @@ class OperonEvaluator(Operator):
                 #     print(i.format(),i.get_fitness())
         else:
             pass
+
+class TaylorGPEvaluator(Operator):
+    def __init__(self):
+        super().__init__()
+    
+    def do(self, population=None):
+        return super().do(population)

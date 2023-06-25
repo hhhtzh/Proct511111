@@ -138,3 +138,13 @@ class OperonMutation(Mutation):
                     population.pop_type = "Operon"
                 else:
                     pass
+
+
+class TaylorGPMutation(Mutation):
+    def __init__(self):
+        super().__init__()
+    
+    def do(self, population):
+        return super().do(population)
+    
+

@@ -133,3 +133,11 @@ class OperonReinserter(Reinserter):
 
         else:
             print("true:" + str(population.pop_type) + str(self.pool.pop_type))
+
+
+class TaylorGPReinserter(Reinserter):
+    def __init__(self):
+        super().__init__()
+
+    def do(self, population=None):
+        return super().do(population)

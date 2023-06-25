@@ -111,3 +111,10 @@ class OperonCrossover(Crossover):
             new_pop_size = len(population.target_pop_list)
             population.set_pop_size(new_pop_size)
             population.self_pop_enable = False
+
+class TaylorGPCrossover(Crossover):
+    def __init__(self):
+        super().__init__()
+    
+    def do(self, population=None):
+        return super().do(population)

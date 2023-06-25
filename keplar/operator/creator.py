@@ -136,4 +136,11 @@ class uDSR_Creator(Creator):
             self.population.pop_type = "uDSR"
             self.population.target_pop_list = self.T
             return self.population
+        
+class TaylorGPCreator(Creator):
+    def __init__(self):
+        super().__init__()
+
+    def do(self, population=None):
+        return super().do(population)
 
