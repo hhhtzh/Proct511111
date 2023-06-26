@@ -176,6 +176,12 @@ class TaylorGP_pre2(Operator):
         self.population_size = 1000
         self.n_components=None
         self.function_set=('add', 'sub', 'mul', 'div')
+        self.metric = 'rmse'
+        self.p_crossover = 0.9
+        self.p_subtree_mutation=0.01,
+        self.p_hoist_mutation=0.01,
+        self.p_point_mutation=0.01,
+        self.p_point_replace=0.05,
 
     def do(self, population=None):
         # return super().do(population)
