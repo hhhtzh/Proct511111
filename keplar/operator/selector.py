@@ -9,9 +9,9 @@ from bingo.symbolic_regression import AGraph
 from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 from keplar.population.population import Population
-import pyoperon as Operon
+# import pyoperon as Operon
 
-from keplar.translator.translator import bingo_infixstr_to_func
+# from keplar.translator.translator import bingo_infixstr_to_func
 
 
 class Selector(Operator):
@@ -74,16 +74,16 @@ class BingoSelector(Operator):
         return new_pop
 
 
-class OperonSelector(Selector):
-    def __init__(self, tour_size):
-        super().__init__()
-        self.selector = None
-        self.tour_size = tour_size
+# class OperonSelector(Selector):
+#     def __init__(self, tour_size):
+#         super().__init__()
+#         self.selector = None
+#         self.tour_size = tour_size
 
-    def do(self, population=None):
-        self.selector = Operon.TournamentSelector(objective_index=0)
-        self.selector.TournamentSize = 5
-        return self.selector
+#     def do(self, population=None):
+#         self.selector = Operon.TournamentSelector(objective_index=0)
+#         self.selector.TournamentSize = 5
+#         return self.selector
     
 
 class TaylorGPSelector(Selector):

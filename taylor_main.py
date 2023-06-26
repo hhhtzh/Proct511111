@@ -8,6 +8,7 @@ from keplar.operator.selector import TaylorGPSelector
 from keplar.operator.crossover import TaylorGPCrossover
 from keplar.operator.mutation import TaylorGPMutation
 from keplar.operator.reinserter import TaylorGPReinserter
+from keplar.operator.Taylor_prework import TaylorGP_Pre1,TaylorGP_pre2
 
 data = Data("pmlb", "1027_ESL",["x1","x2","x3","x4",'y'])
 data.read_file()
@@ -15,6 +16,14 @@ x = data.get_x()
 y = data.get_y()
 x = np.array(x)
 y = np.array(y)
+
+taylorGP_pre1 = TaylorGP_Pre1(x,y)
+X, Y, qualified_list =taylorGP_pre1.do()
+print("finish prework!")
+
+taylorGP_pre2 =TaylorGP_pre2(X,Y,qualified_list)
+K = taylorGP_pre2.do()
+print("finally!")
 
 creator = TaylorGPCreator()
 population =creator.do()

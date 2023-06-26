@@ -10,8 +10,8 @@ from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 
 from keplar.population.population import Population
-from keplar.translator.translator import trans_gp, trans_op
-import pyoperon as Operon
+# from keplar.translator.translator import trans_gp, trans_op
+# import pyoperon as Operon
 
 
 class Creator(Operator):
@@ -66,58 +66,58 @@ class GpCreator(Creator):
         return pop
 
 
-class OperonCreator(Creator):
-    def __init__(self, tree_type, np_x, np_y, pop_size, to_type, minL=1, maxL=50, maxD=10, decimalPrecision=5):
-        super().__init__()
-        if tree_type == "balanced" or tree_type == "probabilistic":
-            self.tree_type = tree_type
-        else:
-            raise ValueError("创建树的类型错误")
-        self.maxD = maxD
-        self.minL = minL
-        self.maxL = maxL
-        self.to_type = to_type
-        self.pop_size = pop_size
-        self.decimalPrecision = decimalPrecision
-        np_y = np_y.reshape([-1, 1])
-        self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
-        self.target = self.ds.Variables[-1]
-        self.inputs = Operon.VariableCollection(v for v in self.ds.Variables if v.Name != self.target.Name)
+# class OperonCreator(Creator):
+#     def __init__(self, tree_type, np_x, np_y, pop_size, to_type, minL=1, maxL=50, maxD=10, decimalPrecision=5):
+#         super().__init__()
+#         if tree_type == "balanced" or tree_type == "probabilistic":
+#             self.tree_type = tree_type
+#         else:
+#             raise ValueError("创建树的类型错误")
+#         self.maxD = maxD
+#         self.minL = minL
+#         self.maxL = maxL
+#         self.to_type = to_type
+#         self.pop_size = pop_size
+#         self.decimalPrecision = decimalPrecision
+#         np_y = np_y.reshape([-1, 1])
+#         self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
+#         self.target = self.ds.Variables[-1]
+#         self.inputs = Operon.VariableCollection(v for v in self.ds.Variables if v.Name != self.target.Name)
 
-    def do(self, population=None):
-        pset = Operon.PrimitiveSet()
-        pset.SetConfig(Operon.PrimitiveSet.TypeCoherent)
-        if self.tree_type == "balanced":
-            tree_creator = Operon.BalancedTreeCreator(pset, self.inputs, bias=0.0)
-        elif self.tree_type == "probabilistic":
-            tree_creator = Operon.ProbabilisticTreeCreator(pset, self.inputs, bias=0.0)
-        else:
-            raise ValueError("Operon创建树的类型名称错误")
-        tree_initializer = Operon.UniformLengthTreeInitializer(tree_creator)
-        tree_initializer.ParameterizeDistribution(self.minL, self.maxL)
-        tree_initializer.MaxDepth = self.maxD
-        rng = Operon.RomuTrio(random.randint(1, 1000000))
-        coeff_initializer = Operon.NormalCoefficientInitializer()
-        coeff_initializer.ParameterizeDistribution(0, 1)
-        tree_list = []
-        pop = Population(self.pop_size)
-        pop.pop_type = "Operon"
+#     def do(self, population=None):
+#         pset = Operon.PrimitiveSet()
+#         pset.SetConfig(Operon.PrimitiveSet.TypeCoherent)
+#         if self.tree_type == "balanced":
+#             tree_creator = Operon.BalancedTreeCreator(pset, self.inputs, bias=0.0)
+#         elif self.tree_type == "probabilistic":
+#             tree_creator = Operon.ProbabilisticTreeCreator(pset, self.inputs, bias=0.0)
+#         else:
+#             raise ValueError("Operon创建树的类型名称错误")
+#         tree_initializer = Operon.UniformLengthTreeInitializer(tree_creator)
+#         tree_initializer.ParameterizeDistribution(self.minL, self.maxL)
+#         tree_initializer.MaxDepth = self.maxD
+#         rng = Operon.RomuTrio(random.randint(1, 1000000))
+#         coeff_initializer = Operon.NormalCoefficientInitializer()
+#         coeff_initializer.ParameterizeDistribution(0, 1)
+#         tree_list = []
+#         pop = Population(self.pop_size)
+#         pop.pop_type = "Operon"
 
-        variable_list = self.ds.Variables
-        for i in range(self.pop_size):
-            tree = tree_initializer(rng)
-            coeff_initializer(rng, tree)
-            tree_list.append(tree)
-        pop.check_flag(self.to_type)
-        trans_flag = pop.translate_flag
-        pop.target_pop_list = tree_list
-        if trans_flag:
-            for i in tree_list:
-                func = trans_op(i, variable_list)
-                ind_new = Individual(func=func)
-                pop.append(ind_new)
-                pop.self_pop_enable = True
-        return pop
+#         variable_list = self.ds.Variables
+#         for i in range(self.pop_size):
+#             tree = tree_initializer(rng)
+#             coeff_initializer(rng, tree)
+#             tree_list.append(tree)
+#         pop.check_flag(self.to_type)
+#         trans_flag = pop.translate_flag
+#         pop.target_pop_list = tree_list
+#         if trans_flag:
+#             for i in tree_list:
+#                 func = trans_op(i, variable_list)
+#                 ind_new = Individual(func=func)
+#                 pop.append(ind_new)
+#                 pop.self_pop_enable = True
+#         return pop
 
 
 class uDSR_Creator(Creator):
