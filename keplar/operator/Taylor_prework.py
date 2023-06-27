@@ -21,6 +21,8 @@ from warnings import warn
 from TaylorGP.src.taylorGP.utils import _partition_estimators
 from joblib import Parallel, delayed #自动创建进程池执行并行化操作
 import itertools
+from sklearn.base import RegressorMixin, TransformerMixin, ClassifierMixin
+
 
 
 
@@ -177,11 +179,24 @@ class TaylorGP_pre2(Operator):
         self.n_components=None
         self.function_set=('add', 'sub', 'mul', 'div')
         self.metric = 'rmse'
-        self.p_crossover = 0.9
-        self.p_subtree_mutation=0.01,
-        self.p_hoist_mutation=0.01,
-        self.p_point_mutation=0.01,
-        self.p_point_replace=0.05,
+        self.p_crossover=0.9
+        self.p_subtree_mutation=0.01
+        self.p_hoist_mutation=0.01
+        self.p_point_mutation=0.01
+        self.p_point_replace=0.05
+
+        self.init_method='half and half'
+        self.const_range=(-1., 1.)
+        self.init_depth=(2, 6)
+        self.feature_names=None
+        self.transformer =None
+
+
+        # self.p_crossover = 0.9
+        # self.p_subtree_mutation=0.01,
+        # self.p_hoist_mutation=0.01,
+        # self.p_point_mutation=0.01,
+        # self.p_point_replace=0.05,
 
     def do(self, population=None):
         # return super().do(population)
@@ -274,6 +289,7 @@ class TaylorGP_pre2(Operator):
                                        self.p_subtree_mutation,
                                        self.p_hoist_mutation,
                                        self.p_point_mutation])
+        
         self._method_probs = np.cumsum(self._method_probs)
 
         if self._method_probs[-1] > 1:

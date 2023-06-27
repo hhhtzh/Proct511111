@@ -3,7 +3,7 @@ import re
 import numpy as np
 import pandas as pd
 import pyoperon as Operon
-
+import conversion
 from bingo.symbolic_regression import AGraph
 from keplar.data.data import Data
 from keplar.operator.feature_engineering import FeatureEngineering
@@ -80,8 +80,9 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # dataset.read_file()
 # fea_en = FeatureEngineering(["PCA", "filter"], dataset)
 # fea_en.do()
-# Operon.MakeSpan()
-a=[1,2,3]
-print(a.pop())
-print("---")
-print(a)
+# Operon.MakeSpan().
+# ind=Operon.Individual()
+# const_list=Operon.IndividualCollection()
+# sel=Operon.RandomSelector()
+# print(type(const_list))
+# ws=Operon.OffspringGeneratorBase.Prepare(const_list)
