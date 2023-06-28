@@ -4,7 +4,7 @@ import numpy as np
 from time import time,sleep
 from sympy import *
 
-from TaylorGP.src.taylorGP.genetic import alarm_handler,MAX_INT,_parallel_evolve
+from TaylorGP.src.taylorGP.genetic import alarm_handler,MAX_INT,_parallel_evolve,BaseEstimator
 from TaylorGP.src.taylorGP.calTaylor import Metrics,Metrics2
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error  # 均方误差
@@ -22,6 +22,11 @@ from TaylorGP.src.taylorGP.utils import _partition_estimators
 from joblib import Parallel, delayed #自动创建进程池执行并行化操作
 import itertools
 from sklearn.base import RegressorMixin, TransformerMixin, ClassifierMixin
+from sklearn.base import BaseEstimator
+# from sklearn.base.BaseEstimator
+
+# from sklearn.base import BaseEstimator
+
 
 
 
@@ -166,18 +171,18 @@ class TaylorGP_Pre1(Operator):
 
             print("TimeOutException catched in fit()")
 
-class TaylorGP_pre2(Operator):
+class TaylorGP_pre2(Operator,BaseEstimator):
     def __init__(self,X,Y, qualified_list):
         super().__init__()
         self.X =X
-        self.y =Y
+        self.Y =Y
         self.qualified_list =qualified_list
         self.random_state =None
         self.sample_weight =None
         self.hall_of_fame =None
         self.population_size = 1000
         self.n_components=None
-        self.function_set=('add', 'sub', 'mul', 'div')
+        self.function_set=['add', 'sub', 'mul', 'div', 'sin', 'cos', 'log', 'exp', 'sqrt']
         self.metric = 'rmse'
         self.p_crossover=0.9
         self.p_subtree_mutation=0.01
@@ -190,6 +195,16 @@ class TaylorGP_pre2(Operator):
         self.init_depth=(2, 6)
         self.feature_names=None
         self.transformer =None
+        self._metric= None
+        self.warm_start =False
+        self.generations=20
+        self.verbose =0
+        self.n_jobs =1
+        self.tournament_size = 20
+        self.parsimony_coefficient =0.01
+        self.max_samples  =1.0
+        # self.feature_names
+
 
 
         # self.p_crossover = 0.9
@@ -228,7 +243,7 @@ class TaylorGP_pre2(Operator):
             self.n_classes_ = len(self.classes_)
 
         else:
-            X, y = check_X_y(self.X, self.y, y_numeric=True)
+            X, y = check_X_y(self.X, self.Y, y_numeric=True)
 
         _, self.n_features_ = X.shape
 
@@ -339,6 +354,20 @@ class TaylorGP_pre2(Operator):
 
         params = self.get_params()
         params['_metric'] = self._metric
+
+        params['tournament_size']  = self.tournament_size
+        params['init_depth'] = self.init_depth
+        params['init_method'] = self.init_method
+        params['const_range'] =self.const_range
+        params['parsimony_coefficient'] = self.parsimony_coefficient
+        params['p_point_replace'] =self.p_point_replace
+        params['max_samples'] =self.max_samples
+        params['feature_names'] =self.feature_names
+        
+
+
+
+
         if hasattr(self, '_transformer'):
             params['_transformer'] = self._transformer
         else:
