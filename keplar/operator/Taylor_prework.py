@@ -392,6 +392,7 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
 
 
         print(selected_space)
+        print(len(selected_space))
 
         if not self.warm_start or not hasattr(self, '_programs'):
             # Free allocated memory, if any
@@ -406,7 +407,7 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
 
         prior_generations = len(self._programs)
 
-        print(self._programs)
+        # print(self._programs)
         n_more_generations = self.generations - prior_generations
 
         print(n_more_generations )
@@ -463,6 +464,10 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
 
             # Reduce, maintaining order across different n_jobs
             population = list(itertools.chain.from_iterable(population))
+            print("ttttttttt")
+
+            print(population[110].__str__())
+
             #父子代合并
             if parents is not None:
                 population.extend(parents)
@@ -532,28 +537,28 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
                 # Remove old generations
                 self._programs[gen - 1] = None
 
-            # Record run details
-            if self._metric.greater_is_better:
-                best_program = population[np.argmax(fitness)]#按惩罚项的fitness排序
-                best_program_fitness_ = population[np.argmax(fitness_)]
-            else:
-                best_program = population[np.argmin(fitness)]
-                best_program_fitness_ = population[np.argmin(fitness_)]
+            # # Record run details
+            # if self._metric.greater_is_better:
+            #     best_program = population[np.argmax(fitness)]#按惩罚项的fitness排序
+            #     best_program_fitness_ = population[np.argmax(fitness_)]
+            # else:
+            #     best_program = population[np.argmin(fitness)]
+            #     best_program_fitness_ = population[np.argmin(fitness_)]
 
-            self.run_details_['generation'].append(gen)
-            self.run_details_['average_length'].append(np.mean(length))
-            self.run_details_['average_fitness'].append(np.mean(fitness_))
-            self.run_details_['best_length'].append(best_program.length_)
-            self.run_details_['best_fitness'].append(best_program.fitness_)
-            oob_fitness = np.nan
-            if self.max_samples < 1.0:
-                oob_fitness = best_program.oob_fitness_
-            self.run_details_['best_oob_fitness'].append(oob_fitness)
-            generation_time = time() - start_time
-            self.run_details_['generation_time'].append(generation_time)
+            # self.run_details_['generation'].append(gen)
+            # self.run_details_['average_length'].append(np.mean(length))
+            # self.run_details_['average_fitness'].append(np.mean(fitness_))
+            # self.run_details_['best_length'].append(best_program.length_)
+            # self.run_details_['best_fitness'].append(best_program.fitness_)
+            # oob_fitness = np.nan
+            # if self.max_samples < 1.0:
+            #     oob_fitness = best_program.oob_fitness_
+            # self.run_details_['best_oob_fitness'].append(oob_fitness)
+            # generation_time = time() - start_time
+            # self.run_details_['generation_time'].append(generation_time)
 
-            if self.verbose:
-                self._verbose_reporter(self.run_details_)
+            # if self.verbose:
+            #     self._verbose_reporter(self.run_details_)
 
             # Check for early stopping
             if self._metric.greater_is_better:
@@ -565,47 +570,47 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
                 if best_fitness <= self.stopping_criteria:
                     break
 
-        if isinstance(self, TransformerMixin):
-            # Find the best individuals in the final generation
-            fitness = np.array(fitness_)
-            if self._metric.greater_is_better:
-                hall_of_fame = fitness.argsort()[::-1][:self.hall_of_fame]
-            else:
-                hall_of_fame = fitness.argsort()[:self.hall_of_fame]
-            evaluation = np.array([gp.execute(X) for gp in
-                                   [self._programs[-1][i] for
-                                    i in hall_of_fame]])
-            if self.metric == 'spearman':
-                evaluation = np.apply_along_axis(rankdata, 1, evaluation)
+        # if isinstance(self, TransformerMixin):
+        #     # Find the best individuals in the final generation
+        #     fitness = np.array(fitness_)
+        #     if self._metric.greater_is_better:
+        #         hall_of_fame = fitness.argsort()[::-1][:self.hall_of_fame]
+        #     else:
+        #         hall_of_fame = fitness.argsort()[:self.hall_of_fame]
+        #     evaluation = np.array([gp.execute(X) for gp in
+        #                            [self._programs[-1][i] for
+        #                             i in hall_of_fame]])
+        #     if self.metric == 'spearman':
+        #         evaluation = np.apply_along_axis(rankdata, 1, evaluation)
 
-            with np.errstate(divide='ignore', invalid='ignore'):
-                correlations = np.abs(np.corrcoef(evaluation))
-            np.fill_diagonal(correlations, 0.)
-            components = list(range(self.hall_of_fame))
-            indices = list(range(self.hall_of_fame))
-            # Iteratively remove least fit individual of most correlated pair
-            while len(components) > self.n_components:
-                most_correlated = np.unravel_index(np.argmax(correlations),
-                                                   correlations.shape)
-                # The correlation matrix is sorted by fitness, so identifying
-                # the least fit of the pair is simply getting the higher index
-                worst = max(most_correlated)
-                components.pop(worst)
-                indices.remove(worst)
-                correlations = correlations[:, indices][indices, :]
-                indices = list(range(len(components)))
-            self._best_programs = [self._programs[-1][i] for i in
-                                   hall_of_fame[components]]
+        #     with np.errstate(divide='ignore', invalid='ignore'):
+        #         correlations = np.abs(np.corrcoef(evaluation))
+        #     np.fill_diagonal(correlations, 0.)
+        #     components = list(range(self.hall_of_fame))
+        #     indices = list(range(self.hall_of_fame))
+        #     # Iteratively remove least fit individual of most correlated pair
+        #     while len(components) > self.n_components:
+        #         most_correlated = np.unravel_index(np.argmax(correlations),
+        #                                            correlations.shape)
+        #         # The correlation matrix is sorted by fitness, so identifying
+        #         # the least fit of the pair is simply getting the higher index
+        #         worst = max(most_correlated)
+        #         components.pop(worst)
+        #         indices.remove(worst)
+        #         correlations = correlations[:, indices][indices, :]
+        #         indices = list(range(len(components)))
+        #     self._best_programs = [self._programs[-1][i] for i in
+        #                            hall_of_fame[components]]
 
-        else:
-            # Find the best individual in the final generation
-            if self._metric.greater_is_better:
-                self._program = self._programs[-1][np.argmax(fitness)]
-            else:
-                self._program = self._programs[-1][np.argmin(fitness)]
-        if  self._program.raw_fitness_ <self.global_fitness:
-            self.sympy_global_best = sympify(self._program)
-            self.global_fitness = self._program.raw_fitness_
-            self.best_is_gp = True
+        # else:
+        #     # Find the best individual in the final generation
+        #     if self._metric.greater_is_better:
+        #         self._program = self._programs[-1][np.argmax(fitness)]
+        #     else:
+        #         self._program = self._programs[-1][np.argmin(fitness)]
+        # if  self._program.raw_fitness_ <self.global_fitness:
+        #     self.sympy_global_best = sympify(self._program)
+        #     self.global_fitness = self._program.raw_fitness_
+        #     self.best_is_gp = True
 
-        return self
+        # return self
