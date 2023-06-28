@@ -1,10 +1,10 @@
 import random
 
 from keplar.operator.operator import Operator
-# import pyoperon as Operon
+import pyoperon as Operon
 
 from keplar.population.population import Population
-# from keplar.translator.translator import to_op
+from keplar.translator.translator import to_op
 
 
 class Reinserter(Operator):
