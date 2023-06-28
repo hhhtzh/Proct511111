@@ -3,6 +3,7 @@ import time
 
 import numpy as np
 
+from TaylorGP.TaylorGP import CalTaylorFeatures
 from TaylorGP.src.taylorGP.calTaylor import Metrics
 from bingo.symbolic_regression.agraph.string_parsing import postfix_to_command_array_and_constants
 from gplearn.genetic import SymbolicRegressor
@@ -199,3 +200,26 @@ class TaylorGPCreator(Creator):
             else:  # 拟合失败后Taylor特征的判别以数据集为准
                 self.metric.bias = 0.
                 print('拟合失败')
+            Pop = 1000
+            end_fitness, program = None, None
+            if metric.judge_Low_polynomial():
+                self.end_fitness, self.program = metric.low_nmse, metric.f_low_taylor
+                return "end"
+            elif metric.nihe_flag and (metric.judge_additi_separability() or metric.judge_multi_separability()):
+                self.end_fitness, self.program = CalTaylorFeatures(metric.f_taylor, _x[:X.shape[1]], X, Y, Pop,
+                                                                   repeatNum,
+                                                                   eq_write)
+                # nihe_flag, low_polynomial, qualified_list, Y = cal_Taylor_features(varNum=X.shape[1], fileNum=fileNum, Y=Y)
+            else:  # 针对多变量不能拟合：仅根据数据集获取边界以及单调性指导SR--放在Taylor特征判别处理
+
+                qualified_list = []
+                qualified_list.extend(
+                    [metric.judge_Bound(),
+                     metric.f_low_taylor,
+                     metric.low_mse,
+                     metric.bias,
+                     metric.judge_parity(),
+                     metric.judge_monotonicity()])
+                print(qualified_list)
+                end_fitness, program = Taylor_Based_SR(_x, X, metric.change_Y(Y), qualified_list, eq_write, Pop,
+                                                       repeatNum, metric.low_mse < 1e-5)
