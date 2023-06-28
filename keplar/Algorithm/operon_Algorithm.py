@@ -12,10 +12,13 @@ gen = 0
 max_ticks = 50
 
 t0 = time.time()
+
+
 class OperonAlg(Alg):
-    def __init__(self, max_generation, up_op_list, down_op_list, eva_op_list, sel,
-                 error_tolerance, population_size, threads_num, np_x, np_y, minL=1, maxL=50, maxD=10, decimalPrecision=5,population=None):
-        super().__init__(max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population)
+    def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, sel,
+                 error_tolerance, population_size, threads_num, np_x, np_y, minL=1, maxL=50, maxD=10,
+                 decimalPrecision=5, population=None):
+        super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
         self.population_size = population_size
         self.threads_num = threads_num
         self.sel = sel
@@ -31,7 +34,7 @@ class OperonAlg(Alg):
     def run(self):
         selector = self.sel.do()
         target = self.ds.Variables[-1]
-        eva = self.eva_op_list[0]
+        eva = self.eval_op_list[0]
         training_range = Operon.Range(0, int(self.ds.Rows * eva.training_p))
         test_range = Operon.Range(int(self.ds.Rows * eva.training_p), self.ds.Rows)
         interpreter = Operon.Interpreter()
@@ -101,7 +104,6 @@ class OperonAlg(Alg):
         gp = Operon.GeneticProgrammingAlgorithm(problem, config, tree_initializer, coeff_initializer, generator,
                                                 reinsert)
         interval = 1 if config.Generations < max_ticks else int(np.round(config.Generations / max_ticks, 0))
-
 
         def report():
             global gen

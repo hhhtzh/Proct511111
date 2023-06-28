@@ -66,7 +66,7 @@ class Metrics:
         self.model = model
         self.f_taylor = 0
         self.f_low_taylor = 0
-        self.fileName = fileName
+        self.fileNum = fileName
         self.dataSet = dataSet
         self.classNum = classNum
         self.x, self.y, self.z, self.v, self.w = symbols("x,y,z,v,w")

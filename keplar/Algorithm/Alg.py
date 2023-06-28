@@ -5,7 +5,9 @@ import numpy as np
 
 from keplar.operator.composite_operator import CompositeOp
 # from keplar.operator.reinserter import OperonReinserter, KeplarReinserter
-# import pyoperon as Operon
+import pyoperon as Operon
+
+from keplar.operator.reinserter import KeplarReinserter
 
 
 # class SR_Alg(CompositeOp):

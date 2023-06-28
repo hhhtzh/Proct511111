@@ -6,7 +6,6 @@ from keplar.operator.creator import OperonCreator
 from keplar.operator.crossover import OperonCrossover
 from keplar.operator.evaluator import OperonEvaluator
 from keplar.operator.mutation import OperonMutation
-from keplar.operator.reinserter import OperonReinserter
 from keplar.operator.selector import BingoSelector
 
 data = Data("txt", "datasets/1.txt", ["x", "y"])

@@ -1,11 +1,11 @@
 from keplar.operator.operator import Operator
 import signal
 import numpy as np
-from time import time,sleep
+from time import time, sleep
 from sympy import *
 
-from TaylorGP.src.taylorGP.genetic import alarm_handler,MAX_INT,_parallel_evolve
-from TaylorGP.src.taylorGP.calTaylor import Metrics,Metrics2
+from TaylorGP.src.taylorGP.genetic import alarm_handler, MAX_INT, _parallel_evolve
+from TaylorGP.src.taylorGP.calTaylor import Metrics, Metrics2
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error  # 均方误差
 
@@ -16,29 +16,27 @@ from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils import compute_sample_weight
 from TaylorGP.src.taylorGP.functions import _function_map, _Function, sig1 as sigmoid
 from TaylorGP.src.taylorGP.fitness import _fitness_map, _Fitness
-from TaylorGP.src.taylorGP.judge_bound import select_space , cal_spacebound
+from TaylorGP.src.taylorGP.judge_bound import select_space, cal_spacebound
 from warnings import warn
 from TaylorGP.src.taylorGP.utils import _partition_estimators
-from joblib import Parallel, delayed #自动创建进程池执行并行化操作
+from joblib import Parallel, delayed  # 自动创建进程池执行并行化操作
 import itertools
 from sklearn.base import RegressorMixin, TransformerMixin, ClassifierMixin
-
-
 
 
 class TimeOutException(Exception):
     pass
 
+
 class TaylorGP_Pre1(Operator):
-    def __init__(self,X,y):
+    def __init__(self, X, y):
         super().__init__()
 
-        self.X =X
-        self.y =y
+        self.X = X
+        self.y = y
 
-        self.max_time =60
+        self.max_time = 60
 
-    
     def do(self, population=None):
         # return super().do(population)
         signal.signal(signal.SIGALRM, alarm_handler)
@@ -54,16 +52,16 @@ class TaylorGP_Pre1(Operator):
             # np.expand_dims(y,axis=1)
             y = self.y[:, np.newaxis]
             # y= y.reshape(-1)
-            X_Y = np.concatenate((self.X,y),axis=1)
+            X_Y = np.concatenate((self.X, y), axis=1)
             print(X_Y.shape)
 
             # X_Y = np.array(X)[1:].astype(np.float)
-            x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21,\
-            x22, x23, x24, x25, x26, x27, x28, x29, x30, x31, x32, x33, x34, x35, x36, x37, x38, x39, x40, x41, x42,\
-            x43, x44, x45, x46, x47, x48, x49,\
-            x50, x51, x52, x53, x54, x55, x56, x57, x58, x59, x60, x61, x62, x63, x64, x65, x66, x67, x68, x69, x70,\
-            x71, x72, x73, x74, x75, x76, x77, x78, x79,\
-            x80, x81, x82, x83, x84, x85, x86, x87, x88, x89, x90, x91, x92, x93, x94, x95, x96, x97, x98, x99, x100 = symbols(
+            x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, \
+                x22, x23, x24, x25, x26, x27, x28, x29, x30, x31, x32, x33, x34, x35, x36, x37, x38, x39, x40, x41, x42, \
+                x43, x44, x45, x46, x47, x48, x49, \
+                x50, x51, x52, x53, x54, x55, x56, x57, x58, x59, x60, x61, x62, x63, x64, x65, x66, x67, x68, x69, x70, \
+                x71, x72, x73, x74, x75, x76, x77, x78, x79, \
+                x80, x81, x82, x83, x84, x85, x86, x87, x88, x89, x90, x91, x92, x93, x94, x95, x96, x97, x98, x99, x100 = symbols(
                 "x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21,\
                   x22, x23, x24, x25, x26, x27, x28, x29, x30, x31, x32, x33, x34, x35, x36, x37, x38, x39, x40, x41, x42,\
                   x43, x44, x45, x46, x47, x48, x49,\
@@ -71,11 +69,14 @@ class TaylorGP_Pre1(Operator):
                   x71, x72, x73, x74, x75, x76, x77, x78, x79,\
                   x80, x81, x82, x83, x84, x85, x86, x87, x88, x89, x90, x91, x92, x93, x94, x95, x96, x97, x98, x99, x100 ")
             _x = [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21,
-                  x22, x23, x24, x25, x26, x27, x28, x29, x30, x31, x32, x33, x34, x35, x36, x37, x38, x39, x40, x41, x42,
+                  x22, x23, x24, x25, x26, x27, x28, x29, x30, x31, x32, x33, x34, x35, x36, x37, x38, x39, x40, x41,
+                  x42,
                   x43, x44, x45, x46, x47, x48, x49,
-                  x50, x51, x52, x53, x54, x55, x56, x57, x58, x59, x60, x61, x62, x63, x64, x65, x66, x67, x68, x69, x70,
+                  x50, x51, x52, x53, x54, x55, x56, x57, x58, x59, x60, x61, x62, x63, x64, x65, x66, x67, x68, x69,
+                  x70,
                   x71, x72, x73, x74, x75, x76, x77, x78, x79,
-                  x80, x81, x82, x83, x84, x85, x86, x87, x88, x89, x90, x91, x92, x93, x94, x95, x96, x97, x98, x99, x100]
+                  x80, x81, x82, x83, x84, x85, x86, x87, x88, x89, x90, x91, x92, x93, x94, x95, x96, x97, x98, x99,
+                  x100]
             self._x = _x
             average_fitness = 0
             repeat = 1
@@ -91,11 +92,11 @@ class TaylorGP_Pre1(Operator):
                         if ((X_Y[i] == X_Y[j]).all()):
                             print("data is same in :" + str(i) + " " + str(j))            
                 '''
-                #使用去重后的数据计算Taylor展开式
+                # 使用去重后的数据计算Taylor展开式
                 metric = Metrics(varNum=self.X.shape[1], dataSet=np.unique(X_Y, axis=0))
                 loopNum += 1
                 Metric.append(metric)
-                if metric.nmse >10000:
+                if metric.nmse > 10000:
                     print("use Linear regression")
                     break
                 if loopNum == 6 and self.X.shape[1] <= 2:
@@ -120,7 +121,7 @@ class TaylorGP_Pre1(Operator):
                 lr_est = LinearRegression().fit(self.X, y)
                 print('coef: ', lr_est.coef_)
                 print('intercept: ', lr_est.intercept_)
-                lr_nmse = mean_squared_error(lr_est.predict(self.X),y,squared=False)
+                lr_nmse = mean_squared_error(lr_est.predict(self.X), y, squared=False)
                 if lr_nmse < metric.nmse:
                     metric.nmse = lr_nmse
                     metric.low_nmse = lr_nmse
@@ -130,7 +131,7 @@ class TaylorGP_Pre1(Operator):
                             f += '+' + str(lr_est.coef_[0][i]) + '*x' + str(i)
                         else:
                             f += str(lr_est.coef_[0][i]) + '*x' + str(i)
-                    print("f_lr and nmse_lr"+f + "  "+str(lr_nmse))
+                    print("f_lr and nmse_lr" + f + "  " + str(lr_nmse))
                     '''
                     fitness = mean_squared_error(lr_est.predict(test_X), test_y, squared=False)  # RMSE
                     print('LR_predict_fitness: ', fitness)                
@@ -152,7 +153,7 @@ class TaylorGP_Pre1(Operator):
             else:
                 qualified_list = []
                 qualified_list.extend(
-                    [metric.judge_Bound(),#ok
+                    [metric.judge_Bound(),  # ok
                      metric.f_low_taylor,
                      metric.low_nmse,
                      metric.bias,
@@ -162,35 +163,35 @@ class TaylorGP_Pre1(Operator):
 
                 return self.X, metric.change_Y(y), qualified_list
 
-        except TimeOutException :
+        except TimeOutException:
 
             print("TimeOutException catched in fit()")
 
+
 class TaylorGP_pre2(Operator):
-    def __init__(self,X,Y, qualified_list):
+    def __init__(self, X, Y, qualified_list):
         super().__init__()
-        self.X =X
-        self.y =Y
-        self.qualified_list =qualified_list
-        self.random_state =None
-        self.sample_weight =None
-        self.hall_of_fame =None
+        self.X = X
+        self.y = Y
+        self.qualified_list = qualified_list
+        self.random_state = None
+        self.sample_weight = None
+        self.hall_of_fame = None
         self.population_size = 1000
-        self.n_components=None
-        self.function_set=('add', 'sub', 'mul', 'div')
+        self.n_components = None
+        self.function_set = ('add', 'sub', 'mul', 'div')
         self.metric = 'rmse'
-        self.p_crossover=0.9
-        self.p_subtree_mutation=0.01
-        self.p_hoist_mutation=0.01
-        self.p_point_mutation=0.01
-        self.p_point_replace=0.05
+        self.p_crossover = 0.9
+        self.p_subtree_mutation = 0.01
+        self.p_hoist_mutation = 0.01
+        self.p_point_mutation = 0.01
+        self.p_point_replace = 0.05
 
-        self.init_method='half and half'
-        self.const_range=(-1., 1.)
-        self.init_depth=(2, 6)
-        self.feature_names=None
-        self.transformer =None
-
+        self.init_method = 'half and half'
+        self.const_range = (-1., 1.)
+        self.init_depth = (2, 6)
+        self.feature_names = None
+        self.transformer = None
 
         # self.p_crossover = 0.9
         # self.p_subtree_mutation=0.01,
@@ -200,7 +201,8 @@ class TaylorGP_pre2(Operator):
 
     def do(self, population=None):
         # return super().do(population)
-        low_bound, high_bound, var_bound = self.qualified_list[0][0][0],self.qualified_list[0][0][1],self.qualified_list[0][1]
+        low_bound, high_bound, var_bound = self.qualified_list[0][0][0], self.qualified_list[0][0][1], \
+        self.qualified_list[0][1]
         random_state = check_random_state(self.random_state)
 
         # Check arrays
@@ -216,7 +218,7 @@ class TaylorGP_pre2(Operator):
                     self.sample_weight = 1.
                 # modify the sample weights with the corresponding class weight
                 self.sample_weight = (self.sample_weight *
-                                 compute_sample_weight(self.class_weight, y))
+                                      compute_sample_weight(self.class_weight, y))
 
             self.classes_, y = np.unique(y, return_inverse=True)
             n_trim_classes = np.count_nonzero(np.bincount(y, self.sample_weight))
@@ -264,7 +266,7 @@ class TaylorGP_pre2(Operator):
 
         # For point-mutation to find a compatible replacement node
         self._arities = {}
-        for function in self._function_set: # 以函数集的arity个数对函数集划分
+        for function in self._function_set:  # 以函数集的arity个数对函数集划分
             arity = function.arity
             self._arities[arity] = self._arities.get(arity, [])
             self._arities[arity].append(function)
@@ -289,7 +291,7 @@ class TaylorGP_pre2(Operator):
                                        self.p_subtree_mutation,
                                        self.p_hoist_mutation,
                                        self.p_point_mutation])
-        
+
         self._method_probs = np.cumsum(self._method_probs)
 
         if self._method_probs[-1] > 1:
@@ -302,8 +304,8 @@ class TaylorGP_pre2(Operator):
                              '"grow", "full" and "half and half". Given %s.'
                              % self.init_method)
 
-        if not((isinstance(self.const_range, tuple) and
-                len(self.const_range) == 2) or self.const_range is None):
+        if not ((isinstance(self.const_range, tuple) and
+                 len(self.const_range) == 2) or self.const_range is None):
             raise ValueError('const_range should be a tuple with length two, '
                              'or None.')
 
@@ -347,11 +349,13 @@ class TaylorGP_pre2(Operator):
         params['arities'] = self._arities
         params['method_probs'] = self._method_probs
         const_flag = True
-        if self.const_range ==None:
+        if self.const_range == None:
             const_flag = False
-        selected_space = select_space(cal_spacebound(self.function_set, self.n_features_,var_bound,const_flag=const_flag),low_bound,high_bound)
+        selected_space = select_space(
+            cal_spacebound(self.function_set, self.n_features_, var_bound, const_flag=const_flag), low_bound,
+            high_bound)
         params['selected_space'] = selected_space
-        self.qualified_list = [self.qualified_list[-2],self.qualified_list[-1] ]
+        self.qualified_list = [self.qualified_list[-2], self.qualified_list[-1]]
         params['qualified_list'] = self.qualified_list
         params['eq_write'] = None
         if not self.warm_start or not hasattr(self, '_programs'):
@@ -386,7 +390,7 @@ class TaylorGP_pre2(Operator):
         if self.verbose:
             # Print header fields
             self._verbose_reporter()
-        #编写代码：1.父子代合并   2.非域排序   3.拥挤度排序
+        # 编写代码：1.父子代合并   2.非域排序   3.拥挤度排序
         best_program = None
         best_program_fitness_ = None
         for gen in range(prior_generations, self.generations):
@@ -417,14 +421,14 @@ class TaylorGP_pre2(Operator):
 
             # Reduce, maintaining order across different n_jobs
             population = list(itertools.chain.from_iterable(population))
-            #父子代合并
+            # 父子代合并
             if parents is not None:
                 population.extend(parents)
-            #多目标优化中保存了父代和子代，所以不需要单独向种群中添加父代最优个体了
+            # 多目标优化中保存了父代和子代，所以不需要单独向种群中添加父代最优个体了
             # if top1Flag:
             #     population.append(best_program_fitness_)
             #     population.append(best_program)
-            #快速非支配排序+多余front[k]的拥挤度排序--->筛选出新父代
+            # 快速非支配排序+多余front[k]的拥挤度排序--->筛选出新父代
             temp_index = self.fast_non_dominated_sort(population)
             '''
             for subPop in temp_index:
@@ -440,10 +444,10 @@ class TaylorGP_pre2(Operator):
             for subPop in temp_index:
                 pre_temp_popSize = temp_popSize
                 temp_popSize += len(subPop)
-                if temp_popSize >self.population_size:
-                    reminder = self.population_size-pre_temp_popSize
+                if temp_popSize > self.population_size:
+                    reminder = self.population_size - pre_temp_popSize
                     # print("temp_popSize: ",temp_popSize,"reminder: ",reminder)
-                    reminder_subPopulation.extend(self.select_by_crowding_distance(population,subPop,reminder))
+                    reminder_subPopulation.extend(self.select_by_crowding_distance(population, subPop, reminder))
                     # print("reminder_subPopulation: ",reminder_subPopulation)
                     break
                 else:
@@ -451,10 +455,10 @@ class TaylorGP_pre2(Operator):
             # print("len(population_index):",len(population_index),"population_index: ",population_index)
             # population_index = sum(temp_index , [])[:self.population_size]
             population = [population[i] for i in population_index]
-            if reminder_subPopulation !=[]:
+            if reminder_subPopulation != []:
                 population.extend(reminder_subPopulation)
             # print("实际种群数量=", len(population))
-            #if gen % 100 ==0:
+            # if gen % 100 ==0:
             #    print("实际种群数量=", len(population),population[0],population[200],population[400],population[-1])
             fitness = [program.raw_fitness_ for program in population]
             length = [program.length_ for program in population]
@@ -488,7 +492,7 @@ class TaylorGP_pre2(Operator):
 
             # Record run details
             if self._metric.greater_is_better:
-                best_program = population[np.argmax(fitness)]#按惩罚项的fitness排序
+                best_program = population[np.argmax(fitness)]  # 按惩罚项的fitness排序
                 best_program_fitness_ = population[np.argmax(fitness_)]
             else:
                 best_program = population[np.argmin(fitness)]
@@ -557,7 +561,7 @@ class TaylorGP_pre2(Operator):
                 self._program = self._programs[-1][np.argmax(fitness)]
             else:
                 self._program = self._programs[-1][np.argmin(fitness)]
-        if  self._program.raw_fitness_ <self.global_fitness:
+        if self._program.raw_fitness_ < self.global_fitness:
             self.sympy_global_best = sympify(self._program)
             self.global_fitness = self._program.raw_fitness_
             self.best_is_gp = True
