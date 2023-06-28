@@ -1,7 +1,9 @@
 import random
+import time
 
 import numpy as np
 
+from TaylorGP.src.taylorGP.calTaylor import Metrics
 from bingo.symbolic_regression.agraph.string_parsing import postfix_to_command_array_and_constants
 from gplearn.genetic import SymbolicRegressor
 
@@ -121,7 +123,7 @@ class OperonCreator(Creator):
 
 
 class uDSR_Creator(Creator):
-    def __init__(self,T):
+    def __init__(self, T):
         super().__init__()
         self.T = T
         self.population = None
@@ -136,11 +138,64 @@ class uDSR_Creator(Creator):
             self.population.pop_type = "uDSR"
             self.population.target_pop_list = self.T
             return self.population
-        
+
+
 class TaylorGPCreator(Creator):
-    def __init__(self):
+    def __init__(self, data, output_fileName):
         super().__init__()
+        self.data = data
+        self.program = None
+        self.end_fitness = None
+        self.metric = None
+        self.output_fileName = output_fileName
 
     def do(self, population=None):
-        return super().do(population)
-
+        x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29 = symbols(
+            "x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,x28,x29 ")
+        _x = [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22,
+              x23, x24, x25, x26, x27, x28, x29]
+        eqName = r'eq_' + str(self.output_fileName) + '.csv'
+        # eqName = r'result/eq_' + str(fileNum) + '.csv'
+        eq_write = open(eqName, "w+")  # 重新写
+        eq_write.write(
+            'Gen|Top1|Length1|Fitness1|Top2|Length2|Fitness2|Top3|Length3|Fitness3|Top4|Length4|Fitness4|Top5|Length5'
+            '|Fitness5|Top6|Length6|Fitness6|Top7|Length7|Fitness7|Top8|Length8|Fitness8|Top9|Length9|Fitness9|Top10'
+            '|Length10|Fitness10\n')
+        print('eqName=', self.output_fileName)
+        average_fitness = 0
+        repeat = 1
+        time_start1 = time.time()
+        for repeatNum in range(repeat):
+            time_start2 = time.time()
+            X = self.data.get_np_x()
+            Y = self.data.get_np_y()
+            np_ds = self.data.get_np_ds()
+            loopNum = 0
+            Metric = []
+            while True:  # 进行5次低阶多项式的判别--不是则继续
+                metric = Metrics(varNum=X.shape[1], dataSet=np_ds)
+                loopNum += 1
+                Metric.append(metric)
+                if loopNum == 2 and X.shape[1] <= 2:
+                    break
+                elif loopNum == 5 and (2 < X.shape[1] <= 3):
+                    break
+                elif loopNum == 4 and (3 < X.shape[1] <= 4):
+                    break
+                elif loopNum == 3 and (4 < X.shape[1] <= 5):
+                    break
+                elif loopNum == 2 and (5 < X.shape[1] <= 6):
+                    break
+                elif loopNum == 1 and (X.shape[1] > 6):
+                    break
+            Metric.sort(key=lambda x: x.nmse)  # 按低阶多项式拟合误差对20个metric排序
+            self.metric = Metric[0]
+            print('排序后选中多项式_and_低阶多项式MSE:', self.metric.nmse, self.metric.low_nmse)
+            eq_write.write(
+                str(-1) + '|' + str(self.metric.f_low_taylor) + '|' + '10' + '|' + str(
+                    self.metric.low_nmse) + '|' + '\n')
+            if self.metric.nmse < 0.1:
+                self.metric.nihe_flag = True
+            else:  # 拟合失败后Taylor特征的判别以数据集为准
+                self.metric.bias = 0.
+                print('拟合失败')
