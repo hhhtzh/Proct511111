@@ -117,6 +117,8 @@ def _parallel_evolve(n_programs, parents, X, y, sample_weight, seeds, params):
                 genome = {'method': 'Subtree Mutation',
                           'parent_idx': parent_index,
                           'parent_nodes': removed}
+                # program = None
+                # genome = None
             elif method < method_probs[2]:
                 # hoist_mutation
                 program, removed = parent.hoist_mutation(random_state)
