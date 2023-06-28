@@ -4,7 +4,7 @@ import numpy as np
 import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
-from keplar.population.function import operator_map, arity_map, operator_map3
+from keplar.population.function import operator_map, arity_map, operator_map3, _function_map
 
 
 def get_priority(op):
@@ -58,7 +58,7 @@ def bingo_infixstr_to_func(equ):
     num_start = False
     i = 0
     equ = re.sub(r"\(-", r'(0-', equ)
-    equ=re.sub(r"-(\d{1})",r"0 - \1",equ)
+    equ = re.sub(r"-(\d{1})", r"0 - \1", equ)
     while i < len(equ):
         if op_start:
             if equ[i].isalnum():
@@ -149,6 +149,27 @@ def bingo_infixstr_to_func(equ):
         else:
             new_func_list.append(item)
     return new_func_list, const_array
+
+
+def to_gp(ind):
+    func = ind.func
+    list_program = []
+    for i in func:
+        int_i = int(i)
+        if int_i < 2000:
+            str_op = operator_map[int_i]
+            _func = _function_map[str_op]
+            list_program.append(_func)
+        elif 2000 <= int_i < 5000:
+            float_con = float('%.3f' % ind.const_array[int_i - 2000])
+            list_program.append(float_con)
+        elif int_i > 5000:
+            x = int(int_i - 5001)
+            list_program.append(x)
+
+        else:
+            raise ValueError("留空")
+    return list_program
 
 
 def infix_to_prefix(infix, len1, s2, top2):
@@ -276,18 +297,6 @@ def postfix_to_infix(expression):
             stack.append(infix)
 
     return stack.pop()  # 返回最终中缀表达式
-
-
-def to_gp(equ):
-    strx = re.sub(r'.(\d{3}) (\d{1})', r'.\1\2', equ)
-    strx = re.sub(r'(\d{1}) 0.000', r'\10.000', strx)
-    strx = re.sub(r'X_(\d{1}) (\d{1})', r'\1\2', strx)
-    strx = re.sub(r'0.000 ', '0.000', strx)
-    strx = re.sub(r' X', r'X', strx)
-    strx = re.sub(r' \+ ', r'+', strx)
-    strx = re.sub(r' - ', r'-', strx)
-    strx = re.sub(r' \* ', r'*', strx)
-    strx = re.sub(r' / ', r'/', strx)
 
 
 # def trans_op(tree):
@@ -476,7 +485,7 @@ def to_op(ind, np_x, np_y):
             var_num_str = token[2:]
             var_num = int(var_num_str)
             node = Operon.Node.Variable(1)
-            node.HashValue = var_hash[var_num-1]
+            node.HashValue = var_hash[var_num - 1]
             node_list.append(node)
         elif token == '+':
             node = Operon.Node.Add()

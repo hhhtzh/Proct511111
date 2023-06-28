@@ -7,6 +7,7 @@ class Data:
     def __init__(self, type, file_path,names):
         self.names = names
         self.pd_data = None
+        self.np_data=None
         self.type = type
         self.file_path = file_path
         self.x = None
@@ -65,6 +66,10 @@ class Data:
         self.y = np.array(self.pd_data.loc[:,str_y])
         dt=pd.DataFrame(self.pd_data)
         self.x = np.array(dt.drop(labels=str_y,axis=1))
+
+    def get_np_ds(self):
+        self.np_data=np.array(self.pd_data)
+        return self.np_data
 
     def display_data(self):
         print(self.pd_data.head())

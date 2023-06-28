@@ -4,9 +4,11 @@ import numpy as np
 import pandas as pd
 import pyoperon as Operon
 import conversion
+from numpy.random import RandomState
+
 from bingo.symbolic_regression import AGraph
 from keplar.data.data import Data
-from keplar.operator.feature_engineering import FeatureEngineering
+from keplar.operator.feature_engineering import FeatureEngineering, TaylorFeature
 from keplar.population.individual import Individual
 # def is_operator(char):
 #     operators = ['+', '-', '*', '/']
@@ -86,3 +88,9 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # sel=Operon.RandomSelector()
 # print(type(const_list))
 # ws=Operon.OffspringGeneratorBase.Prepare(const_list)
+# rd=RandomState(100)
+# print(rd.random(2))
+data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
+data.read_file()
+ty=TaylorFeature(data,"test1")
+ty.do()
