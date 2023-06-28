@@ -436,6 +436,9 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
         #编写代码：1.父子代合并   2.非域排序   3.拥挤度排序
         best_program = None
         best_program_fitness_ = None
+
+
+        
         for gen in range(prior_generations, self.generations):
             top1Flag = False
             start_time = time()

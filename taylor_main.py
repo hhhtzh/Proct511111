@@ -29,8 +29,8 @@ eval_op_list = [evaluator]
 select = TaylorGPSelector()
 crossover = TaylorGPCrossover()
 mutation = TaylorGPMutation()
-reinsert = TaylorGPReinserter()
-taylorGP = TayloGPAlg()
+# reinsert = TaylorGPReinserter()
+taylorGP = TayloGPAlg(20,sdakdj,sd,)
 taylorGP.run()
 
 # selector = OperonSelector(5)
