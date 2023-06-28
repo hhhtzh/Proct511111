@@ -771,6 +771,7 @@ class BaseSymbolic(BaseEstimator, metaclass=ABCMeta):
         qualified_list = [qualified_list[-2],qualified_list[-1] ]
         params['qualified_list'] = qualified_list
         params['eq_write'] = None
+
         if not self.warm_start or not hasattr(self, '_programs'):
             # Free allocated memory, if any
             self._programs = []

@@ -820,6 +820,7 @@ class _Program(object):
         # Build a new naive program
         chicken = self.build_program(random_state)
         # Do subtree mutation via the headless chicken method!
+        
         return self.crossover(chicken, random_state)
 
     def hoist_mutation(self, random_state):
