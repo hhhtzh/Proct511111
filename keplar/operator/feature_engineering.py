@@ -70,12 +70,12 @@ class TaylorFeature(FeatureEngineering):
                     break
                 elif loopNum == 1 and (X.shape[1] > 6):
                     break
-            Metric.sort(key=lambda x: x.mse)  # 按低阶多项式拟合误差对20个metric排序
+            Metric.sort(key=lambda x: x.nmse)  # 按低阶多项式拟合误差对20个metric排序
             metric = Metric[0]
-            print('排序后选中多项式_and_低阶多项式MSE:', metric.mse, metric.low_mse)
+            print('排序后选中多项式_and_低阶多项式MSE:', metric.nmse, metric.low_nmse)
             eq_write.write(
-                str(-1) + '|' + str(metric.f_low_taylor) + '|' + '10' + '|' + str(metric.low_mse) + '|' + '\n')
-            if metric.mse < 0.1:
+                str(-1) + '|' + str(metric.f_low_taylor) + '|' + '10' + '|' + str(metric.low_nmse) + '|' + '\n')
+            if metric.nmse < 0.1:
                 metric.nihe_flag = True
             else:  # 拟合失败后Taylor特征的判别以数据集为准
                 metric.bias = 0.
