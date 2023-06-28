@@ -4,7 +4,7 @@ import numpy as np
 from time import time,sleep
 from sympy import *
 
-from TaylorGP.src.taylorGP.genetic import alarm_handler,MAX_INT,_parallel_evolve,BaseEstimator
+from TaylorGP.src.taylorGP.genetic import alarm_handler,MAX_INT,_parallel_evolve,BaseEstimator,BaseSymbolic
 from TaylorGP.src.taylorGP.calTaylor import Metrics,Metrics2
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error  # 均方误差
@@ -23,6 +23,9 @@ from joblib import Parallel, delayed #自动创建进程池执行并行化操作
 import itertools
 from sklearn.base import RegressorMixin, TransformerMixin, ClassifierMixin
 from sklearn.base import BaseEstimator
+from abc import ABCMeta, abstractmethod #@abc.abstractmethod装饰器后严格控制子类必须实现这个方法
+from TaylorGP.src.taylorGP.calTaylor import Metrics,Metrics2
+
 # from sklearn.base.BaseEstimator
 
 # from sklearn.base import BaseEstimator
@@ -171,7 +174,8 @@ class TaylorGP_Pre1(Operator):
 
             print("TimeOutException catched in fit()")
 
-class TaylorGP_pre2(Operator,BaseEstimator):
+# class TaylorGP_pre2(Operator,BaseEstimator,RegressorMixin):
+class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
     def __init__(self,X,Y, qualified_list):
         super().__init__()
         self.X =X
@@ -183,7 +187,7 @@ class TaylorGP_pre2(Operator,BaseEstimator):
         self.population_size = 1000
         self.n_components=None
         self.function_set=['add', 'sub', 'mul', 'div', 'sin', 'cos', 'log', 'exp', 'sqrt']
-        self.metric = 'rmse'
+        self.metric ='rmse'
         self.p_crossover=0.9
         self.p_subtree_mutation=0.01
         self.p_hoist_mutation=0.01
@@ -195,7 +199,7 @@ class TaylorGP_pre2(Operator,BaseEstimator):
         self.init_depth=(2, 6)
         self.feature_names=None
         self.transformer =None
-        self._metric= None
+        # self._metric= None
         self.warm_start =False
         self.generations=20
         self.verbose =0
@@ -203,6 +207,8 @@ class TaylorGP_pre2(Operator,BaseEstimator):
         self.tournament_size = 20
         self.parsimony_coefficient =0.01
         self.max_samples  =1.0
+        self.low_memory= True
+        self.stopping_criteria =0.0
         # self.feature_names
 
 
@@ -212,7 +218,7 @@ class TaylorGP_pre2(Operator,BaseEstimator):
         # self.p_hoist_mutation=0.01,
         # self.p_point_mutation=0.01,
         # self.p_point_replace=0.05,
-
+    
     def do(self, population=None):
         # return super().do(population)
         low_bound, high_bound, var_bound = self.qualified_list[0][0][0],self.qualified_list[0][0][1],self.qualified_list[0][1]
@@ -363,7 +369,7 @@ class TaylorGP_pre2(Operator,BaseEstimator):
         params['p_point_replace'] =self.p_point_replace
         params['max_samples'] =self.max_samples
         params['feature_names'] =self.feature_names
-        
+
 
 
 
@@ -383,6 +389,10 @@ class TaylorGP_pre2(Operator,BaseEstimator):
         self.qualified_list = [self.qualified_list[-2],self.qualified_list[-1] ]
         params['qualified_list'] = self.qualified_list
         params['eq_write'] = None
+
+
+        print(selected_space)
+
         if not self.warm_start or not hasattr(self, '_programs'):
             # Free allocated memory, if any
             self._programs = []
@@ -395,7 +405,11 @@ class TaylorGP_pre2(Operator,BaseEstimator):
                                  'generation_time': []}
 
         prior_generations = len(self._programs)
+
+        print(self._programs)
         n_more_generations = self.generations - prior_generations
+
+        print(n_more_generations )
 
         if n_more_generations < 0:
             raise ValueError('generations=%d must be larger or equal to '
@@ -411,6 +425,9 @@ class TaylorGP_pre2(Operator,BaseEstimator):
             # initial fit call.
             for i in range(len(self._programs)):
                 _ = random_state.randint(MAX_INT, size=self.population_size)
+
+        # print(self._programs[1])
+        
 
         if self.verbose:
             # Print header fields
