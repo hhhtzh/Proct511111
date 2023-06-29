@@ -2,13 +2,18 @@ from keplar.population.function import operator_map, arity_map, operator_map2
 
 
 class Individual:
-    def __init__(self, func):
+    def __init__(self, func, const_array=None):
+        if const_array is None:
+            const_array = []
         self.equation = None
         # prefix list
         self.func = func
         self.evaluated = False
         self.fitness = None
-        self.const_array = []
+        if const_array is None:
+            self.const_array = []
+        else:
+            self.const_array = const_array
 
     def format(self):
         stack = []
@@ -19,9 +24,9 @@ class Individual:
                 str_op = operator_map2[tk]
                 arity = arity_map[tk]
                 if arity == 1:
-                    if str_op=="square":
+                    if str_op == "square":
                         op1 = stack[stack_i - 1]
-                        equ_str="(("+op1+")"+"^2"+")"
+                        equ_str = "((" + op1 + ")" + "^2" + ")"
                         stack[stack_i - 1] = equ_str
                     else:
                         op1 = stack[stack_i - 1]

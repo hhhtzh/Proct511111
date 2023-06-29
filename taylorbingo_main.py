@@ -18,7 +18,7 @@ data.set_xy("y")
 x = data.get_x()
 y = data.get_y()
 operators = ["+", "-", "*", "/"]
-taylor=TaylorFeature(data,"test1")
+taylor=TaylorFeature(data,"taylorgp")
 fe_list=[taylor]
 creator = BingoCreator(50, operators, x, 10, "Bingo")
 evaluator = BingoEvaluator(x, "exp", "lm", y)

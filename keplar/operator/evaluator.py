@@ -1,6 +1,8 @@
 import random
 
 import numpy as np
+from gplearn.fitness import _mean_square_error, _root_mean_square_error, _weighted_spearman, _log_loss, \
+    _mean_absolute_error, _Fitness
 
 from bingo.evaluation.evaluation import Evaluation
 from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
@@ -19,7 +21,7 @@ class Evaluator(Operator):
         super().__init__()
 
 
-class BingoEvaluator(Operator):
+class BingoEvaluator(Evaluator):
     def __init__(self, x, fit, optimizer_method, y=None, dx_dt=None):
         super().__init__()
         self.x = x
@@ -66,7 +68,7 @@ class BingoEvaluator(Operator):
                 population.target_fit_list.append(bingo_pop[i].fitness)
 
 
-class OperonEvaluator(Operator):
+class OperonEvaluator(Evaluator):
     def __init__(self, error_metric, np_x, np_y, training_p, if_linear_scaling, to_type):
         super().__init__()
         self.to_type = to_type
@@ -127,15 +129,39 @@ class OperonEvaluator(Operator):
                     kep_ind.set_fitness(fit_list[i])
                     kep_pop_list.append(kep_ind)
                 population.pop_list = kep_pop_list
-                population.pop_type="self"
+                population.pop_type = "self"
                 # for i in population.pop_list:
                 #     print(i.format(),i.get_fitness())
         else:
             pass
 
+
 class TaylorGPEvaluator(Operator):
     def __init__(self):
         super().__init__()
-    
+
     def do(self, population=None):
         return super().do(population)
+
+
+class GplearnEvaluator(Evaluator):
+    def __init__(self, method,eavl_x,eval_y):
+        super().__init__()
+        self.eval_y = np.array(eval_y)
+        self.eavl_x = np.array(eavl_x)
+        self.method = method
+
+    def do(self, population):
+        if self.method == "mse":
+            fct = _mean_square_error
+        elif self.method == "rmse":
+            fct = _weighted_spearman
+        elif self.method == "log":
+            fct = _log_loss
+        elif self.method == "mae":
+            fct = _mean_absolute_error
+        else:
+            raise ValueError("gplearn评估模块计算误差方法设置错误")
+
+        if population.pop_type == "gplearn" or "taylorgp":
+            gp_fit = _Fitness(fct, False)

@@ -85,7 +85,7 @@ class TaylorBingoAlg(Alg):
         for i in self.fe_list:
             result = i.do()
             if result == "end":
-                print("回归结束，共迭代" + "0代" +
+                print("使用泰勒GP回归结束，共迭代" + "0代" +
                       f"最佳个体适应度为{i.end_fitness}," + f"最佳个体为{i.program}")
                 return 1
         generation_pop_size = self.population.get_pop_size()
