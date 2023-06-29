@@ -34,7 +34,7 @@ class Population:
             if self.target_fit_list[j] < best_fitness:
                 best_fitness = self.target_fit_list[j]
                 best_index=j
-        return best_fitness
+        return best_index
 
     def get_best(self):
         best_index = 0
