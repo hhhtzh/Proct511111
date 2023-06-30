@@ -90,7 +90,13 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # ws=Operon.OffspringGeneratorBase.Prepare(const_list)
 # rd=RandomState(100)
 # print(rd.random(2))
-data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
-data.read_file()
-ty=TaylorFeature(data,"test1")
-ty.do()
+# data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
+# data.read_file()
+# ty=TaylorFeature(data,"test1")
+# ty.do()
+aa=np.array([
+    [1,2],
+    [2,3],
+    [4,5]
+])
+print(aa.shape[1])

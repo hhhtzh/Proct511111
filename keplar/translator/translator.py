@@ -4,7 +4,10 @@ import numpy as np
 import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
-from keplar.population.function import operator_map, arity_map, operator_map3, _function_map
+from keplar.population.function import arity_map, operator_map3,  operator_map
+
+
+# from keplar.population.function import operator_map, arity_map, operator_map3, _function_map
 
 
 def get_priority(op):

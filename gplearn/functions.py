@@ -1,5 +1,4 @@
 """The functions used to create programs.
-
 The :mod:`gplearn.functions` module contains all of the functions used by
 gplearn programs. It also contains helper methods for a user to define their
 own custom functions.

@@ -1,4 +1,4 @@
-from keplar.population.function import operator_map, arity_map, operator_map2
+from keplar.population.function import  arity_map, operator_map2
 
 
 class Individual:

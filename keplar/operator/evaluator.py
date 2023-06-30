@@ -145,7 +145,8 @@ class TaylorGPEvaluator(Operator):
 
 
 class GplearnEvaluator(Evaluator):
-    def __init__(self, method, eavl_x, eval_y):
+    def __init__(self, method, eavl_x, eval_y,feature_weight=None):
+        self.feature_weight=feature_weight
         super().__init__()
         self.eval_y = np.array(eval_y)
         self.eavl_x = np.array(eavl_x)
@@ -165,5 +166,10 @@ class GplearnEvaluator(Evaluator):
 
         if population.pop_type == "gplearn" or "taylorgp":
             gp_fit = _Fitness(fct, False)
+            if self.feature_weight==None:
+                self.feature_weight=
             for program in population.target_pop_list:
-                pass
+                pred_y=program.execute(self.eavl_x)
+
+
+
