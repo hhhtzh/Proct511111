@@ -20,7 +20,7 @@ class Individual:
         stack_i = 0
         for i in reversed(self.func):
             tk = int(i)
-            if tk < 2000:
+            if tk < 3000:
                 str_op = operator_map2[tk]
                 arity = arity_map[tk]
                 if arity == 1:
@@ -38,8 +38,8 @@ class Individual:
                     stack_i = stack_i - 1
                     equ_str = "(" + op1 + " " + str_op + " " + op2 + ")"
                     stack[stack_i - 1] = equ_str
-            elif 2000 <= tk < 3000:
-                const = self.const_array[tk - 2000]
+            elif 3000 <= tk < 5000:
+                const = self.const_array[tk - 3000]
                 stack.append(str(const))
                 stack_i = stack_i + 1
             elif tk > 5000:

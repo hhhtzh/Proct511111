@@ -167,7 +167,7 @@ class GplearnEvaluator(Evaluator):
         if population.pop_type == "gplearn" or "taylorgp":
             gp_fit = _Fitness(fct, False)
             if self.feature_weight==None:
-                self.feature_weight=
+                self.feature_weight=0
             for program in population.target_pop_list:
                 pred_y=program.execute(self.eavl_x)
 

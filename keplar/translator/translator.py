@@ -4,7 +4,7 @@ import numpy as np
 import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
-from keplar.population.function import arity_map, operator_map3,  operator_map
+from keplar.population.function import arity_map, operator_map3, operator_map, _function_map
 
 
 # from keplar.population.function import operator_map, arity_map, operator_map3, _function_map
@@ -139,7 +139,7 @@ def bingo_infixstr_to_func(equ):
         elif is_float(node):
             const_code = len(const_array)
             const_array.append(float(node))
-            stack.append(const_code + 2000)
+            stack.append(const_code + 3000)
         else:
             var_code = int(node[2:]) + 5000 + 1
             stack.append(var_code)
@@ -159,11 +159,11 @@ def to_gp(ind):
     list_program = []
     for i in func:
         int_i = int(i)
-        if int_i < 2000:
+        if int_i < 3000:
             str_op = operator_map[int_i]
             _func = _function_map[str_op]
             list_program.append(_func)
-        elif 2000 <= int_i < 5000:
+        elif 3000 <= int_i < 5000:
             float_con = float('%.3f' % ind.const_array[int_i - 2000])
             list_program.append(float_con)
         elif int_i > 5000:
@@ -370,7 +370,7 @@ def trans_op(op_tree, variable_list):
     func = []
     const_array = []
     c_num = 0
-    const_code = 2000
+    const_code = 3000
     variable_code = 5000
     node_list = op_tree.Nodes
     node_list = op_postfix_to_prefix(node_list)
@@ -461,11 +461,11 @@ def to_op(ind, np_x, np_y):
     list_prefix = []
     for i in func:
         int_i = int(i)
-        if int_i < 2000:
+        if int_i < 3000:
             str_op = operator_map[int_i]
             list_prefix.append(str_op)
-        elif 2000 <= int_i < 5000:
-            str_con = str(ind.const_array[int_i - 2000])
+        elif 3000 <= int_i < 5000:
+            str_con = str(ind.const_array[int_i - 3000])
             list_prefix.append(str_con)
         elif int_i > 5000:
             str_x = "X_" + str(int_i - 5001)
