@@ -13,7 +13,7 @@ from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 
 from keplar.population.population import Population
-from keplar.translator.translator import trans_gp, trans_op
+from keplar.translator.translator import trans_gp, trans_op, bingo_infixstr_to_func
 import pyoperon as Operon
 from  TaylorGP.src.taylorGP.functions import _Function,_sympol_map
 
@@ -49,7 +49,14 @@ class BingoCreator(Creator):
             self.population.target_pop_list = pop
             self.population.pop_type = "Bingo"
         else:
-            pass
+            self.population.pop_type = "self"
+            for bingo_agraph in pop:
+                bingo_str = str(bingo_agraph)
+                func_list,const_array=bingo_infixstr_to_func(bingo_str)
+                keplar_ind=Individual(func_list,const_array)
+                pop_list.append(keplar_ind)
+            self.population.pop_list=pop_list
+            self.population.set_pop_size(len(pop_list))
         return self.population
 
 
