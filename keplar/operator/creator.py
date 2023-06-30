@@ -15,8 +15,7 @@ from keplar.operator.operator import Operator
 from keplar.population.population import Population
 from keplar.translator.translator import trans_gp, trans_op, bingo_infixstr_to_func
 import pyoperon as Operon
-from  TaylorGP.src.taylorGP.functions import _Function,_sympol_map
-
+from TaylorGP.src.taylorGP.functions import _Function, _sympol_map
 
 
 class Creator(Operator):
@@ -52,10 +51,10 @@ class BingoCreator(Creator):
             self.population.pop_type = "self"
             for bingo_agraph in pop:
                 bingo_str = str(bingo_agraph)
-                func_list,const_array=bingo_infixstr_to_func(bingo_str)
-                keplar_ind=Individual(func_list,const_array)
+                func_list, const_array = bingo_infixstr_to_func(bingo_str)
+                keplar_ind = Individual(func_list, const_array)
                 pop_list.append(keplar_ind)
-            self.population.pop_list=pop_list
+            self.population.pop_list = pop_list
             self.population.set_pop_size(len(pop_list))
         return self.population
 
@@ -153,21 +152,17 @@ class uDSR_Creator(Creator):
 class TaylorGPCreator(Creator):
     def __init__(self, program):
         super().__init__()
-        self.program =program
+        self.program = program
 
     def do(self, population=None):
         population_size = len(self.program)
         population.set_pop_size(population_size)
-        eq= []
+        eq = []
         for i in range(population_size):
-            for j,node in range(self.program[i].program):
+            for j, node in range(self.program[i].program):
                 if isinstance(node, _Function):
                     eq[i].append(node.name)
                 else:
                     eq[i].append(node)
             population.append(eq[i])
         return population
-        
-
-                
-        
