@@ -6,7 +6,7 @@ from keplar.operator.creator import OperonCreator
 from keplar.operator.crossover import OperonCrossover
 from keplar.operator.evaluator import OperonEvaluator
 from keplar.operator.mutation import OperonMutation
-from keplar.operator.selector import BingoSelector98
+from keplar.operator.selector import BingoSelector
 
 data = Data("txt", "datasets/1.txt", ["x", "y"])
 # data=Data("pmlb","1027_ESL",["x1","x2","x3",'y'])
