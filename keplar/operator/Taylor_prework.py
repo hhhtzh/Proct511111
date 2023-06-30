@@ -436,7 +436,10 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
         #编写代码：1.父子代合并   2.非域排序   3.拥挤度排序
         best_program = None
         best_program_fitness_ = None
-        for gen in range(prior_generations, self.generations):
+
+        one = 1
+        population =None
+        for gen in range(one):
             top1Flag = False
             start_time = time()
 
@@ -467,108 +470,146 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
             print("ttttttttt")
 
             print(population[110].__str__())
+            gen+=1
+            
+        return population
 
-            #父子代合并
-            if parents is not None:
-                population.extend(parents)
-            #多目标优化中保存了父代和子代，所以不需要单独向种群中添加父代最优个体了
-            # if top1Flag:
-            #     population.append(best_program_fitness_)
-            #     population.append(best_program)
-            #快速非支配排序+多余front[k]的拥挤度排序--->筛选出新父代
-            temp_index = self.fast_non_dominated_sort(population)
-            '''
-            for subPop in temp_index:
-                prin = [population[i].raw_fitness_ for i in subPop]
-                print(prin)
-                prin = [population[i].length_ for i in subPop]
-                print(prin)            
-            '''
 
-            temp_popSize = 0
-            population_index = []
-            reminder_subPopulation = []
-            for subPop in temp_index:
-                pre_temp_popSize = temp_popSize
-                temp_popSize += len(subPop)
-                if temp_popSize >self.population_size:
-                    reminder = self.population_size-pre_temp_popSize
-                    # print("temp_popSize: ",temp_popSize,"reminder: ",reminder)
-                    reminder_subPopulation.extend(self.select_by_crowding_distance(population,subPop,reminder))
-                    # print("reminder_subPopulation: ",reminder_subPopulation)
-                    break
-                else:
-                    population_index.extend(subPop)
-            # print("len(population_index):",len(population_index),"population_index: ",population_index)
-            # population_index = sum(temp_index , [])[:self.population_size]
-            population = [population[i] for i in population_index]
-            if reminder_subPopulation !=[]:
-                population.extend(reminder_subPopulation)
-            # print("实际种群数量=", len(population))
-            #if gen % 100 ==0:
-            #    print("实际种群数量=", len(population),population[0],population[200],population[400],population[-1])
-            fitness = [program.raw_fitness_ for program in population]
-            length = [program.length_ for program in population]
-            # print(fitness,length,sep="\n")
 
-            parsimony_coefficient = None
-            if self.parsimony_coefficient == 'auto':
-                parsimony_coefficient = (np.cov(length, fitness)[1, 0] /
-                                         np.var(length))
-            for program in population:
-                program.fitness_ = program.fitness(parsimony_coefficient)
-            fitness_ = [program.fitness_ for program in population]
-            self._programs.append(population)
+        
+        # for gen in range(prior_generations, self.generations):
+        #     top1Flag = False
+        #     start_time = time()
 
-            # Remove old programs that didn't make it into the new population.
-            if not self.low_memory:
-                for old_gen in np.arange(gen, 0, -1):
-                    indices = []
-                    for program in self._programs[old_gen]:
-                        if program is not None and program.parents is not None:
-                            for idx in program.parents:
-                                if 'idx' in idx:
-                                    indices.append(program.parents[idx])
-                    indices = set(indices)
-                    for idx in range(self.population_size):
-                        if idx not in indices:
-                            self._programs[old_gen - 1][idx] = None
-            elif gen > 0:
-                # Remove old generations
-                self._programs[gen - 1] = None
+        #     if gen == 0:
+        #         parents = None
+        #     else:
+        #         parents = self._programs[gen - 1]
+        #         parents.sort(key=lambda x: x.raw_fitness_)
+        #         np.random.shuffle(parents)
+        #         top1Flag = True
+        #     n_jobs, n_programs, starts = _partition_estimators(
+        #         self.population_size, self.n_jobs)
+        #     seeds = random_state.randint(MAX_INT, size=self.population_size)
 
-            # # Record run details
-            # if self._metric.greater_is_better:
-            #     best_program = population[np.argmax(fitness)]#按惩罚项的fitness排序
-            #     best_program_fitness_ = population[np.argmax(fitness_)]
-            # else:
-            #     best_program = population[np.argmin(fitness)]
-            #     best_program_fitness_ = population[np.argmin(fitness_)]
+        #     population = Parallel(n_jobs=n_jobs,
+        #                           verbose=int(self.verbose > 1))(
+        #         delayed(_parallel_evolve)(n_programs[i],
+        #                                   parents,
+        #                                   X,
+        #                                   y,
+        #                                   self.sample_weight,
+        #                                   seeds[starts[i]:starts[i + 1]],
+        #                                   params)
+        #         for i in range(n_jobs))
 
-            # self.run_details_['generation'].append(gen)
-            # self.run_details_['average_length'].append(np.mean(length))
-            # self.run_details_['average_fitness'].append(np.mean(fitness_))
-            # self.run_details_['best_length'].append(best_program.length_)
-            # self.run_details_['best_fitness'].append(best_program.fitness_)
-            # oob_fitness = np.nan
-            # if self.max_samples < 1.0:
-            #     oob_fitness = best_program.oob_fitness_
-            # self.run_details_['best_oob_fitness'].append(oob_fitness)
-            # generation_time = time() - start_time
-            # self.run_details_['generation_time'].append(generation_time)
+        #     # Reduce, maintaining order across different n_jobs
+        #     population = list(itertools.chain.from_iterable(population))
+        #     print("ttttttttt")
 
-            # if self.verbose:
-            #     self._verbose_reporter(self.run_details_)
+        #     print(population[110].__str__())
 
-            # Check for early stopping
-            if self._metric.greater_is_better:
-                best_fitness = fitness[np.argmax(fitness_)]
-                if best_fitness >= self.stopping_criteria:
-                    break
-            else:
-                best_fitness = fitness[np.argmin(fitness_)]
-                if best_fitness <= self.stopping_criteria:
-                    break
+        #     #父子代合并
+        #     if parents is not None:
+        #         population.extend(parents)
+        #     #多目标优化中保存了父代和子代，所以不需要单独向种群中添加父代最优个体了
+        #     # if top1Flag:
+        #     #     population.append(best_program_fitness_)
+        #     #     population.append(best_program)
+        #     #快速非支配排序+多余front[k]的拥挤度排序--->筛选出新父代
+        #     temp_index = self.fast_non_dominated_sort(population)
+        #     '''
+        #     for subPop in temp_index:
+        #         prin = [population[i].raw_fitness_ for i in subPop]
+        #         print(prin)
+        #         prin = [population[i].length_ for i in subPop]
+        #         print(prin)            
+        #     '''
+
+        #     temp_popSize = 0
+        #     population_index = []
+        #     reminder_subPopulation = []
+        #     for subPop in temp_index:
+        #         pre_temp_popSize = temp_popSize
+        #         temp_popSize += len(subPop)
+        #         if temp_popSize >self.population_size:
+        #             reminder = self.population_size-pre_temp_popSize
+        #             # print("temp_popSize: ",temp_popSize,"reminder: ",reminder)
+        #             reminder_subPopulation.extend(self.select_by_crowding_distance(population,subPop,reminder))
+        #             # print("reminder_subPopulation: ",reminder_subPopulation)
+        #             break
+        #         else:
+        #             population_index.extend(subPop)
+        #     # print("len(population_index):",len(population_index),"population_index: ",population_index)
+        #     # population_index = sum(temp_index , [])[:self.population_size]
+        #     population = [population[i] for i in population_index]
+        #     if reminder_subPopulation !=[]:
+        #         population.extend(reminder_subPopulation)
+        #     # print("实际种群数量=", len(population))
+        #     #if gen % 100 ==0:
+        #     #    print("实际种群数量=", len(population),population[0],population[200],population[400],population[-1])
+        #     fitness = [program.raw_fitness_ for program in population]
+        #     length = [program.length_ for program in population]
+        #     # print(fitness,length,sep="\n")
+
+        #     parsimony_coefficient = None
+        #     if self.parsimony_coefficient == 'auto':
+        #         parsimony_coefficient = (np.cov(length, fitness)[1, 0] /
+        #                                  np.var(length))
+        #     for program in population:
+        #         program.fitness_ = program.fitness(parsimony_coefficient)
+        #     fitness_ = [program.fitness_ for program in population]
+        #     self._programs.append(population)
+
+        #     # Remove old programs that didn't make it into the new population.
+        #     if not self.low_memory:
+        #         for old_gen in np.arange(gen, 0, -1):
+        #             indices = []
+        #             for program in self._programs[old_gen]:
+        #                 if program is not None and program.parents is not None:
+        #                     for idx in program.parents:
+        #                         if 'idx' in idx:
+        #                             indices.append(program.parents[idx])
+        #             indices = set(indices)
+        #             for idx in range(self.population_size):
+        #                 if idx not in indices:
+        #                     self._programs[old_gen - 1][idx] = None
+        #     elif gen > 0:
+        #         # Remove old generations
+        #         self._programs[gen - 1] = None
+
+        #     # # Record run details
+        #     # if self._metric.greater_is_better:
+        #     #     best_program = population[np.argmax(fitness)]#按惩罚项的fitness排序
+        #     #     best_program_fitness_ = population[np.argmax(fitness_)]
+        #     # else:
+        #     #     best_program = population[np.argmin(fitness)]
+        #     #     best_program_fitness_ = population[np.argmin(fitness_)]
+
+        #     # self.run_details_['generation'].append(gen)
+        #     # self.run_details_['average_length'].append(np.mean(length))
+        #     # self.run_details_['average_fitness'].append(np.mean(fitness_))
+        #     # self.run_details_['best_length'].append(best_program.length_)
+        #     # self.run_details_['best_fitness'].append(best_program.fitness_)
+        #     # oob_fitness = np.nan
+        #     # if self.max_samples < 1.0:
+        #     #     oob_fitness = best_program.oob_fitness_
+        #     # self.run_details_['best_oob_fitness'].append(oob_fitness)
+        #     # generation_time = time() - start_time
+        #     # self.run_details_['generation_time'].append(generation_time)
+
+        #     # if self.verbose:
+        #     #     self._verbose_reporter(self.run_details_)
+
+        #     # Check for early stopping
+        #     if self._metric.greater_is_better:
+        #         best_fitness = fitness[np.argmax(fitness_)]
+        #         if best_fitness >= self.stopping_criteria:
+        #             break
+        #     else:
+        #         best_fitness = fitness[np.argmin(fitness_)]
+        #         if best_fitness <= self.stopping_criteria:
+        #             break
 
         # if isinstance(self, TransformerMixin):
         #     # Find the best individuals in the final generation

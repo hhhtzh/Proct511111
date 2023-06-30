@@ -9,6 +9,8 @@ from keplar.operator.crossover import TaylorGPCrossover
 from keplar.operator.mutation import TaylorGPMutation
 from keplar.operator.reinserter import TaylorGPReinserter
 from keplar.operator.Taylor_prework import TaylorGP_Pre1, TaylorGP_pre2
+from  TaylorGP.src.taylorGP.functions import _Function,_sympol_map
+
 
 data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
 data.read_file()
@@ -19,27 +21,38 @@ X, Y, qualified_list = taylorGP_pre1.do()
 print("finish prework!")
 
 taylorGP_pre2 = TaylorGP_pre2(X, Y, qualified_list)
-K = taylorGP_pre2.do()
+program = taylorGP_pre2.do()
 print("finally!")
 
-creator = TaylorGPCreator()
+# print(K[110].__str__())
+# print(str(K[110]))
+
+# for i, node in enumerate(K[110].program):
+#             if isinstance(node, _Function):
+#                     print(node.name)
+#             else:
+#                     print(node)
+
+creator = TaylorGPCreator(program)
 population = creator.do()
+
+# for i,node in K[110]:
+#     if isinstance(node, _Function):
+#         print(node.name)
+# print(K[110].__str__())
+
+
+# creator = TaylorGPCreator()
+# population = creator.do()
+
 evaluator = TaylorGPEvaluator()
 eval_op_list = [evaluator]
 select = TaylorGPSelector()
+
 crossover = TaylorGPCrossover()
 mutation = TaylorGPMutation()
-reinsert = TaylorGPReinserter()
+# reinsert = TaylorGPReinserter()
 taylorGP = TayloGPAlg()
+# taylorGP = TayloGPAlg(20,sdakdj,sd,)
 taylorGP.run()
 
-# selector = OperonSelector(5)
-# evaluator = OperonEvaluator("R2", x, y, 0.5, True,"Operon")
-# crossover = OperonCrossover(x, y, "Operon")
-# mutation = OperonMutation(0.9, 0.9, 0.9, 0.5, x, y, 10, 50, "balanced", "Operon")
-# reinsert = OperonReinserter(None, "ReplaceWorst", 10, "Operon")
-# op_up_list = [mutation, crossover]
-# op_down_list = [reinsert]
-# eva_list = [evaluator]
-# op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, selector, 1e-5, 1000, 16, x, y)
-# op_alg.run()

@@ -188,6 +188,7 @@ class _Program(object):
         self._n_samples = None
         self._max_samples = None
         self._indices_state = None
+        
     def build(self,random_state,X):
         build_flag = False
         qualified_flag = False
