@@ -52,7 +52,7 @@ class uDsrAlgorithm(Alg):
             udsr_sample = uDSR_Sample(self.model)
             self.T, self.programs,self.actions, self.obs, self.priors= udsr_sample.do()
             #定义一个新的population
-            population = Population(len(self.T))
+            population = Population(len(self.T))             
             
             #创建population
             udsr_creator = uDSR_Creator(self.T)
