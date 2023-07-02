@@ -94,9 +94,10 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # data.read_file()
 # ty=TaylorFeature(data,"test1")
 # ty.do()
-aa=np.array([
-    [1,2],
-    [2,3],
-    [4,5]
-])
-print(aa.shape[1])
+# aa=np.array([
+#     [1,2],
+#     [2,3],
+#     [4,5]
+# ])
+# print(aa.shape[1])
+A=Operon.RMSE()

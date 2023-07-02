@@ -45,10 +45,6 @@ class BingoAlg(Alg):
         super().__init__(max_generation, up_op_list, down_op_list,
                          eva_op_list, error_tolerance, population)
 
-
-
-
-
     def get_best_individual(self):
         return self.population.target_pop_list[self.population.get_tar_best()]
 
@@ -79,7 +75,6 @@ class TaylorBingoAlg(Alg):
 
     def get_best_individual(self):
         return self.population.target_pop_list[self.population.get_tar_best()]
-
 
     def run(self):
         for i in self.fe_list:
@@ -125,6 +120,34 @@ class OperonBingoAlg(Alg):
         else:
             best_num = self.population.get_best()
             return self.population.pop_list[best_num].format()
+
+    def run(self):
+        for i in self.eval_op_list:
+            i.do(self.population)
+        now_error = self.population.get_best_fitness()
+        while self.age < self.max_generation and now_error >= self.error_tolerance or str(now_error) == "nan":
+            pool_list = self.selector.do(self.population)
+            while len(pool_list.target_pop_list) < self.pool_size:
+                for i in self.up_op_list:
+                    i.do(pool_list)
+            for i in self.eval_op_list:
+                i.do(pool_list)
+            reinserter = KeplarReinserter(pool_list, "self")
+            reinserter.do(self.population)
+            now_error = self.population.get_best_fitness()
+            best_ind = str(self.get_best_individual())
+            self.age += 1
+            print("第" + f"{self.age}代种群，" +
+                  f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+        best_ind = str(self.get_best_individual())
+
+        print("迭代结束，共迭代" + f"{self.age}代" +
+              f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+
+
+class GplearnAlg(Alg):
+    def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population):
+        super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
 
     def run(self):
         for i in self.eval_op_list:

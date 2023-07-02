@@ -164,6 +164,7 @@ sin1 = _Function(function=np.sin, name='sin', arity=1)
 cos1 = _Function(function=np.cos, name='cos', arity=1)
 tan1 = _Function(function=np.tan, name='tan', arity=1)
 sig1 = _Function(function=_sigmoid, name='sig', arity=1)
+exp1 = _Function(function=np.exp,name='exp',arity=1)
 
 _function_map = {'add': add2,
                  'sub': sub2,
@@ -178,4 +179,5 @@ _function_map = {'add': add2,
                  'min': min2,
                  'sin': sin1,
                  'cos': cos1,
-                 'tan': tan1}
+                 'tan': tan1,
+                 'exp': exp1}

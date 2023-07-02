@@ -85,11 +85,11 @@ class OperonEvaluator(Evaluator):
         if self.error_metric == "R2":
             error_metric = Operon.R2()
         elif self.error_metric == "MSE":
-            error_metric = Operon.MES()
+            error_metric = Operon.MSE()
         elif self.error_metric == "NMSE":
-            error_metric = Operon.NMES()
+            error_metric = Operon.NMSE()
         elif self.error_metric == "RMSE":
-            error_metric = Operon.RMES()
+            error_metric = Operon.RMSE()
         elif self.error_metric == "MAE":
             error_metric = Operon.MAE()
         elif self.error_metric == "C2":
@@ -145,11 +145,12 @@ class TaylorGPEvaluator(Operator):
 
 
 class GplearnEvaluator(Evaluator):
-    def __init__(self, method, eavl_x, eval_y,feature_weight=None):
-        self.feature_weight=feature_weight
+    def __init__(self, method, eval_x, eval_y, to_type, feature_weight=None):
+        self.to_type = to_type
+        self.feature_weight = feature_weight
         super().__init__()
         self.eval_y = np.array(eval_y)
-        self.eavl_x = np.array(eavl_x)
+        self.eval_x = np.array(eval_x)
         self.method = method
 
     def do(self, population):
@@ -165,11 +166,22 @@ class GplearnEvaluator(Evaluator):
             raise ValueError("gplearn评估模块计算误差方法设置错误")
 
         if population.pop_type == "gplearn" or "taylorgp":
+            fit_list = []
             gp_fit = _Fitness(fct, False)
-            if self.feature_weight==None:
-                self.feature_weight=0
+            lie_num = self.eval_x.shape[1]
+            if self.feature_weight is None:
+                self.feature_weight = []
+                for i in range(lie_num):
+                    self.feature_weight.append(1)
+                self.feature_weight = np.array(self.feature_weight)
             for program in population.target_pop_list:
-                pred_y=program.execute(self.eavl_x)
+                pred_y = program.execute(self.eval_x)
+                fitness = gp_fit(self.eval_y, pred_y, self.feature_weight)
+                fit_list.append(fitness)
+        else:
+            raise ValueError("not now")
 
-
-
+        if self.to_type == "gplearn" or "taylor":
+            population.target_fit_list = fit_list
+        else:
+            raise  ValueError("not now")

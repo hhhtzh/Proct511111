@@ -44,11 +44,11 @@ class OperonAlg(Alg):
         if eva.error_metric == "R2":
             error_metric = Operon.R2()
         elif eva.error_metric == "MSE":
-            error_metric = Operon.MES()
+            error_metric = Operon.MSE()
         elif eva.error_metric == "NMSE":
-            error_metric = Operon.NMES()
+            error_metric = Operon.NMSE()
         elif eva.error_metric == "RMSE":
-            error_metric = Operon.RMES()
+            error_metric = Operon.RMSE()
         elif eva.error_metric == "MAE":
             error_metric = Operon.MAE()
         elif eva.error_metric == "C2":
@@ -57,7 +57,7 @@ class OperonAlg(Alg):
             ValueError("误差矩阵类型错误")
         evaluator = Operon.Evaluator(problem, interpreter, error_metric,
                                      True)  # initialize evaluator, use linear scaling = True
-        evaluator.Budget = 1000 * 1000  # computational budget
+        evaluator.Budget = 10000 * 10000 # computational budget
         evaluator.LocalOptimizationIterations = 0
         mut = self.up_op_list[0]
         cro = self.up_op_list[1]
