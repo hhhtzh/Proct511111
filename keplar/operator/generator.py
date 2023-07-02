@@ -21,7 +21,7 @@ class GpGenerator(Generator):
         super().__init__()
 
     def do(self,population):
-        if
+        pass
 
 
 class OperonGenerator(Generator):

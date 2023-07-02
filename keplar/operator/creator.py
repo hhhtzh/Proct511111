@@ -3,12 +3,15 @@ import time
 
 import numpy as np
 from sklearn.base import RegressorMixin
+from joblib import Parallel, delayed
 
 from TaylorGP.TaylorGP import CalTaylorFeatures
 from TaylorGP.src.taylorGP.calTaylor import Metrics
+from TaylorGP.src.taylorGP.genetic import _parallel_evolve
 from bingo.symbolic_regression.agraph.string_parsing import postfix_to_command_array_and_constants
 from gplearn.fitness import _Fitness, _fitness_map
-from gplearn.genetic import SymbolicRegressor, BaseSymbolic
+from gplearn.genetic import SymbolicRegressor, BaseSymbolic, MAX_INT
+from gplearn.utils import _partition_estimators, check_random_state
 from keplar.population.function import _function_map
 from bingo.symbolic_regression import ComponentGenerator, AGraphGenerator, AGraph
 from keplar.population.individual import Individual
@@ -62,10 +65,13 @@ class BingoCreator(Creator):
 
 
 class GpCreator(Creator):
-    def __init__(self, pop_size, x, y, to_type, operators=('add', 'sub', 'mul', 'div'), init_depth=(2, 6), init_method="half and half",
+    def __init__(self, pop_size, x, y, to_type, operators=('add', 'sub', 'mul', 'div'), init_depth=(2, 6),
+                 init_method="half and half",
                  p_point_replace=0.05, sample_weight=None, metric='mean absolute error', const_range=(-1., 1.),
-                 parsimony_coefficient=0.001,):
+                 parsimony_coefficient=0.001, n_jobs=1, random_state=None):
         super().__init__()
+        self.random_state = random_state
+        self.n_jobs = n_jobs
         self._arities = None
         self._function_set = None
         self.parsimony_coefficient = parsimony_coefficient
@@ -119,9 +125,9 @@ class GpCreator(Creator):
                                  % type(function))
         if not self._function_set:
             raise ValueError('No valid functions found in `function_set`.')
-        gp_sy = BaseSymbolic(function_set=self.operators,parsimony_coefficient=self.parsimony_coefficient,
-                             const_range=self.const_range,init_depth=self.init_depth,init_method=self.init_method
-                             ,p_point_replace=self.p_point_replace)
+        gp_sy = BaseSymbolic(function_set=self.operators, parsimony_coefficient=self.parsimony_coefficient,
+                             const_range=self.const_range, init_depth=self.init_depth, init_method=self.init_method
+                             , p_point_replace=self.p_point_replace)
         params = gp_sy.get_params()
         params['_metric'] = self._metric
         params['function_set'] = self.operators
@@ -131,8 +137,27 @@ class GpCreator(Creator):
             arity = function.arity
             self._arities[arity] = self._arities.get(arity, [])
             self._arities[arity].append(function)
+        params['arities'] = self._arities
         pop = Population(self.pop_size)
-        n_programs = self.pop_size
+        n_jobs, n_programs, starts = _partition_estimators(
+            self.pop_size, self.n_jobs)
+        random_state = check_random_state(self.random_state)
+        seeds = random_state.randint(MAX_INT, size=self.pop_size)
+        parents = None
+        population = Parallel(n_jobs=n_jobs,
+                              verbose=True)(
+            delayed(_parallel_evolve)(n_programs[i],
+                                      parents,
+                                      self.x,
+                                      self.y,
+                                      self.sample_weight,
+                                      seeds[starts[i]:starts[i + 1]],
+                                      params)
+            for i in range(n_jobs))
+        pop.target_pop_list = population
+        pop.pop_type = "gplearn"
+        if self.to_type != "gplearn":
+            pass
 
 
 class OperonCreator(Creator):

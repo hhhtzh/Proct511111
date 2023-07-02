@@ -4,7 +4,7 @@ import numpy as np
 import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
-from keplar.population.function import arity_map, operator_map3, operator_map, _function_map
+from keplar.population.function import arity_map, operator_map3, _function_map, map_F1
 
 
 # from keplar.population.function import operator_map, arity_map, operator_map3, _function_map
@@ -160,7 +160,7 @@ def to_gp(ind):
     for i in func:
         int_i = int(i)
         if int_i < 3000:
-            str_op = operator_map[int_i]
+            str_op = map_F1[int_i]
             _func = _function_map[str_op]
             list_program.append(_func)
         elif 3000 <= int_i < 5000:
@@ -462,7 +462,7 @@ def to_op(ind, np_x, np_y):
     for i in func:
         int_i = int(i)
         if int_i < 3000:
-            str_op = operator_map[int_i]
+            str_op = map_F1[int_i]
             list_prefix.append(str_op)
         elif 3000 <= int_i < 5000:
             str_con = str(ind.const_array[int_i - 3000])
