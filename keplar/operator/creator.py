@@ -7,10 +7,10 @@ from joblib import Parallel, delayed
 
 from TaylorGP.TaylorGP import CalTaylorFeatures
 from TaylorGP.src.taylorGP.calTaylor import Metrics
-from TaylorGP.src.taylorGP.genetic import _parallel_evolve
+
 from bingo.symbolic_regression.agraph.string_parsing import postfix_to_command_array_and_constants
 from gplearn.fitness import _Fitness, _fitness_map
-from gplearn.genetic import SymbolicRegressor, BaseSymbolic, MAX_INT
+from gplearn.genetic import SymbolicRegressor, BaseSymbolic, MAX_INT, _parallel_evolve
 from gplearn.utils import _partition_estimators, check_random_state
 from keplar.population.function import _function_map
 from bingo.symbolic_regression import ComponentGenerator, AGraphGenerator, AGraph
@@ -91,6 +91,9 @@ class GpCreator(Creator):
     def do(self, population=None):
         if isinstance(self.metric, _Fitness):
             self._metric = self.metric
+        elif self.metric in ('mean absolute error', 'mse', 'rmse',
+                             'pearson', 'spearman'):
+            self._metric = _fitness_map[self.metric]
         else:
             raise ValueError("metric必须为gplearn的_Fitness实例")
 
@@ -125,13 +128,15 @@ class GpCreator(Creator):
                                  % type(function))
         if not self._function_set:
             raise ValueError('No valid functions found in `function_set`.')
-        gp_sy = BaseSymbolic(function_set=self.operators, parsimony_coefficient=self.parsimony_coefficient,
-                             const_range=self.const_range, init_depth=self.init_depth, init_method=self.init_method
-                             , p_point_replace=self.p_point_replace)
+        gp_sy = SymbolicRegressor(function_set=self.operators, parsimony_coefficient=self.parsimony_coefficient,
+                                  const_range=self.const_range, init_depth=self.init_depth, init_method=self.init_method
+                                  , p_point_replace=self.p_point_replace)
         params = gp_sy.get_params()
         params['_metric'] = self._metric
-        params['function_set'] = self.operators
+        params['function_set'] = self._function_set
         params['method_probs'] = None
+        params['_transformer']=None
+        params['selected_space']=None
         self._arities = {}
         for function in self._function_set:
             arity = function.arity
@@ -154,10 +159,17 @@ class GpCreator(Creator):
                                       seeds[starts[i]:starts[i + 1]],
                                       params)
             for i in range(n_jobs))
-        pop.target_pop_list = population
+        for i in population:
+            for j in i:
+                pop.target_pop_list.append(j)
+        for j in pop.target_pop_list:
+            print(type(j))
         pop.pop_type = "gplearn"
+
+
         if self.to_type != "gplearn":
             pass
+        return pop
 
 
 class OperonCreator(Creator):
