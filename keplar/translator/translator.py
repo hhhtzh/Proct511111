@@ -5,7 +5,7 @@ import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
 from gplearn.functions import _Function
-from keplar.population.function import arity_map, operator_map3, _function_map, map_F1
+from keplar.population.function import arity_map, operator_map3, _function_map, map_F1, Operator_map_S
 from keplar.population.individual import Individual
 
 
@@ -261,28 +261,27 @@ def trans_gp(gp_program):
         str_x = int(int_x)
         ind = Individual(func=[str_x], const_array=[])
         return ind
-    func=[]
-    const_array=[]
+    func = []
+    const_array = []
+    const_index=0
     for i, node in enumerate(gp_program.program):
         if isinstance(node, _Function):
-            op_name=node.name
-            op_code=
+            op_name = node.name
+            op_code = Operator_map_S[op_name]
+            func.append(op_code)
         else:
             if isinstance(node, int):
-                if self.feature_names is None:
-                    output += 'X%s' % node
-                else:
-                    output += self.feature_names[node]
+                x_code = 3000 + node
+                func.append(x_code)
+            elif isinstance(node,float):
+                const_array.append(node)
+                const_code=5000+const_index
+                func.append(const_code)
+                const_index=const_index+1
             else:
-                output += '%.3f' % node
-            terminals[-1] -= 1
-            while terminals[-1] == 0:
-                terminals.pop()
-                terminals[-1] -= 1
-                output += ')'
-            if i != len(self.program) - 1:
-                output += ', '
-    return output
+                raise ValueError(f"未识别，字符{node}")
+    ind=Individual(func=func,const_array=const_array)
+    return ind
 
 
 # def trans_gp(gp_equ):
