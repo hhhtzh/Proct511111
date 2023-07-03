@@ -1,9 +1,9 @@
 import random
 
 import numpy as np
-from gplearn.fitness import _mean_square_error, _root_mean_square_error, _weighted_spearman, _log_loss, \
-    _mean_absolute_error, _Fitness
 
+from TaylorGP.src.taylorGP.fitness import _mean_square_error, _weighted_spearman, _log_loss, _mean_absolute_error, \
+    _Fitness
 from bingo.evaluation.evaluation import Evaluation
 from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
 from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
@@ -13,7 +13,7 @@ from keplar.operator.operator import Operator
 import pyoperon as Operon
 
 from keplar.population.individual import Individual
-from keplar.translator.translator import trans_op, to_bingo
+from keplar.translator.translator import trans_op, to_bingo, trans_gp
 
 
 class Evaluator(Operator):
@@ -56,7 +56,7 @@ class BingoEvaluator(Evaluator):
                 population.pop_list[i].fitness = bingo_pop[i].fitness
                 population.pop_list[i].evaluated = True
             if self.to_type == "Bingo":
-                population.target_pop_list= bingo_pop
+                population.target_pop_list = bingo_pop
                 population.pop_type = "Bingo"
                 for i in range(len(bingo_pop)):
                     population.target_fit_list.append(bingo_pop[i].fitness)
@@ -138,9 +138,6 @@ class OperonEvaluator(Evaluator):
             pass
 
 
-
-
-
 class TaylorGPEvaluator(Evaluator):
     def __init__(self, method, eval_x, eval_y, to_type, feature_weight=None):
         self.to_type = to_type
@@ -162,7 +159,7 @@ class TaylorGPEvaluator(Evaluator):
         else:
             raise ValueError("gplearn评估模块计算误差方法设置错误")
 
-        if population.pop_type == "gplearn" or "taylorgp":
+        if population.pop_type == "taylorgp":
             fit_list = []
             gp_fit = _Fitness(fct, False)
             lie_num = self.eval_x.shape[1]
@@ -175,13 +172,12 @@ class TaylorGPEvaluator(Evaluator):
                 pred_y = program.execute(self.eval_x)
                 fitness = gp_fit(self.eval_y, pred_y, self.feature_weight)
                 fit_list.append(fitness)
-            if self.to_type == "gplearn" or "taylor":
+            if self.to_type == "taylorgp":
                 population.target_fit_list = fit_list
             else:
-                raise ValueError("not now")
+                population.pop_type="self"
+                for i in range(len(population.target_pop_list)):
+                    ind=trans_gp(population.target_pop_list[i])
+                    population.pop_list.append(ind)
         else:
-
-
-
-
-
+            pass
