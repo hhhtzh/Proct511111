@@ -4,6 +4,7 @@ import numpy as np
 import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
+from gplearn._program import _Program
 from gplearn.functions import _Function
 from keplar.population.function import arity_map, operator_map3, _function_map, map_F1, Operator_map_S,operator_map_dsr,operator_map_dsr2
 from keplar.population.individual import Individual
@@ -174,6 +175,7 @@ def to_gp(ind):
 
         else:
             raise ValueError("留空")
+    gp_program=_Program()
     return list_program
 
 

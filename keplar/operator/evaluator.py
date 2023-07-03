@@ -138,15 +138,10 @@ class OperonEvaluator(Evaluator):
             pass
 
 
-class TaylorGPEvaluator(Operator):
-    def __init__(self):
-        super().__init__()
-
-    def do(self, population=None):
-        return super().do(population)
 
 
-class GplearnEvaluator(Evaluator):
+
+class TaylorGPEvaluator(Evaluator):
     def __init__(self, method, eval_x, eval_y, to_type, feature_weight=None):
         self.to_type = to_type
         self.feature_weight = feature_weight
@@ -185,6 +180,7 @@ class GplearnEvaluator(Evaluator):
             else:
                 raise ValueError("not now")
         else:
+
 
 
 
