@@ -1,4 +1,4 @@
-from keplar.population.function import  arity_map, operator_map2
+from keplar.population.function import arity_map, operator_map2
 
 
 class Individual:
@@ -38,12 +38,12 @@ class Individual:
                     stack_i = stack_i - 1
                     equ_str = "(" + op1 + " " + str_op + " " + op2 + ")"
                     stack[stack_i - 1] = equ_str
-            elif 3000 <= tk < 5000:
-                const = self.const_array[tk - 3000]
+            elif tk >= 5000:
+                const = self.const_array[tk - 5000]
                 stack.append(str(const))
                 stack_i = stack_i + 1
-            elif tk > 5000:
-                x_num = tk - 5000
+            elif 3000 <= tk < 5000:
+                x_num = tk - 3000
                 x_str = "X_" + str(x_num)
                 stack.append(x_str)
                 stack_i = stack_i + 1

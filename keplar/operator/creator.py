@@ -135,8 +135,8 @@ class GpCreator(Creator):
         params['_metric'] = self._metric
         params['function_set'] = self._function_set
         params['method_probs'] = None
-        params['_transformer']=None
-        params['selected_space']=None
+        params['_transformer'] = None
+        params['selected_space'] = None
         self._arities = {}
         for function in self._function_set:
             arity = function.arity
@@ -162,13 +162,16 @@ class GpCreator(Creator):
         for i in population:
             for j in i:
                 pop.target_pop_list.append(j)
-        for j in pop.target_pop_list:
-            print(type(j))
         pop.pop_type = "gplearn"
 
-
         if self.to_type != "gplearn":
-            pass
+            for gp_program in pop.target_pop_list:
+                ind = trans_gp(gp_program)
+                pop.pop_list.append(ind)
+                pop.pop_type = "self"
+                pop.pop_size = len(pop.pop_list)
+            for i in pop.pop_list:
+                print(i.format())
         return pop
 
 
@@ -245,17 +248,16 @@ class uDSR_Creator(Creator):
 
 
 class TaylorGPCreator(Creator):
-    def __init__(self, program,to_type):
+    def __init__(self, program, to_type):
         super().__init__()
         self.program = program
         self.to_type = to_type
 
-
     def do(self, population=None):
         population_size = len(self.program)
         # print(population_size)
-        population =Population(population_size)
-        if self.to_type == "Taylor":    
+        population = Population(population_size)
+        if self.to_type == "Taylor":
             for i in range(population_size):
                 eq = []
 

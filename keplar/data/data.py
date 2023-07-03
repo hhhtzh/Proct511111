@@ -64,7 +64,7 @@ class Data:
             raise ValueError("数据集xy未设置")
 
     def set_xy(self, str_y):
-        self.y = np.array(self.pd_data.loc[:, [str_y]])
+        self.y = np.array(self.pd_data.loc[:, str_y])
         dt = pd.DataFrame(self.pd_data)
         self.x = np.array(dt.drop(labels=str_y, axis=1))
 
