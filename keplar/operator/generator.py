@@ -16,6 +16,13 @@ class Generator(Operator):
     def do(self, population):
         raise NotImplementedError
 
+class GpGenerator(Generator):
+    def __init__(self):
+        super().__init__()
+
+    def do(self,population):
+        pass
+
 
 class OperonGenerator(Generator):
     def __init__(self):

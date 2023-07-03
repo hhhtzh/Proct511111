@@ -1,4 +1,3 @@
-
 import numpy as np
 import os
 from dsr.dso.train import Trainer
@@ -10,7 +9,7 @@ from dsr.dso.program import Program, from_tokens
 from dsr.dso.utils import empirical_entropy, get_duration, weighted_quantile, pad_action_obs_priors
 from dsr.dso.memory import Batch, make_queue
 from dsr.dso.variance import quantile_variance
-from dsr.dso.task import set_task,make_task
+from dsr.dso.task import set_task, make_task
 from itertools import compress
 from textwrap import indent
 
@@ -19,19 +18,21 @@ tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 # Set TensorFlow seed
 tf.compat.v1.set_random_seed(0)
+
+
 class dsr_Train(Trainer):
     def __init__(self, sess, policy, policy_optimizer, gp_controller, logger,
                  pool, n_samples=200000, batch_size=1000, alpha=0.5,
                  epsilon=0.05, verbose=True, baseline="R_e",
                  b_jumpstart=False, early_stopping=True, debug=0,
-                 use_memory=False, memory_capacity=1e3,  warm_start=None, memory_threshold=None,
-                 complexity="token", const_optimizer="scipy", const_params=None,  n_cores_batch=1, **config_task):
+                 use_memory=False, memory_capacity=1e3, warm_start=None, memory_threshold=None,
+                 complexity="token", const_optimizer="scipy", const_params=None, n_cores_batch=1, **config_task):
         Trainer.__init__(self, sess, policy, policy_optimizer, gp_controller, logger,
-                 pool, n_samples=200000, batch_size=1000, alpha=0.5,
-                 epsilon=0.05, verbose=True, baseline="R_e",
-                 b_jumpstart=False, early_stopping=True, debug=0,
-                 use_memory=False, memory_capacity=1e3,  warm_start=None, memory_threshold=None,
-                 complexity="token", const_optimizer="scipy", const_params=None,  n_cores_batch=1)
+                         pool, n_samples=200000, batch_size=1000, alpha=0.5,
+                         epsilon=0.05, verbose=True, baseline="R_e",
+                         b_jumpstart=False, early_stopping=True, debug=0,
+                         use_memory=False, memory_capacity=1e3, warm_start=None, memory_threshold=None,
+                         complexity="token", const_optimizer="scipy", const_params=None, n_cores_batch=1)
         # # self.programs = self.get_program()
         # Trainer.batch_size = batch_size
         # Trainer.policy = policy
@@ -40,7 +41,7 @@ class dsr_Train(Trainer):
 
         # self.config_task1 = config_task
         # # Programs=Program
-        
+
         # # Initialize compute graph
         # self.sess.run(tf.compat.v1.global_variables_initializer())
 
@@ -119,9 +120,9 @@ class dsr_Train(Trainer):
         # self.p_r_best = None
         # self.done = False
 
-    def one_iter(self,programs=None,actions=None, obs=None, priors=None):
+    def one_iter(self, programs=None, actions=None, obs=None, priors=None):
         # print("node 0.1")
-    # def run_one_step(self, override=None):
+        # def run_one_step(self, override=None):
         """
         Executes one step of main training loop. If override is given,
         train on that batch. Otherwise, sample the batch to train on.
@@ -133,14 +134,14 @@ class dsr_Train(Trainer):
             samples instead of sampled
         """
 
-        override=None
+        override = None
 
         positional_entropy = None
         top_samples_per_batch = list()
         if self.debug >= 1:
             print("\nDEBUG: Policy parameter means:")
             self.print_var_means()
-        ewma = None if self.b_jumpstart else 0.0 # EWMA portion of baseline
+        ewma = None if self.b_jumpstart else 0.0  # EWMA portion of baseline
         start_time = time.time()
         if self.verbose:
             print("-- RUNNING ITERATIONS START -------------")
@@ -157,7 +158,6 @@ class dsr_Train(Trainer):
         if override is None:
             # length = len(T)
             pass
-
 
             # pass
             # Sample batch of Programs from the Controller
@@ -206,7 +206,8 @@ class dsr_Train(Trainer):
             elif actions.shape[1] > deap_actions.shape[1]:
                 # If GP shape is smaller than RL then pad
                 pad_length = actions.shape[1] - deap_actions.shape[1]
-                deap_actions, deap_obs, deap_priors = pad_action_obs_priors(deap_actions, deap_obs, deap_priors, pad_length)
+                deap_actions, deap_obs, deap_priors = pad_action_obs_priors(deap_actions, deap_obs, deap_priors,
+                                                                            pad_length)
 
             # print("node 2")
             # Combine RNN and deap programs, actions, obs, and priors
@@ -220,8 +221,8 @@ class dsr_Train(Trainer):
             # print("node 3.1")
             # Filter programs that need reward computing
             programs_to_optimize = list(set([p for p in programs if "r" not in p.__dict__]))
-            pool_p_dict = { p.str : p for p in self.pool.map(work, programs_to_optimize) }
-            programs = [pool_p_dict[p.str] if "r" not in p.__dict__  else p for p in programs]
+            pool_p_dict = {p.str: p for p in self.pool.map(work, programs_to_optimize)}
+            programs = [pool_p_dict[p.str] if "r" not in p.__dict__ else p for p in programs]
             # print("node 3")
 
             # Make sure to update cache with new programs
@@ -234,10 +235,10 @@ class dsr_Train(Trainer):
         controller_programs = programs.copy() if self.logger.save_token_count else None
 
         # Need for Vanilla Policy Gradient (epsilon = null)
-        l           = np.array([len(p.traversal) for p in programs])
-        s           = [p.str for p in programs] # Str representations of Programs
-        on_policy   = np.array([p.originally_on_policy for p in programs])
-        invalid     = np.array([p.invalid for p in programs], dtype=bool)
+        l = np.array([len(p.traversal) for p in programs])
+        s = [p.str for p in programs]  # Str representations of Programs
+        on_policy = np.array([p.originally_on_policy for p in programs])
+        invalid = np.array([p.invalid for p in programs], dtype=bool)
 
         if self.logger.save_positional_entropy:
             # print("node 4")
@@ -266,7 +267,7 @@ class dsr_Train(Trainer):
         if self.epsilon is not None and self.epsilon < 1.0:
             # print("node 4.2")
             # Compute reward quantile estimate
-            if self.use_memory: # Memory-augmented quantile
+            if self.use_memory:  # Memory-augmented quantile
                 # print("node 4.3")
                 # Get subset of Programs not in buffer
                 unique_programs = [p for p in programs \
@@ -284,7 +285,7 @@ class dsr_Train(Trainer):
                 memory_w = self.memory_queue.compute_probs()
                 if N == 0:
                     print("WARNING: Found no unique samples in batch!")
-                    combined_w = memory_w / memory_w.sum() # Renormalize
+                    combined_w = memory_w / memory_w.sum()  # Renormalize
                 else:
                     sample_w = np.repeat((1 - memory_w.sum()) / N, N)
                     combined_w = np.concatenate([memory_w, sample_w])
@@ -298,7 +299,7 @@ class dsr_Train(Trainer):
                 # Compute the weighted quantile
                 quantile = weighted_quantile(values=combined_r, weights=combined_w, q=1 - self.epsilon)
 
-            else: # Empirical quantile
+            else:  # Empirical quantile
                 quantile = np.quantile(r, 1 - self.epsilon, interpolation="higher")
 
             # Filter quantities whose reward >= quantile
@@ -307,7 +308,7 @@ class dsr_Train(Trainer):
             s = list(compress(s, keep))
             invalid = invalid[keep]
             r = r[keep]
-            programs  = list(compress(programs, keep))
+            programs = list(compress(programs, keep))
             actions = actions[keep, :]
             obs = obs[keep, :, :]
             priors = priors[keep, :, :]
@@ -319,16 +320,17 @@ class dsr_Train(Trainer):
         # Compute baseline
         # NOTE: pg_loss = tf.reduce_mean((self.r - self.baseline) * neglogp, name="pg_loss")
         if self.baseline == "ewma_R":
-            ewma = np.mean(r) if ewma is None else self.alpha*np.mean(r) + (1 - self.alpha)*ewma
+            ewma = np.mean(r) if ewma is None else self.alpha * np.mean(r) + (1 - self.alpha) * ewma
             b = ewma
-        elif self.baseline == "R_e": # Default
+        elif self.baseline == "R_e":  # Default
             ewma = -1
             b = quantile
         elif self.baseline == "ewma_R_e":
-            ewma = np.min(r) if ewma is None else self.alpha*quantile + (1 - self.alpha)*ewma
+            ewma = np.min(r) if ewma is None else self.alpha * quantile + (1 - self.alpha) * ewma
             b = ewma
         elif self.baseline == "combined":
-            ewma = np.mean(r) - quantile if ewma is None else self.alpha*(np.mean(r) - quantile) + (1 - self.alpha)*ewma
+            ewma = np.mean(r) - quantile if ewma is None else self.alpha * (np.mean(r) - quantile) + (
+                        1 - self.alpha) * ewma
             b = quantile + ewma
 
         # Compute sequence lengths
@@ -368,7 +370,8 @@ class dsr_Train(Trainer):
 
             # Print new best expression
             if self.verbose or self.debug:
-                print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time), self.iteration + 1, self.r_best))
+                print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time),
+                                                                                  self.iteration + 1, self.r_best))
                 print("\n\t** New best")
                 self.p_r_best.print_stats()
 
@@ -380,14 +383,14 @@ class dsr_Train(Trainer):
         #                        self.nevals, controller_programs,
         #                        positional_entropy, top_samples_per_batch)
 
-
         # Stop if early stopping criteria is met
         if self.early_stopping and self.p_r_best.evaluate.get("success"):
             print("[{}] Early stopping criteria met; breaking early.".format(get_duration(start_time)))
             self.done = True
 
         if self.verbose and (self.iteration + 1) % 10 == 0:
-            print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time), self.iteration + 1, self.r_best))
+            print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time),
+                                                                              self.iteration + 1, self.r_best))
 
         if self.debug >= 2:
             print("\nParameter means after iteration {}:".format(self.iteration + 1))
@@ -397,28 +400,28 @@ class dsr_Train(Trainer):
             self.done = True
 
         # if self.iteration==self.n_samples/self.batch_size-1:
-        print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time), self.iteration + 1, self.r_best))
+        print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time), self.iteration + 1,
+                                                                          self.r_best))
         print("\n\t** New best")
         self.p_r_best.print_stats()
 
         # Increment the iteration counter
         self.iteration += 1
 
-        return programs,actions, obs, priors
-
+        return programs, actions, obs, priors
 
         # print("??????????????????????")
 
         # self.programs = self.get_program()
+
     def run_step(self, override=None):
-            
+
         # if override is None:
         #     # Sample batch of Programs from the Controller
         #     print("xxxxxxxxxxxxx\n")
         #     # Program.task.task_type='regression'
         #     # print(self.programs.task.task_type+"\n")
         #     print(Program.task.task_type+"xxx\n")
-
 
         #     actions, obs, priors = self.policy.sample(self.batch_size)
         #     programs = [from_tokens(a) for a in actions]     
@@ -428,7 +431,7 @@ class dsr_Train(Trainer):
         if override is None:
             # Sample batch of Programs from the Controller
             actions, obs, priors = self.policy.sample(self.batch_size)
-            programs = [from_tokens(a) for a in actions]   
+            programs = [from_tokens(a) for a in actions]
             r = np.array([p.r for p in programs])
             l = np.array([len(p.traversal) for p in programs])
             # expr = np.array([repr(p.sympy_expr) for p in programs])
@@ -438,32 +441,28 @@ class dsr_Train(Trainer):
             #     # print(programs[i].pretty())
             #     print("{}\n".format(indent(programs[i].pretty(), '\t  ')))
 
-                # print(str(expr[i]))/
+            # print(str(expr[i]))/
 
-        return programs,r,l,actions, obs, priors
-    
-    
-    
+        return programs, r, l, actions, obs, priors
+
     # def loop_one_step(self, override=None):
     #     pass
 
     def T_step(self, override=None):
-            
+
         if override is None:
             # Sample batch of Programs from the Controller
             print("xxxxxxxxxxxxx\n")
             # Program.task.task_type='regression'
             # print(self.programs.task.task_type+"\n")
-            print(Program.task.task_type+"xxx\n")
-            
-
+            print(Program.task.task_type + "xxx\n")
 
             actions, obs, priors = self.policy.sample(self.batch_size)
-            programs = [from_tokens(a) for a in actions]  
+            programs = [from_tokens(a) for a in actions]
 
             r = np.array([p.r for p in programs])
             l = np.array([len(p.traversal) for p in programs])
-            R= np.array([p.sympy_expr for p in programs])
+            R = np.array([p.sympy_expr for p in programs])
 
             # print(Program.library)
             # print(programs.library)
@@ -480,20 +479,16 @@ class dsr_Train(Trainer):
 
             # print(p.traversal)
 
-
-            
             # r.__repr__()
             # print(r)
             # print(R)
 
-
-
             # programs.__str__()
         # self.two_step()
 
-    def loop_one_step(self,programs=None,actions=None, obs=None, priors=None):
+    def loop_one_step(self, programs=None, actions=None, obs=None, priors=None):
         # print("node 0.1")
-    # def run_one_step(self, override=None):
+        # def run_one_step(self, override=None):
         """
         Executes one step of main training loop. If override is given,
         train on that batch. Otherwise, sample the batch to train on.
@@ -505,14 +500,14 @@ class dsr_Train(Trainer):
             samples instead of sampled
         """
 
-        override=None
+        override = None
 
         positional_entropy = None
         top_samples_per_batch = list()
         if self.debug >= 1:
             print("\nDEBUG: Policy parameter means:")
             self.print_var_means()
-        ewma = None if self.b_jumpstart else 0.0 # EWMA portion of baseline
+        ewma = None if self.b_jumpstart else 0.0  # EWMA portion of baseline
         start_time = time.time()
         if self.verbose:
             print("-- RUNNING ITERATIONS START -------------")
@@ -574,7 +569,8 @@ class dsr_Train(Trainer):
             elif actions.shape[1] > deap_actions.shape[1]:
                 # If GP shape is smaller than RL then pad
                 pad_length = actions.shape[1] - deap_actions.shape[1]
-                deap_actions, deap_obs, deap_priors = pad_action_obs_priors(deap_actions, deap_obs, deap_priors, pad_length)
+                deap_actions, deap_obs, deap_priors = pad_action_obs_priors(deap_actions, deap_obs, deap_priors,
+                                                                            pad_length)
 
             # print("node 2")
             # Combine RNN and deap programs, actions, obs, and priors
@@ -588,8 +584,8 @@ class dsr_Train(Trainer):
             # print("node 3.1")
             # Filter programs that need reward computing
             programs_to_optimize = list(set([p for p in programs if "r" not in p.__dict__]))
-            pool_p_dict = { p.str : p for p in self.pool.map(work, programs_to_optimize) }
-            programs = [pool_p_dict[p.str] if "r" not in p.__dict__  else p for p in programs]
+            pool_p_dict = {p.str: p for p in self.pool.map(work, programs_to_optimize)}
+            programs = [pool_p_dict[p.str] if "r" not in p.__dict__ else p for p in programs]
             # print("node 3")
 
             # Make sure to update cache with new programs
@@ -602,10 +598,10 @@ class dsr_Train(Trainer):
         controller_programs = programs.copy() if self.logger.save_token_count else None
 
         # Need for Vanilla Policy Gradient (epsilon = null)
-        l           = np.array([len(p.traversal) for p in programs])
-        s           = [p.str for p in programs] # Str representations of Programs
-        on_policy   = np.array([p.originally_on_policy for p in programs])
-        invalid     = np.array([p.invalid for p in programs], dtype=bool)
+        l = np.array([len(p.traversal) for p in programs])
+        s = [p.str for p in programs]  # Str representations of Programs
+        on_policy = np.array([p.originally_on_policy for p in programs])
+        invalid = np.array([p.invalid for p in programs], dtype=bool)
 
         if self.logger.save_positional_entropy:
             # print("node 4")
@@ -634,7 +630,7 @@ class dsr_Train(Trainer):
         if self.epsilon is not None and self.epsilon < 1.0:
             # print("node 4.2")
             # Compute reward quantile estimate
-            if self.use_memory: # Memory-augmented quantile
+            if self.use_memory:  # Memory-augmented quantile
                 # print("node 4.3")
                 # Get subset of Programs not in buffer
                 unique_programs = [p for p in programs \
@@ -652,7 +648,7 @@ class dsr_Train(Trainer):
                 memory_w = self.memory_queue.compute_probs()
                 if N == 0:
                     print("WARNING: Found no unique samples in batch!")
-                    combined_w = memory_w / memory_w.sum() # Renormalize
+                    combined_w = memory_w / memory_w.sum()  # Renormalize
                 else:
                     sample_w = np.repeat((1 - memory_w.sum()) / N, N)
                     combined_w = np.concatenate([memory_w, sample_w])
@@ -666,7 +662,7 @@ class dsr_Train(Trainer):
                 # Compute the weighted quantile
                 quantile = weighted_quantile(values=combined_r, weights=combined_w, q=1 - self.epsilon)
 
-            else: # Empirical quantile
+            else:  # Empirical quantile
                 quantile = np.quantile(r, 1 - self.epsilon, interpolation="higher")
 
             # Filter quantities whose reward >= quantile
@@ -675,7 +671,7 @@ class dsr_Train(Trainer):
             s = list(compress(s, keep))
             invalid = invalid[keep]
             r = r[keep]
-            programs  = list(compress(programs, keep))
+            programs = list(compress(programs, keep))
             actions = actions[keep, :]
             obs = obs[keep, :, :]
             priors = priors[keep, :, :]
@@ -687,16 +683,17 @@ class dsr_Train(Trainer):
         # Compute baseline
         # NOTE: pg_loss = tf.reduce_mean((self.r - self.baseline) * neglogp, name="pg_loss")
         if self.baseline == "ewma_R":
-            ewma = np.mean(r) if ewma is None else self.alpha*np.mean(r) + (1 - self.alpha)*ewma
+            ewma = np.mean(r) if ewma is None else self.alpha * np.mean(r) + (1 - self.alpha) * ewma
             b = ewma
-        elif self.baseline == "R_e": # Default
+        elif self.baseline == "R_e":  # Default
             ewma = -1
             b = quantile
         elif self.baseline == "ewma_R_e":
-            ewma = np.min(r) if ewma is None else self.alpha*quantile + (1 - self.alpha)*ewma
+            ewma = np.min(r) if ewma is None else self.alpha * quantile + (1 - self.alpha) * ewma
             b = ewma
         elif self.baseline == "combined":
-            ewma = np.mean(r) - quantile if ewma is None else self.alpha*(np.mean(r) - quantile) + (1 - self.alpha)*ewma
+            ewma = np.mean(r) - quantile if ewma is None else self.alpha * (np.mean(r) - quantile) + (
+                        1 - self.alpha) * ewma
             b = quantile + ewma
 
         # Compute sequence lengths
@@ -736,7 +733,8 @@ class dsr_Train(Trainer):
 
             # Print new best expression
             if self.verbose or self.debug:
-                print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time), self.iteration + 1, self.r_best))
+                print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time),
+                                                                                  self.iteration + 1, self.r_best))
                 print("\n\t** New best")
                 self.p_r_best.print_stats()
 
@@ -748,14 +746,14 @@ class dsr_Train(Trainer):
         #                        self.nevals, controller_programs,
         #                        positional_entropy, top_samples_per_batch)
 
-
         # Stop if early stopping criteria is met
         if self.early_stopping and self.p_r_best.evaluate.get("success"):
             print("[{}] Early stopping criteria met; breaking early.".format(get_duration(start_time)))
             self.done = True
 
         if self.verbose and (self.iteration + 1) % 10 == 0:
-            print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time), self.iteration + 1, self.r_best))
+            print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time),
+                                                                              self.iteration + 1, self.r_best))
 
         if self.debug >= 2:
             print("\nParameter means after iteration {}:".format(self.iteration + 1))
@@ -764,18 +762,13 @@ class dsr_Train(Trainer):
         if self.nevals >= self.n_samples:
             self.done = True
 
-        if self.iteration==self.n_samples/self.batch_size-1:
-            print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time), self.iteration + 1, self.r_best))
+        if self.iteration == self.n_samples / self.batch_size - 1:
+            print("[{}] Training iteration {}, current best R: {:.4f}".format(get_duration(start_time),
+                                                                              self.iteration + 1, self.r_best))
             print("\n\t** New best")
             self.p_r_best.print_stats()
 
         # Increment the iteration counter
         self.iteration += 1
 
-        return programs,actions, obs, priors
-
-
-
-
-
-        
+        return programs, actions, obs, priors

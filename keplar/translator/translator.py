@@ -4,7 +4,8 @@ import numpy as np
 import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
-from keplar.population.function import arity_map, operator_map3, operator_map, _function_map
+from keplar.population.function import arity_map, operator_map3, _function_map, map_F1
+from keplar.population.individual import Individual
 
 
 # from keplar.population.function import operator_map, arity_map, operator_map3, _function_map
@@ -160,7 +161,7 @@ def to_gp(ind):
     for i in func:
         int_i = int(i)
         if int_i < 3000:
-            str_op = operator_map[int_i]
+            str_op = map_F1[int_i]
             _func = _function_map[str_op]
             list_program.append(_func)
         elif 3000 <= int_i < 5000:
@@ -247,33 +248,46 @@ def pre_to_mid(x):
                     par = '(' + shu + fu + par + ')'  # 计算
                 s.push(str(par))  # 算式入栈
     return s.pop()  # 返回最终算式
+def trans_gp(gp_program):
+    node = gp_program.program[0]
+    if isinstance(node, float):
+        ind=Individual(func=["5000"],const_array=[node])
+        return ind
+    if isinstance(node, int):
+        int_x=3000+node
+        str_x=int(int_x)
+        ind = Individual(func=[str_x], const_array=[])
+        return ind
+    for node in gp_program.program:
 
 
-def trans_gp(gp_equ):
-    strx_ = re.sub(r'X(\d{1})', r'X_\1', gp_equ)
-    strx_ = re.sub(r'-(\d{1}).(\d{3})', r'sub(0.000,\1.\2)', strx_)
-    strx_ = re.sub(r'add', r'+', strx_)
-    strx_ = re.sub(r'sub', '-', strx_)
-    strx_ = re.sub(r'mul', r'*', strx_)
-    strx_ = re.sub(r'div', r'/', strx_)
-    strx_ = re.sub(r',', ' ', strx_)
-    strx_ = re.sub(r'\(', r' ', strx_)
-    strx_ = re.sub(r'\)', r' ', strx_)
-    strx_ = re.sub(r'  ', ' ', strx_)
-    strx_ = re.sub(r'   ', ' ', strx_)
-    strx_ = pre_to_mid(str(strx_))
-    # strx_ = infix_to_postfix(strx_)
-    strx_ = "".join(strx_)
-    strx_ = re.sub(r'-', ' - ', strx_)
-    strx_ = re.sub(r'\+', ' + ', strx_)
-    strx_ = re.sub(r'\*', ' * ', strx_)
-    strx_ = re.sub(r'/', ' / ', strx_)
-    strx_ = re.sub(r'X', r' X', strx_)
-    strx_ = re.sub(r'0.000', '0.000 ', strx_)
-    strx_ = re.sub(r'X_(\d{1})(\d{1})', r'X_\1 \2', strx_)
-    strx_ = re.sub(r'(\d{1})0.000', r'\1 0.000', strx_)
-    strx_ = re.sub(r'.(\d{3})(\d{1})', r'.\1 \2', strx_)
-    return str(strx_)
+
+
+# def trans_gp(gp_equ):
+#     strx_ = re.sub(r'X(\d{1})', r'X_\1', gp_equ)
+#     strx_ = re.sub(r'-(\d{1}).(\d{3})', r'sub(0.000,\1.\2)', strx_)
+#     strx_ = re.sub(r'add', r'+', strx_)
+#     strx_ = re.sub(r'sub', '-', strx_)
+#     strx_ = re.sub(r'mul', r'*', strx_)
+#     strx_ = re.sub(r'div', r'/', strx_)
+#     strx_ = re.sub(r',', ' ', strx_)
+#     strx_ = re.sub(r'\(', r' ', strx_)
+#     strx_ = re.sub(r'\)', r' ', strx_)
+#     strx_ = re.sub(r'  ', ' ', strx_)
+#     strx_ = re.sub(r'   ', ' ', strx_)
+#     strx_ = pre_to_mid(str(strx_))
+#     # strx_ = infix_to_postfix(strx_)
+#     strx_ = "".join(strx_)
+#     strx_ = re.sub(r'-', ' - ', strx_)
+#     strx_ = re.sub(r'\+', ' + ', strx_)
+#     strx_ = re.sub(r'\*', ' * ', strx_)
+#     strx_ = re.sub(r'/', ' / ', strx_)
+#     strx_ = re.sub(r'X', r' X', strx_)
+#     strx_ = re.sub(r'0.000', '0.000 ', strx_)
+#     strx_ = re.sub(r'X_(\d{1})(\d{1})', r'X_\1 \2', strx_)
+#     strx_ = re.sub(r'(\d{1})0.000', r'\1 0.000', strx_)
+#     strx_ = re.sub(r'.(\d{3})(\d{1})', r'.\1 \2', strx_)
+#     return str(strx_)
 
 
 class trans_Dsr():
@@ -462,7 +476,7 @@ def to_op(ind, np_x, np_y):
     for i in func:
         int_i = int(i)
         if int_i < 3000:
-            str_op = operator_map[int_i]
+            str_op = map_F1[int_i]
             list_prefix.append(str_op)
         elif 3000 <= int_i < 5000:
             str_con = str(ind.const_array[int_i - 3000])
@@ -664,3 +678,7 @@ def to_op(ind, np_x, np_y):
     # op_tree.UpdateNodes()
     # print(Operon.InfixFormatter.Format(op_tree, ds, 5))
     # return op_tree
+
+
+
+

@@ -12,6 +12,12 @@ from gplearn.functions import _protected_division, _protected_sqrt, _Function, _
 #     , 1007: 'abs', 1008: 'neg', 1009: 'inv', 1010: 'max', 1011: 'min', 1012: 'sin',
 #                 1013: 'cos', 1014: 'tan', 1015: 'sig', 1016: 'aq', 1017: 'pow', 1018: 'exp', 1019: 'square',
 #                 1020: '^'}
+# 存放框架的字典编码方式，这一套编码为数字翻译成先序遍历结果1000（函数）、3000（变量）、5000（常量）
+# 1000(函数)
+map_F1 = {1001: 'add', 1002: 'sub', 1003: 'mul', 1004: 'div', 1005: 'sqrt', 1006: 'log'
+    , 1007: 'abs', 1008: 'neg', 1009: 'inv', 1010: 'max', 1011: 'min', 1012: 'sin',
+          1013: 'cos', 1014: 'tan', 1015: 'sig', 1016: 'aq', 1017: 'pow', 1018: 'exp', 1019: 'square',
+          1020: '^'}
 
 # map_F1_format = {'+': 1001, '-': 1002, '*': 1003, '/': 1004, 'sqrt': 1005, 'log': 1006, 'abs': 1007,
 #                  'neg': 1008, 'inv': 1009, 'max': 1010, 'min': 1011, 'sin': 1012, 'cos': 1013, 'tan': 1014,
@@ -21,8 +27,17 @@ from gplearn.functions import _protected_division, _protected_sqrt, _Function, _
 # map_F2 ={3001: 'x1', 3002: 'x2', 3003: 'x3'}
 # #5000（常量）
 # map_F3 = {} 
+map_F1_format = {'+': 1001, '-': 1002, '*': 1003, '/': 1004, 'sqrt': 1005, 'log': 1006, 'abs': 1007,
+                 'neg': 1008, 'inv': 1009, 'max': 1010, 'min': 1011, 'sin': 1012, 'cos': 1013, 'tan': 1014,
+                 'sig': 1015, 'aq': 1016, 'pow': 1017, 'exp': 1018, 'square': 1019, '^': 1020
+                 }
+# 3000（变量）
+map_F2 = {3001: 'x1', 3002: 'x2', 3003: 'x3'}
+# 5000（常量）
+map_F3 = {}
 
 # Operator_map_F = {map_F1,map_F2,map_F3}
+# Operator_map_Format ={map_F1_format,map_F2,map_F3}
 
 # Operator_map_Format ={map_F1_format,map_F2,map_F3}
 
@@ -32,6 +47,12 @@ from gplearn.functions import _protected_division, _protected_sqrt, _Function, _
 #     ,  'abs':1007, 'neg':1008 , 'inv':1009 ,  'max':1010,  'min':1011, 1012: 'sin',
 #                 1013: 'cos', 1014: 'tan', 1015: 'sig', 1016: 'aq', 1017: 'pow', 1018: 'exp', 1019: 'square',
 #                 1020: '^'}
+# 存放框架的字典编码方式，这一套编码为遍历结果翻译成数字 1000（函数）、3000（变量）、5000（常量）
+# 1000(函数)
+map_S1 = {'add': 1001, 'sub': 1002, 'mul': 1003, 'div': 1004, 'sqrt': 1005, 'log': 1006
+    , 'abs': 1007, 'neg': 1008, 'inv': 1009, 'max': 1010, 'min': 1011, 1012: 'sin',
+          1013: 'cos', 1014: 'tan', 1015: 'sig', 1016: 'aq', 1017: 'pow', 1018: 'exp', 1019: 'square',
+          1020: '^'}
 
 # #3000（变量）
 # map_S2_taylor = {'1':3001,  '2':3002,  '3':3003 ,'4':3004 ,'5':3005}
@@ -42,19 +63,22 @@ from gplearn.functions import _protected_division, _protected_sqrt, _Function, _
 # Operator_map_S_dsr ={map_S1 , map_S2_dsr , map_S3}
 
 # Operator_map_S_taylor ={map_S1 , map_S2_taylor , map_S3}
+# Operator_map_S_dsr ={map_S1 , map_S2_dsr , map_S3}
+# Operator_map_S_taylor ={map_S1 , map_S2_taylor , map_S3}
 
 
-#------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------#
 
 # Operator_map_S = {'add':1001, 'sub':1002, 'mul':1003, 1004: 'div', 1005: 'sqrt', 1006: 'log'
 # >>>>>>> 9c18fba (commit)
 
 operator_map = {1001: 'add', 1002: 'sub', 1003: 'mul', 1004: 'div', 1005: 'sqrt', 1006: 'log'
+Operator_map_S = {'add': 1001, 'sub': 1002, 'mul': 1003, 1004: 'div', 1005: 'sqrt', 1006: 'log'
     , 1007: 'abs', 1008: 'neg', 1009: 'inv', 1010: 'max', 1011: 'min', 1012: 'sin',
-                1013: 'cos', 1014: 'tan', 1015: 'sig', 1016: 'aq', 1017: 'pow', 1018: 'exp', 1019: 'square',
-                1020: '^',
-                5001: 'x1', 5002: 'x2', 5003: 'x3'
-                }
+                  1013: 'cos', 1014: 'tan', 1015: 'sig', 1016: 'aq', 1017: 'pow', 1018: 'exp', 1019: 'square',
+                  1020: '^',
+                  5001: 'x1', 5002: 'x2', 5003: 'x3'
+                  }
 
 arity_map = {1001: 2, 1002: 2, 1003: 2, 1004: 2, 1005: 1, 1006: 1
     , 1007: 1, 1008: 1, 1009: 1, 1010: 2, 1011: 2, 1012: 1,
@@ -94,9 +118,13 @@ tan1 = _Function(function=np.tan, name='tan', arity=1)
 sig1 = _Function(function=_sigmoid, name='sig', arity=1)
 
 _function_map = {'add': add2,
+                 '+': add2,
                  'sub': sub2,
+                 '-': sub2,
                  'mul': mul2,
+                 '*': mul2,
                  'div': div2,
+                 '/': div2,
                  'sqrt': sqrt1,
                  'log': log1,
                  'abs': abs1,

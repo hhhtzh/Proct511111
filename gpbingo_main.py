@@ -11,13 +11,13 @@ from keplar.operator.generator import BingoGenerator
 from keplar.operator.mutation import BingoMutation
 from keplar.operator.selector import BingoSelector
 
-data = Data("txt", "datasets/1.txt",["x","y"])
+data = Data("txt", "datasets/1.txt", ["x", "y"])
 data.read_file()
 data.set_xy("y")
-x = data.get_x()
-y = data.get_y()
-operators = ["+", "-", "*", "/","^"]
-creator = BingoCreator(50, operators, x, 10, "Bingo")
+x = data.get_np_x()
+y = data.get_np_y()
+operators = ["+", "-", "*", "/", "^"]
+creator = GpCreator(100, x, y, "Bingo")
 evaluator = BingoEvaluator(x, "exp", "lm", y)
 crossover = BingoCrossover("Bingo")
 mutation = BingoMutation(x, operators, "Bingo")
@@ -28,4 +28,3 @@ gen_eva_oplist = CompositeOp([evaluator])
 population = creator.do()
 bgsr = BingoAlg(1000, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
 bgsr.run()
-#纯Bingo时可导入bingocpp包
