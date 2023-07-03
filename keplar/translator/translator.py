@@ -166,10 +166,10 @@ def to_gp(ind):
             _func = _function_map[str_op]
             list_program.append(_func)
         elif 3000 <= int_i < 5000:
-            float_con = float('%.3f' % ind.const_array[int_i - 2000])
+            float_con = float('%.3f' % ind.const_array[int_i - 3000])
             list_program.append(float_con)
         elif int_i > 5000:
-            x = int(int_i - 5001)
+            x = int(int_i - 5000)
             list_program.append(x)
 
         else:
@@ -526,8 +526,10 @@ def trans_op(op_tree, variable_list):
 
 def to_bingo(ind):
     str_equ=ind.format()
+    print(str_equ)
     bingo_graph=AGraph(equation=str_equ)
     bingo_graph._update()
+    return bingo_graph
 
 
 

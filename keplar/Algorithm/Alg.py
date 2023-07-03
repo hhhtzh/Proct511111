@@ -257,6 +257,7 @@ class TaylorGpAlg(Alg):
         #     time_end2 = time.time()
         #     print('current_time_cost', (time_end2 - time_start2) / 3600, 'hour')
 
+
 class GpBingoAlg(Alg):
 
     def __init__(self, max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population):
