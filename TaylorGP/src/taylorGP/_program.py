@@ -169,6 +169,7 @@ class _Program(object):
         self.X =X
         self.eq_write = eq_write
         if self.program is not None :
+            # print("hhhhh")
             if not self.validate_program() :
                 raise ValueError('The supplied program is incomplete.')
             while True:

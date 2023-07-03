@@ -94,9 +94,11 @@ def _parallel_evolve(n_programs, parents, X, y, sample_weight, seeds, params):
         random_state = check_random_state(seeds[i])
 
         if parents is None:
+            # print("uuuuuu")
             program = None
             genome = None
         else:
+            print("mmmmm")
             method = random_state.uniform()
             parent, parent_index = _tournament()
             if method < method_probs[0]:
@@ -176,7 +178,7 @@ def _parallel_evolve(n_programs, parents, X, y, sample_weight, seeds, params):
         if max_samples < n_samples:
             # Calculate OOB fitness
             program.oob_fitness_ = program.raw_fitness(X, y, oob_sample_weight)
-
+ 
         programs.append(program)
 
     return programs
@@ -820,6 +822,7 @@ class BaseSymbolic(BaseEstimator, metaclass=ABCMeta):
                 parents.sort(key=lambda x: x.raw_fitness_)
                 np.random.shuffle(parents)
                 top1Flag = True
+                
             n_jobs, n_programs, starts = _partition_estimators(
                 self.population_size, self.n_jobs)
             seeds = random_state.randint(MAX_INT, size=self.population_size)
