@@ -5,7 +5,7 @@ import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
 from gplearn.functions import _Function
-from keplar.population.function import arity_map, operator_map3, _function_map, map_F1, Operator_map_S
+from keplar.population.function import arity_map, operator_map3, _function_map, map_F1, Operator_map_S,operator_map_dsr,operator_map_dsr2
 from keplar.population.individual import Individual
 
 
@@ -282,6 +282,51 @@ def trans_gp(gp_program):
                 raise ValueError(f"未识别，字符{node}")
     ind=Individual(func=func,const_array=const_array)
     return ind
+
+class DSRToKeplar():
+    def __init__(self,T):
+        self.T = T
+        self.length_T = len(self.T)
+
+        # self.operator_map_dsr = operator_map_dsr
+        # self.poplation = poplation
+
+    def do(self,poplation=None):
+        f = [[] for i in range(self.length_T)]
+        for i in range(self.length_T):
+            for j in range(len(self.T[i])):
+                f[i].append(int(operator_map_dsr[str(self.T[i][j])]))
+            poplation.append(f[i])
+        poplation.set_pop_size(self.length_T)
+        return poplation
+    
+    def to_keplar(self,poplation=None):
+        self.length_T = poplation.get_pop_size()
+        T_new = [[] for i in range(self.length_T)]
+        for i in range(self.length_T):
+            for j in range(len(poplation.pop_list[i])):
+                T_new[i].append(Operator_map_S[int(poplation.pop_list[i][j])])
+
+        return T_new
+
+class KeplarToDSR():
+
+    def __init__(self):
+        # self.poplation = poplation
+        self.length_T = None
+        # self.T = T
+        # self.operator_map = operator_map
+
+    def do(self,poplation=None):
+        self.length_T = poplation.get_pop_size()
+        T_new = [[] for i in range(self.length_T)]
+        for i in range(self.length_T):
+            for j in range(len(poplation.pop_list[i])):
+                T_new[i].append(operator_map_dsr2[int(poplation.pop_list[i][j])])
+
+        return T_new
+
+
 
 
 # def trans_gp(gp_equ):

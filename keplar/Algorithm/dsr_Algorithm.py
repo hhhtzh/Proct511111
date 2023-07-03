@@ -8,7 +8,7 @@ from dsr.dso.program import Program, from_tokens
 from keplar.operator.creator import uDSR_Creator
 from keplar.Algorithm.Alg import Alg
 from keplar.operator.composite_operator import uDsr_CompositeOp
-from keplar.population.function import operator_map,operator_map_dsr
+# from keplar.population.function import operator_map,operator_map_dsr
 from keplar.translator.translator import KeplarToDSR,DSRToKeplar
 from keplar.population.population import Population
 from keplar.operator.dsr_model import uDSR_Model,uDSR_Sample
@@ -28,10 +28,10 @@ class uDsrAlgorithm(Alg):
         self.config_filename = config_filename
 
     def run(self):
-        data = Data("csv", self.csv_filename,["x","y"])
-        data.read_file()
-        x = data.get_x()
-        y = data.get_y()
+        # data = Data("csv", self.csv_filename,["x","y"])
+        # data.read_file()
+        # x = data.get_x()
+        # y = data.get_y()
 
 
 
@@ -59,18 +59,18 @@ class uDsrAlgorithm(Alg):
             #对uDSR类型的编码进行转化population的编码
             udsr_trans = DSRToKeplar(self.T)
 
-            operators = ["+", "-", "*", "/"]
+            # operators = ["+", "-", "*", "/"]
 
-            creator = BingoCreator(50, operators, x, 10, "Bingo")
-            population2 =creator.do()
+            # creator = BingoCreator(50, operators, x, 10, "Bingo")
+            # population2 =creator.do()
             
-            evaluator = BingoEvaluator(x, "exp", "lm", y)
-            crossover = BingoCrossover("Bingo")
-            mutation = BingoMutation(x, operators, "Bingo")
-            selector = BingoSelector(0.5, "tournament", "Bingo")
-            gen_up_oplist = CompositeOp([crossover, mutation])
-            gen_down_oplist = CompositeOpReturn([selector])
-            gen_eva_oplist = CompositeOp([evaluator])
+            # evaluator = BingoEvaluator(x, "exp", "lm", y)
+            # crossover = BingoCrossover("Bingo")
+            # mutation = BingoMutation(x, operators, "Bingo")
+            # selector = BingoSelector(0.5, "tournament", "Bingo")
+            # gen_up_oplist = CompositeOp([crossover, mutation])
+            # gen_down_oplist = CompositeOpReturn([selector])
+            # gen_eva_oplist = CompositeOp([evaluator])
 
             # 在这一步可以将其他算法的poppulation传入，进行组合
             trans_udsr = KeplarToDSR()
