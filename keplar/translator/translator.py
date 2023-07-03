@@ -480,7 +480,10 @@ def trans_op(op_tree, variable_list):
 
 
 def to_bingo(ind):
-    code = ind.func
+    str_equ=ind.format()
+    bingo_graph=AGraph(equation=str_equ)
+    bingo_graph._update()
+
 
 
 def to_dsr(length, *T, **map):
@@ -502,8 +505,8 @@ def to_op(ind, np_x, np_y):
         elif 3000 <= int_i < 5000:
             str_con = str(ind.const_array[int_i - 3000])
             list_prefix.append(str_con)
-        elif int_i > 5000:
-            str_x = "X_" + str(int_i - 5001)
+        elif int_i >= 5000:
+            str_x = "X_" + str(int_i - 5000)
             list_prefix.append(str_x)
 
         else:
