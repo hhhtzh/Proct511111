@@ -162,8 +162,6 @@ class GpCreator(Creator):
         for i in population:
             for j in i:
                 pop.target_pop_list.append(j)
-        for j in pop.target_pop_list:
-            print(type(j))
         pop.pop_type = "gplearn"
 
         if self.to_type != "gplearn":
@@ -173,7 +171,7 @@ class GpCreator(Creator):
                 pop.pop_type = "self"
                 pop.pop_size = len(pop.pop_list)
             for i in pop.pop_list:
-                i.format()
+                print(i.format())
         return pop
 
 
