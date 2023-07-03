@@ -4,6 +4,7 @@ import numpy as np
 import pyoperon as Operon
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
+from gplearn.functions import _Function
 from keplar.population.function import arity_map, operator_map3, _function_map, map_F1
 from keplar.population.individual import Individual
 
@@ -248,19 +249,40 @@ def pre_to_mid(x):
                     par = '(' + shu + fu + par + ')'  # 计算
                 s.push(str(par))  # 算式入栈
     return s.pop()  # 返回最终算式
+
+
 def trans_gp(gp_program):
     node = gp_program.program[0]
     if isinstance(node, float):
-        ind=Individual(func=["5000"],const_array=[node])
+        ind = Individual(func=["5000"], const_array=[node])
         return ind
     if isinstance(node, int):
-        int_x=3000+node
-        str_x=int(int_x)
+        int_x = 3000 + node
+        str_x = int(int_x)
         ind = Individual(func=[str_x], const_array=[])
         return ind
-    for node in gp_program.program:
-
-
+    func=[]
+    const_array=[]
+    for i, node in enumerate(gp_program.program):
+        if isinstance(node, _Function):
+            op_name=node.name
+            op_code=
+        else:
+            if isinstance(node, int):
+                if self.feature_names is None:
+                    output += 'X%s' % node
+                else:
+                    output += self.feature_names[node]
+            else:
+                output += '%.3f' % node
+            terminals[-1] -= 1
+            while terminals[-1] == 0:
+                terminals.pop()
+                terminals[-1] -= 1
+                output += ')'
+            if i != len(self.program) - 1:
+                output += ', '
+    return output
 
 
 # def trans_gp(gp_equ):
@@ -678,7 +700,3 @@ def to_op(ind, np_x, np_y):
     # op_tree.UpdateNodes()
     # print(Operon.InfixFormatter.Format(op_tree, ds, 5))
     # return op_tree
-
-
-
-
