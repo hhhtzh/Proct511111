@@ -447,6 +447,8 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
                 parents = None
             else:
                 parents = self._programs[gen - 1]
+                print("xxx!")
+                print(parents.__str__())
                 parents.sort(key=lambda x: x.raw_fitness_)
                 np.random.shuffle(parents)
                 top1Flag = True

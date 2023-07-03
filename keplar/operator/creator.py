@@ -245,19 +245,29 @@ class uDSR_Creator(Creator):
 
 
 class TaylorGPCreator(Creator):
-    def __init__(self, program):
+    def __init__(self, program,to_type):
         super().__init__()
         self.program = program
+        self.to_type = to_type
+
 
     def do(self, population=None):
         population_size = len(self.program)
-        population.set_pop_size(population_size)
-        eq = []
-        for i in range(population_size):
-            for j, node in range(self.program[i].program):
-                if isinstance(node, _Function):
-                    eq[i].append(node.name)
-                else:
-                    eq[i].append(node)
-            population.append(eq[i])
+        # print(population_size)
+        population =Population(population_size)
+        if self.to_type == "Taylor":    
+            for i in range(population_size):
+                eq = []
+
+                for j, node in enumerate(self.program[i].program):
+                    if isinstance(node, _Function):
+                        eq.append(node.name)
+                    else:
+                        eq.append(node)
+                # print(self.program[i].__str__())
+                # print(eq)
+                population.append(eq)
+        else:
+            pass
+
         return population

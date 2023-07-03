@@ -27,32 +27,32 @@ print("finally!")
 # print(K[110].__str__())
 # print(str(K[110]))
 
-# for i, node in enumerate(K[110].program):
+# for i, node in enumerate(program[110].program):
 #             if isinstance(node, _Function):
 #                     print(node.name)
 #             else:
 #                     print(node)
 
-creator = TaylorGPCreator(program)
+#生成种群（population）
+creator = TaylorGPCreator(program,"Taylor")
 population = creator.do()
 
-# for i,node in K[110]:
-#     if isinstance(node, _Function):
-#         print(node.name)
-# print(K[110].__str__())
 
-
-# creator = TaylorGPCreator()
-# population = creator.do()
-
+#计算fitness的值
 evaluator = TaylorGPEvaluator()
 eval_op_list = [evaluator]
+
+#选择最好的一个或者几个
 select = TaylorGPSelector()
 
+#做交叉crossover
 crossover = TaylorGPCrossover()
+
+#做变异，包括子树变异、提升变异（subtree mutation、Hoist mutation、reproduction）
 mutation = TaylorGPMutation()
-# reinsert = TaylorGPReinserter()
+
+#算法的全部流程
 taylorGP = TayloGPAlg()
-# taylorGP = TayloGPAlg(20,sdakdj,sd,)
+
 taylorGP.run()
 
