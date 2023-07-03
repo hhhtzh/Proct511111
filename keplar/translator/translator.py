@@ -285,6 +285,8 @@ def trans_gp(gp_program):
     return output
 
 
+
+
 # def trans_gp(gp_equ):
 #     strx_ = re.sub(r'X(\d{1})', r'X_\1', gp_equ)
 #     strx_ = re.sub(r'-(\d{1}).(\d{3})', r'sub(0.000,\1.\2)', strx_)
