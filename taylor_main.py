@@ -47,6 +47,11 @@ print("population_size")
 #计算fitness的值
 # evaluator = TaylorGPEvaluator()
 # eval_op_list = [evaluator]
+
+#选择最好的一个或者几个
+select = TaylorGPSelector(random_state,tournament_size=50,greater_is_better=False)
+pop_best,pop_best_indes = select.do()
+
 print("crossover begin!")
 
 random_state = check_random_state(1)
@@ -57,8 +62,7 @@ population= crossover.do(population,1,0)
 print("crossover end!")
 
 
-#选择最好的一个或者几个
-select = TaylorGPSelector()
+
 
 
 
