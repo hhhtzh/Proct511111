@@ -29,8 +29,9 @@ class TayloGPAlg(Alg):
 
 class MTaylorGPAlg(Alg):
     def __init__(self, max_generation, ds,up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None, population=None,
-                 recursion_limit=300, repeat=3, originalTaylorGPGeneration=20):
+                 recursion_limit=300, repeat=3, originalTaylorGPGeneration=20,SR_method="gplearn"):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.SR_method = SR_method
         self.ds = ds
         self.originalTaylorGPGeneration = originalTaylorGPGeneration
         self.repeat = repeat
@@ -67,7 +68,7 @@ class MTaylorGPAlg(Alg):
                 SRC.firstMabFlag = True
                 set_value('FIRST_EVOLUTION_FLAG', True)  # 进行每轮数据集演化前执行
                 for tryNum in range(mabLoopNum):
-                    SRC.CalTops(repeatNum, Pop)
+                    SRC.CalTops(repeatNum, Pop,SR_method=self.SR_method)
                     SRC.SubRegionPruning()
                     SRC.SparseRegression()
                     if SRC.bestLassoFitness < 1e-5:

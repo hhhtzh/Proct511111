@@ -10,7 +10,8 @@ from TaylorGP.src.taylorGP.calTaylor import Metrics
 
 from bingo.symbolic_regression.agraph.string_parsing import postfix_to_command_array_and_constants
 from gplearn.fitness import _Fitness, _fitness_map
-from gplearn.genetic import SymbolicRegressor, BaseSymbolic, MAX_INT, _parallel_evolve
+from gplearn.genetic import SymbolicRegressor, BaseSymbolic, MAX_INT
+from  gplearn.genetic import _parallel_evolve as gp_pe
 from gplearn.utils import _partition_estimators, check_random_state
 from keplar.population.function import _function_map
 from bingo.symbolic_regression import ComponentGenerator, AGraphGenerator, AGraph
@@ -141,6 +142,7 @@ class GpCreator(Creator):
         params['method_probs'] = None
         params['_transformer'] = None
         params['selected_space'] = None
+        params['qualified_list']=None
         self._arities = {}
         for function in self._function_set:
             arity = function.arity
@@ -155,7 +157,7 @@ class GpCreator(Creator):
         parents = None
         population = Parallel(n_jobs=n_jobs,
                               verbose=True)(
-            delayed(_parallel_evolve)(n_programs[i],
+            delayed(gp_pe)(n_programs[i],
                                       parents,
                                       self.x,
                                       self.y,

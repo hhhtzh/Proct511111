@@ -172,12 +172,13 @@ class subRegionCalculator:
         print("Count of SubRegions: ",len(self.subRegions),"Avg Nmse:","%.5g" %avgNmse)
         return avgNmse
 
-    def CalTops(self,repeatNum,Pop):
+    def CalTops(self,repeatNum,Pop,SR_method):
         """
         对选中的子区间分别执行OriginalTaylorGP
         Args:
             repeatNum: 作为随机数种子
             Pop: 进化量
+            :param SR_method:
         """
         if self.firstMabFlag:
             self.abSelectedArm = [1] * self.mabArmCount
@@ -216,7 +217,7 @@ class subRegionCalculator:
                 print("Pop,self.abSelectedArm.count(1),self.abSelectedArm",Pop,self.abSelectedArm.count(1),self.abSelectedArm,sep=" ")
                 Pop = max(Pop // self.abSelectedArm.count(1) ,10) #种群大小至少为10
                 # [end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
-            top1 = OriginalTaylorGP(self.subRegions[selectedRegionIndex],Y_pred,parents, repeatNum,self.originalTaylorGPGen,Pop,qualified_list=qualified_list) #top是list 0是适应度，1是公式 2是上轮最后一代种群
+            top1 = OriginalTaylorGP(self.subRegions[selectedRegionIndex],Y_pred,parents, repeatNum,self.originalTaylorGPGen,Pop,qualified_list=qualified_list,SR_method=SR_method) #top是list 0是适应度，1是公式 2是上轮最后一代种群
             self.tops[selectedRegionIndex] = top1 #由于MAB，所以选择性更新tops
         set_value('FIRST_EVOLUTION_FLAG', False)
         return self.tops
