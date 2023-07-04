@@ -1,7 +1,7 @@
-"""Generator of acyclic graph individuals.
+"""Generator of acyclic draw individuals.
 
 This module contains the implementation of the generation of random acyclic
-graph individuals.
+draw individuals.
 """
 import numpy as np
 
@@ -18,7 +18,7 @@ from ...util.argument_validation import argument_validation
 
 
 class AGraphGenerator(Generator):
-    """Generates acyclic graph individuals
+    """Generates acyclic draw individuals
 
     Parameters
     ----------
@@ -49,7 +49,7 @@ class AGraphGenerator(Generator):
         Returns
         -------
         Agraph
-            new random acyclic graph individual
+            new random acyclic draw individual
         """
         individual = self._backend_generator_function()
         individual.command_array = self._create_command_array()

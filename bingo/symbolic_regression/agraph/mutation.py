@@ -1,6 +1,6 @@
-"""Mutation of acyclic graph individuals.
+"""Mutation of acyclic draw individuals.
 
-This module contains the implementation of mutation for acyclic graph
+This module contains the implementation of mutation for acyclic draw
 individuals, which is composed of 4 possible mutation strategies: command
 mutation, node mutation, parameter mutation and pruning.
 """
@@ -22,7 +22,7 @@ FORK_MUTATION = "fork"
 
 
 class AGraphMutation(Mutation):
-    """Mutation of acyclic graph individual
+    """Mutation of acyclic draw individual
 
     Mutation of an agraph individual my modification of its command array.
     Mutation randomly takes one of the following 5 forms

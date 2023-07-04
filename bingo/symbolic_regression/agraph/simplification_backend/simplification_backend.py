@@ -44,7 +44,7 @@ def get_utilized_commands(stack):
 def simplify_stack(stack):
     """Simplifies a stack based on computational algebra
 
-    An acyclic graph is given in stack form.  The stack is algebraically
+    An acyclic draw is given in stack form.  The stack is algebraically
     simplified and put in a canonical form.
 
     Parameters
@@ -64,7 +64,7 @@ def simplify_stack(stack):
 def reduce_stack(stack):
     """Reduces a stack
 
-    An acyclic graph is given in stack form.  The stack is simplified to
+    An acyclic draw is given in stack form.  The stack is simplified to
     consist only of the commands used by the last command.
 
     Parameters

@@ -18,7 +18,7 @@ x = data.get_np_x()
 y = data.get_np_y()
 operators = ["+", "-", "*", "/", "^"]
 creator = GpCreator(100, x, y, "Bingo",n_jobs=20)
-evaluator = BingoEvaluator(x, "exp", "lm", "Bingo",y)
+evaluator = BingoEvaluator(x, "exp", "lm", "Bingo",y,metric="rmse")
 crossover = BingoCrossover("Bingo")
 mutation = BingoMutation(x, operators, "Bingo")
 selector = BingoSelector(0.5, "tournament", "Bingo")

@@ -101,7 +101,7 @@ class uDSR_Deeplearn(Operator):
         self.pool = self.make_pool_and_set_task()
         # Generate objects needed for training and set seeds
         # DeepSymbolicOptimizer.pool = DeepSymbolicOptimizer.make_pool_and_set_task()
-        self.set_seeds() # Must be called _after_ resetting graph and _after_ setting task
+        self.set_seeds() # Must be called _after_ resetting draw and _after_ setting task
 
         # Limit TF to single thread to prevent "resource not available" errors in parallelized runs
         session_config = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1,
@@ -349,7 +349,7 @@ class uDsrDeeplearning(Operator):
         self.pool = self.make_pool_and_set_task()
         # Generate objects needed for training and set seeds
         # DeepSymbolicOptimizer.pool = DeepSymbolicOptimizer.make_pool_and_set_task()
-        self.set_seeds() # Must be called _after_ resetting graph and _after_ setting task
+        self.set_seeds() # Must be called _after_ resetting draw and _after_ setting task
 
         # Limit TF to single thread to prevent "resource not available" errors in parallelized runs
         session_config = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1,
