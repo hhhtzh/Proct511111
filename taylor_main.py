@@ -21,7 +21,7 @@ X, Y, qualified_list = taylorGP_pre1.do()
 print("finish prework!")
 
 taylorGP_pre2 = TaylorGP_pre2(X, Y, qualified_list)
-program = taylorGP_pre2.do()
+X,y,params,population_size = taylorGP_pre2.do()
 print("finally!")
 
 # print(K[110].__str__())
@@ -34,13 +34,14 @@ print("finally!")
 #                     print(node)
 
 #生成种群（population）
-creator = TaylorGPCreator(program,"Taylor")
+gen =0
+creator = TaylorGPCreator(X,y,params,gen,population_size,"Taylor")
 population = creator.do()
 
 
 #计算fitness的值
-evaluator = TaylorGPEvaluator()
-eval_op_list = [evaluator]
+# evaluator = TaylorGPEvaluator()
+# eval_op_list = [evaluator]
 
 #选择最好的一个或者几个
 select = TaylorGPSelector()
@@ -52,7 +53,7 @@ crossover = TaylorGPCrossover()
 mutation = TaylorGPMutation()
 
 #算法的全部流程
-taylorGP = TayloGPAlg()
+taylorGP = TayloGPAlg(20,creator,crossover)
 
 taylorGP.run()
 

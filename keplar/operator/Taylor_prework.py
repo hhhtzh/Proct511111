@@ -1,11 +1,11 @@
 from keplar.operator.operator import Operator
 import signal
 import numpy as np
-from time import time,sleep
+from time import time, sleep
 from sympy import *
 
-from TaylorGP.src.taylorGP.genetic import alarm_handler,MAX_INT,_parallel_evolve,BaseEstimator,BaseSymbolic
-from TaylorGP.src.taylorGP.calTaylor import Metrics,Metrics2
+from TaylorGP.src.taylorGP.genetic import alarm_handler, MAX_INT, _parallel_evolve, BaseEstimator, BaseSymbolic
+from TaylorGP.src.taylorGP.calTaylor import Metrics, Metrics2
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error  # 均方误差
 
@@ -16,37 +16,35 @@ from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils import compute_sample_weight
 from TaylorGP.src.taylorGP.functions import _function_map, _Function, sig1 as sigmoid
 from TaylorGP.src.taylorGP.fitness import _fitness_map, _Fitness
-from TaylorGP.src.taylorGP.judge_bound import select_space , cal_spacebound
+from TaylorGP.src.taylorGP.judge_bound import select_space, cal_spacebound
 from warnings import warn
 from TaylorGP.src.taylorGP.utils import _partition_estimators
-from joblib import Parallel, delayed #自动创建进程池执行并行化操作
+from joblib import Parallel, delayed  # 自动创建进程池执行并行化操作
 import itertools
 from sklearn.base import RegressorMixin, TransformerMixin, ClassifierMixin
 from sklearn.base import BaseEstimator
-from abc import ABCMeta, abstractmethod #@abc.abstractmethod装饰器后严格控制子类必须实现这个方法
-from TaylorGP.src.taylorGP.calTaylor import Metrics,Metrics2
+# @abc.abstractmethod装饰器后严格控制子类必须实现这个方法
+from abc import ABCMeta, abstractmethod
+from TaylorGP.src.taylorGP.calTaylor import Metrics, Metrics2
 
 # from sklearn.base.BaseEstimator
 
 # from sklearn.base import BaseEstimator
 
 
-
-
-
 class TimeOutException(Exception):
     pass
 
+
 class TaylorGP_Pre1(Operator):
-    def __init__(self,X,y):
+    def __init__(self, X, y):
         super().__init__()
 
-        self.X =X
-        self.y =y
+        self.X = X
+        self.y = y
 
-        self.max_time =60
+        self.max_time = 60
 
-    
     def do(self, population=None):
         # return super().do(population)
         signal.signal(signal.SIGALRM, alarm_handler)
@@ -62,17 +60,17 @@ class TaylorGP_Pre1(Operator):
             # np.expand_dims(y,axis=1)
             y = self.y[:, np.newaxis]
             # y= y.reshape(-1)
-            X_Y = np.concatenate((self.X,y),axis=1)
+            X_Y = np.concatenate((self.X, y), axis=1)
             print(X_Y.shape)
 
             # X_Y = np.array(X)[1:].astype(np.float)
             x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21,\
-            x22, x23, x24, x25, x26, x27, x28, x29, x30, x31, x32, x33, x34, x35, x36, x37, x38, x39, x40, x41, x42,\
-            x43, x44, x45, x46, x47, x48, x49,\
-            x50, x51, x52, x53, x54, x55, x56, x57, x58, x59, x60, x61, x62, x63, x64, x65, x66, x67, x68, x69, x70,\
-            x71, x72, x73, x74, x75, x76, x77, x78, x79,\
-            x80, x81, x82, x83, x84, x85, x86, x87, x88, x89, x90, x91, x92, x93, x94, x95, x96, x97, x98, x99, x100 = symbols(
-                "x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21,\
+                x22, x23, x24, x25, x26, x27, x28, x29, x30, x31, x32, x33, x34, x35, x36, x37, x38, x39, x40, x41, x42,\
+                x43, x44, x45, x46, x47, x48, x49,\
+                x50, x51, x52, x53, x54, x55, x56, x57, x58, x59, x60, x61, x62, x63, x64, x65, x66, x67, x68, x69, x70,\
+                x71, x72, x73, x74, x75, x76, x77, x78, x79,\
+                x80, x81, x82, x83, x84, x85, x86, x87, x88, x89, x90, x91, x92, x93, x94, x95, x96, x97, x98, x99, x100 = symbols(
+                    "x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21,\
                   x22, x23, x24, x25, x26, x27, x28, x29, x30, x31, x32, x33, x34, x35, x36, x37, x38, x39, x40, x41, x42,\
                   x43, x44, x45, x46, x47, x48, x49,\
                   x50, x51, x52, x53, x54, x55, x56, x57, x58, x59, x60, x61, x62, x63, x64, x65, x66, x67, x68, x69, x70,\
@@ -99,11 +97,12 @@ class TaylorGP_Pre1(Operator):
                         if ((X_Y[i] == X_Y[j]).all()):
                             print("data is same in :" + str(i) + " " + str(j))            
                 '''
-                #使用去重后的数据计算Taylor展开式
-                metric = Metrics(varNum=self.X.shape[1], dataSet=np.unique(X_Y, axis=0))
+                # 使用去重后的数据计算Taylor展开式
+                metric = Metrics(
+                    varNum=self.X.shape[1], dataSet=np.unique(X_Y, axis=0))
                 loopNum += 1
                 Metric.append(metric)
-                if metric.nmse >10000:
+                if metric.nmse > 10000:
                     print("use Linear regression")
                     break
                 if loopNum == 6 and self.X.shape[1] <= 2:
@@ -120,7 +119,8 @@ class TaylorGP_Pre1(Operator):
                     break
             Metric.sort(key=lambda x: x.nmse)
             metric = Metric[0]
-            print('NMSE of polynomial and lower order polynomial after sorting:', metric.nmse, metric.low_nmse)
+            print('NMSE of polynomial and lower order polynomial after sorting:',
+                  metric.nmse, metric.low_nmse)
             if metric.nmse < 0.01:
                 metric.nihe_flag = True
             else:
@@ -128,7 +128,8 @@ class TaylorGP_Pre1(Operator):
                 lr_est = LinearRegression().fit(self.X, y)
                 print('coef: ', lr_est.coef_)
                 print('intercept: ', lr_est.intercept_)
-                lr_nmse = mean_squared_error(lr_est.predict(self.X),y,squared=False)
+                lr_nmse = mean_squared_error(
+                    lr_est.predict(self.X), y, squared=False)
                 if lr_nmse < metric.nmse:
                     metric.nmse = lr_nmse
                     metric.low_nmse = lr_nmse
@@ -149,7 +150,8 @@ class TaylorGP_Pre1(Operator):
                 if lr_nmse < 0.1:
                     print('Fitting failed')
             time_end2 = time()
-            print('Pretreatment_time_cost', (time_end2 - time_start2) / 3600, 'hour')
+            print('Pretreatment_time_cost',
+                  (time_end2 - time_start2) / 3600, 'hour')
             self.global_fitness, self.sympy_global_best = metric.low_nmse, metric.f_low_taylor
             if metric.judge_Low_polynomial():
                 self.global_fitness, self.sympy_global_best = metric.low_nmse, metric.f_low_taylor
@@ -160,7 +162,7 @@ class TaylorGP_Pre1(Operator):
             else:
                 qualified_list = []
                 qualified_list.extend(
-                    [metric.judge_Bound(),#ok
+                    [metric.judge_Bound(),  # ok
                      metric.f_low_taylor,
                      metric.low_nmse,
                      metric.bias,
@@ -170,63 +172,66 @@ class TaylorGP_Pre1(Operator):
 
                 return self.X, metric.change_Y(y), qualified_list
 
-        except TimeOutException :
+        except TimeOutException:
 
             print("TimeOutException catched in fit()")
 
 # class TaylorGP_pre2(Operator,BaseEstimator,RegressorMixin):
-class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
-    def __init__(self,X,Y, qualified_list):
+
+
+class TaylorGP_pre2(Operator, BaseSymbolic, RegressorMixin):
+    def __init__(self, X, Y, qualified_list):
         super().__init__()
-        self.X =X
-        self.Y =Y
-        self.qualified_list =qualified_list
-        self.random_state =None
-        self.sample_weight =None
-        self.hall_of_fame =None
+        self.X = X
+        self.Y = Y
+        self.qualified_list = qualified_list
+        self.random_state = None
+        self.sample_weight = None
+        self.hall_of_fame = None
         self.population_size = 1000
-        self.n_components=None
-        self.function_set=['add', 'sub', 'mul', 'div', 'sin', 'cos', 'log', 'exp', 'sqrt']
-        self.metric ='rmse'
-        self.p_crossover=0.9
-        self.p_subtree_mutation=0.01
-        self.p_hoist_mutation=0.01
-        self.p_point_mutation=0.01
-        self.p_point_replace=0.05
+        self.n_components = None
+        self.function_set = ['add', 'sub', 'mul',
+                             'div', 'sin', 'cos', 'log', 'exp', 'sqrt']
+        self.metric = 'rmse'
+        self.p_crossover = 0.9
+        self.p_subtree_mutation = 0.01
+        self.p_hoist_mutation = 0.01
+        self.p_point_mutation = 0.01
+        self.p_point_replace = 0.05
 
-        self.init_method='half and half'
-        self.const_range=(-1., 1.)
-        self.init_depth=(2, 6)
-        self.feature_names=None
-        self.transformer =None
+        self.init_method = 'half and half'
+        self.const_range = (-1., 1.)
+        self.init_depth = (2, 6)
+        self.feature_names = None
+        self.transformer = None
         # self._metric= None
-        self.warm_start =False
-        self.generations=20
-        self.verbose =0
-        self.n_jobs =1
+        self.warm_start = False
+        self.generations = 20
+        self.verbose = 0
+        self.n_jobs = 1
         self.tournament_size = 20
-        self.parsimony_coefficient =0.01
-        self.max_samples  =1.0
-        self.low_memory= True
-        self.stopping_criteria =0.0
+        self.parsimony_coefficient = 0.01
+        self.max_samples = 1.0
+        self.low_memory = True
+        self.stopping_criteria = 0.0
         # self.feature_names
-
-
 
         # self.p_crossover = 0.9
         # self.p_subtree_mutation=0.01,
         # self.p_hoist_mutation=0.01,
         # self.p_point_mutation=0.01,
         # self.p_point_replace=0.05,
-    
+
     def do(self, population=None):
         # return super().do(population)
-        low_bound, high_bound, var_bound = self.qualified_list[0][0][0],self.qualified_list[0][0][1],self.qualified_list[0][1]
+        low_bound, high_bound, var_bound = self.qualified_list[0][0][
+            0], self.qualified_list[0][0][1], self.qualified_list[0][1]
         random_state = check_random_state(self.random_state)
 
         # Check arrays
         if self.sample_weight is not None:
-            self.sample_weight = check_array(self.sample_weight, ensure_2d=False)
+            self.sample_weight = check_array(
+                self.sample_weight, ensure_2d=False)
 
         if isinstance(self, ClassifierMixin):
             X, y = check_X_y(X, y, y_numeric=False)
@@ -237,10 +242,11 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
                     self.sample_weight = 1.
                 # modify the sample weights with the corresponding class weight
                 self.sample_weight = (self.sample_weight *
-                                 compute_sample_weight(self.class_weight, y))
+                                      compute_sample_weight(self.class_weight, y))
 
             self.classes_, y = np.unique(y, return_inverse=True)
-            n_trim_classes = np.count_nonzero(np.bincount(y, self.sample_weight))
+            n_trim_classes = np.count_nonzero(
+                np.bincount(y, self.sample_weight))
             if n_trim_classes != 2:
                 raise ValueError("y contains %d class after sample_weight "
                                  "trimmed classes with zero weights, while 2 "
@@ -285,7 +291,7 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
 
         # For point-mutation to find a compatible replacement node
         self._arities = {}
-        for function in self._function_set: # 以函数集的arity个数对函数集划分
+        for function in self._function_set:  # 以函数集的arity个数对函数集划分
             arity = function.arity
             self._arities[arity] = self._arities.get(arity, [])
             self._arities[arity].append(function)
@@ -310,7 +316,7 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
                                        self.p_subtree_mutation,
                                        self.p_hoist_mutation,
                                        self.p_point_mutation])
-        
+
         self._method_probs = np.cumsum(self._method_probs)
 
         if self._method_probs[-1] > 1:
@@ -323,7 +329,7 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
                              '"grow", "full" and "half and half". Given %s.'
                              % self.init_method)
 
-        if not((isinstance(self.const_range, tuple) and
+        if not ((isinstance(self.const_range, tuple) and
                 len(self.const_range) == 2) or self.const_range is None):
             raise ValueError('const_range should be a tuple with length two, '
                              'or None.')
@@ -361,18 +367,14 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
         params = self.get_params()
         params['_metric'] = self._metric
 
-        params['tournament_size']  = self.tournament_size
+        params['tournament_size'] = self.tournament_size
         params['init_depth'] = self.init_depth
         params['init_method'] = self.init_method
-        params['const_range'] =self.const_range
+        params['const_range'] = self.const_range
         params['parsimony_coefficient'] = self.parsimony_coefficient
-        params['p_point_replace'] =self.p_point_replace
-        params['max_samples'] =self.max_samples
-        params['feature_names'] =self.feature_names
-
-
-
-
+        params['p_point_replace'] = self.p_point_replace
+        params['max_samples'] = self.max_samples
+        params['feature_names'] = self.feature_names
 
         if hasattr(self, '_transformer'):
             params['_transformer'] = self._transformer
@@ -382,14 +384,15 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
         params['arities'] = self._arities
         params['method_probs'] = self._method_probs
         const_flag = True
-        if self.const_range ==None:
+        if self.const_range == None:
             const_flag = False
-        selected_space = select_space(cal_spacebound(self.function_set, self.n_features_,var_bound,const_flag=const_flag),low_bound,high_bound)
+        selected_space = select_space(cal_spacebound(
+            self.function_set, self.n_features_, var_bound, const_flag=const_flag), low_bound, high_bound)
         params['selected_space'] = selected_space
-        self.qualified_list = [self.qualified_list[-2],self.qualified_list[-1] ]
+        self.qualified_list = [
+            self.qualified_list[-2], self.qualified_list[-1]]
         params['qualified_list'] = self.qualified_list
         params['eq_write'] = None
-
 
         print(selected_space)
         print(len(selected_space))
@@ -410,7 +413,7 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
         # print(self._programs)
         n_more_generations = self.generations - prior_generations
 
-        print(n_more_generations )
+        print(n_more_generations)
 
         if n_more_generations < 0:
             raise ValueError('generations=%d must be larger or equal to '
@@ -428,17 +431,16 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
                 _ = random_state.randint(MAX_INT, size=self.population_size)
 
         # print(self._programs[1])
-        
 
         if self.verbose:
             # Print header fields
             self._verbose_reporter()
-        #编写代码：1.父子代合并   2.非域排序   3.拥挤度排序
+        # 编写代码：1.父子代合并   2.非域排序   3.拥挤度排序
         best_program = None
         best_program_fitness_ = None
 
         one = 1
-        population =None
+        population = None
         for gen in range(one):
             top1Flag = False
             start_time = time()
@@ -472,13 +474,10 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
             print("ttttttttt")
 
             print(population[110].__str__())
-            gen+=1
-            
-        return population
+            gen += 1
 
+        return X, y, params,self.population_size
 
-
-        
         # for gen in range(prior_generations, self.generations):
         #     top1Flag = False
         #     start_time = time()
@@ -525,7 +524,7 @@ class TaylorGP_pre2(Operator,BaseSymbolic,RegressorMixin):
         #         prin = [population[i].raw_fitness_ for i in subPop]
         #         print(prin)
         #         prin = [population[i].length_ for i in subPop]
-        #         print(prin)            
+        #         print(prin)
         #     '''
 
         #     temp_popSize = 0
