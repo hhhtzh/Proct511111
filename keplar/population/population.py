@@ -22,6 +22,10 @@ class Population:
         self.pop_size += 1
 
     def get_pop_size(self):
+        if self.pop_type=="self":
+            self.pop_size=len(self.pop_list)
+        else:
+            self.pop_size=len(self.target_pop_list)
         return self.pop_size
 
     def set_pop_size(self, new_pop_size):

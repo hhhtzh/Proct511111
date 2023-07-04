@@ -18,7 +18,7 @@ from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 
 from keplar.population.population import Population
-from keplar.translator.translator import trans_gp, trans_op, bingo_infixstr_to_func
+from keplar.translator.translator import trans_gp, trans_op, bingo_infixstr_to_func, to_bingo
 import pyoperon as Operon
 from TaylorGP.src.taylorGP.functions import _Function, _sympol_map
 from joblib import Parallel, delayed #自动创建进程池执行并行化操作
@@ -174,8 +174,6 @@ class GpCreator(Creator):
                 pop.pop_list.append(ind)
                 pop.pop_type = "self"
                 pop.pop_size = len(pop.pop_list)
-            for i in pop.pop_list:
-                print(i.format())
         return pop
 
 

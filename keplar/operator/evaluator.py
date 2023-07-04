@@ -1,9 +1,9 @@
 import random
 
 import numpy as np
-from gplearn.fitness import _mean_square_error, _root_mean_square_error, _weighted_spearman, _log_loss, \
-    _mean_absolute_error, _Fitness
 
+from TaylorGP.src.taylorGP.fitness import _mean_square_error, _weighted_spearman, _log_loss, _mean_absolute_error, \
+    _Fitness
 from bingo.evaluation.evaluation import Evaluation
 from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
 from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
@@ -13,7 +13,7 @@ from keplar.operator.operator import Operator
 import pyoperon as Operon
 
 from keplar.population.individual import Individual
-from keplar.translator.translator import trans_op
+from keplar.translator.translator import trans_op, to_bingo, trans_gp
 
 
 class Evaluator(Operator):
@@ -22,8 +22,9 @@ class Evaluator(Operator):
 
 
 class BingoEvaluator(Evaluator):
-    def __init__(self, x, fit, optimizer_method, y=None, dx_dt=None):
+    def __init__(self, x, fit, optimizer_method, to_type, y=None, dx_dt=None):
         super().__init__()
+        self.to_type = to_type
         self.x = x
         self.y = y
         self.dx_dt = dx_dt
@@ -48,16 +49,17 @@ class BingoEvaluator(Evaluator):
         bingo_pop = []
         if population.pop_type != "Bingo":
             for i in population.pop_list:
-                equation = i.equation
-                bingo_ind = AGraph(equation=str(equation))
-                bingo_ind._update()
-                # print("这是equation"+equation)
-                # print("这是直接转化后的array"+str(bingo_ind.command_array))
+                bingo_ind = to_bingo(i)
                 bingo_pop.append(bingo_ind)
             evaluator(population=bingo_pop)
             for i in range(len(bingo_pop)):
                 population.pop_list[i].fitness = bingo_pop[i].fitness
                 population.pop_list[i].evaluated = True
+            if self.to_type == "Bingo":
+                population.target_pop_list = bingo_pop
+                population.pop_type = "Bingo"
+                for i in range(len(bingo_pop)):
+                    population.target_fit_list.append(bingo_pop[i].fitness)
         else:
             bingo_pop = population.target_pop_list
             population.set_pop_size(len(bingo_pop))
@@ -136,15 +138,7 @@ class OperonEvaluator(Evaluator):
             pass
 
 
-class TaylorGPEvaluator(Operator):
-    def __init__(self):
-        super().__init__()
-
-    def do(self, population=None):
-        return super().do(population)
-
-
-class GplearnEvaluator(Evaluator):
+class TaylorGPEvaluator(Evaluator):
     def __init__(self, method, eval_x, eval_y, to_type, feature_weight=None):
         self.to_type = to_type
         self.feature_weight = feature_weight
@@ -165,7 +159,7 @@ class GplearnEvaluator(Evaluator):
         else:
             raise ValueError("gplearn评估模块计算误差方法设置错误")
 
-        if population.pop_type == "gplearn" or "taylorgp":
+        if population.pop_type == "taylorgp":
             fit_list = []
             gp_fit = _Fitness(fct, False)
             lie_num = self.eval_x.shape[1]
@@ -178,10 +172,12 @@ class GplearnEvaluator(Evaluator):
                 pred_y = program.execute(self.eval_x)
                 fitness = gp_fit(self.eval_y, pred_y, self.feature_weight)
                 fit_list.append(fitness)
+            if self.to_type == "taylorgp":
+                population.target_fit_list = fit_list
+            else:
+                population.pop_type="self"
+                for i in range(len(population.target_pop_list)):
+                    ind=trans_gp(population.target_pop_list[i])
+                    population.pop_list.append(ind)
         else:
-            raise ValueError("not now")
-
-        if self.to_type == "gplearn" or "taylor":
-            population.target_fit_list = fit_list
-        else:
-            raise  ValueError("not now")
+            pass

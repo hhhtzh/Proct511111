@@ -2,10 +2,13 @@ import re
 
 import numpy as np
 import pyoperon as Operon
+
+from TaylorGP.src.taylorGP._program import _Program
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
 from gplearn.functions import _Function
-from keplar.population.function import arity_map, operator_map3, _function_map, map_F1, Operator_map_S,operator_map_dsr,operator_map_dsr2
+from keplar.population.function import arity_map, operator_map3, _function_map, map_F1, Operator_map_S, \
+    operator_map_dsr, operator_map_dsr2
 from keplar.population.individual import Individual
 
 
@@ -166,15 +169,55 @@ def to_gp(ind):
             _func = _function_map[str_op]
             list_program.append(_func)
         elif 3000 <= int_i < 5000:
-            float_con = float('%.3f' % ind.const_array[int_i - 2000])
+            float_con = float('%.3f' % ind.const_array[int_i - 3000])
             list_program.append(float_con)
         elif int_i > 5000:
-            x = int(int_i - 5001)
+            x = int(int_i - 5000)
             list_program.append(x)
 
         else:
             raise ValueError("留空")
     return list_program
+
+
+def to_taylor(ind, function_set,
+              arities,
+              init_depth,
+              init_method,
+              n_features,
+              const_range,
+              metric,
+              p_point_replace,
+              parsimony_coefficient,
+              random_state):
+    func = ind.func
+    list_program = []
+    for i in func:
+        int_i = int(i)
+        if int_i < 3000:
+            str_op = map_F1[int_i]
+            _func = _function_map[str_op]
+            list_program.append(_func)
+        elif 3000 <= int_i < 5000:
+            float_con = float('%.3f' % ind.const_array[int_i - 3000])
+            list_program.append(float_con)
+        elif int_i > 5000:
+            x = int(int_i - 5000)
+            list_program.append(x)
+
+        else:
+            raise ValueError("留空")
+    taylor_program = _Program(function_set,
+                              arities,
+                              init_depth,
+                              init_method,
+                              n_features,
+                              const_range,
+                              metric,
+                              p_point_replace,
+                              parsimony_coefficient,
+                              random_state, program=list_program)
+    return taylor_program
 
 
 def infix_to_prefix(infix, len1, s2, top2):
@@ -263,7 +306,7 @@ def trans_gp(gp_program):
         return ind
     func = []
     const_array = []
-    const_index=0
+    const_index = 0
     for i, node in enumerate(gp_program.program):
         if isinstance(node, _Function):
             op_name = node.name
@@ -273,25 +316,26 @@ def trans_gp(gp_program):
             if isinstance(node, int):
                 x_code = 3000 + node
                 func.append(x_code)
-            elif isinstance(node,float):
+            elif isinstance(node, float):
                 const_array.append(node)
-                const_code=5000+const_index
+                const_code = 5000 + const_index
                 func.append(const_code)
-                const_index=const_index+1
+                const_index = const_index + 1
             else:
                 raise ValueError(f"未识别，字符{node}")
-    ind=Individual(func=func,const_array=const_array)
+    ind = Individual(func=func, const_array=const_array)
     return ind
 
+
 class DSRToKeplar():
-    def __init__(self,T):
+    def __init__(self, T):
         self.T = T
         self.length_T = len(self.T)
 
         # self.operator_map_dsr = operator_map_dsr
         # self.poplation = poplation
 
-    def do(self,poplation=None):
+    def do(self, poplation=None):
         f = [[] for i in range(self.length_T)]
         for i in range(self.length_T):
             for j in range(len(self.T[i])):
@@ -299,8 +343,8 @@ class DSRToKeplar():
             poplation.append(f[i])
         poplation.set_pop_size(self.length_T)
         return poplation
-    
-    def to_keplar(self,poplation=None):
+
+    def to_keplar(self, poplation=None):
         self.length_T = poplation.get_pop_size()
         T_new = [[] for i in range(self.length_T)]
         for i in range(self.length_T):
@@ -308,6 +352,7 @@ class DSRToKeplar():
                 T_new[i].append(Operator_map_S[int(poplation.pop_list[i][j])])
 
         return T_new
+
 
 class KeplarToDSR():
 
@@ -317,7 +362,7 @@ class KeplarToDSR():
         # self.T = T
         # self.operator_map = operator_map
 
-    def do(self,poplation=None):
+    def do(self, poplation=None):
         self.length_T = poplation.get_pop_size()
         T_new = [[] for i in range(self.length_T)]
         for i in range(self.length_T):
@@ -325,8 +370,6 @@ class KeplarToDSR():
                 T_new[i].append(operator_map_dsr2[int(poplation.pop_list[i][j])])
 
         return T_new
-
-
 
 
 # def trans_gp(gp_equ):
@@ -525,7 +568,10 @@ def trans_op(op_tree, variable_list):
 
 
 def to_bingo(ind):
-    code = ind.func
+    str_equ = ind.format()
+    bingo_graph = AGraph(equation=str_equ)
+    bingo_graph._update()
+    return bingo_graph
 
 
 def to_dsr(length, *T, **map):
@@ -547,8 +593,8 @@ def to_op(ind, np_x, np_y):
         elif 3000 <= int_i < 5000:
             str_con = str(ind.const_array[int_i - 3000])
             list_prefix.append(str_con)
-        elif int_i > 5000:
-            str_x = "X_" + str(int_i - 5001)
+        elif int_i >= 5000:
+            str_x = "X_" + str(int_i - 5000)
             list_prefix.append(str_x)
 
         else:
