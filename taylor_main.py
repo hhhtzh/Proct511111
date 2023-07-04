@@ -19,13 +19,12 @@ x = data.get_np_x()
 y = data.get_np_y()
 taylorGP_pre1 = TaylorGP_Pre1(x, y)
 X, Y, qualified_list = taylorGP_pre1.do()
-print("finish prework!")
+# print("finish prework!")
 
 taylorGP_pre2 = TaylorGP_pre2(X, Y, qualified_list)
-        # program = None
 X,y,params,population_size,seeds,qualified_list,function_set,n_features= taylorGP_pre2.do()
-print("finally!")
-print(population_size)
+# print("finally!")
+# print(population_size)
 
 # print(K[110].__str__())
 # print(str(K[110]))
