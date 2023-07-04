@@ -5,6 +5,7 @@ evolutionary algorithms.
 """
 from multiprocessing import Pool
 
+
 class Evaluation:
     """Base phase for calculating fitness of a population.
 
@@ -34,6 +35,7 @@ class Evaluation:
     eval_count : int
         the number of fitness function evaluations that have occurred
     """
+
     def __init__(self, fitness_function, redundant=False, multiprocess=False):
         self.fitness_function = fitness_function
         self._redundant = redundant
@@ -75,8 +77,8 @@ class Evaluation:
             for i, indv in enumerate(population):
                 if self._redundant or not indv.fit_set:
                     results.append(
-                            pool.apply_async(_fitness_job,
-                                             (indv, self.fitness_function, i)))
+                        pool.apply_async(_fitness_job,
+                                         (indv, self.fitness_function, i)))
 
             for res in results:
                 indv, i = res.get()

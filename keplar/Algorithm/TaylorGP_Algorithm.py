@@ -5,8 +5,9 @@ import argparse
 
 import numpy as np
 from numpy import shape
+from sympy import symbols
 
-from TaylorGP.src.taylorGP._global import set_value
+from TaylorGP.src.taylorGP._global import set_value, _init
 from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
 from keplar.Algorithm.Alg import Alg
 from TaylorGP.src.taylorGP.utils import check_random_state
@@ -47,20 +48,29 @@ class TayloGPAlg(Alg):
 
 
 class MTaylorGPAlg(Alg):
-    def __init__(self, max_generation, ds,up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None, population=None,
-                 recursion_limit=300, repeat=3, originalTaylorGPGeneration=20,SR_method="gplearn"):
+    def __init__(self, max_generation, ds, up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
+                 population=None,
+                 recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn"):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
         self.SR_method = SR_method
         self.ds = ds
         self.originalTaylorGPGeneration = originalTaylorGPGeneration
         self.repeat = repeat
         self.recursion_limit = recursion_limit
+        x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29 = symbols(
+            "x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,"
+            "x28,x29 ")
+
+        set_value('_x',
+                  [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21,
+                   x22, x23,
+                   x24, x25, x26, x27, x28, x29])
 
     def run(self):
-        np_x=self.ds.get_np_x()
-        np_y=self.ds.get_np_y()
+        np_x = self.ds.get_np_x()
+        np_y = self.ds.get_np_y()
         np_y = np_y.reshape([-1, 1])
-        self.ds=np.hstack([np_x, np_y])
+        self.ds = np.hstack([np_x, np_y])
         sys.setrecursionlimit(self.recursion_limit)
         argparser = argparse.ArgumentParser()
         argparser.add_argument('--fileNum', default=1, type=int)
@@ -85,9 +95,10 @@ class MTaylorGPAlg(Alg):
                     print("聚类有问题")
                     continue
                 SRC.firstMabFlag = True
+                _init()
                 set_value('FIRST_EVOLUTION_FLAG', True)  # 进行每轮数据集演化前执行
                 for tryNum in range(mabLoopNum):
-                    SRC.CalTops(repeatNum, Pop,SR_method=self.SR_method)
+                    SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method)
                     SRC.SubRegionPruning()
                     SRC.SparseRegression()
                     if SRC.bestLassoFitness < 1e-5:

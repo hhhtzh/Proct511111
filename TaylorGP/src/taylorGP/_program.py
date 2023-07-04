@@ -29,7 +29,6 @@ def print_program(program,qualified_list,X,_x):
         __x.append('x'+str(i))
     for i in range(X.shape[1]):
         program = program.replace(__x[i],str(_x[i]))
-    print(program)
     return program
 class _Program(object):
 
