@@ -394,8 +394,8 @@ class TaylorGP_pre2(Operator, BaseSymbolic, RegressorMixin):
         params['qualified_list'] = self.qualified_list
         params['eq_write'] = None
 
-        print(selected_space)
-        print(len(selected_space))
+        # print(selected_space)
+        # print(len(selected_space))
 
         if not self.warm_start or not hasattr(self, '_programs'):
             # Free allocated memory, if any
@@ -439,44 +439,44 @@ class TaylorGP_pre2(Operator, BaseSymbolic, RegressorMixin):
         best_program = None
         best_program_fitness_ = None
 
-        one = 1
-        population = None
-        for gen in range(one):
-            top1Flag = False
-            start_time = time()
+        # one = 1
+        # population = None
+        # for gen in range(one):
+        #     top1Flag = False
+        #     start_time = time()
 
-            if gen == 0:
-                parents = None
-            else:
-                parents = self._programs[gen - 1]
-                print("xxx!")
-                print(parents.__str__())
-                parents.sort(key=lambda x: x.raw_fitness_)
-                np.random.shuffle(parents)
-                top1Flag = True
-            n_jobs, n_programs, starts = _partition_estimators(
-                self.population_size, self.n_jobs)
-            seeds = random_state.randint(MAX_INT, size=self.population_size)
+        #     if gen == 0:
+        #         parents = None
+        #     else:
+        #         parents = self._programs[gen - 1]
+        #         print("xxx!")
+        #         print(parents.__str__())
+        #         parents.sort(key=lambda x: x.raw_fitness_)
+        #         np.random.shuffle(parents)
+        #         top1Flag = True
+        #     n_jobs, n_programs, starts = _partition_estimators(
+        #         self.population_size, self.n_jobs)
+        #     seeds = random_state.randint(MAX_INT, size=self.population_size)
 
-            population = Parallel(n_jobs=n_jobs,
-                                  verbose=int(self.verbose > 1))(
-                delayed(_parallel_evolve)(n_programs[i],
-                                          parents,
-                                          X,
-                                          y,
-                                          self.sample_weight,
-                                          seeds[starts[i]:starts[i + 1]],
-                                          params)
-                for i in range(n_jobs))
+        #     population = Parallel(n_jobs=n_jobs,
+        #                           verbose=int(self.verbose > 1))(
+        #         delayed(_parallel_evolve)(n_programs[i],
+        #                                   parents,
+        #                                   X,
+        #                                   y,
+        #                                   self.sample_weight,
+        #                                   seeds[starts[i]:starts[i + 1]],
+        #                                   params)
+        #         for i in range(n_jobs))
 
-            # Reduce, maintaining order across different n_jobs
-            population = list(itertools.chain.from_iterable(population))
-            print("ttttttttt")
+        #     # Reduce, maintaining order across different n_jobs
+        #     population = list(itertools.chain.from_iterable(population))
+        #     print("ttttttttt")
 
-            print(population[110].__str__())
-            gen += 1
+        #     print(population[110].__str__())
+        #     gen += 1
 
-        return X, y, params,self.population_size
+        return X, y, params, self.population_size
 
         # for gen in range(prior_generations, self.generations):
         #     top1Flag = False

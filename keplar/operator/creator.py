@@ -24,6 +24,8 @@ from TaylorGP.src.taylorGP.functions import _Function, _sympol_map
 from joblib import Parallel, delayed #自动创建进程池执行并行化操作
 import itertools
 from TaylorGP.src.taylorGP.genetic import alarm_handler, MAX_INT, _parallel_evolve, BaseEstimator, BaseSymbolic
+from TaylorGP.src.taylorGP._program import _Program,print_program
+import math
 
 
 
@@ -250,7 +252,7 @@ class uDSR_Creator(Creator):
 
 
 class TaylorGPCreator(Creator):
-    def __init__(self, X,y,params,gen,population_size, to_type):
+    def __init__(self, X,y,params,gen,population_size,program,to_type):
         super().__init__()
         self.X= X
         self.y=y
@@ -262,58 +264,99 @@ class TaylorGPCreator(Creator):
         self.n_jobs =1
         self.verbose = 0
         self.sample_weight = None
+        self.program =program
 
 
 
 
     def do(self, population=None):
 
-        if self.gen == 0:
-                parents = None
-        else:
-                parents = self._programs[self.gen - 1]
-                print("xxx!")
-                print(parents.__str__())
-                parents.sort(key=lambda x: x.raw_fitness_)
-                np.random.shuffle(parents)
-                top1Flag = True
-            
+        population = Population(self.population_size)
 
         random_state = check_random_state(self.random_state)
 
         n_jobs, n_programs, starts = _partition_estimators(
                 self.population_size, self.n_jobs)
         seeds = random_state.randint(MAX_INT, size=self.population_size)
+        n_samples, n_features = self.X.shape
+        # Unpack parameters
+        tournament_size = self.params['tournament_size']
+        function_set = self.params['function_set']
+        arities = self.params['arities']
+        init_depth = self.params['init_depth']
+        init_method = self.params['init_method']
+        const_range = self.params['const_range']
+        metric = self.params['_metric']
+        transformer = self.params['_transformer']
+        parsimony_coefficient = self.params['parsimony_coefficient']
+        method_probs = self.params['method_probs']
+        p_point_replace = self.params['p_point_replace']
+        max_samples = self.params['max_samples']
+        feature_names = self.params['feature_names']
+        selected_space = self.params['selected_space']
+        qualified_list = self.params['qualified_list'] #合格判别标准
+        eq_write = self.params['eq_write'] #用于将所有生成的公式写入eq_write文件
 
-        population1 = Parallel(n_jobs=n_jobs,
-                                  verbose=int(self.verbose > 1))(
-                delayed(_parallel_evolve)(n_programs[i],
-                                          parents,
-                                          self.X,
-                                          self.y,
-                                          self.sample_weight,
-                                          seeds[starts[i]:starts[i + 1]],
-                                          self.params)
-                for i in range(n_jobs))
-        population1 = list(itertools.chain.from_iterable(population1))
-        
-        
-        population_size = len(population1)
-        # print(population_size)
-        population = Population(population_size)
-        if self.to_type == "Taylor":
-            for i in range(population_size):
-                eq = []
+        max_samples = int(max_samples * n_samples)
 
-                for j, node in enumerate(population1[i].program):
+        for i in range(self.population_size):
+            genome = None
+            program = _Program(function_set=function_set,
+                            arities=arities,
+                            init_depth=init_depth,
+                            init_method=init_method,
+                            n_features=n_features,
+                            metric=metric,
+                            transformer=transformer,
+                            const_range=const_range,
+                            p_point_replace=p_point_replace,
+                            parsimony_coefficient=parsimony_coefficient,
+                            feature_names=feature_names,
+                            random_state=random_state,
+                            program=self.program,
+                            selected_space = selected_space,
+                            qualified_list = qualified_list,
+                            X =self.X,
+                            eq_write =  eq_write)
+            program.parents = genome
+
+            # Draw samples, using sample weights, and then fit
+            if self.sample_weight is None:
+                curr_sample_weight = np.ones((n_samples,))
+            else:
+                curr_sample_weight = self.sample_weight.copy()
+            oob_sample_weight = curr_sample_weight.copy()
+            
+            indices, not_indices = program.get_all_indices(n_samples,
+                                                        max_samples,
+                                                        random_state)
+
+            curr_sample_weight[not_indices] = 0
+            oob_sample_weight[indices] = 0
+
+            program.raw_fitness_ = program.raw_fitness(self.X, self.y, curr_sample_weight)
+            if math.isnan(program.raw_fitness_) or math.isinf(program.raw_fitness_) or program.length_ >500:
+                i -= 1
+                continue
+            # if max_samples < n_samples:
+            #     # Calculate OOB fitness
+            #     program.oob_fitness_ = program.raw_fitness(self.X, self.y, oob_sample_weight)
+            
+            eq=[]
+            if self.to_type == "Taylor":
+                for i, node in enumerate(program.program):
                     if isinstance(node, _Function):
                         eq.append(node.name)
                     else:
                         eq.append(node)
-                # print(self.program[i].__str__())
-                # print(eq)
-                population.append(eq)
-        else:
-            pass
+                ind=Individual(eq)
+                ind.fitness = program.raw_fitness_
+                population.append(ind)
+                # print(str(ind.func))
+            else:
+                pass
+
+            # population.pop_list[i].fitness = program.raw_fitness_
 
         return population
+

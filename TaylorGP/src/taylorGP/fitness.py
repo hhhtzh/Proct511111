@@ -136,6 +136,7 @@ def _root_mean_square_error(y, y_pred, w):
     return np.sqrt(np.average(((y_pred - y) ** 2), weights=w))
 
 
+
 def _log_loss(y, y_pred, w):
     """Calculate the log loss."""
     eps = 1e-15
