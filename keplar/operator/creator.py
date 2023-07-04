@@ -21,6 +21,10 @@ from keplar.population.population import Population
 from keplar.translator.translator import trans_gp, trans_op, bingo_infixstr_to_func, to_bingo
 import pyoperon as Operon
 from TaylorGP.src.taylorGP.functions import _Function, _sympol_map
+from joblib import Parallel, delayed #自动创建进程池执行并行化操作
+import itertools
+from TaylorGP.src.taylorGP.genetic import alarm_handler, MAX_INT, _parallel_evolve, BaseEstimator, BaseSymbolic
+
 
 
 class Creator(Operator):
@@ -246,20 +250,62 @@ class uDSR_Creator(Creator):
 
 
 class TaylorGPCreator(Creator):
-    def __init__(self, program, to_type):
+    def __init__(self, X,y,params,gen,population_size, to_type):
         super().__init__()
-        self.program = program
+        self.X= X
+        self.y=y
+        self.params = params
+        self.gen=gen
         self.to_type = to_type
+        self.random_state =None
+        self.population_size=population_size
+        self.n_jobs =1
+        self.verbose = 0
+        self.sample_weight = None
+
+
+
 
     def do(self, population=None):
-        population_size = len(self.program)
+
+        if self.gen == 0:
+                parents = None
+        else:
+                parents = self._programs[self.gen - 1]
+                print("xxx!")
+                print(parents.__str__())
+                parents.sort(key=lambda x: x.raw_fitness_)
+                np.random.shuffle(parents)
+                top1Flag = True
+            
+
+        random_state = check_random_state(self.random_state)
+
+        n_jobs, n_programs, starts = _partition_estimators(
+                self.population_size, self.n_jobs)
+        seeds = random_state.randint(MAX_INT, size=self.population_size)
+
+        population1 = Parallel(n_jobs=n_jobs,
+                                  verbose=int(self.verbose > 1))(
+                delayed(_parallel_evolve)(n_programs[i],
+                                          parents,
+                                          self.X,
+                                          self.y,
+                                          self.sample_weight,
+                                          seeds[starts[i]:starts[i + 1]],
+                                          self.params)
+                for i in range(n_jobs))
+        population1 = list(itertools.chain.from_iterable(population1))
+        
+        
+        population_size = len(population1)
         # print(population_size)
         population = Population(population_size)
         if self.to_type == "Taylor":
             for i in range(population_size):
                 eq = []
 
-                for j, node in enumerate(self.program[i].program):
+                for j, node in enumerate(population1[i].program):
                     if isinstance(node, _Function):
                         eq.append(node.name)
                     else:
