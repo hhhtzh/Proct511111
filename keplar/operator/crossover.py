@@ -117,13 +117,14 @@ class OperonCrossover(Crossover):
 
 
 class TaylorGPCrossover(Crossover):
-    def __init__(self,donor, random_state,qualified_list):
+    def __init__(self,donor, random_state,qualified_list,pop_idx):
         super().__init__()
         self.donor = donor
         self.random_state = random_state
         self.qualified_list =qualified_list
 
     def do(self, population=None):
+
         program = None
         qualified_flag = False
         op_index = 0
@@ -158,6 +159,9 @@ class TaylorGPCrossover(Crossover):
                     terminal = self.donor
                     program = self.changeTo(self.program, node, terminal)
             return program,None,None
+        
+    def changeTo(self,program,node, terminal):
+        return program[:node] + terminal + program[node+1:]
 
 
 class GplearnCrossover(Crossover):
