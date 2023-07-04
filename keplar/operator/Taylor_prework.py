@@ -393,6 +393,8 @@ class TaylorGP_pre2(Operator, BaseSymbolic, RegressorMixin):
             self.qualified_list[-2], self.qualified_list[-1]]
         params['qualified_list'] = self.qualified_list
         params['eq_write'] = None
+        n_samples, n_features = X.shape
+
 
         # print(selected_space)
         # print(len(selected_space))
@@ -456,7 +458,7 @@ class TaylorGP_pre2(Operator, BaseSymbolic, RegressorMixin):
         #         top1Flag = True
         #     n_jobs, n_programs, starts = _partition_estimators(
         #         self.population_size, self.n_jobs)
-        #     seeds = random_state.randint(MAX_INT, size=self.population_size)
+        seeds = random_state.randint(MAX_INT, size=self.population_size)
 
         #     population = Parallel(n_jobs=n_jobs,
         #                           verbose=int(self.verbose > 1))(
@@ -476,7 +478,7 @@ class TaylorGP_pre2(Operator, BaseSymbolic, RegressorMixin):
         #     print(population[110].__str__())
         #     gen += 1
 
-        return X, y, params, self.population_size
+        return X, y, params, self.population_size,seeds,self.qualified_list,self.function_set,n_features
 
         # for gen in range(prior_generations, self.generations):
         #     top1Flag = False

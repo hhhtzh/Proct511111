@@ -8,6 +8,9 @@ import numpy as np
 import pyoperon as Operon
 
 from keplar.translator.translator import to_op
+from keplar.operator.crossover import TaylorGPCrossover
+
+from keplar.translator.translator import to_op, trans_op, to_gp, trans_taylor_program, taylor_trans_population,taylor_trans_ind
 
 
 # from keplar.translator.translator import to_op
@@ -46,18 +49,19 @@ class BingoMutation(Mutation):
         component_generator = ComponentGenerator(self.x.shape[1])
         for op in self.operators:
             component_generator.add_operator(op)
-        mutation = AGraphMutation(component_generator, self.command_probability
-                                  , self.node_probability, self.parameter_probability
-                                  , self.prune_probability, self.fork_probability)
+        mutation = AGraphMutation(component_generator, self.command_probability, self.node_probability,
+                                  self.parameter_probability, self.prune_probability, self.fork_probability)
         if population.pop_type != "Bingo":
             population.set_pop_size(len(population.target_pop_list))
-            parent_num = np.random.randint(low=0, high=population.get_pop_size() - 1)
+            parent_num = np.random.randint(
+                low=0, high=population.get_pop_size() - 1)
             bingo_parent = population.target_pop_list[parent_num]
             bingo_parent._update()
             bingo_child = mutation(bingo_parent)
         else:
             population.set_pop_size(len(population.target_pop_list))
-            parent_num = np.random.randint(low=0, high=population.get_pop_size() - 1)
+            parent_num = np.random.randint(
+                low=0, high=population.get_pop_size() - 1)
             parent = population.target_pop_list[parent_num]
             # parent._update()
             bingo_child = mutation(parent)
@@ -95,14 +99,16 @@ class OperonMutation(Mutation):
 
     def do(self, population):
         target = self.ds.Variables[-1]
-        inputs = Operon.VariableCollection(v for v in self.ds.Variables if v.Name != target.Name)
+        inputs = Operon.VariableCollection(
+            v for v in self.ds.Variables if v.Name != target.Name)
         pset = Operon.PrimitiveSet()
         pset.SetConfig(
             Operon.PrimitiveSet.TypeCoherent)
         if self.tree_type == "balanced":
             tree_creator = Operon.BalancedTreeCreator(pset, inputs, bias=0.0)
         elif self.tree_type == "probabilistic":
-            tree_creator = Operon.ProbabilisticTreeCreator(pset, inputs, bias=0.0)
+            tree_creator = Operon.ProbabilisticTreeCreator(
+                pset, inputs, bias=0.0)
         else:
             raise ValueError("Operon创建树的类型名称错误")
 
@@ -111,7 +117,8 @@ class OperonMutation(Mutation):
         mut_onepoint = Operon.NormalOnePointMutation()
         mut_changeVar = Operon.ChangeVariableMutation(inputs)
         mut_changeFunc = Operon.ChangeFunctionMutation(pset)
-        mut_replace = Operon.ReplaceSubtreeMutation(tree_creator, coeff_initializer, self.maxD, self.maxL)
+        mut_replace = Operon.ReplaceSubtreeMutation(
+            tree_creator, coeff_initializer, self.maxD, self.maxL)
         mutation = Operon.MultiMutation()
         mutation.Add(mut_onepoint, self.onepoint_p)
         mutation.Add(mut_changeVar, self.changevar_p)
@@ -145,10 +152,43 @@ class OperonMutation(Mutation):
 
 
 class TaylorGPMutation(Mutation):
-    def __init__(self):
+    def __init__(self, option, random_state, qualified_list, function_set, n_features, pragram_useless, pop_parent, pop_best_idx):
         super().__init__()
-    
-    def do(self, population):
-        return super().do(population)
-    
+        self.option = option
+        self.random_state = random_state
+        self.qualified_list = qualified_list
+        # self.pop_idx =pop_idx
+        self.function_set = function_set
+        self.n_features = n_features
+        self.pragram_useless = pragram_useless
+        self.pop_parent = pop_parent
+        self.pop_best_idx = pop_best_idx
 
+    def do(self, population):
+
+        # subtree mutation
+        if (self.option == 1):
+            # Build a new naive program
+            # 我们需要一个_Program的一个对象来调用build_program随机生成一个新的program对象，
+            # 因此我们传入一个_Program的对象来辅助我们生成新的program
+            honor = self.pragram_useless.build_program(self.random_state)
+
+            pop_honor = taylor_trans_ind(honor)
+            # 做crossover
+            crossover = TaylorGPCrossover(self.random_state, self.qualified_list, self.function_set,
+                                          self.n_features, self.pop_parent, pop_honor, self.pop_best_idx)
+
+            return crossover.do(population)
+        # hoist mutation
+        elif (self.option == 2):
+            pass
+
+        # point mutation
+        elif (self.option == 3):
+            pass
+
+        # reproduction
+        elif (self.option == 4):
+            pass
+
+        return population

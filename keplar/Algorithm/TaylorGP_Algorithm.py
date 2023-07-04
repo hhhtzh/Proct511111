@@ -10,22 +10,41 @@ from sympy import symbols
 from TaylorGP.src.taylorGP._global import set_value, _init
 from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
 from keplar.Algorithm.Alg import Alg
+from TaylorGP.src.taylorGP.utils import check_random_state
+
 
 
 # from keplar.operator.creator import OperonCreator
 # from 
 
 class TayloGPAlg(Alg):
-    # def __init__(self, max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population):
-    #     super().__init__(max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population)
-    def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population):
-        # super().__init__()
-        super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+    def __init__(self, generation, selector,creator,crossover,mutation,method_probs):
+        self.generation=generation
+        self.selector=selector
+        self.creator=creator
+        self.crossover=crossover
+        self.mutation=mutation
+        self.method_probs=method_probs
+
+     
 
     def run(self):
-        # return super().run()
-        # return super().run()
-        print("done!")
+        for i in range(self.generation):
+            population,pragram_useless = self.creator.do()
+            random_state = check_random_state(1)
+            pop_parent,pop_best_index = self.selector.do(population)
+            pop_honor,honor_best_index = self.selector.do(population)
+            method = random_state.uniform()
+
+            if method < self.method_probs[0]:
+                population= self.crossover.do(population)
+            elif method < self.method_probs[1]:
+                
+
+
+
+
+
 
 
 class MTaylorGPAlg(Alg):
