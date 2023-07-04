@@ -13,15 +13,47 @@ from keplar.population.individual import Individual
 
 from TaylorGP.src.taylorGP.functions import _function_map
 
+#该函数是将种群中的一个个体转化成TaylorGP中的program格式
 def trans_taylor_program(ind):
     length = len(ind.func)
     program=[]
     for i in range(length):
-        if _function_map[ind.func[i]] is not None:
-            program.append(_function_map[ind.func[i]])
-        else:
+
+        #如果遍历列表中数据类型为浮点数，那么该数为常量
+        if isinstance(ind.func[i],float):
             program.append(ind.func[i])
+            # print(ind.func[i])
+
+        #如果遍历列表中数据类型为字符串类型，那么该数据为function类型
+        elif isinstance(ind.func[i],str):
+            if _function_map.get(ind.func[i]) is not None:
+                # print(_function_map[ind.func[i]].name)
+                program.append(_function_map[ind.func[i]])
+            else:
+                program.append(ind.func[i])
+
+        #如果遍历列表中数据类型为整数类型，那么该数据为变量（x1、x2、x3....）
+        elif isinstance(ind.func[i],int):
+            # print(ind.func[i])
+            program.append(ind.func[i])
+            
     return program
+
+#该函数是将TaylorGP中的program格式转化成框架中我们种群中的一个个体
+def taylor_trans_population(program,population,idx):
+    eq=[]
+
+    for i, node in enumerate(program):
+        if isinstance(node, _Function):
+            eq.append(node.name)
+        else:
+            eq.append(node)
+    ind=Individual(eq)
+
+    population.pop_list[idx] = ind
+
+    return population
+
 
 
 # from keplar.population.function import operator_map, arity_map, operator_map3, _function_map

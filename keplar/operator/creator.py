@@ -19,7 +19,7 @@ from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 
 from keplar.population.population import Population
-from keplar.translator.translator import trans_gp, trans_op, bingo_infixstr_to_func, to_bingo
+from keplar.translator.translator import trans_gp, trans_op, bingo_infixstr_to_func, to_bingo,trans_taylor_program
 import pyoperon as Operon
 from TaylorGP.src.taylorGP.functions import _Function, _sympol_map
 from joblib import Parallel, delayed #自动创建进程池执行并行化操作
@@ -27,6 +27,8 @@ import itertools
 from TaylorGP.src.taylorGP.genetic import alarm_handler, MAX_INT, _parallel_evolve, BaseEstimator, BaseSymbolic
 from TaylorGP.src.taylorGP._program import _Program,print_program
 import math
+
+
 
 
 
@@ -340,6 +342,7 @@ class TaylorGPCreator(Creator):
             if math.isnan(program.raw_fitness_) or math.isinf(program.raw_fitness_) or program.length_ >500:
                 i -= 1
                 continue
+            program.fitness_ = program.fitness(parsimony_coefficient)
             # if max_samples < n_samples:
             #     # Calculate OOB fitness
             #     program.oob_fitness_ = program.raw_fitness(self.X, self.y, oob_sample_weight)
@@ -352,13 +355,14 @@ class TaylorGPCreator(Creator):
                     else:
                         eq.append(node)
                 ind=Individual(eq)
-                ind.fitness = program.raw_fitness_
-                population.append(ind)
-                # print(str(ind.func))
+                # ind.fitness = program.raw_fitness_
+                population.target_append(ind)
+                idx =population.pop_size-1
+                population.target_fit_list[idx]=program.fitness_
+
             else:
                 pass
 
-            # population.pop_list[i].fitness = program.raw_fitness_
 
         return population
 

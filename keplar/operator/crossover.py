@@ -5,7 +5,7 @@ from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 import numpy as np
 from bingo.symbolic_regression.agraph.crossover import AGraphCrossover
-from keplar.translator.translator import to_op, trans_op, to_gp,trans_taylor_program
+from keplar.translator.translator import to_op, trans_op, to_gp,trans_taylor_program,taylor_trans_population
 import pyoperon as Operon
 
 from TaylorGP.src.taylorGP.functions import _Function
@@ -117,24 +117,26 @@ class OperonCrossover(Crossover):
 
 
 class TaylorGPCrossover(Crossover):
-    def __init__(self,best_idx, random_state,qualified_list,pop_idx,function_set):
+    def __init__(self, random_state,qualified_list,function_set,n_features):
         super().__init__()
-        self.best_idx = best_idx
+        # self.best_idx = best_idx
         self.random_state = random_state
         self.qualified_list =qualified_list
-        self.pop_idx =pop_idx
+        # self.pop_idx =pop_idx
         self.function_set= function_set
+        self.n_features=n_features
+        
 
 
 
-    def do(self, population=None):
+    def do(self, population=None,best_idx=None,pop_idx=None):
 
-        program = trans_taylor_program(population[self.pop_idx])
+        program = trans_taylor_program(population.pop_list[pop_idx])
 
-        donor = trans_taylor_program(population[self.best_idx])
+        donor = trans_taylor_program(population.pop_list[best_idx])
 
 
-        program = None
+        # program = None
         qualified_flag = False
         op_index = 0
         while qualified_flag == False:
@@ -154,7 +156,9 @@ class TaylorGPCrossover(Crossover):
 
         if op_index <4 :
             program_new = self.function_set[op_index:op_index + 1] + program[:] + donor[:]
-            return  program,None,None
+            population = taylor_trans_population(program_new,population,pop_idx)
+            return population
+            # return  program,None,None
         else:
             x_index = self.random_state.randint(self.n_features)
             if x_index not in program:
@@ -167,7 +171,10 @@ class TaylorGPCrossover(Crossover):
                 if isinstance(program[node], _Function) == False and program[node] == x_index:
                     terminal = donor
                     program_new= self.changeTo(program, node, terminal)
-            return program,None,None
+            # return program,None,None
+            population = taylor_trans_population(program_new,population,pop_idx)
+            return population
+
         
     def changeTo(self,program,node, terminal):
         return program[:node] + terminal + program[node+1:]

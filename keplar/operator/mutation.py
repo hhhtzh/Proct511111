@@ -8,6 +8,7 @@ import numpy as np
 import pyoperon as Operon
 
 from keplar.translator.translator import to_op
+from keplar.operator.crossover import TaylorGPCrossover
 
 
 # from keplar.translator.translator import to_op
@@ -145,10 +146,28 @@ class OperonMutation(Mutation):
 
 
 class TaylorGPMutation(Mutation):
-    def __init__(self):
+    def __init__(self,option,random_state,qualified_list,function_set,n_features,pragram_useless):
         super().__init__()
+        self.option=option
+        self.random_state = random_state
+        self.qualified_list =qualified_list
+        # self.pop_idx =pop_idx
+        self.function_set= function_set
+        self.n_features=n_features
+        self.pragram_useless =pragram_useless
     
     def do(self, population):
-        return super().do(population)
-    
 
+        #subtree mutation
+        if(self.option==1):
+            # Build a new naive program
+            # 我们需要一个_Program的一个对象来调用build_program随机生成一个新的program对象，
+            # 因此我们传入一个_Program的对象来辅助我们生成新的program
+            chicken = self.pragram_useless.build_program(self.random_state)
+            
+            # 做交叉
+            crossover=TaylorGPCrossover(chicken, self.random_state,self.qualified_list,self.function_set,self.n_features,self.pragram_useless)
+
+            return crossover.do(population)
+
+    

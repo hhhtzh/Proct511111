@@ -15,6 +15,7 @@ from keplar.translator.translator import bingo_infixstr_to_func
 import pyoperon as Operon
 
 from keplar.translator.translator import bingo_infixstr_to_func
+import numpy as np
 
 
 class Selector(Operator):
@@ -90,8 +91,20 @@ class OperonSelector(Selector):
     
 
 class TaylorGPSelector(Selector):
-    def __init__(self):
+    def __init__(self,random_state,tournament_size,greater_is_better):
         super().__init__()
+        self.random_state=random_state
+        self.tournament_size=tournament_size
+        self.greater_is_better =greater_is_better
+    
 
     def do(self, population=None):
-        return super().do(population)
+        contenders = self.random_state.randint(0, population.pop_size, self.tournament_size)
+        fitness = [population.target_fit_list[p] for p in contenders]
+        if self.greater_is_better:
+            parent_index = contenders[np.argmax(fitness)]
+        else:
+            parent_index = contenders[np.argmin(fitness)]
+        return population.target_pop_list[parent_index], parent_index
+
+
