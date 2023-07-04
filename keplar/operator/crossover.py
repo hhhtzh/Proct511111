@@ -153,20 +153,20 @@ class TaylorGPCrossover(Crossover):
 
 
         if op_index <4 :
-            program = self.function_set[op_index:op_index + 1] + self.program[:] + donor[:]
+            program_new = self.function_set[op_index:op_index + 1] + program[:] + donor[:]
             return  program,None,None
         else:
             x_index = self.random_state.randint(self.n_features)
-            if x_index not in self.program:
-                for i in range(len(self.program)):
-                    if isinstance(self.program[i],int):
-                        x_index = self.program[i]
+            if x_index not in program:
+                for i in range(len(program)):
+                    if isinstance(program[i],int):
+                        x_index = program[i]
                         break
 
-            for node in range(len(self.program)):
-                if isinstance(self.program[node], _Function) == False and self.program[node] == x_index:
-                    terminal = self.donor
-                    program = self.changeTo(self.program, node, terminal)
+            for node in range(len(program)):
+                if isinstance(program[node], _Function) == False and program[node] == x_index:
+                    terminal = donor
+                    program_new= self.changeTo(program, node, terminal)
             return program,None,None
         
     def changeTo(self,program,node, terminal):
