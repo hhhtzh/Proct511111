@@ -276,6 +276,7 @@ class TaylorGPCreator(Creator):
     def do(self, population=None):
 
         population = Population(self.population_size)
+        population.set_pop_size(0)
 
         random_state = check_random_state(self.random_state)
 
@@ -303,6 +304,7 @@ class TaylorGPCreator(Creator):
 
         max_samples = int(max_samples * n_samples)
 
+        programs=[]
         for i in range(self.population_size):
             genome = None
             program = _Program(function_set=function_set,
@@ -340,9 +342,12 @@ class TaylorGPCreator(Creator):
 
             program.raw_fitness_ = program.raw_fitness(self.X, self.y, curr_sample_weight)
             if math.isnan(program.raw_fitness_) or math.isinf(program.raw_fitness_) or program.length_ >500:
-                i -= 1
-                continue
+                pass
+                # i -= 1
+                # continue
             program.fitness_ = program.fitness(parsimony_coefficient)
+            # print("test111")
+            # print(program.fitness_)
             # if max_samples < n_samples:
             #     # Calculate OOB fitness
             #     program.oob_fitness_ = program.raw_fitness(self.X, self.y, oob_sample_weight)
@@ -357,12 +362,19 @@ class TaylorGPCreator(Creator):
                 ind=Individual(eq)
                 # ind.fitness = program.raw_fitness_
                 population.target_append(ind)
-                idx =population.pop_size-1
-                population.target_fit_list[idx]=program.fitness_
+                # idx =population.pop_size
+                population.target_fit_list.append(program.fitness_)
 
             else:
                 pass
 
-
-        return population
+            programs.append(program)
+        population.set_pop_size(self.population_size)
+        # print("kkkk")
+        # print(population.target_fit_list[998])
+        # print(population.target_fit_list[999])
+        # print("kkkk")
+        # print("gggg")
+        # print(population.target_fit_list[10])
+        return population,programs[0]
 

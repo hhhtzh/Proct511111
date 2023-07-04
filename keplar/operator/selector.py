@@ -99,7 +99,17 @@ class TaylorGPSelector(Selector):
     
 
     def do(self, population=None):
+        # print("8888888")
+        # print(population.pop_size)
         contenders = self.random_state.randint(0, population.pop_size, self.tournament_size)
+        # print(contenders)
+        # for p in contenders:
+        #     print(p)
+        #     print(population.target_fit_list[p])
+        # print("kkkk")
+        # print(population.target_fit_list[999])
+        # print("kkkk")
+
         fitness = [population.target_fit_list[p] for p in contenders]
         if self.greater_is_better:
             parent_index = contenders[np.argmax(fitness)]

@@ -40,39 +40,55 @@ print(population_size)
 gen =0
 program = None
 creator = TaylorGPCreator(X,y,params,gen,population_size,program,"Taylor")
-population = creator.do()
+population,pragram_useless= creator.do()
 
 print("population_size")
 
 #计算fitness的值
 # evaluator = TaylorGPEvaluator()
 # eval_op_list = [evaluator]
+random_state = check_random_state(1)
 
 #选择最好的一个或者几个
-select = TaylorGPSelector(random_state,tournament_size=50,greater_is_better=False)
-pop_best,pop_best_indes = select.do()
+# tournament_size = 1000
+# greater_is_better = False
+selector = TaylorGPSelector(random_state,tournament_size=1000,greater_is_better=False)
+pop_parent,pop_best_index = selector.do(population)
+pop_honor,honor_best_index = selector.do(population)
 
 print("crossover begin!")
 
-random_state = check_random_state(1)
 
 #做交叉crossover
-crossover = TaylorGPCrossover(random_state,qualified_list,function_set,n_features)
-population= crossover.do(population,1,0)
+crossover = TaylorGPCrossover(random_state,qualified_list,function_set,n_features,pop_parent,pop_honor,pop_best_index)
+population= crossover.do(population)
 print("crossover end!")
-
-
-
 
 
 
 #做变异，包括子树变异、提升变异（subtree mutation、Hoist mutation、reproduction）
 option = 1
-mutation = TaylorGPMutation(option,random_state,qualified_list,function_set,n_features)
-# population =
+mutation1 = TaylorGPMutation(1,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
+mutation2 = TaylorGPMutation(2,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
+mutation3 = TaylorGPMutation(3,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
+mutation4 = TaylorGPMutation(4,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
+
+# population = mutation1.do(population)
+
+p_crossover=0.9,
+p_subtree_mutation=0.01,
+p_hoist_mutation=0.01,
+p_point_mutation=0.01,
+
+method_probs = np.array([p_crossover,
+                        p_subtree_mutation,
+                        p_hoist_mutation,
+                        p_point_mutation])
+
+mutation =[mutation1,mutation2,mutation3,mutation4]
 
 #算法的全部流程
-taylorGP = TayloGPAlg(20,creator,crossover)
+taylorGP = TayloGPAlg(20,selector,creator,crossover,mutation,method_probs)
 
 taylorGP.run()
 

@@ -117,7 +117,7 @@ class OperonCrossover(Crossover):
 
 
 class TaylorGPCrossover(Crossover):
-    def __init__(self, random_state,qualified_list,function_set,n_features):
+    def __init__(self, random_state,qualified_list,function_set,n_features,pop_parent,pop_honor,pop_best_index):
         super().__init__()
         # self.best_idx = best_idx
         self.random_state = random_state
@@ -125,18 +125,26 @@ class TaylorGPCrossover(Crossover):
         # self.pop_idx =pop_idx
         self.function_set= function_set
         self.n_features=n_features
+        self.pop_parent=pop_parent
+        self.pop_honor =pop_honor
+        self.pop_best_index=pop_best_index
+        print("fffff")
+        print(self.pop_best_index)
         
 
 
 
-    def do(self, population=None,best_idx=None,pop_idx=None):
+    def do(self, population=None):
 
-        program = trans_taylor_program(population.pop_list[pop_idx])
+        # parent = trans_taylor_program(population.target_pop_list[self.pop_best_index])
+        # donor = trans_taylor_program(population.target_pop_list[self.donor_best_index])
 
-        donor = trans_taylor_program(population.pop_list[best_idx])
+        parent = trans_taylor_program(self.pop_parent)
+        honor = trans_taylor_program(self.pop_honor)
+        # print(self.pop_parent.)
 
 
-        # program = None
+        program = None
         qualified_flag = False
         op_index = 0
         while qualified_flag == False:
@@ -155,24 +163,24 @@ class TaylorGPCrossover(Crossover):
 
 
         if op_index <4 :
-            program_new = self.function_set[op_index:op_index + 1] + program[:] + donor[:]
-            population = taylor_trans_population(program_new,population,pop_idx)
+            program = self.function_set[op_index:op_index + 1] + parent[:] + honor[:]
+            population = taylor_trans_population(program,population,self.pop_best_index)
             return population
             # return  program,None,None
         else:
             x_index = self.random_state.randint(self.n_features)
-            if x_index not in program:
-                for i in range(len(program)):
-                    if isinstance(program[i],int):
-                        x_index = program[i]
+            if x_index not in parent:
+                for i in range(len(parent)):
+                    if isinstance(parent[i],int):
+                        x_index = parent[i]
                         break
 
-            for node in range(len(program)):
-                if isinstance(program[node], _Function) == False and program[node] == x_index:
-                    terminal = donor
-                    program_new= self.changeTo(program, node, terminal)
+            for node in range(len(parent)):
+                if isinstance(parent[node], _Function) == False and parent[node] == x_index:
+                    terminal = honor
+                    program= self.changeTo(parent, node, terminal)
             # return program,None,None
-            population = taylor_trans_population(program_new,population,pop_idx)
+            population = taylor_trans_population(program,population,self.pop_best_index)
             return population
 
         

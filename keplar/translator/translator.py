@@ -50,9 +50,22 @@ def taylor_trans_population(program,population,idx):
             eq.append(node)
     ind=Individual(eq)
 
-    population.pop_list[idx] = ind
+    population.target_pop_list[idx] = ind
 
     return population
+
+def taylor_trans_ind(program):
+    eq=[]
+
+    for i, node in enumerate(program):
+        if isinstance(node, _Function):
+            eq.append(node.name)
+        else:
+            eq.append(node)
+    ind=Individual(eq)
+
+
+    return ind
 
 
 
