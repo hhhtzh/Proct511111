@@ -1,7 +1,8 @@
 import copy
 
 from .genetic import SymbolicRegressor
-from .calTaylor import Metrics,Metrics2 # ,cal_Taylor_features
+from .calTaylor import Metrics2 # ,cal_Taylor_features
+from  .calTaylor1 import Metrics
 from ._program import print_program
 from ._global import set_value,get_value
 import numpy as np

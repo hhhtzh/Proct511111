@@ -4,7 +4,9 @@ import time
 import argparse
 
 import numpy as np
+from numpy import shape
 
+from TaylorGP.src.taylorGP._global import set_value
 from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
 from keplar.Algorithm.Alg import Alg
 
@@ -24,27 +26,31 @@ class TayloGPAlg(Alg):
         # return super().run()
         print("done!")
 
+
 class MTaylorGPAlg(Alg):
-    def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population,
-                 recursion_limit=300,repeat = 3,originalTaylorGPGeneration = 20):
+    def __init__(self, max_generation, ds,up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None, population=None,
+                 recursion_limit=300, repeat=3, originalTaylorGPGeneration=20):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.ds = ds
         self.originalTaylorGPGeneration = originalTaylorGPGeneration
         self.repeat = repeat
         self.recursion_limit = recursion_limit
 
     def run(self):
+        np_x=self.ds.get_np_x()
+        np_y=self.ds.get_np_y()
+        np_y = np_y.reshape([-1, 1])
+        self.ds=np.hstack([np_x, np_y])
         sys.setrecursionlimit(self.recursion_limit)
         argparser = argparse.ArgumentParser()
         argparser.add_argument('--fileNum', default=1, type=int)
         args = argparser.parse_args()
-        fileName = "D:\PYcharm_program\Test_everything\AllDataSets\F" + str(args.fileNum) + ".tsv"
-        # fileName = "/home/hebaihe/STORAGE/taylorSR/data/AllDataSets/F" + str(args.fileNum) + ".tsv"
-        dataSets = np.loadtxt(fileName, dtype=np.float, skiprows=1)
-        print("fileNum: ", str(args.fileNum), "维度： ", dataSets.shape[1] - 1)
+        dataSets = self.ds
+        print("维度： ", dataSets.shape[1] - 1)
         repeat = self.repeat
         totalGeneration = self.max_generation
         originalTaylorGPGeneration = self.originalTaylorGPGeneration
-        Pop = self.population.pop_size# 种群规模
+        Pop = self.population.pop_size  # 种群规模
         epsilons = [1e-5, 0.2, 1, 4, 10, 100]
         # time_start1 = time.time()
         for repeatNum in range(repeat):
@@ -55,7 +61,7 @@ class MTaylorGPAlg(Alg):
             for epsilon in epsilons:
                 if epsilon == 1e-5:
                     SRC.PreDbscan(epsilon, noClusterFlag=True, clusterMethod="NOCLUSTER")  # 执行 OriginalTaylorGP
-                elif SRC.PreDbscan(epsilon, clusterMethod="DBSCAN") == False:
+                elif not SRC.PreDbscan(epsilon, clusterMethod="DBSCAN"):
                     print("聚类有问题")
                     continue
                 SRC.firstMabFlag = True
@@ -77,4 +83,3 @@ class MTaylorGPAlg(Alg):
             dataSets = np.loadtxt(fileName,dtype=np.float,skiprows=1)
             TaylorGP2Master(dataSets)    
         """
-
