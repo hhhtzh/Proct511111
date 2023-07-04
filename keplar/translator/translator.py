@@ -21,6 +21,7 @@ def trans_taylor_program(ind):
             program.append(_function_map[ind.func[i]])
         else:
             program.append(ind.func[i])
+    return program
 
 
 # from keplar.population.function import operator_map, arity_map, operator_map3, _function_map
