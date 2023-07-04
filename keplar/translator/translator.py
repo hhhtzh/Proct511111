@@ -493,8 +493,8 @@ def trans_op(op_tree, variable_list):
     func = []
     const_array = []
     c_num = 0
-    const_code = 3000
-    variable_code = 5000
+    const_code = 5000
+    variable_code = 3000
     node_list = op_tree.Nodes
     node_list = op_postfix_to_prefix(node_list)
     for node in node_list:
@@ -509,7 +509,7 @@ def trans_op(op_tree, variable_list):
                 variable_code = variable_code + 1
                 var_name = var_dict[node.HashValue]
                 var_name = var_name[1:]
-                token = 5000 + int(var_name)
+                token = 2999 + int(var_name)
                 token = str(token)
                 func.append(token)
         else:

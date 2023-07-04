@@ -1,7 +1,8 @@
 import copy
 
 from .genetic import SymbolicRegressor
-from .calTaylor import Metrics,Metrics2 # ,cal_Taylor_features
+from .calTaylor import Metrics2 # ,cal_Taylor_features
+from  .calTaylor1 import Metrics
 from ._program import print_program
 from ._global import set_value,get_value
 import numpy as np
@@ -94,7 +95,7 @@ def Taylor_Based_SR(_x,X,Y,qualified_list,eq_write,population,Gen,Pop,repeatNum,
         return [f_low_taylor_mse], [f_low_taylor], None, Y_pred
 
 
-def OriginalTaylorGP(X_Y,Y_pred,population,repeatNum,Generation,Pop,rmseFlag = False,qualified_list=None):
+def OriginalTaylorGP(X_Y,Y_pred,population,repeatNum,Generation,Pop,rmseFlag = False,qualified_list=None,SR_method="gplearn"):
     """
     原始版本的TaylorGP
     Args:
@@ -102,6 +103,7 @@ def OriginalTaylorGP(X_Y,Y_pred,population,repeatNum,Generation,Pop,rmseFlag = F
         eq_write: 输出文件
 
     Returns: top,保存每个子块的topk个体数组
+    :param SR_method:
 
     """
 
