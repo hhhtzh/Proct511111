@@ -5,7 +5,7 @@ from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 import numpy as np
 from bingo.symbolic_regression.agraph.crossover import AGraphCrossover
-from keplar.translator.translator import to_op, trans_op, to_gp
+from keplar.translator.translator import to_op, trans_op, to_gp,trans_taylor_program
 import pyoperon as Operon
 
 from TaylorGP.src.taylorGP.functions import _Function
@@ -117,13 +117,23 @@ class OperonCrossover(Crossover):
 
 
 class TaylorGPCrossover(Crossover):
-    def __init__(self,donor, random_state,qualified_list):
+    def __init__(self,best_idx, random_state,qualified_list,pop_idx,function_set):
         super().__init__()
-        self.donor = donor
+        self.best_idx = best_idx
         self.random_state = random_state
         self.qualified_list =qualified_list
+        self.pop_idx =pop_idx
+        self.function_set= function_set
+
+
 
     def do(self, population=None):
+
+        program = trans_taylor_program(population[self.pop_idx])
+
+        donor = trans_taylor_program(population[self.best_idx])
+
+
         program = None
         qualified_flag = False
         op_index = 0
@@ -143,21 +153,24 @@ class TaylorGPCrossover(Crossover):
 
 
         if op_index <4 :
-            program = self.function_set[op_index:op_index + 1] + self.program[:] + self.donor[:]
+            program_new = self.function_set[op_index:op_index + 1] + program[:] + donor[:]
             return  program,None,None
         else:
             x_index = self.random_state.randint(self.n_features)
-            if x_index not in self.program:
-                for i in range(len(self.program)):
-                    if isinstance(self.program[i],int):
-                        x_index = self.program[i]
+            if x_index not in program:
+                for i in range(len(program)):
+                    if isinstance(program[i],int):
+                        x_index = program[i]
                         break
 
-            for node in range(len(self.program)):
-                if isinstance(self.program[node], _Function) == False and self.program[node] == x_index:
-                    terminal = self.donor
-                    program = self.changeTo(self.program, node, terminal)
+            for node in range(len(program)):
+                if isinstance(program[node], _Function) == False and program[node] == x_index:
+                    terminal = donor
+                    program_new= self.changeTo(program, node, terminal)
             return program,None,None
+        
+    def changeTo(self,program,node, terminal):
+        return program[:node] + terminal + program[node+1:]
 
 
 class GplearnCrossover(Crossover):

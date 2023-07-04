@@ -23,6 +23,7 @@ print("finish prework!")
 taylorGP_pre2 = TaylorGP_pre2(X, Y, qualified_list)
 X,y,params,population_size = taylorGP_pre2.do()
 print("finally!")
+print(population_size)
 
 # print(K[110].__str__())
 # print(str(K[110]))
@@ -35,19 +36,23 @@ print("finally!")
 
 #生成种群（population）
 gen =0
-creator = TaylorGPCreator(X,y,params,gen,population_size,"Taylor")
+program = None
+creator = TaylorGPCreator(X,y,params,gen,population_size,program,"Taylor")
 population = creator.do()
 
+print("population_size")
 
 #计算fitness的值
 # evaluator = TaylorGPEvaluator()
 # eval_op_list = [evaluator]
 
+#做交叉crossover
+crossover = TaylorGPCrossover()
+
 #选择最好的一个或者几个
 select = TaylorGPSelector()
 
-#做交叉crossover
-crossover = TaylorGPCrossover()
+
 
 #做变异，包括子树变异、提升变异（subtree mutation、Hoist mutation、reproduction）
 mutation = TaylorGPMutation()
