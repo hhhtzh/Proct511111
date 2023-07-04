@@ -22,8 +22,9 @@ class Evaluator(Operator):
 
 
 class BingoEvaluator(Evaluator):
-    def __init__(self, x, fit, optimizer_method, to_type, y=None, dx_dt=None):
+    def __init__(self, x, fit, optimizer_method, to_type, y=None, dx_dt=None, metric="mae"):
         super().__init__()
+        self.metric = metric
         self.to_type = to_type
         self.x = x
         self.y = y
@@ -35,7 +36,7 @@ class BingoEvaluator(Evaluator):
 
         if self.fit == "exp":
             training_data = ExplicitTrainingData(self.x, self.y)
-            fitness = ExplicitRegression(training_data=training_data)
+            fitness = ExplicitRegression(training_data=training_data, metric=self.metric)
         elif self.fit == "imp":
             training_data = ImplicitTrainingData(x=self.x, dx_dt=self.dx_dt)
             fitness = ImplicitRegression(training_data=training_data)
@@ -175,9 +176,9 @@ class TaylorGPEvaluator(Evaluator):
             if self.to_type == "taylorgp":
                 population.target_fit_list = fit_list
             else:
-                population.pop_type="self"
+                population.pop_type = "self"
                 for i in range(len(population.target_pop_list)):
-                    ind=trans_gp(population.target_pop_list[i])
+                    ind = trans_gp(population.target_pop_list[i])
                     population.pop_list.append(ind)
         else:
             pass

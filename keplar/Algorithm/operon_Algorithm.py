@@ -19,6 +19,8 @@ class OperonAlg(Alg):
                  error_tolerance, population_size, threads_num, np_x, np_y, minL=1, maxL=50, maxD=10,
                  decimalPrecision=5, population=None):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.model_fit = None
+        self.model_string = None
         self.population_size = population_size
         self.threads_num = threads_num
         self.sel = sel
@@ -115,7 +117,7 @@ class OperonAlg(Alg):
                 sys.stdout.write('\u2588')
             sys.stdout.write(' ' * (max_ticks - cursor))
             sys.stdout.write(
-                f'{100 * gen / config.Generations:.1f}%, generation {gen}/{config.Generations}, train quality: {-bestfit:.6f}, elapsed: {time.time() - t0:.2f}s')
+                f'{100 * gen / config.Generations:.1f}%, generation {gen}/{config.Generations}, best_fit:{bestfit:.6f}, train quality:{-bestfit:.6f}, elapsed: {time.time() - t0:.2f}s')
             sys.stdout.flush()
             gen += 1
 
@@ -124,4 +126,8 @@ class OperonAlg(Alg):
         # get the best solution and print it
         best = gp.BestModel
         model_string = Operon.InfixFormatter.Format(best.Genotype, self.ds, 6)
+        model_fit=best.GetFitness(0)
+        self.model_string=model_string
+        self.model_fit=model_fit
         print(f'\n{model_string}')
+        print("最好适应度"+f'\n{model_fit}')
