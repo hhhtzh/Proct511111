@@ -11,6 +11,17 @@ from keplar.population.function import arity_map, operator_map3, _function_map, 
     operator_map_dsr, operator_map_dsr2
 from keplar.population.individual import Individual
 
+from TaylorGP.src.taylorGP.functions import _function_map
+
+def trans_taylor_program(ind):
+    length = len(ind.func)
+    program=[]
+    for i in range(length):
+        if _function_map[ind.func[i]] is not None:
+            program.append(_function_map[ind.func[i]])
+        else:
+            program.append(ind.func[i])
+
 
 # from keplar.population.function import operator_map, arity_map, operator_map3, _function_map
 

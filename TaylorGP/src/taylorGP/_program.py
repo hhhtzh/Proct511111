@@ -796,8 +796,6 @@ class _Program(object):
                     program = self.changeTo(self.program, node, terminal)
             return program,None,None
 
-    def changeTo(self,program,node, terminal):
-        return program[:node] + terminal + program[node+1:]
     def subtree_mutation(self, random_state):
         """Perform the subtree mutation operation on the program.
 

@@ -117,48 +117,56 @@ class OperonCrossover(Crossover):
 
 
 class TaylorGPCrossover(Crossover):
-    def __init__(self,donor, random_state,qualified_list,pop_idx):
+    def __init__(self,best_idx, random_state,qualified_list,pop_idx):
         super().__init__()
-        self.donor = donor
+        self.best_idx = best_idx
         self.random_state = random_state
         self.qualified_list =qualified_list
+        self.pop_idx =pop_idx
+
+
 
     def do(self, population=None):
 
-        program = None
-        qualified_flag = False
-        op_index = 0
-        while qualified_flag == False:
-            op_index = self.random_state.randint(5)
-            if get_value('TUIHUA_FLAG'):
-                break
-            elif self.qualified_list == [1,-1] and (op_index == 2 or op_index==3):
-                continue
-            elif self.qualified_list == [2, -1] and op_index == 4 and self.n_features>1:
-                continue
-            elif (self.qualified_list == [-1, 1] or self.qualified_list == [-1, 2]) and (op_index == 1 or op_index == 3):
-                continue
-            elif (self.qualified_list == [1, 1] or self.qualified_list == [-1, 2]) and (op_index == 1 or op_index == 2 or op_index == 3):
-                continue
-            qualified_flag = True
+        program = trans_taylor_program(population[self.pop_idx])
+
+        donor = trans_taylor_program(population[self.best_idx])
 
 
-        if op_index <4 :
-            program = self.function_set[op_index:op_index + 1] + self.program[:] + self.donor[:]
-            return  program,None,None
-        else:
-            x_index = self.random_state.randint(self.n_features)
-            if x_index not in self.program:
-                for i in range(len(self.program)):
-                    if isinstance(self.program[i],int):
-                        x_index = self.program[i]
-                        break
+        # program = None
+        # qualified_flag = False
+        # op_index = 0
+        # while qualified_flag == False:
+        #     op_index = self.random_state.randint(5)
+        #     if get_value('TUIHUA_FLAG'):
+        #         break
+        #     elif self.qualified_list == [1,-1] and (op_index == 2 or op_index==3):
+        #         continue
+        #     elif self.qualified_list == [2, -1] and op_index == 4 and self.n_features>1:
+        #         continue
+        #     elif (self.qualified_list == [-1, 1] or self.qualified_list == [-1, 2]) and (op_index == 1 or op_index == 3):
+        #         continue
+        #     elif (self.qualified_list == [1, 1] or self.qualified_list == [-1, 2]) and (op_index == 1 or op_index == 2 or op_index == 3):
+        #         continue
+        #     qualified_flag = True
 
-            for node in range(len(self.program)):
-                if isinstance(self.program[node], _Function) == False and self.program[node] == x_index:
-                    terminal = self.donor
-                    program = self.changeTo(self.program, node, terminal)
-            return program,None,None
+
+        # if op_index <4 :
+        #     program = self.function_set[op_index:op_index + 1] + self.program[:] + self.donor[:]
+        #     return  program,None,None
+        # else:
+        #     x_index = self.random_state.randint(self.n_features)
+        #     if x_index not in self.program:
+        #         for i in range(len(self.program)):
+        #             if isinstance(self.program[i],int):
+        #                 x_index = self.program[i]
+        #                 break
+
+        #     for node in range(len(self.program)):
+        #         if isinstance(self.program[node], _Function) == False and self.program[node] == x_index:
+        #             terminal = self.donor
+        #             program = self.changeTo(self.program, node, terminal)
+        #     return program,None,None
         
     def changeTo(self,program,node, terminal):
         return program[:node] + terminal + program[node+1:]
