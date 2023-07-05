@@ -15,9 +15,9 @@ from TaylorGP.src.taylorGP.utils import check_random_state
 
 data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
 data.read_file()
-x = data.get_np_x()
-y = data.get_np_y()
-taylorGP_pre1 = TaylorGP_Pre1(x, y)
+x_train = data.get_np_x()
+y_train = data.get_np_y()
+taylorGP_pre1 = TaylorGP_Pre1(x_train, y_train)
 X, Y, qualified_list = taylorGP_pre1.do()
 # print("finish prework!")
 
@@ -39,12 +39,12 @@ X,y,params,population_size,seeds,qualified_list,function_set,n_features= taylorG
 gen =0
 program = None
 creator = TaylorGPCreator(X,y,params,gen,population_size,program,"Taylor")
-population,pragram_useless= creator.do()
+population= creator.do()
 
 print("population_size")
 
 #计算fitness的值
-# evaluator = TaylorGPEvaluator()
+# evaluator = TaylorGPEvaluator() 
 # eval_op_list = [evaluator]
 random_state = check_random_state(1)
 
@@ -54,23 +54,25 @@ random_state = check_random_state(1)
 selector = TaylorGPSelector(random_state,tournament_size=1000,greater_is_better=False)
 pop_parent,pop_best_index = selector.do(population)
 pop_honor,honor_best_index = selector.do(population)
+pop_now_index=0
 
 print("crossover begin!")
 
 
 #做交叉crossover
-crossover = TaylorGPCrossover(random_state,qualified_list,function_set,n_features,pop_parent,pop_honor,pop_best_index)
-population= crossover.do(population)
+crossover = TaylorGPCrossover(random_state,qualified_list,function_set,n_features,pop_parent.program,pop_honor.program,pop_now_index)
+# population= crossover.do(population)
 print("crossover end!")
 
 
 
 #做变异，包括子树变异、提升变异（subtree mutation、Hoist mutation、reproduction）
-option = 1
-mutation = TaylorGPMutation(1,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
+# option = 1
+mutation = TaylorGPMutation(1,random_state,qualified_list,function_set,n_features,pop_parent,pop_now_index)
 # mutation2 = TaylorGPMutation(2,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
 # mutation3 = TaylorGPMutation(3,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
 # mutation4 = TaylorGPMutation(4,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
+evaluator = TaylorGPEvaluator("rmse",x_train,y_train,"taylorgp",feature_weight=None)
 
 # population = mutation1.do(population)
 
@@ -88,8 +90,8 @@ method_probs = np.array([p_crossover,
 
 
 #算法的全部流程
-gen = 20
-taylorGP = TayloGPAlg(gen,taylorGP_pre1,taylorGP_pre2,selector,creator,crossover,mutation,method_probs)
+gen = 1
+taylorGP = TayloGPAlg(gen,taylorGP_pre1,taylorGP_pre2,selector,creator,crossover,mutation,method_probs,evaluator)
 
 taylorGP.run()
 

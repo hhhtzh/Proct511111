@@ -97,7 +97,7 @@ class TaylorGPSelector(Selector):
         self.tournament_size=tournament_size
         self.greater_is_better =greater_is_better
 
-    def get_value(self,random_state,tournament_size,greater_is_better):
+    def get_value(self,random_state,tournament_size):
         self.random_state=random_state
         self.tournament_size=tournament_size
         # self.greater_is_better =greater_is_better
@@ -115,7 +115,7 @@ class TaylorGPSelector(Selector):
         # print(population.target_fit_list[999])
         # print("kkkk")
 
-        fitness = [population.target_fit_list[p] for p in contenders]
+        fitness = [population.target_pop_list[p].fitness_ for p in contenders]
         if self.greater_is_better:
             parent_index = contenders[np.argmax(fitness)]
         else:

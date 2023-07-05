@@ -117,7 +117,7 @@ class OperonCrossover(Crossover):
 
 
 class TaylorGPCrossover(Crossover):
-    def __init__(self, random_state,qualified_list,function_set,n_features,pop_parent,pop_honor,pop_best_index):
+    def __init__(self, random_state,qualified_list,function_set,n_features,pop_parent,pop_honor,pop_now_index):
         super().__init__()
         # self.best_idx = best_idx
         self.random_state = random_state
@@ -127,18 +127,18 @@ class TaylorGPCrossover(Crossover):
         self.n_features=n_features
         self.pop_parent=pop_parent
         self.pop_honor =pop_honor
-        self.pop_best_index=pop_best_index
+        self.pop_now_index=pop_now_index
         # print("fffff")
         # print(self.pop_best_index)
 
-    def get_value(self, random_state,qualified_list,function_set,n_features,pop_parent,pop_honor,pop_best_index):
+    def get_value(self, random_state,qualified_list,function_set,n_features,pop_parent,pop_honor,pop_now_index):
         self.random_state = random_state
         self.qualified_list =qualified_list
         self.function_set= function_set
         self.n_features=n_features
         self.pop_parent=pop_parent
         self.pop_honor =pop_honor
-        self.pop_best_index=pop_best_index
+        self.pop_now_index=pop_now_index
         
 
 
@@ -148,8 +148,8 @@ class TaylorGPCrossover(Crossover):
         # parent = trans_taylor_program(population.target_pop_list[self.pop_best_index])
         # donor = trans_taylor_program(population.target_pop_list[self.donor_best_index])
 
-        parent = trans_taylor_program(self.pop_parent)
-        honor = trans_taylor_program(self.pop_honor)
+        # parent = trans_taylor_program(self.pop_parent)
+        # honor = trans_taylor_program(self.pop_honor)
         # print(self.pop_parent.)
 
 
@@ -172,24 +172,28 @@ class TaylorGPCrossover(Crossover):
 
 
         if op_index <4 :
-            program = self.function_set[op_index:op_index + 1] + parent[:] + honor[:]
-            population = taylor_trans_population(program,population,self.pop_best_index)
+            program = self.function_set[op_index:op_index + 1] + self.pop_parent[:] + self.pop_honor[:]
+            # population = taylor_trans_population(program,population,self.pop_now_index)
+            population.target_pop_list[self.pop_now_index]=program
+
+
             return population
             # return  program,None,None
         else:
             x_index = self.random_state.randint(self.n_features)
-            if x_index not in parent:
-                for i in range(len(parent)):
-                    if isinstance(parent[i],int):
-                        x_index = parent[i]
+            if x_index not in self.pop_honor:
+                for i in range(len(self.pop_honor)):
+                    if isinstance(self.pop_honor[i],int):
+                        x_index = self.pop_honor[i]
                         break
 
-            for node in range(len(parent)):
-                if isinstance(parent[node], _Function) == False and parent[node] == x_index:
-                    terminal = honor
-                    program= self.changeTo(parent, node, terminal)
+            for node in range(len(self.pop_honor)):
+                if isinstance(self.pop_honor[node], _Function) == False and self.pop_honor[node] == x_index:
+                    terminal = self.pop_honor
+                    program= self.changeTo(self.pop_honor, node, terminal)
             # return program,None,None
-            population = taylor_trans_population(program,population,self.pop_best_index)
+            # population = taylor_trans_population(program,population,self.pop_now_index)
+            population.target_pop_list[self.pop_now_index].program=program
             return population
 
         

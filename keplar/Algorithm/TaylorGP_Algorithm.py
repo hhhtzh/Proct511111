@@ -16,7 +16,7 @@ from keplar.translator.translator import trans_taylor_program,taylor_trans_popul
 
 
 class TayloGPAlg(Alg):
-    def __init__(self, generation,taylorGP_pre1,taylorGP_pre2, selector,creator,crossover,mutation,method_probs):
+    def __init__(self, generation,taylorGP_pre1,taylorGP_pre2, selector,creator,crossover,mutation,method_probs,evaluator):
         self.generation=generation
         self.taylorGP_pre1=taylorGP_pre1
         self.taylorGP_pre2=taylorGP_pre2
@@ -25,6 +25,7 @@ class TayloGPAlg(Alg):
         self.crossover=crossover
         self.mutation=mutation
         self.method_probs=method_probs
+        self.evaluator=evaluator
 
      
 
@@ -36,23 +37,63 @@ class TayloGPAlg(Alg):
         for i in range(self.generation):
             programs = []
             if i==0:
-                population,pragram_useless = self.creator.do()
+                population = self.creator.do()
             else:
-                for j in range(population.get_size):
-                    program  = trans_taylor_program(population.target_pop_list[j])
-                    
-                    programs.append(program)
-            self.creator.get_value(X,y,params,i,population_size,program)
-            population,pragram_useless = self.creator.do()
-            random_state = check_random_state(1)
-            pop_parent,pop_best_index = self.selector.do(population)
-            pop_honor,honor_best_index = self.selector.do(population)
-            method = random_state.uniform()
+                print(population.pop_size)
+                for j in range(population.pop_size):
+                    random_state = check_random_state(j)
+                    method = random_state.uniform()
+                    # program  = trans_taylor_program(population.target_pop_list[j])
+                    self.selector.get_value(random_state,tournament_size=50)
+                    pop_parent,pop_best_index = self.selector.do(population)
 
-            if method < self.method_probs[0]:
-                population= self.crossover.do(population)
-            elif method < self.method_probs[1]:
-                pass
+                    if method < self.method_probs[0]:
+                        pop_honor,honor_best_index = self.selector.do(population)
+                        self.crossover.get_value(random_state,qualified_list,function_set,n_features,pop_parent,pop_honor,j)
+                        population= self.crossover.do(population)
+
+                    elif method < self.method_probs[1]:
+                        self.mutation.get_value(1, random_state, qualified_list, function_set, n_features, pragram_useless, pop_parent, j)
+                        self.mutation.do(population)
+
+                    elif method < self.method_probs[2]:
+                        self.mutation.get_value(2, random_state, qualified_list, function_set, n_features, pragram_useless, pop_parent, j)
+                        self.mutation.do(population)
+                    
+                    elif method < self.method_probs[3]:
+                        self.mutation.get_value(3, random_state, qualified_list, function_set, n_features, pragram_useless, pop_parent, j)
+                        self.mutation.do(population)
+
+                    else:
+                        self.mutation.get_value(4, random_state, qualified_list, function_set, n_features, pragram_useless, pop_parent, j)
+                        self.mutation.do(population)
+
+                    self.evaluator.do(population)
+                
+                
+                r_best_index = population.get_tar_best()
+                r_best = population.target_pop_list[r_best_index]
+                r_best_fintness = population.target_fit_list[r_best_index]
+                # print("r_best_index: %d"%(r_best_index))
+                # print("r_best: %s"%(r_best.program.__str__))
+                # print("r_best_fintness: %f"%(r_best_fintness))
+
+        for j in range(population.pop_size):
+            print(str(population.target_pop_list[j].__str__()))
+            print(population.target_pop_list[j].fitness_)
+        print("finished!")
+                    
+
+
+
+                    # programs.append(program)
+
+            # self.creator.get_value(X,y,params,i,population_size,program)
+            # population,pragram_useless = self.creator.do()
+            # random_state = check_random_state(1)
+            # pop_honor,honor_best_index = self.selector.do(population)
+
+            
                 
 
 

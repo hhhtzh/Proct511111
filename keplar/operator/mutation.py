@@ -152,7 +152,7 @@ class OperonMutation(Mutation):
 
 
 class TaylorGPMutation(Mutation):
-    def __init__(self, option, random_state, qualified_list, function_set, n_features, pragram_useless, pop_parent, pop_best_idx):
+    def __init__(self, option, random_state, qualified_list, function_set, n_features, pop_parent, pop_now_index):
         super().__init__()
         self.option = option
         self.random_state = random_state
@@ -160,19 +160,17 @@ class TaylorGPMutation(Mutation):
         # self.pop_idx =pop_idx
         self.function_set = function_set
         self.n_features = n_features
-        self.pragram_useless = pragram_useless
         self.pop_parent = pop_parent
-        self.pop_best_idx = pop_best_idx
+        self.pop_now_index = pop_now_index
     
-    def get_value(self, option, random_state, qualified_list, function_set, n_features, pragram_useless, pop_parent, pop_best_idx):
+    def get_value(self, option, random_state, qualified_list, function_set, n_features, pop_parent, pop_now_index):
         self.option = option
         self.random_state = random_state
         self.qualified_list = qualified_list
         self.function_set = function_set
         self.n_features = n_features
-        self.pragram_useless = pragram_useless
         self.pop_parent = pop_parent
-        self.pop_best_idx = pop_best_idx
+        self.pop_now_index = pop_now_index
 
     def do(self, population):
 
@@ -181,12 +179,12 @@ class TaylorGPMutation(Mutation):
             # Build a new naive program
             # 我们需要一个_Program的一个对象来调用build_program随机生成一个新的program对象，
             # 因此我们传入一个_Program的对象来辅助我们生成新的program
-            honor = self.pragram_useless.build_program(self.random_state)
+            honor = self.pop_parent.build_program(self.random_state)
 
-            pop_honor = taylor_trans_ind(honor)
+            # pop_honor = taylor_trans_ind(honor)
             # 做crossover
             crossover = TaylorGPCrossover(self.random_state, self.qualified_list, self.function_set,
-                                          self.n_features, self.pop_parent, pop_honor, self.pop_best_idx)
+                                          self.n_features, self.pop_parent.program, honor.program, self.pop_now_index)
 
             return crossover.do(population)
         # hoist mutation

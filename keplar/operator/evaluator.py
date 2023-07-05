@@ -139,6 +139,51 @@ class OperonEvaluator(Evaluator):
             pass
 
 
+class TaylorGPEvaluator1(Evaluator):
+    def __init__(self, method, eval_x, eval_y, to_type, feature_weight=None):
+        self.to_type = to_type
+        self.feature_weight = feature_weight
+        super().__init__()
+        self.eval_y = np.array(eval_y)
+        self.eval_x = np.array(eval_x)
+        self.method = method
+
+
+    def do(self, population):
+        if self.method == "mse":
+            fct = _mean_square_error
+        elif self.method == "rmse":
+            fct = _weighted_spearman
+        elif self.method == "log":
+            fct = _log_loss
+        elif self.method == "mae":
+            fct = _mean_absolute_error
+        else:
+            raise ValueError("gplearn评估模块计算误差方法设置错误")
+
+        if population.pop_type == "taylorgp":
+            fit_list = []
+            gp_fit = _Fitness(fct, False)
+            lie_num = self.eval_x.shape[1]
+            if self.feature_weight is None:
+                self.feature_weight = []
+                for i in range(lie_num):
+                    self.feature_weight.append(1)
+                self.feature_weight = np.array(self.feature_weight)
+            for program in population.target_pop_list:
+                pred_y = program.execute(self.eval_x)
+                fitness = gp_fit(self.eval_y, pred_y, self.feature_weight)
+                fit_list.append(fitness)
+            if self.to_type == "taylorgp":
+                population.target_fit_list = fit_list
+            else:
+                population.pop_type = "self"
+                for i in range(len(population.target_pop_list)):
+                    ind = trans_gp(population.target_pop_list[i])
+                    population.pop_list.append(ind)
+        else:
+            pass
+
 class TaylorGPEvaluator(Evaluator):
     def __init__(self, method, eval_x, eval_y, to_type, feature_weight=None):
         self.to_type = to_type
@@ -147,6 +192,7 @@ class TaylorGPEvaluator(Evaluator):
         self.eval_y = np.array(eval_y)
         self.eval_x = np.array(eval_x)
         self.method = method
+
 
     def do(self, population):
         if self.method == "mse":

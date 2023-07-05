@@ -361,29 +361,25 @@ class TaylorGPCreator(Creator):
             #     # Calculate OOB fitness
             #     program.oob_fitness_ = program.raw_fitness(self.X, self.y, oob_sample_weight)
             
-            eq=[]
-            if self.to_type == "Taylor":
-                for i, node in enumerate(program.program):
-                    if isinstance(node, _Function):
-                        eq.append(node.name)
-                    else:
-                        eq.append(node)
-                ind=Individual(eq)
-                # ind.fitness = program.raw_fitness_
-                population.target_append(ind)
-                # idx =population.pop_size
-                population.target_fit_list.append(program.fitness_)
+            population.target_pop_list.append(program)
+        #     eq=[]
+        #     if self.to_type == "Taylor":
+        #         for i, node in enumerate(program.program):
+        #             if isinstance(node, _Function):
+        #                 eq.append(node.name)
+        #             else:
+        #                 eq.append(node)
+        #         ind=Individual(eq)
+        #         # ind.fitness = program.raw_fitness_
+        #         population.target_append(ind)
+        #         # idx =population.pop_size
+        #         population.target_fit_list.append(program.fitness_)
 
-            else:
-                pass
+        #     else:
+        #         pass
 
-            programs.append(program)
+        #     programs.append(program)
         population.set_pop_size(self.population_size)
-        # print("kkkk")
-        # print(population.target_fit_list[998])
-        # print(population.target_fit_list[999])
-        # print("kkkk")
-        # print("gggg")
-        # print(population.target_fit_list[10])
-        return population,programs[0]
+
+        return population
 
