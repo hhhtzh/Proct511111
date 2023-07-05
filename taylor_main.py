@@ -67,10 +67,10 @@ print("crossover end!")
 
 #做变异，包括子树变异、提升变异（subtree mutation、Hoist mutation、reproduction）
 option = 1
-mutation1 = TaylorGPMutation(1,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
-mutation2 = TaylorGPMutation(2,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
-mutation3 = TaylorGPMutation(3,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
-mutation4 = TaylorGPMutation(4,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
+mutation = TaylorGPMutation(1,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
+# mutation2 = TaylorGPMutation(2,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
+# mutation3 = TaylorGPMutation(3,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
+# mutation4 = TaylorGPMutation(4,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
 
 # population = mutation1.do(population)
 
@@ -84,10 +84,12 @@ method_probs = np.array([p_crossover,
                         p_hoist_mutation,
                         p_point_mutation])
 
-mutation =[mutation1,mutation2,mutation3,mutation4]
+# mutation =[mutation1,mutation2,mutation3,mutation4]
+
 
 #算法的全部流程
-taylorGP = TayloGPAlg(20,selector,creator,crossover,mutation,method_probs)
+gen = 20
+taylorGP = TayloGPAlg(gen,taylorGP_pre1,taylorGP_pre2,selector,creator,crossover,mutation,method_probs)
 
 taylorGP.run()
 

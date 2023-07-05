@@ -96,6 +96,11 @@ class TaylorGPSelector(Selector):
         self.random_state=random_state
         self.tournament_size=tournament_size
         self.greater_is_better =greater_is_better
+
+    def get_value(self,random_state,tournament_size,greater_is_better):
+        self.random_state=random_state
+        self.tournament_size=tournament_size
+        # self.greater_is_better =greater_is_better
     
 
     def do(self, population=None):

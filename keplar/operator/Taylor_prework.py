@@ -222,6 +222,11 @@ class TaylorGP_pre2(Operator, BaseSymbolic, RegressorMixin):
         # self.p_point_mutation=0.01,
         # self.p_point_replace=0.05,
 
+    def get_value(self,X,Y,qualified_list):
+        self.X = X
+        self.Y = Y
+        self.qualified_list = qualified_list
+
     def do(self, population=None):
         # return super().do(population)
         low_bound, high_bound, var_bound = self.qualified_list[0][0][

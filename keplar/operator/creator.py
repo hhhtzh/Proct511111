@@ -271,6 +271,15 @@ class TaylorGPCreator(Creator):
         self.program =program
 
 
+    def get_value(self,X,y,params,gen,population_size,program):
+        self.X= X
+        self.y=y
+        self.params = params
+        self.gen=gen
+        self.population_size=population_size
+        self.program =program
+
+
 
 
     def do(self, population=None):

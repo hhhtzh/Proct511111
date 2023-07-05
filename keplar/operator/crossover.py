@@ -128,8 +128,17 @@ class TaylorGPCrossover(Crossover):
         self.pop_parent=pop_parent
         self.pop_honor =pop_honor
         self.pop_best_index=pop_best_index
-        print("fffff")
-        print(self.pop_best_index)
+        # print("fffff")
+        # print(self.pop_best_index)
+
+    def get_value(self, random_state,qualified_list,function_set,n_features,pop_parent,pop_honor,pop_best_index):
+        self.random_state = random_state
+        self.qualified_list =qualified_list
+        self.function_set= function_set
+        self.n_features=n_features
+        self.pop_parent=pop_parent
+        self.pop_honor =pop_honor
+        self.pop_best_index=pop_best_index
         
 
 

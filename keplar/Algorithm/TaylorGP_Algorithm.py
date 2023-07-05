@@ -11,15 +11,15 @@ from TaylorGP.src.taylorGP._global import set_value, _init
 from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
 from keplar.Algorithm.Alg import Alg
 from TaylorGP.src.taylorGP.utils import check_random_state
+from keplar.translator.translator import trans_taylor_program,taylor_trans_population
 
 
-
-# from keplar.operator.creator import OperonCreator
-# from 
 
 class TayloGPAlg(Alg):
-    def __init__(self, generation, selector,creator,crossover,mutation,method_probs):
+    def __init__(self, generation,taylorGP_pre1,taylorGP_pre2, selector,creator,crossover,mutation,method_probs):
         self.generation=generation
+        self.taylorGP_pre1=taylorGP_pre1
+        self.taylorGP_pre2=taylorGP_pre2
         self.selector=selector
         self.creator=creator
         self.crossover=crossover
@@ -29,7 +29,19 @@ class TayloGPAlg(Alg):
      
 
     def run(self):
+        X, Y, qualified_list = self.taylorGP_pre1.do()
+        self.taylorGP_pre2.get_value(X, Y, qualified_list)
+        X,y,params,population_size,seeds,qualified_list,function_set,n_features= self.taylorGP_pre2.do()
+
         for i in range(self.generation):
+            programs = []
+            if i==0:
+                population,pragram_useless = self.creator.do()
+            else:
+                for j in range(population.get_size):
+                    program  = trans_taylor_program(population.target_pop_list[j])
+                    programs.append(program)
+            self.creator.get_value(X,y,params,i,population_size,program)
             population,pragram_useless = self.creator.do()
             random_state = check_random_state(1)
             pop_parent,pop_best_index = self.selector.do(population)
@@ -39,6 +51,7 @@ class TayloGPAlg(Alg):
             if method < self.method_probs[0]:
                 population= self.crossover.do(population)
             elif method < self.method_probs[1]:
+                pass
                 
 
 

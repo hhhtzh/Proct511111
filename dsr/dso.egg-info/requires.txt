@@ -17,9 +17,9 @@ PyYAML
 prettytable
 
 [all]
-gym[box2d]==0.15.4
-mpi4py
 pybullet
+mpi4py
+gym[box2d]==0.15.4
 stable-baselines[mpi]==2.10.0
 
 [control]

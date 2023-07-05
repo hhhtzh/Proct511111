@@ -163,6 +163,16 @@ class TaylorGPMutation(Mutation):
         self.pragram_useless = pragram_useless
         self.pop_parent = pop_parent
         self.pop_best_idx = pop_best_idx
+    
+    def get_value(self, option, random_state, qualified_list, function_set, n_features, pragram_useless, pop_parent, pop_best_idx):
+        self.option = option
+        self.random_state = random_state
+        self.qualified_list = qualified_list
+        self.function_set = function_set
+        self.n_features = n_features
+        self.pragram_useless = pragram_useless
+        self.pop_parent = pop_parent
+        self.pop_best_idx = pop_best_idx
 
     def do(self, population):
 
@@ -192,3 +202,6 @@ class TaylorGPMutation(Mutation):
             pass
 
         return population
+    
+    def change(self,option):
+        self.option=option
