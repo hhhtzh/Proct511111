@@ -40,6 +40,7 @@ class TayloGPAlg(Alg):
             else:
                 for j in range(population.get_size):
                     program  = trans_taylor_program(population.target_pop_list[j])
+                    
                     programs.append(program)
             self.creator.get_value(X,y,params,i,population_size,program)
             population,pragram_useless = self.creator.do()
