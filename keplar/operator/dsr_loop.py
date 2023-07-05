@@ -91,7 +91,7 @@ class dsr_Train(Trainer):
         # self.config_task1 = config_task
         # # Programs=Program
         
-        # # Initialize compute graph
+        # # Initialize compute draw
         # self.sess.run(tf.compat.v1.global_variables_initializer())
 
         # self.policy = policy

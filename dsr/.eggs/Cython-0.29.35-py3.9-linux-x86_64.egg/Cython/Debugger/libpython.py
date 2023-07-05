@@ -37,7 +37,7 @@ having the file-like object raise an exception if it gets too much data.
 
 With both "proxyval" and "write_repr" we keep track of the set of all addresses
 visited so far in the traversal, to avoid infinite recursion due to cycles in
-the graph of object references.
+the draw of object references.
 
 We try to defer gdb.lookup_type() invocations for python types until as late as
 possible: for a dynamically linked python binary, when the process starts in
@@ -244,7 +244,7 @@ class PyObjectPtr(object):
     def get_truncated_repr(self, maxlen):
         '''
         Get a repr-like string for the data, but truncate it at "maxlen" bytes
-        (ending the object graph traversal as soon as you do)
+        (ending the object draw traversal as soon as you do)
         '''
         out = TruncatedStringIO(maxlen)
         try:
@@ -427,7 +427,7 @@ class PyVarObjectPtr(PyObjectPtr):
 class ProxyAlreadyVisited(object):
     '''
     Placeholder proxy to use when protecting against infinite recursion due to
-    loops in the object graph.
+    loops in the object draw.
 
     Analogous to the values emitted by the users of Py_ReprEnter and Py_ReprLeave
     '''

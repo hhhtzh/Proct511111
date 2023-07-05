@@ -128,7 +128,7 @@ class Trainer():
 
         """
         self.sess = sess
-        # Initialize compute graph
+        # Initialize compute draw
         self.sess.run(tf.compat.v1.global_variables_initializer())
 
         self.policy = policy

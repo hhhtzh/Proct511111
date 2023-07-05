@@ -54,13 +54,13 @@ class DeepSymbolicOptimizer():
 
     def setup(self):
 
-        # Clear the cache and reset the compute graph
+        # Clear the cache and reset the compute draw
         Program.clear_cache()
         tf.compat.v1.reset_default_graph()
 
         # Generate objects needed for training and set seeds
         self.pool = self.make_pool_and_set_task()
-        self.set_seeds() # Must be called _after_ resetting graph and _after_ setting task
+        self.set_seeds() # Must be called _after_ resetting draw and _after_ setting task
 
         # Limit TF to single thread to prevent "resource not available" errors in parallelized runs
         session_config = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1,

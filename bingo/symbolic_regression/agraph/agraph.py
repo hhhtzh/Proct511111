@@ -1,8 +1,8 @@
-"""Acyclic graph representation of an equation.
+"""Acyclic draw representation of an equation.
 
 
 This module contains most of the code necessary for the representation of an
-acyclic graph (linear stack) in symbolic regression.
+acyclic draw (linear stack) in symbolic regression.
 
 Stack
 -----
@@ -91,7 +91,7 @@ def force_use_of_python_simplification():
 
 
 class AGraph(Equation):
-    """Acyclic graph representation of an equation.
+    """Acyclic draw representation of an equation.
 
     `AGraph` is initialized with with empty command array and no constants.
 
@@ -157,7 +157,7 @@ class AGraph(Equation):
 
     @property
     def command_array(self):
-        """Nx3 array of int: acyclic graph stack.
+        """Nx3 array of int: acyclic draw stack.
 
         Notes
         -----
@@ -173,7 +173,7 @@ class AGraph(Equation):
 
     @property
     def mutable_command_array(self):
-        """Nx3 array of int: acyclic graph stack.
+        """Nx3 array of int: acyclic draw stack.
 
         Notes
         -----
