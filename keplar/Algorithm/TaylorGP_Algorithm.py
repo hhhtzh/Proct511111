@@ -48,39 +48,54 @@ class TayloGPAlg(Alg):
                     pop_parent,pop_best_index = self.selector.do(population)
 
                     if method < self.method_probs[0]:
+                        # print("ttt")
+                        # print(population.target_pop_list[j].get_expression())
+
+                        self.selector.get_value(random_state,tournament_size=50)
                         pop_honor,honor_best_index = self.selector.do(population)
-                        self.crossover.get_value(random_state,qualified_list,function_set,n_features,pop_parent,pop_honor,j)
-                        population= self.crossover.do(population)
+                        # print("how")
+                        self.crossover.get_value(random_state,pop_parent,pop_honor.program,j)
+                        population = self.crossover.do(population)
+                        
+                        # population.target_pop_list[]
 
                     elif method < self.method_probs[1]:
-                        self.mutation.get_value(1, random_state, qualified_list, function_set, n_features, pragram_useless, pop_parent, j)
-                        self.mutation.do(population)
+                        # print("rrrr")
+       
+                        self.mutation.get_value(1, random_state,  pop_parent, j)
+                        population =self.mutation.do(population)
 
                     elif method < self.method_probs[2]:
-                        self.mutation.get_value(2, random_state, qualified_list, function_set, n_features, pragram_useless, pop_parent, j)
-                        self.mutation.do(population)
+                        self.mutation.get_value(2, random_state, pop_parent, j)
+                        population =self.mutation.do(population)
                     
                     elif method < self.method_probs[3]:
-                        self.mutation.get_value(3, random_state, qualified_list, function_set, n_features, pragram_useless, pop_parent, j)
-                        self.mutation.do(population)
+                        self.mutation.get_value(3, random_state,  pop_parent, j)
+                        population = self.mutation.do(population)
 
                     else:
-                        self.mutation.get_value(4, random_state, qualified_list, function_set, n_features, pragram_useless, pop_parent, j)
-                        self.mutation.do(population)
+                        self.mutation.get_value(4, random_state,  pop_parent, j)
+                        population = self.mutation.do(population)
+                    # print("5555")
+                    # print(j)
+                    print(population.target_pop_list[j].get_expression())
 
-                    self.evaluator.do(population)
+                    # self.evaluator.get_value()
+                    # print(population.target_pop_list[j].fitness_)
+
+                population = self.evaluator.do(population)
                 
                 
-                r_best_index = population.get_tar_best()
-                r_best = population.target_pop_list[r_best_index]
-                r_best_fintness = population.target_fit_list[r_best_index]
+                # r_best_index = population.get_tar_best()
+                # r_best = population.target_pop_list[r_best_index]
+                # r_best_fintness = population.target_fit_list[r_best_index]
                 # print("r_best_index: %d"%(r_best_index))
-                # print("r_best: %s"%(r_best.program.__str__))
-                # print("r_best_fintness: %f"%(r_best_fintness))
+                # print("r_best: %s"%(r_best.__str__()))
+                # print("r_best_fintness: %f"%(r_best.fitness_))
 
-        for j in range(population.pop_size):
-            print(str(population.target_pop_list[j].__str__()))
-            print(population.target_pop_list[j].fitness_)
+        # for j in range(population.pop_size):
+        #     print(str(population.target_pop_list[j].__str__()))
+        #     print(population.target_pop_list[j].fitness_)
         print("finished!")
                     
 

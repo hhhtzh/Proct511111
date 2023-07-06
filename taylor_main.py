@@ -60,7 +60,7 @@ print("crossover begin!")
 
 
 #做交叉crossover
-crossover = TaylorGPCrossover(random_state,qualified_list,function_set,n_features,pop_parent.program,pop_honor.program,pop_now_index)
+crossover = TaylorGPCrossover(random_state,pop_parent,pop_honor,pop_now_index)
 # population= crossover.do(population)
 print("crossover end!")
 
@@ -68,7 +68,7 @@ print("crossover end!")
 
 #做变异，包括子树变异、提升变异（subtree mutation、Hoist mutation、reproduction）
 # option = 1
-mutation = TaylorGPMutation(1,random_state,qualified_list,function_set,n_features,pop_parent,pop_now_index)
+mutation = TaylorGPMutation(1,random_state,pop_parent,pop_now_index)
 # mutation2 = TaylorGPMutation(2,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
 # mutation3 = TaylorGPMutation(3,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
 # mutation4 = TaylorGPMutation(4,random_state,qualified_list,function_set,n_features,pragram_useless,pop_parent,pop_best_index)
@@ -77,9 +77,9 @@ evaluator = TaylorGPEvaluator("rmse",x_train,y_train,"taylorgp",feature_weight=N
 # population = mutation1.do(population)
 
 p_crossover=0.9,
-p_subtree_mutation=0.01,
-p_hoist_mutation=0.01,
-p_point_mutation=0.01,
+p_subtree_mutation=1,
+p_hoist_mutation=1,
+p_point_mutation=1,
 
 method_probs = np.array([p_crossover,
                         p_subtree_mutation,
@@ -90,7 +90,7 @@ method_probs = np.array([p_crossover,
 
 
 #算法的全部流程
-gen = 1
+gen = 2
 taylorGP = TayloGPAlg(gen,taylorGP_pre1,taylorGP_pre2,selector,creator,crossover,mutation,method_probs,evaluator)
 
 taylorGP.run()

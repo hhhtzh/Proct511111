@@ -11,6 +11,7 @@ from keplar.translator.translator import to_op
 from keplar.operator.crossover import TaylorGPCrossover
 
 from keplar.translator.translator import to_op, trans_op, to_gp, trans_taylor_program, taylor_trans_population,taylor_trans_ind
+from copy import copy
 
 
 # from keplar.translator.translator import to_op
@@ -152,23 +153,18 @@ class OperonMutation(Mutation):
 
 
 class TaylorGPMutation(Mutation):
-    def __init__(self, option, random_state, qualified_list, function_set, n_features, pop_parent, pop_now_index):
+    def __init__(self, option, random_state,pop_parent, pop_now_index):
         super().__init__()
         self.option = option
         self.random_state = random_state
-        self.qualified_list = qualified_list
-        # self.pop_idx =pop_idx
-        self.function_set = function_set
-        self.n_features = n_features
+
         self.pop_parent = pop_parent
         self.pop_now_index = pop_now_index
     
-    def get_value(self, option, random_state, qualified_list, function_set, n_features, pop_parent, pop_now_index):
+    def get_value(self, option, random_state,  pop_parent, pop_now_index):
         self.option = option
         self.random_state = random_state
-        self.qualified_list = qualified_list
-        self.function_set = function_set
-        self.n_features = n_features
+
         self.pop_parent = pop_parent
         self.pop_now_index = pop_now_index
 
@@ -183,23 +179,38 @@ class TaylorGPMutation(Mutation):
 
             # pop_honor = taylor_trans_ind(honor)
             # 做crossover
-            crossover = TaylorGPCrossover(self.random_state, self.qualified_list, self.function_set,
-                                          self.n_features, self.pop_parent.program, honor.program, self.pop_now_index)
+            crossover = TaylorGPCrossover(self.random_state, self.pop_parent, honor, self.pop_now_index)
 
             return crossover.do(population)
         # hoist mutation
         elif (self.option == 2):
-            pass
+            # Get a subtree to replace
+            start, end = self.pop_parent.get_subtree(self.random_state)
+            subtree = self.pop_parent.program[start:end]
+            # Get a subtree of the subtree to hoist
+            sub_start, sub_end = self.pop_parent.get_subtree(self.random_state, subtree)
+            hoist = subtree[sub_start:sub_end]
+            # Determine which nodes were removed for plotting
+            removed = list(set(range(start, end)) -
+                        set(range(start + sub_start, start + sub_end)))
+            program= self.pop_parent.program[:start] + hoist + self.pop_parent.program[end:]
+
+            population.target_pop_list[self.pop_now_index].program=program
+
+            return population
 
         # point mutation
         elif (self.option == 3):
-            pass
+            return population
 
         # reproduction
         elif (self.option == 4):
-            pass
 
-        return population
+            program = copy(self.program)
+            population.target_pop_list[self.pop_now_index].program=program
+
+            return population
+
     
     def change(self,option):
         self.option=option

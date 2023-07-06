@@ -117,25 +117,25 @@ class OperonCrossover(Crossover):
 
 
 class TaylorGPCrossover(Crossover):
-    def __init__(self, random_state,qualified_list,function_set,n_features,pop_parent,pop_honor,pop_now_index):
+    def __init__(self, random_state,pop_parent,pop_honor,pop_now_index):
         super().__init__()
         # self.best_idx = best_idx
         self.random_state = random_state
-        self.qualified_list =qualified_list
+        # self.qualified_list =qualified_list
         # self.pop_idx =pop_idx
-        self.function_set= function_set
-        self.n_features=n_features
+        # self.function_set= function_set
+        # self.n_features=n_features
         self.pop_parent=pop_parent
         self.pop_honor =pop_honor
         self.pop_now_index=pop_now_index
         # print("fffff")
         # print(self.pop_best_index)
 
-    def get_value(self, random_state,qualified_list,function_set,n_features,pop_parent,pop_honor,pop_now_index):
+    def get_value(self, random_state,pop_parent,pop_honor,pop_now_index):
         self.random_state = random_state
-        self.qualified_list =qualified_list
-        self.function_set= function_set
-        self.n_features=n_features
+        # self.qualified_list =qualified_list
+        # self.function_set= function_set
+        # self.n_features=n_features
         self.pop_parent=pop_parent
         self.pop_honor =pop_honor
         self.pop_now_index=pop_now_index
@@ -160,41 +160,47 @@ class TaylorGPCrossover(Crossover):
             op_index = self.random_state.randint(5)
             if get_value('TUIHUA_FLAG'):
                 break
-            elif self.qualified_list == [1,-1] and (op_index == 2 or op_index==3):
+            elif self.pop_parent.qualified_list == [1,-1] and (op_index == 2 or op_index==3):
                 continue
-            elif self.qualified_list == [2, -1] and op_index == 4 and self.n_features>1:
+            elif self.pop_parent.qualified_list == [2, -1] and op_index == 4 and self.pop_parent.n_features>1:
                 continue
-            elif (self.qualified_list == [-1, 1] or self.qualified_list == [-1, 2]) and (op_index == 1 or op_index == 3):
+            elif (self.pop_parent.qualified_list == [-1, 1] or self.pop_parent.qualified_list == [-1, 2]) and (op_index == 1 or op_index == 3):
                 continue
-            elif (self.qualified_list == [1, 1] or self.qualified_list == [-1, 2]) and (op_index == 1 or op_index == 2 or op_index == 3):
+            elif (self.pop_parent.qualified_list == [1, 1] or self.pop_parent.qualified_list == [-1, 2]) and (op_index == 1 or op_index == 2 or op_index == 3):
                 continue
             qualified_flag = True
 
+        print(op_index)
+        print(self.pop_now_index)
+
 
         if op_index <4 :
-            program = self.function_set[op_index:op_index + 1] + self.pop_parent[:] + self.pop_honor[:]
-            # population = taylor_trans_population(program,population,self.pop_now_index)
-            population.target_pop_list[self.pop_now_index]=program
-
-
-            return population
-            # return  program,None,None
-        else:
-            x_index = self.random_state.randint(self.n_features)
-            if x_index not in self.pop_honor:
-                for i in range(len(self.pop_honor)):
-                    if isinstance(self.pop_honor[i],int):
-                        x_index = self.pop_honor[i]
-                        break
-
-            for node in range(len(self.pop_honor)):
-                if isinstance(self.pop_honor[node], _Function) == False and self.pop_honor[node] == x_index:
-                    terminal = self.pop_honor
-                    program= self.changeTo(self.pop_honor, node, terminal)
-            # return program,None,None
-            # population = taylor_trans_population(program,population,self.pop_now_index)
+            program = self.pop_parent.function_set[op_index:op_index + 1] + self.pop_parent.program[:] + self.pop_honor[:]
+            # population = taylor_trans_population(program,population,self.pop_now_index)=program
             population.target_pop_list[self.pop_now_index].program=program
             return population
+
+
+            # return population
+            # return  program,None,None
+        else:
+            x_index = self.random_state.randint(self.pop_parent.n_features)
+            if x_index not in self.pop_parent.program:
+                for i in range(len(self.pop_parent.program)):
+                    if isinstance(self.pop_parent.program[i],int):
+                        x_index = self.pop_parent.program[i]
+                        break
+
+            for node in range(len(self.pop_parent.program)):
+                if isinstance(self.pop_parent.program[node], _Function) == False and self.pop_parent.program[node] == x_index:
+                    terminal = self.pop_honor
+                    program= self.changeTo(self.pop_parent.program, node, terminal)
+                    population.target_pop_list[self.pop_now_index].program=program
+
+            # return program,None,None
+            # population = taylor_trans_population(program,population,self.pop_now_index)
+            return population
+            # return population
 
         
     def changeTo(self,program,node, terminal):

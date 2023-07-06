@@ -366,6 +366,79 @@ class _Program(object):
                     terminals.pop()
                     terminals[-1] -= 1
         return terminals == [-1]
+    # def get_expression(self):
+    #     """return a sympy formula."""
+    #     terminals = [0]
+    #     output = ''
+    #     stack = []
+    #     X_num = [] #the variable of the sympy formula
+    #     for i, node in enumerate(self.program):
+    #         if isinstance(node, _Function):
+    #             terminals.append(node.arity)
+    #             if node.arity == 2:
+    #                 if node.name not in 'addsubmuldiv':
+    #                     output += node.name + '('
+    #                 else:
+    #                     output += '('
+    #                 stack.append(node)
+    #             elif node.arity == 1:
+    #                 output += node.name + '('
+    #             else:
+    #                 print("node arity error!")
+    #         else:
+    #             if isinstance(node, int):
+    #                 if self.feature_names is None:
+    #                     output += 'x%s' % node
+    #                     if node not in X_num:
+    #                         X_num.append(node)
+    #                 else:
+    #                     output += self.feature_names[node]
+    #             else:
+    #                 if node<0:
+    #                     output += '(%.3f)' % node
+    #                 else:
+    #                     output += '%.3f' % node
+
+
+    #             terminals[-1] -= 1
+    #             while terminals[-1] == 0:
+    #                 terminals.pop()
+    #                 terminals[-1] -= 1
+    #                 output += ')'
+    #             if i != len(self.program) - 1:
+    #                 if stack[-1].name in 'addsubmuldiv':
+    #                     output += _sympol_map[f'{stack[-1].name}']
+    #                     stack.pop()
+    #     return output
+
+    # def __str__(self):
+    #     """Overloads `print` output of the object to resemble a LISP tree."""
+    #     return self.get_expression()
+    #     '''
+        
+    #     '''
+    #     terminals = [0]
+    #     output = ''
+    #     for i, node in enumerate(self.program):
+    #         if isinstance(node, _Function):
+    #             terminals.append(node.arity)
+    #             output += node.name + '('
+    #         else:
+    #             if isinstance(node, int):
+    #                 if self.feature_names is None:
+    #                     output += 'X%s' % node
+    #                 else:
+    #                     output += self.feature_names[node]
+    #             else:
+    #                 output += '%.3f' % node
+    #             terminals[-1] -= 1
+    #             while terminals[-1] == 0:
+    #                 terminals.pop()
+    #                 terminals[-1] -= 1
+    #                 output += ')'
+    #             if i != len(self.program) - 1:
+    #                 output += ', '
+    #     # return self.get_expression(output)#没有考虑奇偶性加上偏置项：奇偶性几乎没有
     def get_expression(self):
         """return a sympy formula."""
         terminals = [0]
@@ -411,10 +484,6 @@ class _Program(object):
 
     def __str__(self):
         """Overloads `print` output of the object to resemble a LISP tree."""
-        return self.get_expression()
-        '''
-        
-        '''
         terminals = [0]
         output = ''
         for i, node in enumerate(self.program):
@@ -436,8 +505,7 @@ class _Program(object):
                     output += ')'
                 if i != len(self.program) - 1:
                     output += ', '
-        # return self.get_expression(output)#没有考虑奇偶性加上偏置项：奇偶性几乎没有
-
+        return output
     def export_graphviz(self, fade_nodes=None):
         """Returns a string, Graphviz script for visualizing the program.
 
