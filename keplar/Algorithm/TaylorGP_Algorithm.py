@@ -221,9 +221,6 @@ class MTaylorGPAlg(Alg):
         np_y = np_y.reshape([-1, 1])
         self.ds = np.hstack([np_x, np_y])
         sys.setrecursionlimit(self.recursion_limit)
-        argparser = argparse.ArgumentParser()
-        argparser.add_argument('--fileNum', default=1, type=int)
-        args = argparser.parse_args()
         dataSets = self.ds
         print("维度： ", dataSets.shape[1] - 1)
         repeat = self.repeat
@@ -234,7 +231,7 @@ class MTaylorGPAlg(Alg):
         # time_start1 = time.time()
         for repeatNum in range(repeat):
             # time_start2 = time.time()
-            SRC = subRegionCalculator(dataSets, originalTaylorGPGeneration, mabPolicy="Greedy")
+            SRC = subRegionCalculator(dataSets, originalTaylorGPGeneration, mabPolicy=self.mabPolicy)
             countAvailableParameters = SRC.CalCountofAvailableParameters(epsilons=epsilons)
             mabLoopNum = max(totalGeneration // originalTaylorGPGeneration // countAvailableParameters, 1)
             for epsilon in epsilons:
