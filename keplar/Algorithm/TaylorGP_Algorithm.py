@@ -7,6 +7,7 @@ import numpy as np
 from numpy import shape
 from sympy import symbols
 
+from TaylorGP.TaylorGP2_KMEANS import Cal_fitness_Coef
 from TaylorGP.src.taylorGP._global import set_value, _init
 from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
 from keplar.Algorithm.Alg import Alg
@@ -260,3 +261,47 @@ class MTaylorGPAlg(Alg):
             dataSets = np.loadtxt(fileName,dtype=np.float,skiprows=1)
             TaylorGP2Master(dataSets)    
         """
+class MTaylorKMeansAlg(Alg):
+    def __init__(self, max_generation, ds, up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
+                 population=None,
+                 recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn", mabPolicy="Greedy"):
+        super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.mabPolicy = mabPolicy
+        self.SR_method = SR_method
+        self.ds = ds
+        self.originalTaylorGPGeneration = originalTaylorGPGeneration
+        self.repeat = repeat
+        self.recursion_limit = recursion_limit
+        x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29 = symbols(
+            "x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,"
+            "x28,x29 ")
+
+        set_value('_x',
+                  [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21,
+                   x22, x23,
+                   x24, x25, x26, x27, x28, x29])
+
+    def run(self):
+        dataSets=self.ds.get_np_ds()
+        average_fitness = 0
+        repeat = 2
+        totalGeneration = 500
+        originalTaylorGPGen = 10
+        Pop = 1000  # 种群规模
+        if dataSets.shape[1] - 1 == 1:
+            clusters = [1]
+        elif dataSets.shape[1] - 1 == 2:
+            clusters = [2, 4]
+        else:
+            clusters = [1, 2, 4, 8, 16]
+        time_start1 = time.time()
+        for repeatNum in range(repeat):
+            time_start2 = time.time()
+            bestLassoFitness, globalBestLassoCoef = Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration,
+                                                                     clusters, repeatNum, Pop, fileNum=1)
+            average_fitness += bestLassoFitness
+            time_end2 = time.time()
+            print('current_time_cost', (time_end2 - time_start2) / 3600, 'hour')
+        time_end1 = time.time()
+        print('average_time_cost', (time_end1 - time_start1) / 3600 / repeat, 'hour')
+        print('average_fitness = ', average_fitness / repeat)

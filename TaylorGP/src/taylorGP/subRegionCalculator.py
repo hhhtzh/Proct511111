@@ -375,6 +375,7 @@ class subRegionCalculator:
         #将各子块的top3个体按7:2:1的概率执行稀疏回归-->改为最优+随机 组合
         根据选中的个体计算其对应的训练集特征X，需要重新计算，之前只是在子块进行评估，这里需要在整个个数据集上评估
         """
+
         bestFlag = True
         numberOfCombinations = 5
         X_Trains = []
