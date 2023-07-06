@@ -16,7 +16,7 @@ from keplar.translator.translator import trans_taylor_program,taylor_trans_popul
 
 
 class TayloGPAlg(Alg):
-    def __init__(self, generation,taylorGP_pre1,taylorGP_pre2, selector,creator,crossover,mutation,method_probs,evaluator):
+    def __init__(self, generation,taylorGP_pre1,taylorGP_pre2, selector,creator,crossover,mutation,method_probs,taylorsort,evaluator):
         self.generation=generation
         self.taylorGP_pre1=taylorGP_pre1
         self.taylorGP_pre2=taylorGP_pre2
@@ -26,6 +26,9 @@ class TayloGPAlg(Alg):
         self.mutation=mutation
         self.method_probs=method_probs
         self.evaluator=evaluator
+        self.taylorsort=taylorsort
+        self.parsimony_coefficient=0.001
+        self.population_size = 1000
 
      
 
@@ -33,7 +36,7 @@ class TayloGPAlg(Alg):
         X, Y, qualified_list = self.taylorGP_pre1.do()
         self.taylorGP_pre2.get_value(X, Y, qualified_list)
         X,y,params,population_size,seeds,qualified_list,function_set,n_features= self.taylorGP_pre2.do()
-
+        parents = None
         for i in range(self.generation):
             programs = []
             if i==0:
@@ -45,14 +48,14 @@ class TayloGPAlg(Alg):
                     method = random_state.uniform()
                     # program  = trans_taylor_program(population.target_pop_list[j])
                     self.selector.get_value(random_state,tournament_size=50)
-                    pop_parent,pop_best_index = self.selector.do(population)
+                    pop_parent,pop_best_index = self.selector.do(parents)
 
                     if method < self.method_probs[0]:
                         # print("ttt")
                         # print(population.target_pop_list[j].get_expression())
 
                         self.selector.get_value(random_state,tournament_size=50)
-                        pop_honor,honor_best_index = self.selector.do(population)
+                        pop_honor,honor_best_index = self.selector.do(parents)
                         # print("how")
                         self.crossover.get_value(random_state,pop_parent,pop_honor.program,j)
                         population = self.crossover.do(population)
@@ -83,7 +86,99 @@ class TayloGPAlg(Alg):
                     # self.evaluator.get_value()
                     # print(population.target_pop_list[j].fitness_)
 
+                    # population
+                temp_index = self.taylorsort.do(population)
+                
+                if parents is not None:
+                    for i in range(parents.pop_size):
+                        population.append(parents.target_pop_list[i])
+                temp_popSize = 0
+                population_index = []
+                reminder_subPopulation = []
+                for subPop in temp_index:
+                    pre_temp_popSize = temp_popSize
+                    temp_popSize += len(subPop)
+                    if temp_popSize >self.population_size:
+                        reminder = self.population_size-pre_temp_popSize
+                        # print("temp_popSize: ",temp_popSize,"reminder: ",reminder)
+                        reminder_subPopulation.extend(self.select_by_crowding_distance(population,subPop,reminder))
+                        # print("reminder_subPopulation: ",reminder_subPopulation)
+                        break
+                    else:
+                        population_index.extend(subPop)
+                
+                population = [population[i] for i in population_index]
+                if reminder_subPopulation !=[]:
+                    population.extend(reminder_subPopulation)
+
+                fitness = [program.raw_fitness_ for program in population]
+                length = [program.length_ for program in population]
+
+                parsimony_coefficient = None
+                if self.parsimony_coefficient == 'auto':
+                    parsimony_coefficient = (np.cov(length, fitness)[1, 0] /
+                                            np.var(length))
+                for program in population:
+                    program.fitness_ = program.fitness(parsimony_coefficient)
+                fitness_ = [program.fitness_ for program in population]
+                self._programs.append(population)
+
+                # Remove old programs that didn't make it into the new population.
+                if not self.low_memory:
+                    for old_gen in np.arange(i, 0, -1):
+                        indices = []
+                        for program in self._programs[old_gen]:
+                            if program is not None and program.parents is not None:
+                                for idx in program.parents:
+                                    if 'idx' in idx:
+                                        indices.append(program.parents[idx])
+                        indices = set(indices)
+                        for idx in range(self.population_size):
+                            if idx not in indices:
+                                self._programs[old_gen - 1][idx] = None
+                elif i > 0:
+                    # Remove old generations
+                    self._programs[i - 1] = None
+
+                # Record run details
+                if self._metric.greater_is_better:
+                    best_program = population[np.argmax(fitness)]#按惩罚项的fitness排序
+                    best_program_fitness_ = population[np.argmax(fitness_)]
+                else:
+                    best_program = population[np.argmin(fitness)]
+                    best_program_fitness_ = population[np.argmin(fitness_)]
+
+                self.run_details_['generation'].append(i)
+                self.run_details_['average_length'].append(np.mean(length))
+                self.run_details_['average_fitness'].append(np.mean(fitness_))
+                self.run_details_['best_length'].append(best_program.length_)
+                self.run_details_['best_fitness'].append(best_program.fitness_)
+                oob_fitness = np.nan
+                if self.max_samples < 1.0:
+                    oob_fitness = best_program.oob_fitness_
+                self.run_details_['best_oob_fitness'].append(oob_fitness)
+                # generation_time = time() - start_time
+                # self.run_details_['generation_time'].append(generation_time)
+
+                if self.verbose:
+                    self._verbose_reporter(self.run_details_)
+
+                # Check for early stopping
+                if self._metric.greater_is_better:
+                    best_fitness = fitness[np.argmax(fitness_)]
+                    if best_fitness >= self.stopping_criteria:
+                        break
+                else:
+                    best_fitness = fitness[np.argmin(fitness_)]
+                    if best_fitness <= self.stopping_criteria:
+                        break
+
+
+
                 population = self.evaluator.do(population)
+
+            parents = population
+
                 
                 
                 # r_best_index = population.get_tar_best()

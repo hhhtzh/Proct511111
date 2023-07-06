@@ -838,7 +838,7 @@ class BaseSymbolic(BaseEstimator, metaclass=ABCMeta):
                                           params)
                 for i in range(n_jobs))
 
-            # Reduce, maintaining order across different n_jobs
+            # Reduce, maintaining order across different n_jobs/
             population = list(itertools.chain.from_iterable(population))
             #父子代合并
             if parents is not None:

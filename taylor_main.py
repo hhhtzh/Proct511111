@@ -11,6 +11,8 @@ from keplar.operator.reinserter import TaylorGPReinserter
 from keplar.operator.Taylor_prework import TaylorGP_Pre1, TaylorGP_pre2
 from TaylorGP.src.taylorGP.functions import _Function,_sympol_map
 from TaylorGP.src.taylorGP.utils import check_random_state
+from keplar.operator.TaylorSort import TaylorSort
+
 
 
 data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
@@ -88,10 +90,12 @@ method_probs = np.array([p_crossover,
 
 # mutation =[mutation1,mutation2,mutation3,mutation4]
 
+taylorsort = TaylorSort()
+
 
 #算法的全部流程
 gen = 2
-taylorGP = TayloGPAlg(gen,taylorGP_pre1,taylorGP_pre2,selector,creator,crossover,mutation,method_probs,evaluator)
+taylorGP = TayloGPAlg(gen,taylorGP_pre1,taylorGP_pre2,selector,creator,crossover,mutation,method_probs,taylorsort,evaluator)
 
 taylorGP.run()
 
