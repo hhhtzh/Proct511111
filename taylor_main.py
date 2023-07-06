@@ -41,7 +41,7 @@ X,y,params,population_size,seeds,qualified_list,function_set,n_features= taylorG
 gen =0
 program = None
 creator = TaylorGPCreator(X,y,params,gen,population_size,program,"Taylor")
-population= creator.do()
+population, sample_wight= creator.do()
 
 print("population_size")
 
@@ -79,9 +79,9 @@ evaluator = TaylorGPEvaluator("rmse",x_train,y_train,"taylorgp",feature_weight=N
 # population = mutation1.do(population)
 
 p_crossover=0.9,
-p_subtree_mutation=1,
-p_hoist_mutation=1,
-p_point_mutation=1,
+p_subtree_mutation=0.01,
+p_hoist_mutation=0.01,
+p_point_mutation=0.01,
 
 method_probs = np.array([p_crossover,
                         p_subtree_mutation,
@@ -94,7 +94,7 @@ taylorsort = TaylorSort()
 
 
 #算法的全部流程
-gen = 2
+gen = 20
 taylorGP = TayloGPAlg(gen,taylorGP_pre1,taylorGP_pre2,selector,creator,crossover,mutation,method_probs,taylorsort,evaluator)
 
 taylorGP.run()

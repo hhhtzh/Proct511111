@@ -2,6 +2,7 @@ import random
 import sys
 import time
 import argparse
+import copy
 
 import numpy as np
 from numpy import shape
@@ -12,6 +13,11 @@ from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
 from keplar.Algorithm.Alg import Alg
 from TaylorGP.src.taylorGP.utils import check_random_state
 from keplar.translator.translator import trans_taylor_program,taylor_trans_population
+# from TaylorGP.src.taylorGP.genetic import BaseSymbolic
+from TaylorGP.src.taylorGP.fitness import _mean_square_error, _weighted_spearman, _log_loss, _mean_absolute_error, \
+    _Fitness
+import math
+
 
 
 
@@ -29,21 +35,116 @@ class TayloGPAlg(Alg):
         self.taylorsort=taylorsort
         self.parsimony_coefficient=0.001
         self.population_size = 1000
+        self.run_details_ = {'generation': [],
+                                 'average_length': [],
+                                 'average_fitness': [],
+                                 'best_length': [],
+                                 'best_fitness': [],
+                                 'best_oob_fitness': [],
+                                 'generation_time': []}
+        self.max_samples =1.0
+        self.verbose = 1
+        self.stopping_criteria = 0.0
+        self.sample_weight = None
+        # self.params= params
+        # self.X =X
+        # self.y =y 
 
-     
+
+    
+    def print_details(self, run_details=None ,i =None):
+        """A report of the progress of the evolution process.
+
+        Parameters
+        ----------
+        run_details : dict
+            Information about the evolution.
+
+        """
+        if run_details is None:
+            print('    |{:^25}|{:^42}|'.format('Population Average',
+                                               'Best Individual'))
+            print('-' * 4 + ' ' + '-' * 25 + ' ' + '-' * 42 + ' ' + '-' * 10)
+            line_format = '{:>4} {:>8} {:>16} {:>8} {:>16} {:>16} {:>10}'
+            print(line_format.format('Gen', 'Length', 'Fitness', 'Length',
+                                     'Fitness', 'OOB Fitness', 'Time Left'))
+
+        else:
+            # Estimate remaining time for run
+            gen = run_details['generation'][i]
+            # generation_time = run_details['generation_time'][i]
+            # remaining_time = (self.generations - gen - 1) * generation_time
+            # if remaining_time > 60:
+            #     remaining_time = '{0:.2f}m'.format(remaining_time / 60.0)
+            # else:
+            #     remaining_time = '{0:.2f}s'.format(remaining_time)
+            remaining_time = '{0:.2f}s'.format(0.0)
+
+
+            oob_fitness = 'N/A'
+            # line_format = '{:4d} {:8.2f} {:16g} {:8d} {:16g} {:>16} {:>10}'
+            # if self.max_samples < 1.0:
+            oob_fitness = run_details['best_oob_fitness'][i]
+            line_format = '{:4d} {:8.2f} {:16g} {:8d} {:16g} {:16g} {:>10}'
+
+            print(line_format.format(run_details['generation'][i],
+                                     run_details['average_length'][i],
+                                     run_details['average_fitness'][i],
+                                     run_details['best_length'][i],
+                                     run_details['best_fitness'][i],
+                                     oob_fitness,
+                                     remaining_time
+                                     ))
+
+    def select_by_crowding_distance(self,population,front,reminder):
+        cur_population = copy.deepcopy([population[i] for i in front])
+        cur_population.sort(key=lambda x: x.raw_fitness_)
+        sorted1 = copy.deepcopy(cur_population)
+        cur_population.sort(key=lambda x: x.length_)
+        sorted2 = cur_population
+        distance = [0 for i in range(0, len(front))]
+        distance[0] = 4444444444444444
+        distance[len(front) - 1] = 4444444444444444
+        fitness_ = [sorted1[i].raw_fitness_ for i in range(len(cur_population))]
+        length_ =  [sorted2[i].length_ for i in range(len(cur_population))]
+        maxFit,minFit,maxLen,minLen = max(fitness_),min(fitness_),max(length_),min(length_)
+        #第k个个体的距离就是front[k]的距离----dis[k]==front[k]
+        for k in range(1, len(front) - 1):
+            distance[k] = distance[k] + (fitness_[k + 1] - fitness_[k - 1]) / (
+                        maxFit - minFit+0.01)
+        for k in range(1, len(front) - 1):
+            distance[k] = distance[k] + (length_[k + 1] - length_[k - 1]) / (
+                        maxLen - minLen+0.01)
+        index_ = sorted(range(len(distance)),key=lambda k:distance[k])
+        index_.reverse()
+        reminderPop = [cur_population[i] for i in index_][:reminder]
+        return reminderPop
 
     def run(self):
         X, Y, qualified_list = self.taylorGP_pre1.do()
         self.taylorGP_pre2.get_value(X, Y, qualified_list)
         X,y,params,population_size,seeds,qualified_list,function_set,n_features= self.taylorGP_pre2.do()
         parents = None
-        for i in range(self.generation):
+
+        n_samples, n_features = X.shape
+        max_samples = params['max_samples']
+        max_samples = int(max_samples * n_samples)
+
+
+
+
+
+        
+        for gen in range(self.generation):
             programs = []
-            if i==0:
-                population = self.creator.do()
+            if gen==0:
+                population,sample_weight = self.creator.do()
+                self.print_details()
             else:
-                print(population.pop_size)
-                for j in range(population.pop_size):
+                # print(population.pop_size)
+                # for j in range(population.pop_size):
+                j=0
+                while j != population.pop_size:
                     random_state = check_random_state(j)
                     method = random_state.uniform()
                     # program  = trans_taylor_program(population.target_pop_list[j])
@@ -59,6 +160,7 @@ class TayloGPAlg(Alg):
                         # print("how")
                         self.crossover.get_value(random_state,pop_parent,pop_honor.program,j)
                         population = self.crossover.do(population)
+                        # print("how")
                         
                         # population.target_pop_list[]
 
@@ -67,6 +169,8 @@ class TayloGPAlg(Alg):
        
                         self.mutation.get_value(1, random_state,  pop_parent, j)
                         population =self.mutation.do(population)
+                        # print("how2")
+
 
                     elif method < self.method_probs[2]:
                         self.mutation.get_value(2, random_state, pop_parent, j)
@@ -79,19 +183,84 @@ class TayloGPAlg(Alg):
                     else:
                         self.mutation.get_value(4, random_state,  pop_parent, j)
                         population = self.mutation.do(population)
+
+                    # curr_sample_weight = np.ones((n_samples,))
+                    # gp_fit = _Fitness(_weighted_spearman, False)
+
+                    # pred_y = program.execute(self.eval_x)
+                    # population.target_pop_list[j].raw_fitness_ = gp_fit(self.eval_y, pred_y, self.feature_weight)
+                    # # population.target_pop_list[j].raw_fitness_ = population.target_pop_list[j].raw_fitness(X, y, curr_sample_weight)
+                    # if math.isnan(population.target_pop_list[j].raw_fitness_) or math.isinf(population.target_pop_list[j].raw_fitness_) or population.target_pop_list[j].length_ >500:
+                    #     j -= 1
+                    #     continue
+
+                    if sample_weight is None:
+                        curr_sample_weight = np.ones((n_samples,))
+                    else:
+                        curr_sample_weight = sample_weight.copy()
+
+                    oob_sample_weight = curr_sample_weight.copy()
+                    program =population.target_pop_list[j]
+
+                    
+                    indices, not_indices = program.get_all_indices(n_samples,
+                                                                max_samples,
+                                                                random_state)
+
+                    curr_sample_weight[not_indices] = 0
+                    oob_sample_weight[indices] = 0
+
+
+                    program.raw_fitness_ = program.raw_fitness(X, y, curr_sample_weight)
+          
+                    if math.isnan(program.raw_fitness_) or math.isinf(program.raw_fitness_) or program.length_ >500:
+                        # i =i- 1
+                        # i -= 1
+                        # idx = i
+                        # print(i)
+                        # n_pop += 1
+                        continue
+                        # pass
+                    program.fitness_ = program.fitness(self.parsimony_coefficient)
+                    # print("test111")
+                    # print(program.fitness_)
+
+                    # if max_samples < n_samples:
+                    #     # Calculate OOB fitness
+                    #     program.oob_fitness_ = program.raw_fitness(self.X, self.y, oob_sample_weight)
+                    
+                    # if idx == i:
+                    #     print("????")
+                    # population.target_append(program)
+
+
+
+                    j+=1
+
+
+
+                    
                     # print("5555")
                     # print(j)
-                    print(population.target_pop_list[j].get_expression())
+                    # print(population.target_pop_list[j].get_expression())
 
                     # self.evaluator.get_value()
                     # print(population.target_pop_list[j].fitness_)
 
                     # population
-                temp_index = self.taylorsort.do(population)
-                
+                population = self.evaluator.do(population)
+
                 if parents is not None:
-                    for i in range(parents.pop_size):
-                        population.append(parents.target_pop_list[i])
+                    pass
+                    # for i in range(parents.pop_size):
+                    #     population.target_append(parents.target_pop_list[i])
+
+                temp_index = self.taylorsort.do(population)
+                # print("kkkk")
+                # print(len(temp_index))
+                # print(temp_index)
+                
+                
                 temp_popSize = 0
                 population_index = []
                 reminder_subPopulation = []
@@ -101,54 +270,42 @@ class TayloGPAlg(Alg):
                     if temp_popSize >self.population_size:
                         reminder = self.population_size-pre_temp_popSize
                         # print("temp_popSize: ",temp_popSize,"reminder: ",reminder)
-                        reminder_subPopulation.extend(self.select_by_crowding_distance(population,subPop,reminder))
+                        # print(len())
+                        # print(self.select_by_crowding_distance(population.target_pop_list,subPop,reminder))
+                        reminder_pop = self.select_by_crowding_distance(population.target_pop_list,subPop,reminder)
+                        for h in range(len(reminder_pop)):
+                            reminder_subPopulation.append(reminder_pop[h])
+
+                        # reminder_subPopulation.target_append(self.select_by_crowding_distance(population.target_pop_list,subPop,reminder))
                         # print("reminder_subPopulation: ",reminder_subPopulation)
                         break
                     else:
                         population_index.extend(subPop)
                 
-                population = [population[i] for i in population_index]
+                population.target_pop_list = [population.target_pop_list[i] for i in population_index]
                 if reminder_subPopulation !=[]:
-                    population.extend(reminder_subPopulation)
+                    # population.target_append(reminder_subPopulation)
+                    pass
 
-                fitness = [program.raw_fitness_ for program in population]
-                length = [program.length_ for program in population]
+                fitness = [program.raw_fitness_ for program in population.target_pop_list]
+                length = [program.length_ for program in population.target_pop_list]
 
                 parsimony_coefficient = None
                 if self.parsimony_coefficient == 'auto':
                     parsimony_coefficient = (np.cov(length, fitness)[1, 0] /
                                             np.var(length))
-                for program in population:
+                for program in population.target_pop_list:
                     program.fitness_ = program.fitness(parsimony_coefficient)
-                fitness_ = [program.fitness_ for program in population]
-                self._programs.append(population)
+                fitness_ = [program.fitness_ for program in population.target_pop_list]
 
-                # Remove old programs that didn't make it into the new population.
-                if not self.low_memory:
-                    for old_gen in np.arange(i, 0, -1):
-                        indices = []
-                        for program in self._programs[old_gen]:
-                            if program is not None and program.parents is not None:
-                                for idx in program.parents:
-                                    if 'idx' in idx:
-                                        indices.append(program.parents[idx])
-                        indices = set(indices)
-                        for idx in range(self.population_size):
-                            if idx not in indices:
-                                self._programs[old_gen - 1][idx] = None
-                elif i > 0:
-                    # Remove old generations
-                    self._programs[i - 1] = None
-
-                # Record run details
-                if self._metric.greater_is_better:
-                    best_program = population[np.argmax(fitness)]#按惩罚项的fitness排序
-                    best_program_fitness_ = population[np.argmax(fitness_)]
+                if self.selector.greater_is_better:
+                    best_program = population.target_pop_list[np.argmax(fitness)]#按惩罚项的fitness排序
+                    best_program_fitness_ = population.target_pop_list[np.argmax(fitness_)]
                 else:
-                    best_program = population[np.argmin(fitness)]
-                    best_program_fitness_ = population[np.argmin(fitness_)]
+                    best_program = population.target_pop_list[np.argmin(fitness)]
+                    best_program_fitness_ = population.target_pop_list[np.argmin(fitness_)]
 
-                self.run_details_['generation'].append(i)
+                self.run_details_['generation'].append(gen)
                 self.run_details_['average_length'].append(np.mean(length))
                 self.run_details_['average_fitness'].append(np.mean(fitness_))
                 self.run_details_['best_length'].append(best_program.length_)
@@ -157,14 +314,15 @@ class TayloGPAlg(Alg):
                 if self.max_samples < 1.0:
                     oob_fitness = best_program.oob_fitness_
                 self.run_details_['best_oob_fitness'].append(oob_fitness)
-                # generation_time = time() - start_time
-                # self.run_details_['generation_time'].append(generation_time)
 
                 if self.verbose:
-                    self._verbose_reporter(self.run_details_)
+                    # print("uuuu")
+                    # print(gen)
+                    print(self.run_details_['generation'][0])
+                    self.print_details(self.run_details_,gen-1)
 
                 # Check for early stopping
-                if self._metric.greater_is_better:
+                if self.selector.greater_is_better:
                     best_fitness = fitness[np.argmax(fitness_)]
                     if best_fitness >= self.stopping_criteria:
                         break
@@ -174,10 +332,8 @@ class TayloGPAlg(Alg):
                         break
 
 
-
-                population = self.evaluator.do(population)
-
             parents = population
+            print(population.pop_size)
 
                 
                 
@@ -192,6 +348,9 @@ class TayloGPAlg(Alg):
         #     print(str(population.target_pop_list[j].__str__()))
         #     print(population.target_pop_list[j].fitness_)
         print("finished!")
+
+
+
                     
 
 

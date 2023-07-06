@@ -206,7 +206,7 @@ class TaylorGPMutation(Mutation):
         # reproduction
         elif (self.option == 4):
 
-            program = copy(self.program)
+            program = copy(self.pop_parent.program)
             population.target_pop_list[self.pop_now_index].program=program
 
             return population

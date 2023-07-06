@@ -228,3 +228,5 @@ class TaylorGPEvaluator(Evaluator):
                     population.pop_list.append(ind)
         else:
             pass
+
+        return population
