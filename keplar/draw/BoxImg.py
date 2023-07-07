@@ -91,7 +91,7 @@ import matplotlib.pyplot as plt
 
 def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOperon, fitnessMTaylorGp,
                      fitnessMTaylorBingo,
-                     fitnessMTaylorOperon, fitnessTaylorBingo, fitnessBingoCPP, fitnessUDSR, dataName, isAll: bool):
+                     fitnessMTaylorOperon, fitnessTaylorBingo, fitnessBingoCPP, fitnessMTaylorKMeans, dataName, isAll: bool):
     # 设置中文和负号正常显示
     plt.rcParams['axes.unicode_minus'] = False
     plt.rcParams['pdf.fonttype'] = 42
@@ -110,14 +110,14 @@ def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOp
             'MTaylorGp': fitnessMTaylorGp,
             'MTaylorBingo': fitnessMTaylorBingo,
             'MTaylorOperon': fitnessMTaylorOperon,
-            'UDSR': fitnessUDSR
+            'MTaylorKMeans': fitnessMTaylorKMeans
         }
     else:
         data = {
             'MTaylorGp': fitnessMTaylorGp,
             'BingoCPP': fitnessBingoCPP,
             'Operon': fitnessOperon,
-            'UDSR': fitnessUDSR
+            'MTaylorKMeans': fitnessMTaylorKMeans
         }
     df = pd.DataFrame(data)
     fig, axes = plt.subplots()
@@ -148,6 +148,7 @@ def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOp
         patch.set_facecolor(color)
     plt.grid(linestyle="--", alpha=0.3)
     plt.ylabel("Score( $RMSE$)")
+    plt.title("population_size=100\ngeneration=1000")
     if isAll == True:
         plt.xticks(np.arange(11), (
             '', 'TaylorGP',
@@ -159,7 +160,7 @@ def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOp
             'MTaylorGp',
             'MTaylorBingo',
             'MTaylorOperon',
-            'UDSR'),
+            'MTaylorKMeans'),
                    fontsize=7, rotation=30)
     else:
         plt.xticks(np.arange(5), (

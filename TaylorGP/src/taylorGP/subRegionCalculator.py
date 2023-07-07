@@ -113,8 +113,9 @@ class subRegionCalculator:
                     return False
                 n_noise_ = list(labels).count(-1)
 
-                if (1.0 * n_noise_ / self.dataSets.shape[0] > 0.5 and self.dataSets.shape[
-                    1] != 2 and self.subRegions == None): return False
+                if 1.0 * n_noise_ / self.dataSets.shape[0] > 0.5 and self.dataSets.shape[1] != 2 \
+                        and self.subRegions is None:
+                    return False
             elif clusterMethod == "KMEANS":
                 k_means = KMeans(n_clusters=n_clusters_, random_state=10).fit(self.dataSets)
                 labels = k_means.labels_
@@ -376,24 +377,32 @@ class subRegionCalculator:
         根据选中的个体计算其对应的训练集特征X，需要重新计算，之前只是在子块进行评估，这里需要在整个个数据集上评估
         """
 
+        global arr
         bestFlag = True
         numberOfCombinations = 5
         X_Trains = []
+        num = 100000
         for num in range(numberOfCombinations):
             index = 0
             for i, top in enumerate(self.tops):  # self.tops = [[subtops]] top = [[fits],[eqs],[population]]
-                if bestFlag == False: index = math.floor(random.random() * len(top[1]))
+                if not bestFlag:
+                    index = math.floor(random.random() * len(top[1]))
                 try:
                     tempArr = np.array(CalFitness(eq=top[1][index], dataSet=self.dataSets, IsPred=True)).reshape(-1, 1)
                 except BaseException:  # 此公式不适用于完整数据集，需要跳过
+                    num += 1
                     continue
                 if i == 0:
                     arr = tempArr
                 else:
                     arr = np.append(arr, tempArr, axis=1)
             bestFlag = False  # 第一次按index = 0 最优个体处理，以后按随机选取
-            X_Trains.extend([arr])
-        return X_Trains
+            try:
+                X_Trains.extend([arr])
+            except BaseException:
+                print("没有找到适用于完整数据集的公式")
+
+            return X_Trains
 
     def MAB(self, bestIndividualIndex, policy="epsilonGreedy"):
         """

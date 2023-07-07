@@ -7,7 +7,6 @@ from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
 from keplar.operator.creator import BingoCreator, GpCreator
 from keplar.operator.crossover import BingoCrossover
 from keplar.operator.evaluator import BingoEvaluator
-from keplar.operator.feature_engineering import TaylorFeature
 from keplar.operator.generator import BingoGenerator
 from keplar.operator.mutation import BingoMutation
 from keplar.operator.selector import BingoSelector

@@ -24,8 +24,7 @@ def WriteFile_X_Y_pred(SRC, fileNum, cluster, repeatNum):
     # Y_predfile = "D:\PYcharm_program\dynamicalSystem\TaylorGP2_1\Y_pred\TaylorGP2_KMeans_UCB_" + str(fileNum) + ".out"
     # Y_predfile = "/home/hebaihe/STORAGE/taylorSR/result/TaylorGP2_1/Y_pred/TaylorGP2_KMeans_Greedy_" + str(fileNum) + ".out"
     # Y_predfile = "/home/hebaihe/STORAGE/taylorSR/result/TaylorGP2_1/Y_pred/TaylorGP2_KMeans_NoMAB_" + str(fileNum) + ".out"
-    Y_predfile = "/home/hebaihe/STORAGE/taylorSR/result/TaylorGP2_1/Y_pred/TaylorGP2_KMeans_UCB_" + str(
-        fileNum) + ".out"
+    Y_predfile = "Y_pred/TaylorGP2_KMeans_UCB_" + str(fileNum) + ".out"
     # Y_predfile = "/home/hebaihe/taylorSR/result/TaylorGP2_1/Y_pred/TaylorGP2_KMeans_NoMAB_" + str(fileNum) + ".out"
     # Y_predfile = "/home/hebaihe/taylorSR/result/TaylorGP2_1/Y_pred/TaylorGP2_KMeans_UCB_" + str(fileNum) + ".out"
     f = open(Y_predfile, "a+")

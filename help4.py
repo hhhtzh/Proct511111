@@ -9,7 +9,7 @@ from numpy.random import RandomState
 from bingo.symbolic_regression import AGraph
 from keplar.data.data import Data
 from keplar.operator.creator import GpCreator
-from keplar.operator.feature_engineering import FeatureEngineering, TaylorFeature
+# from keplar.operator.feature_engineering import FeatureEngineering, TaylorFeature
 from keplar.population.individual import Individual
 # def is_operator(char):
 #     operators = ['+', '-', '*', '/']
@@ -102,10 +102,14 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # ])
 # print(aa.shape[1])
 # A=Operon.RMSE()
-data = Data("txt", "datasets/1.txt", ["x", "y"])
-data.read_file()
-data.set_xy("y")
-x = data.get_np_x()
-y = data.get_np_y()
-cr = GpCreator(100, x, y, "bingo", n_jobs=3)
-cr.do()
+# data = Data("txt", "datasets/1.txt", ["x", "y"])
+# data.read_file()
+# data.set_xy("y")
+# x = data.get_np_x()
+# y = data.get_np_y()
+# cr = GpCreator(100, x, y, "bingo", n_jobs=3)
+# cr.do()
+a = [1, 2, 3]
+b=a.pop(1)
+print(b)
+print(a)
