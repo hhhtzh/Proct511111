@@ -170,8 +170,8 @@ class TaylorGPCrossover(Crossover):
                 continue
             qualified_flag = True
 
-        print(op_index)
-        print(self.pop_now_index)
+        # print(op_index)
+        # print(self.pop_now_index)
 
 
         if op_index <4 :

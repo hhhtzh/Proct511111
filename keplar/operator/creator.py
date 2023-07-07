@@ -314,7 +314,10 @@ class TaylorGPCreator(Creator):
         max_samples = int(max_samples * n_samples)
 
         programs=[]
-        for i in range(self.population_size):
+        n_pop = self.population_size
+        # for i in range(n_pop):
+        i=0
+        while i != 1000 :
             genome = None
             program = _Program(function_set=function_set,
                             arities=arities,
@@ -350,18 +353,27 @@ class TaylorGPCreator(Creator):
             oob_sample_weight[indices] = 0
 
             program.raw_fitness_ = program.raw_fitness(self.X, self.y, curr_sample_weight)
+   
             if math.isnan(program.raw_fitness_) or math.isinf(program.raw_fitness_) or program.length_ >500:
-                pass
+                # i =i- 1
                 # i -= 1
-                # continue
+                # idx = i
+                # print(i)
+                # n_pop += 1
+                continue
+                # pass
             program.fitness_ = program.fitness(parsimony_coefficient)
             # print("test111")
             # print(program.fitness_)
-            # if max_samples < n_samples:
-            #     # Calculate OOB fitness
-            #     program.oob_fitness_ = program.raw_fitness(self.X, self.y, oob_sample_weight)
+            if max_samples < n_samples:
+                # Calculate OOB fitness
+                program.oob_fitness_ = program.raw_fitness(self.X, self.y, oob_sample_weight)
             
-            population.target_pop_list.append(program)
+            # if idx == i:
+            #     print("????")
+            population.target_append(program)
+
+            i+=1
         #     eq=[]
         #     if self.to_type == "Taylor":
         #         for i, node in enumerate(program.program):
@@ -378,8 +390,13 @@ class TaylorGPCreator(Creator):
         #     else:
         #         pass
 
-        #     programs.append(program)
-        population.set_pop_size(self.population_size)
+        # #     programs.append(program)
+        # print(i)
+        # print("ll")
+        # print(self.population_size)
+        # print(population.pop_size)
+        # population.set_pop_size(self.population_size)
+        # print(population.pop_size)
 
-        return population
+        return population,self.sample_weight
 
