@@ -1,3 +1,6 @@
+import numpy as np
+
+from keplar.Algorithm.Alg import BingoAlg
 from keplar.Algorithm.operon_Algorithm import OperonAlg
 from keplar.data.data import Data
 from keplar.operator.crossover import OperonCrossover
@@ -14,10 +17,11 @@ data.set_xy("y")
 
 for i in [1e-5, 0.2, 1, 4, 10, 100]:
     dbscan = SklearnDBscan(eps=i)
-    x = dbscan.do(data)
+    x, num = dbscan.do(data)
     if x:
         break
 db_sum = x
+n_cluster = num
 programs = []
 fit_list = []
 for db_i in db_sum:
@@ -29,17 +33,12 @@ for db_i in db_sum:
         programs.append(taylor.program)
         fit_list.append(taylor.end_fitness)
     else:
-        selector = OperonSelector(5)
-        evaluator = OperonEvaluator("RMSE", db_i[:, :-1], db_i[:, -1], 0.5, True, "Operon")
-        crossover = OperonCrossover(db_i[:, :-1], db_i[:, -1], "Operon")
-        mutation = OperonMutation(1, 1, 1, 0.5, db_i[:, :-1], db_i[:,-1], 10, 50, "balanced", "Operon")
-        reinsert = OperonReinserter(None, "ReplaceWorst", 10, "Operon", db_i[:, :-1], db_i[:, -1])
-        op_up_list = [mutation, crossover]
-        op_down_list = [reinsert]
-        eva_list = [evaluator]
-        op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, selector, 1e-5, 1000, 16, db_i[:, :-1],
-                           db_i[:, -1])
-        op_alg.run()
-        programs.append(op_alg.model_string)
-        fit_list.append(op_alg.model_fit)
-
+        bingo = BingoAlg(1000, data, operators=["+", "-", "*", "/", "sin", "exp"])
+        bingo.run()
+        graph3 = bingo.island.get3top()
+if n_cluster > 1:
+    mean_fit = np.mean(fit_list)
+    for i in range(len(fit_list)):
+        if fit_list[i] > mean_fit:
+            fit_list.pop(i)
+            programs.pop(i)

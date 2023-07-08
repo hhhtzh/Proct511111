@@ -15,6 +15,7 @@ from keplar.operator.composite_operator import CompositeOp
 import pyoperon as Operon
 
 from keplar.operator.reinserter import KeplarReinserter
+from keplar.population.newisland import NewIsland
 
 
 # class SR_Alg(CompositeOp):
@@ -305,6 +306,7 @@ class BingoAlg(Alg):
                  ERROR_TOLERANCE=1e-6, metric="rmse",up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
                  population=None):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.island = None
         self.metric = metric
         self.ERROR_TOLERANCE = ERROR_TOLERANCE
         self.STOP = STOP
@@ -322,6 +324,7 @@ class BingoAlg(Alg):
         print("Best individual:     ", test_island.get_best_individual())
         print("Best fitness:        ", test_island.get_best_fitness())
         print("Fitness evaluations: ", test_island.get_fitness_evaluation_count())
+
 
     def init_island(self):
         np.random.seed(4)
@@ -352,7 +355,7 @@ class BingoAlg(Alg):
             self.POP_SIZE,
         )
 
-        island = Island(ea, agraph_generator, self.POP_SIZE)
+        island = NewIsland(ea, agraph_generator, self.POP_SIZE)
         return island
 
     def run(self):
@@ -362,3 +365,5 @@ class BingoAlg(Alg):
             max_generations=1000, fitness_threshold=self.ERROR_TOLERANCE
         )
         self.report_island_status(test_island)
+        self.island=test_island
+

@@ -31,8 +31,8 @@ class SklearnDBscan(PreOperator):
         print(f"统计噪声数据共{n_noise_}条")
         if n_clusters_ < 1:
             print("划分数据集失败")
-            return False
-        return db_sum
+            return False, 0
+        return db_sum,n_clusters_
         # print(n_clusters_)
         # print(core_samples_mask)
         # print(labels)
