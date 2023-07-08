@@ -76,7 +76,7 @@ class subRegionCalculator:
         self.ucbVal = []
         self.rockBestFit = []
 
-    def PreDbscan(self, epsilon, n_clusters_=-1, noClusterFlag=False, clusterMethod="DBScan"):
+    def PreDbscan(self, epsilon, data_x,n_clusters_=-1, noClusterFlag=False, clusterMethod="DBScan"):
         """
         使用DBScan密度聚类做数据集分割
         Args:
@@ -94,7 +94,7 @@ class subRegionCalculator:
         else:
             labels = None
             if clusterMethod == "DBSCAN":
-                db = DBSCAN(eps=epsilon, min_samples=2 * self.dataSets.shape[1]).fit(self.dataSets)
+                db = DBSCAN(eps=epsilon, min_samples=2 * data_x.shape[1]).fit(data_x)
                 core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
                 core_samples_mask[db.core_sample_indices_] = True
                 labels = db.labels_  # 记录了每个数据点的分类结果，根据分类结果通过np.where就能直接取出对应类的所有数据索引了
