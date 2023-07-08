@@ -42,6 +42,4 @@ for db_i in db_sum:
         op_alg.run()
         programs.append(op_alg.model_string)
         fit_list.append(op_alg.model_fit)
-print(len(programs))
-for i in programs:
-    print(i)
+
