@@ -8,7 +8,7 @@ from keplar.operator.selector import OperonSelector
 from keplar.operator.taylor_judge import TaylorJudge
 from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
 
-data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
+data = Data("txt", "datasets/1.txt", ["x", "y"])
 data.read_file()
 data.set_xy("y")
 
@@ -21,19 +21,27 @@ db_sum = x
 programs = []
 fit_list = []
 for db_i in db_sum:
-    taylor = TaylorJudge(db_i, "taylorgp")
+    data_i = Data("numpy", db_i, ["x", "y"])
+    data_i.read_file()
+    taylor = TaylorJudge(data_i, "taylorgp")
     jd = taylor.do()
     if jd == "end":
         programs.append(taylor.program)
         fit_list.append(taylor.end_fitness)
     else:
         selector = OperonSelector(5)
-        evaluator = OperonEvaluator("RMSE", x, y, 0.5, True, "Operon")
-        crossover = OperonCrossover(x, y, "Operon")
-        mutation = OperonMutation(1, 1, 1, 0.5, x, y, 10, 50, "balanced", "Operon")
-        reinsert = OperonReinserter(None, "ReplaceWorst", 10, "Operon", x, y)
+        evaluator = OperonEvaluator("RMSE", db_i[:, :-1], db_i[:, -1], 0.5, True, "Operon")
+        crossover = OperonCrossover(db_i[:, :-1], db_i[:, -1], "Operon")
+        mutation = OperonMutation(1, 1, 1, 0.5, db_i[:, :-1], db_i[:,-1], 10, 50, "balanced", "Operon")
+        reinsert = OperonReinserter(None, "ReplaceWorst", 10, "Operon", db_i[:, :-1], db_i[:, -1])
         op_up_list = [mutation, crossover]
         op_down_list = [reinsert]
         eva_list = [evaluator]
-        op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, selector, 1e-5, 1000, 16, x, y)
+        op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, selector, 1e-5, 1000, 16, db_i[:, :-1],
+                           db_i[:, -1])
         op_alg.run()
+        programs.append(op_alg.model_string)
+        fit_list.append(op_alg.model_fit)
+print(len(programs))
+for i in programs:
+    print(i)
