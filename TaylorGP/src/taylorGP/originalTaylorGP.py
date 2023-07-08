@@ -1,6 +1,6 @@
 import copy
 
-from keplar.Algorithm.Alg import BingoAlg
+from keplar.Algorithm.Alg import KeplarBingoAlg
 from keplar.Algorithm.operon_Algorithm import OperonAlg
 from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
 from keplar.operator.creator import BingoCreator
@@ -129,7 +129,7 @@ def Taylor_Based_SR(_x, X, Y, qualified_list, eq_write, population, Gen, Pop, re
             gen_down_oplist = CompositeOpReturn([selector])
             gen_eva_oplist = CompositeOp([evaluator])
             population = creator.do()
-            bgsr = BingoAlg(1000, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
+            bgsr = KeplarBingoAlg(1000, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
             bgsr.run()
             tops_fit=population.get_best_fitness()
             tops_str=str(population.get_tar_best())

@@ -1,5 +1,5 @@
 from pmlb import fetch_data
-from keplar.Algorithm.Alg import BingoAlg
+from keplar.Algorithm.Alg import KeplarBingoAlg
 
 from keplar.data.data import Data
 from keplar.operator.cleaner import BingoCleaner
@@ -27,6 +27,6 @@ gen_up_oplist = CompositeOp([crossover, mutation])
 gen_down_oplist = CompositeOpReturn([selector])
 gen_eva_oplist = CompositeOp([evaluator])
 population = creator.do()
-bgsr = BingoAlg(1000, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
+bgsr = KeplarBingoAlg(1000, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
 bgsr.run()
 #纯Bingo时可导入bingocpp包

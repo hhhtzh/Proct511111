@@ -1,5 +1,5 @@
 from pmlb import fetch_data
-from keplar.Algorithm.Alg import BingoAlg, GpBingoAlg
+from keplar.Algorithm.Alg import KeplarBingoAlg, GpBingoAlg
 
 from keplar.data.data import Data
 from keplar.operator.cleaner import BingoCleaner

@@ -9,14 +9,14 @@ from keplar.operator.mutation import OperonMutation
 from keplar.operator.reinserter import OperonReinserter
 from keplar.operator.selector import OperonSelector
 
-data = Data("txt", "datasets/1.txt", ["x", "y"])
-# data = Data("txt", "datasets/2.txt", ["x0", "x1","x2","x3","x4","y"])
+# data = Data("txt", "datasets/1.txt", ["x", "y"])
+data = Data("txt", "datasets/2.txt", ["x0", "x1","x2","x3","x4","y"])
 data.read_file()
 data.set_xy("y")
 x = data.get_np_x()
 y = data.get_np_y()
 selector = OperonSelector(5)
-evaluator = OperonEvaluator("MSE", x, y, 0.5, True, "Operon")
+evaluator = OperonEvaluator("RMSE", x, y, 0.5, True, "Operon")
 crossover = OperonCrossover(x, y, "Operon")
 mutation = OperonMutation(1, 1, 1, 0.5, x, y, 10, 50, "balanced", "Operon")
 reinsert = OperonReinserter(None, "ReplaceWorst", 10, "Operon", x, y)

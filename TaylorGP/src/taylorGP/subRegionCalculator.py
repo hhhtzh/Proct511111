@@ -104,7 +104,7 @@ class subRegionCalculator:
 
                 # 聚类过多或过少则舍掉,只统计一次聚类为1的结果
                 if n_clusters_ == 1:
-                    if self.oneSubRegionFlag == False:
+                    if not self.oneSubRegionFlag:
                         self.oneSubRegionFlag = True
                         self.subRegions = [self.dataSets]
                     else:

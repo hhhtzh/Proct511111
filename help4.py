@@ -116,3 +116,5 @@ data.set_xy("y")
 # print(a)
 sk=SklearnDBscan()
 sk.do(data)
+# for i in range(2):
+#     print("ee")
