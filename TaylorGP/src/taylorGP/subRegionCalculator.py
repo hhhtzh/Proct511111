@@ -415,12 +415,12 @@ class subRegionCalculator:
 
         """
 
-    def CalCountofAvailableParameters(self, epsilons=None, clusters=None):
+    def CalCountofAvailableParameters(self, np_x,epsilons=None, clusters=None):
         count = 0
         if epsilons != None:
             for epsilon in epsilons:
                 if epsilon == 1e-5: continue
-                if self.PreDbscan(epsilon, clusterMethod="DBSCAN") == True:
+                if self.PreDbscan(epsilon, clusterMethod="DBSCAN",data_x=np_x) == True:
                     count += 1
             return count + 1
         elif clusters != None:

@@ -233,11 +233,12 @@ class MTaylorGPAlg(Alg):
         for repeatNum in range(repeat):
             # time_start2 = time.time()
             SRC = subRegionCalculator(dataSets, originalTaylorGPGeneration, mabPolicy=self.mabPolicy)
-            countAvailableParameters = SRC.CalCountofAvailableParameters(epsilons=epsilons)
+            countAvailableParameters = SRC.CalCountofAvailableParameters(epsilons=epsilons, np_x=np_x)
             mabLoopNum = max(totalGeneration // originalTaylorGPGeneration // countAvailableParameters, 1)
             for epsilon in epsilons:
                 if epsilon == 1e-5:
-                    SRC.PreDbscan(epsilon, noClusterFlag=True, clusterMethod="NOCLUSTER",data_x=np_x)  # 执行 OriginalTaylorGP
+                    SRC.PreDbscan(epsilon, noClusterFlag=True, clusterMethod="NOCLUSTER",
+                                  data_x=np_x)  # 执行 OriginalTaylorGP
                 elif not SRC.PreDbscan(epsilon, clusterMethod="DBSCAN"):
                     print("聚类有问题")
                     continue
