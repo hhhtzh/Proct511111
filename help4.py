@@ -11,6 +11,7 @@ from keplar.data.data import Data
 from keplar.operator.creator import GpCreator
 # from keplar.operator.feature_engineering import FeatureEngineering, TaylorFeature
 from keplar.population.individual import Individual
+from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
 # def is_operator(char):
 #     operators = ['+', '-', '*', '/']
 #     return char in operators
@@ -102,14 +103,16 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # ])
 # print(aa.shape[1])
 # A=Operon.RMSE()
-# data = Data("txt", "datasets/1.txt", ["x", "y"])
-# data.read_file()
-# data.set_xy("y")
+data = Data("txt", "datasets/1.txt", ["x", "y"])
+data.read_file()
+data.set_xy("y")
 # x = data.get_np_x()
 # y = data.get_np_y()
 # cr = GpCreator(100, x, y, "bingo", n_jobs=3)
 # cr.do()
-a = [1, 2, 3]
-b=a.pop(1)
-print(b)
-print(a)
+# a = [1, 2, 3]
+# b=a.pop(1)
+# print(b)
+# print(a)
+sk=SklearnDBscan()
+sk.do(data)
