@@ -1,5 +1,5 @@
 from pmlb import fetch_data
-from keplar.Algorithm.Alg import BingoAlg, TaylorBingoAlg
+from keplar.Algorithm.Alg import KeplarBingoAlg, TaylorBingoAlg
 
 from keplar.data.data import Data
 from keplar.operator.cleaner import BingoCleaner
@@ -7,10 +7,10 @@ from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
 from keplar.operator.creator import BingoCreator, GpCreator
 from keplar.operator.crossover import BingoCrossover
 from keplar.operator.evaluator import BingoEvaluator
-from keplar.operator.feature_engineering import TaylorFeature
 from keplar.operator.generator import BingoGenerator
 from keplar.operator.mutation import BingoMutation
 from keplar.operator.selector import BingoSelector
+from keplar.operator.taylor_judge import TaylorJudge
 
 data = Data("txt", "datasets/1.txt",["x","y"])
 data.read_file()
@@ -18,7 +18,7 @@ data.set_xy("y")
 x = data.get_x()
 y = data.get_y()
 operators = ["+", "-", "*", "/"]
-taylor=TaylorFeature(data,"taylorgp")
+taylor=TaylorJudge(data,"taylorgp")
 fe_list=[taylor]
 creator = BingoCreator(50, operators, x, 10, "Bingo")
 evaluator = BingoEvaluator(x, "exp", "lm", y)

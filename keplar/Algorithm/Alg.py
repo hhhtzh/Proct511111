@@ -3,11 +3,19 @@ from abc import abstractmethod
 
 import numpy as np
 
+from bingo.evaluation.evaluation import Evaluation
+from bingo.evolutionary_algorithms.age_fitness import AgeFitnessEA
+from bingo.evolutionary_optimizers.island import Island
+from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
+from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
+from bingo.symbolic_regression import ExplicitTrainingData, ComponentGenerator, AGraphCrossover, AGraphMutation, \
+    ExplicitRegression, AGraphGenerator
 from keplar.operator.composite_operator import CompositeOp
 # from keplar.operator.reinserter import OperonReinserter, KeplarReinserter
 import pyoperon as Operon
 
 from keplar.operator.reinserter import KeplarReinserter
+from keplar.population.newisland import NewIsland
 
 
 # class SR_Alg(CompositeOp):
@@ -39,7 +47,7 @@ class uDSR_Alg(Alg):
         super().__init__(max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population)
 
 
-class BingoAlg(Alg):
+class KeplarBingoAlg(Alg):
 
     def __init__(self, max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population):
         super().__init__(max_generation, up_op_list, down_op_list,
@@ -284,3 +292,78 @@ class GpBingoAlg(Alg):
         best_ind = str(self.get_best_individual())
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+
+
+class BingoAlg(Alg):
+
+    def __init__(self, max_generation, data, operators, POP_SIZE=128,
+                 STACK_SIZE=10,
+                 MUTATION_PROBABILITY=0.4,
+                 CROSSOVER_PROBABILITY=0.4,
+                 NUM_POINTS=100,
+                 START=-10,
+                 STOP=10,
+                 ERROR_TOLERANCE=1e-6, metric="rmse",up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
+                 population=None):
+        super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.island = None
+        self.metric = metric
+        self.ERROR_TOLERANCE = ERROR_TOLERANCE
+        self.STOP = STOP
+        self.START = START
+        self.NUM_POINTS = NUM_POINTS
+        self.CROSSOVER_PROBABILITY = CROSSOVER_PROBABILITY
+        self.MUTATION_PROBABILITY = MUTATION_PROBABILITY
+        self.STACK_SIZE = STACK_SIZE
+        self.POP_SIZE = POP_SIZE
+        self.operators = operators
+        self.data = data
+
+    def report_island_status(self,test_island):
+        print("-----  Generation %d  -----" % test_island.generational_age)
+        print("Best individual:     ", test_island.get_best_individual())
+        print("Best fitness:        ", test_island.get_best_fitness())
+        print("Fitness evaluations: ", test_island.get_fitness_evaluation_count())
+
+
+    def init_island(self):
+        np.random.seed(4)
+
+        training_data = ExplicitTrainingData(self.data.get_np_x(), self.data.get_np_y())
+
+        component_generator = ComponentGenerator(self.data.get_np_x().shape[1])
+        for i in self.operators:
+            component_generator.add_operator(i)
+
+        crossover = AGraphCrossover()
+        mutation = AGraphMutation(component_generator)
+
+        agraph_generator = AGraphGenerator(self.STACK_SIZE, component_generator)
+
+        fitness = ExplicitRegression(training_data=training_data,metric=self.metric)
+        optimizer = ScipyOptimizer(fitness, method="lm")
+        local_opt_fitness = LocalOptFitnessFunction(fitness, optimizer)
+        evaluator = Evaluation(local_opt_fitness)
+
+        ea = AgeFitnessEA(
+            evaluator,
+            agraph_generator,
+            crossover,
+            mutation,
+            self.MUTATION_PROBABILITY,
+            self.CROSSOVER_PROBABILITY,
+            self.POP_SIZE,
+        )
+
+        island = NewIsland(ea, agraph_generator, self.POP_SIZE)
+        return island
+
+    def run(self):
+        test_island = self.init_island()
+        self.report_island_status(test_island)
+        test_island.evolve_until_convergence(
+            max_generations=1000, fitness_threshold=self.ERROR_TOLERANCE
+        )
+        self.report_island_status(test_island)
+        self.island=test_island
+

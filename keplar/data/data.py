@@ -28,6 +28,13 @@ class Data:
                 self.x, self.y = fetch_data(str(self.file_path), local_cache_dir='./datasets', return_X_y=True)
             except:
                 raise ValueError('pmlb数据集名称错误')
+        elif self.type == "numpy":
+            try:
+                self.pd_data = pd.DataFrame(self.file_path)
+                self.x, self.y = pd.DataFrame(self.file_path[:, :-1]), pd.DataFrame(self.file_path[:, -1])
+            except:
+                raise ValueError('numpy数据集设置失败')
+
         else:
             raise ValueError("获取数据的方法选择错误")
 
@@ -69,8 +76,13 @@ class Data:
         self.x = np.array(dt.drop(labels=str_y, axis=1))
 
     def get_np_ds(self):
-        self.np_data = np.array(self.pd_data)
+        np_x = self.get_np_x()
+        np_y = self.get_np_y()
+        np_y = np_y.reshape([-1, 1])
+        self.np_data = np.hstack([np_x, np_y])
         return self.np_data
+
+    # 默认最后一列为y
 
     def display_data(self):
         print(self.pd_data.head())

@@ -9,8 +9,9 @@ from numpy.random import RandomState
 from bingo.symbolic_regression import AGraph
 from keplar.data.data import Data
 from keplar.operator.creator import GpCreator
-from keplar.operator.feature_engineering import FeatureEngineering, TaylorFeature
+# from keplar.operator.feature_engineering import FeatureEngineering, TaylorFeature
 from keplar.population.individual import Individual
+from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
 # def is_operator(char):
 #     operators = ['+', '-', '*', '/']
 #     return char in operators
@@ -101,11 +102,25 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 #     [4,5]
 # ])
 # print(aa.shape[1])
-# A=Operon.RMSE()
-data = Data("txt", "datasets/1.txt", ["x", "y"])
-data.read_file()
-data.set_xy("y")
-x = data.get_np_x()
-y = data.get_np_y()
-cr = GpCreator(100, x, y, "bingo", n_jobs=3)
-cr.do()
+# # A=Operon.RMSE()
+# data = Data("txt", "datasets/1.txt", ["x", "y"])
+# # data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
+# data.read_file()
+# data.set_xy("y")
+# x = data.get_np_x()
+# y = data.get_np_y()
+# cr = GpCreator(100, x, y, "bingo", n_jobs=3)
+# cr.do()
+# a = [1, 2, 3]
+# b=a.pop(1)
+# print(b)
+# print(a)
+# sk=SklearnDBscan()
+# # ds = data.get_np_ds()
+# # print(ds[:, :-1])
+# sk.do(data)
+# for i in range(2):
+#     print("ee")
+a=[1,2,3]
+a.sort(reverse=True)
+print(a)
