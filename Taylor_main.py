@@ -1,6 +1,6 @@
 import numpy as np
 
-from keplar.Algorithm.TaylorGP_Algorithm import TayloGPAlg
+from keplar.Algorithm.TaylorGP_Alg import TayloGPAlg
 from keplar.data.data import Data
 from keplar.operator.creator import TaylorGPCreator
 from keplar.operator.evaluator import TaylorGPEvaluator
@@ -22,7 +22,7 @@ taylorGP_pre1 = TaylorGP_Pre1(x_train, y_train)
 X, Y, qualified_list = taylorGP_pre1.do()
 
 taylorGP_pre2 = TaylorGP_pre2(X, Y, qualified_list)
-X, y, params, population_size, seeds, qualified_list, function_set, n_features = taylorGP_pre2.do()
+X, y, params, population_size, seeds, qualified_list, function_set, n_features,sample_wight= taylorGP_pre2.do()
 
 # 生成种群（population）
 gen = 0

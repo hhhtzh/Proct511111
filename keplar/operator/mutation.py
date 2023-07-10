@@ -158,7 +158,7 @@ class TaylorGPMutation(Mutation):
         self.option = option
         self.random_state = random_state
 
-        self.pop_parent = pop_parent
+        # self.pop_parent = pop_parent
         self.pop_now_index = pop_now_index
     
     def get_value(self, option, random_state,  pop_parent, pop_now_index):
@@ -175,6 +175,8 @@ class TaylorGPMutation(Mutation):
             # Build a new naive program
             # 我们需要一个_Program的一个对象来调用build_program随机生成一个新的program对象，
             # 因此我们传入一个_Program的对象来辅助我们生成新的program
+            # parent = self.pop_parent
+            
             honor = self.pop_parent.build_program(self.random_state)
 
             # pop_honor = taylor_trans_ind(honor)
@@ -195,9 +197,9 @@ class TaylorGPMutation(Mutation):
                         set(range(start + sub_start, start + sub_end)))
             program= self.pop_parent.program[:start] + hoist + self.pop_parent.program[end:]
 
-            population.target_pop_list[self.pop_now_index].program=program
+            # population.target_pop_list[self.pop_now_index]=program
 
-            return population
+            return program,removed
 
         # point mutation
         elif (self.option == 3):
@@ -207,9 +209,9 @@ class TaylorGPMutation(Mutation):
         elif (self.option == 4):
 
             program = copy(self.pop_parent.program)
-            population.target_pop_list[self.pop_now_index].program=program
+            # population.target_pop_list[self.pop_now_index].program=program
 
-            return population
+            return program
 
     
     def change(self,option):

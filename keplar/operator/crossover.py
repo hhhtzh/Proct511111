@@ -175,10 +175,12 @@ class TaylorGPCrossover(Crossover):
 
 
         if op_index <4 :
+            # program = self.pop_parent.function_set[op_index:op_index + 1]
             program = self.pop_parent.function_set[op_index:op_index + 1] + self.pop_parent.program[:] + self.pop_honor[:]
             # population = taylor_trans_population(program,population,self.pop_now_index)=program
-            population.target_pop_list[self.pop_now_index].program=program
-            return population
+            # population.target_pop_list[self.pop_now_index].program=program
+            # return self.pop_parent.program,None,None
+            return program,None,None
 
 
             # return population
@@ -195,11 +197,11 @@ class TaylorGPCrossover(Crossover):
                 if isinstance(self.pop_parent.program[node], _Function) == False and self.pop_parent.program[node] == x_index:
                     terminal = self.pop_honor
                     program= self.changeTo(self.pop_parent.program, node, terminal)
-                    population.target_pop_list[self.pop_now_index].program=program
+                    # population.target_pop_list[self.pop_now_index].program=program
 
             # return program,None,None
             # population = taylor_trans_population(program,population,self.pop_now_index)
-            return population
+            return program,None,None
             # return population
 
         

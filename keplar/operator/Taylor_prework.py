@@ -483,7 +483,7 @@ class TaylorGP_pre2(Operator, BaseSymbolic, RegressorMixin):
         #     print(population[110].__str__())
         #     gen += 1
 
-        return X, y, params, self.population_size,seeds,self.qualified_list,self.function_set,n_features
+        return X, y, params, self.population_size,seeds,self.qualified_list,self.function_set,n_features,self.sample_weight
 
         # for gen in range(prior_generations, self.generations):
         #     top1Flag = False
