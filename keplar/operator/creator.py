@@ -286,6 +286,7 @@ class TaylorGPCreator(Creator):
 
         population = Population(self.population_size)
         population.set_pop_size(0)
+        population.pop_type = "taylorgp"
 
         random_state = check_random_state(self.random_state)
 
@@ -363,6 +364,10 @@ class TaylorGPCreator(Creator):
                 continue
                 # pass
             program.fitness_ = program.fitness(parsimony_coefficient)
+
+            population.target_fit_list.append(program.fitness_) 
+
+
             # print("test111")
             # print(program.fitness_)
             if max_samples < n_samples:
@@ -372,6 +377,7 @@ class TaylorGPCreator(Creator):
             # if idx == i:
             #     print("????")
             population.target_append(program)
+            
 
             i+=1
         #     eq=[]

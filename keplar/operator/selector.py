@@ -119,7 +119,7 @@ class TaylorGPSelector(Selector):
         # print(population.target_pop_list[999].fitness_)
         # print(population.target_pop_list[1].fitness_)
 
-        fitness = [population.target_pop_list[p].fitness_ for p in contenders]
+        fitness = [population.target_fit_list[p] for p in contenders]
         if self.greater_is_better:
             parent_index = contenders[np.argmax(fitness)]
         else:

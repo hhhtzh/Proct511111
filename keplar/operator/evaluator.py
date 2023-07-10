@@ -207,6 +207,7 @@ class TaylorGPEvaluator(Evaluator):
             raise ValueError("gplearn评估模块计算误差方法设置错误")
 
         if population.pop_type == "taylorgp":
+            print("xxxxxxx")
             fit_list = []
             gp_fit = _Fitness(fct, False)
             lie_num = self.eval_x.shape[1]
@@ -215,10 +216,13 @@ class TaylorGPEvaluator(Evaluator):
                 for i in range(lie_num):
                     self.feature_weight.append(1)
                 self.feature_weight = np.array(self.feature_weight)
+            z=0
             for program in population.target_pop_list:
                 pred_y = program.execute(self.eval_x)
                 fitness = gp_fit(self.eval_y, pred_y, self.feature_weight)
                 fit_list.append(fitness)
+                z +=1
+                print(z)
             if self.to_type == "taylorgp":
                 population.target_fit_list = fit_list
             else:

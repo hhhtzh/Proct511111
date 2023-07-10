@@ -140,6 +140,8 @@ class TayloGPAlg(Alg):
             if gen==0:
                 population,sample_weight = self.creator.do()
                 self.print_details()
+                # self.print_details(self.run_details_,gen-1)
+
             else:
                 # print(population.pop_size)
                 # for j in range(population.pop_size):
@@ -222,6 +224,10 @@ class TayloGPAlg(Alg):
                         continue
                         # pass
                     program.fitness_ = program.fitness(self.parsimony_coefficient)
+
+                    population.target_fit_list[j] = program.fitness_ 
+
+                    
                     # print("test111")
                     # print(program.fitness_)
 
@@ -248,7 +254,7 @@ class TayloGPAlg(Alg):
                     # print(population.target_pop_list[j].fitness_)
 
                     # population
-                population = self.evaluator.do(population)
+                # population = self.evaluator.do(population)
 
                 if parents is not None:
                     pass
@@ -300,10 +306,12 @@ class TayloGPAlg(Alg):
 
                 if self.selector.greater_is_better:
                     best_program = population.target_pop_list[np.argmax(fitness)]#按惩罚项的fitness排序
-                    best_program_fitness_ = population.target_pop_list[np.argmax(fitness_)]
+                    # best_program_fitness_ = population.target_pop_list[np.argmax(fitness_)]
+                    best_program_fitness_ = population.target_fit_list[np.argmin(fitness_)]
                 else:
                     best_program = population.target_pop_list[np.argmin(fitness)]
-                    best_program_fitness_ = population.target_pop_list[np.argmin(fitness_)]
+                    # best_program_fitness_ = population.target_pop_list[np.argmin(fitness_)]
+                    best_program_fitness_ = population.target_fit_list[np.argmin(fitness_)]
 
                 self.run_details_['generation'].append(gen)
                 self.run_details_['average_length'].append(np.mean(length))
