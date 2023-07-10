@@ -363,9 +363,10 @@ class TaylorGPCreator(Creator):
                 # n_pop += 1
                 continue
                 # pass
-            program.fitness_ = program.fitness(parsimony_coefficient)
+            # program.fitness_ = program.fitness(parsimony_coefficient)
+            program.fitness_ = program.raw_fitness_
 
-            population.target_fit_list.append(program.fitness_) 
+            population.target_fit_list.append(program.raw_fitness_) 
 
 
             # print("test111")
