@@ -11,14 +11,15 @@ from keplar.operator.generator import BingoGenerator
 from keplar.operator.mutation import BingoMutation
 from keplar.operator.selector import BingoSelector
 
-data = Data("txt", "datasets/1.txt", ["x", "y"])
+# data = Data("txt", "datasets/1.txt", ["x", "y"])
+data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 data.read_file()
-data.set_xy("y")
+# data.set_xy("y")
 x = data.get_np_x()
 y = data.get_np_y()
-operators = ["+", "-", "*", "/", "^"]
-creator = GpCreator(100, x, y, "Bingo",n_jobs=20)
-evaluator = BingoEvaluator(x, "exp", "lm", "Bingo",y,metric="rmse")
+operators =["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^']
+creator = GpCreator(128, x, y, "Bingo", n_jobs=20)
+evaluator = BingoEvaluator(x, "exp", "lm", "Bingo", y, metric="rmse")
 crossover = BingoCrossover("Bingo")
 mutation = BingoMutation(x, operators, "Bingo")
 selector = BingoSelector(0.5, "tournament", "Bingo")
@@ -26,5 +27,5 @@ gen_up_oplist = CompositeOp([crossover, mutation])
 gen_down_oplist = CompositeOpReturn([selector])
 gen_eva_oplist = CompositeOp([evaluator])
 population = creator.do()
-bgsr = GpBingoAlg(100, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
+bgsr = GpBingoAlg(1000, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
 bgsr.run()

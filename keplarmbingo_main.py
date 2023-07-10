@@ -52,8 +52,5 @@ for db_i in db_sum:
 # print(programs)
 # print(fit_list)
 if n_cluster > 1:
-    eval = MetricsBingoEvaluator(data, func_fund_list=programs)
-    xtrain = eval.do()
-    print(xtrain)
     spare = KeplarSpareseRegression(n_cluster, programs, fit_list, data, 5)
     spare.do()
