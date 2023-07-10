@@ -306,6 +306,8 @@ class BingoAlg(Alg):
                  ERROR_TOLERANCE=1e-6, metric="rmse",up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
                  population=None):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.best_fit = None
+        self.best_ind = None
         self.island = None
         self.metric = metric
         self.ERROR_TOLERANCE = ERROR_TOLERANCE
@@ -366,4 +368,6 @@ class BingoAlg(Alg):
         )
         self.report_island_status(test_island)
         self.island=test_island
+        self.best_ind=test_island.get_best_individual()
+        self.best_fit=test_island.get_best_fitness()
 

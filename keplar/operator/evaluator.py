@@ -148,7 +148,6 @@ class TaylorGPEvaluator1(Evaluator):
         self.eval_x = np.array(eval_x)
         self.method = method
 
-
     def do(self, population):
         if self.method == "mse":
             fct = _mean_square_error
@@ -184,6 +183,7 @@ class TaylorGPEvaluator1(Evaluator):
         else:
             pass
 
+
 class TaylorGPEvaluator(Evaluator):
     def __init__(self, method, eval_x, eval_y, to_type, feature_weight=None):
         self.to_type = to_type
@@ -192,7 +192,6 @@ class TaylorGPEvaluator(Evaluator):
         self.eval_y = np.array(eval_y)
         self.eval_x = np.array(eval_x)
         self.method = method
-
 
     def do(self, population):
         if self.method == "mse":
@@ -230,3 +229,40 @@ class TaylorGPEvaluator(Evaluator):
             pass
 
         return population
+
+
+class MetricsBingoEvaluator(Evaluator):
+    def __init__(self, data, func_fund_list, metric="rmse", optimizer_method="lm"):
+        super().__init__()
+        self.optimizer_method = optimizer_method
+        self.metric = metric
+        self.func_fund_list = func_fund_list
+        self.data = data
+
+    def do(self, population=None):
+        x = self.data.get_np_x()
+        y = self.data.get_np_y()
+        np_xtrain = None
+        training_data = ExplicitTrainingData(x, y)
+        fitness = ExplicitRegression(training_data=training_data, metric=self.metric)
+        if self.optimizer_method not in ["lm", "TNC", "BFGS", "L-BFGS-B", "CG", "SLSQP"]:
+            raise ValueError("优化方法名称未识别")
+        optimizer = ScipyOptimizer(fitness, method=self.optimizer_method)
+        local_opt_fitness = LocalOptFitnessFunction(fitness, optimizer)
+        evaluator = Evaluation(local_opt_fitness)
+        for i in range(len(self.func_fund_list)):
+            graph_list = []
+            fit_arr = []
+            for j in self.func_fund_list[i]:
+                bingo_ind = AGraph(equation=str(j))
+                bingo_ind._update()
+                graph_list.append(bingo_ind)
+            evaluator(graph_list)
+            for j in graph_list:
+                fit_arr.append(j.fitness)
+            np_arr = np.array(fit_arr).reshape(1, -1)
+            if i == 0:
+                np_xtrain = np_arr
+            else:
+                np_xtrain = np.vstack((np_xtrain, np_arr))
+        return np_xtrain
