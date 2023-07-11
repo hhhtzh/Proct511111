@@ -34,6 +34,16 @@ class Data:
                 self.x, self.y = pd.DataFrame(self.file_path[:, :-1]), pd.DataFrame(self.file_path[:, -1])
             except:
                 raise ValueError('numpy数据集设置失败')
+        elif self.type == "tsv":
+            try:
+                self.pd_data = pd.read_csv(str(self.file_path), sep='\t')
+                self.x = self.pd_data.iloc[:, :-1]  # 提取除最后一列外的所有列作为特征
+                self.y = self.pd_data.iloc[:, -1]  # 提取最后一列作为目标变量
+            except:
+                raise ValueError('TSV文件读取失败')
+
+
+
 
         else:
             raise ValueError("获取数据的方法选择错误")

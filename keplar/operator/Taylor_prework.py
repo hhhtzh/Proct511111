@@ -59,7 +59,7 @@ class TaylorGP_Pre1(Operator):
         try:
             # np.expand_dims(y,axis=1)
             y = self.y[:, np.newaxis]
-            # y= y.reshape(-1)
+            # # y= y.reshape(-1)
             X_Y = np.concatenate((self.X, y), axis=1)
             print(X_Y.shape)
 
@@ -90,7 +90,8 @@ class TaylorGP_Pre1(Operator):
             loopNum = 0
             Metric = []
             while True:
-                print(X_Y.shape)
+                # print(X_Y.shape)
+                pass
                 '''
                 for i in range(X_Y.shape[0]):
                     for j in range(i + 1, X_Y.shape[0]):
