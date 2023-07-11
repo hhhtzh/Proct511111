@@ -1,6 +1,6 @@
 import numpy as np
 
-from keplar.Algorithm.TaylorGP_Algorithm import TayloGPAlg
+from keplar.Algorithm.TaylorGP_Alg import TayloGPAlg
 from keplar.data.data import Data
 from keplar.operator.creator import TaylorGPCreator
 from keplar.operator.evaluator import TaylorGPEvaluator
@@ -18,11 +18,34 @@ data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
 data.read_file()
 x_train = data.get_np_x()
 y_train = data.get_np_y()
+
+# data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
+# data.read_file()
+# data.set_xy("y")
+# x_train = data.get_np_x()
+# y_train = data.get_np_y()
+
+# data = Data("tsv", "datasets/F30.tsv", ["x1", "x2", "x3", "x4", 'y'])
+# data.read_file()
+# x_train = data.x
+# y_train = data.y
+# print(x_train)
+# x_train = data.get_np_x()
+# y_train = data.get_np_y()
+
+
+# data = Data("txt", "datasets/F30.tsv", ["x0", "x1", "y"])
+# data.read_file()
+# data.set_xy("y")
+# x_train = data.get_np_x()
+# y_train = data.get_np_y()
+# y_train = y_train.reshape([-1, 1])
+
 taylorGP_pre1 = TaylorGP_Pre1(x_train, y_train)
 X, Y, qualified_list = taylorGP_pre1.do()
 
 taylorGP_pre2 = TaylorGP_pre2(X, Y, qualified_list)
-X, y, params, population_size, seeds, qualified_list, function_set, n_features = taylorGP_pre2.do()
+X, y, params, population_size, seeds, qualified_list, function_set, n_features,sample_wight= taylorGP_pre2.do()
 
 # 生成种群（population）
 gen = 0
@@ -65,7 +88,7 @@ method_probs = np.array([p_crossover,
 taylorsort = TaylorSort()
 
 # 算法的全部流程
-gen = 20
+gen = 1000
 taylorGP = TayloGPAlg(gen, taylorGP_pre1, taylorGP_pre2, selector,
                       creator, crossover, mutation, method_probs, taylorsort, evaluator)
 
