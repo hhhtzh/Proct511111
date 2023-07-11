@@ -4,13 +4,13 @@ from keplar.operator.operator import Operator
 
 
 class KeplarJudgeUCB(Operator):
-    def __init__(self, data_sum,subregion_num):
+    def __init__(self, data_sum,subregion_num,abRockSum,abRockNum):
         super().__init__()
+        self.abRockNum = abRockNum
+        self.abRockSum = abRockSum
         self.subregion_num = subregion_num
         self.n_cluster = subregion_num
         self.lbd = None
-        self.abRockNum = None
-        self.abRockSum = None
         self.rockBestFit = None
         self.ucbVal = None
         self.data_sum = data_sum

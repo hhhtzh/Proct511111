@@ -55,3 +55,4 @@ if n_cluster > 1:
     spare = KeplarSpareseRegression(n_cluster, programs, fit_list, data, 488)
     spare.do()
     final_best_fit = spare.bestLassoFitness
+    rockBestFit = spare.rockBestFit
