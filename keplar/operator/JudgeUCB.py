@@ -4,7 +4,7 @@ from keplar.operator.operator import Operator
 
 
 class KeplarJudgeUCB(Operator):
-    def __init__(self, subregion_num, abRockSum, abRockNum):
+    def __init__(self, subregion_num, abRockSum, abRockNum,rockBestFit):
         super().__init__()
         self.max_ucb_index = None
         self.max_ucb = None
@@ -12,7 +12,7 @@ class KeplarJudgeUCB(Operator):
         self.abRockSum = abRockSum
         self.n_cluster = subregion_num
         self.lbd = None
-        self.rockBestFit = None
+        self.rockBestFit = rockBestFit
         self.ucbVal = None
 
     def pos_do(self):
