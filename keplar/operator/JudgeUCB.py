@@ -17,5 +17,4 @@ class JudgeUCB(Operator):
         for i in range(len(self.data_sum)):
             self.ucbVal[i] = 1 / (self.rockBestFit[i] + 1) + self.lbd * math.sqrt(
                 math.log(self.abRockSum) / (self.abRockNum[i]))
-
         self.ucbVal.sort(reversed=True)

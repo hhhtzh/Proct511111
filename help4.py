@@ -130,4 +130,6 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # print(a)
 # a.sort(reverse=True)
 # print(a)
-
+a=1
+b=[0]*9
+print(b)

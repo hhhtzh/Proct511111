@@ -76,7 +76,7 @@ class subRegionCalculator:
         self.ucbVal = []
         self.rockBestFit = []
 
-    def PreDbscan(self, epsilon, data_x,n_clusters_=-1, noClusterFlag=False, clusterMethod="DBScan"):
+    def PreDbscan(self, epsilon, data_x, n_clusters_=-1, noClusterFlag=False, clusterMethod="DBScan"):
         """
         使用DBScan密度聚类做数据集分割
         Args:
@@ -156,7 +156,7 @@ class subRegionCalculator:
             # 选择UCB值最大的子区间进行演化:ucbs[0]存储各个子区间的ucb值，[1]存储各子区间所代表结果的最优适应度，##[2]存储各子区间被选中次数，[3]表示总次数
             for i in range(len(self.ucbVal)):
                 self.ucbVal[i] = 1 / (self.rockBestFit[i] + 1) + self.lbd * math.sqrt(
-                    math.log(self.abRockSum ) / (self.abRockNum[i] ))
+                    math.log(self.abRockSum) / (self.abRockNum[i]))
             maxUCB = max(self.ucbVal)
             for ucb in self.ucbVal:
                 if abs(ucb - maxUCB) < 1e-5:
@@ -319,7 +319,7 @@ class subRegionCalculator:
         X_trains = self.CalXOfLasso()  # 将各子块的top3个体按7:2:1的概率执行稀疏回归-->改为最优+随机 组合
         try:
             for X_train in X_trains:
-                if X_train == []: continue
+                if not X_train: continue
                 if len(self.subRegions) <= 5:
                     alphas = [0, 0.2, 0.3, 0.6, 0.8, 1.0]
                 else:
@@ -415,13 +415,13 @@ class subRegionCalculator:
 
         """
 
-    def CalCountofAvailableParameters(self, np_x,epsilons=None, clusters=None):
+    def CalCountofAvailableParameters(self, np_x, epsilons=None, clusters=None):
         count = 0
-        if epsilons != None:
+        if epsilons is not None:
             for epsilon in epsilons:
                 if epsilon == 1e-5: continue
-                if self.PreDbscan(epsilon, clusterMethod="DBSCAN",data_x=np_x) == True:
+                if self.PreDbscan(epsilon, clusterMethod="DBSCAN", data_x=np_x):
                     count += 1
             return count + 1
-        elif clusters != None:
+        elif clusters is not None:
             return len(clusters)

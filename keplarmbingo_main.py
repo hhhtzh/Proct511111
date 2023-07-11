@@ -30,7 +30,7 @@ fit_list = []
 top3s = []
 
 for db_i in db_sum:
-    data_i = Data("numpy", db_i, ["x", "y"])
+    data_i = Data("numpy", db_i, ["x1", "x2", "x3", "x4", 'y'])
     data_i.read_file()
     taylor = TaylorJudge(data_i, "taylorgp")
     jd = taylor.do()
@@ -52,5 +52,6 @@ for db_i in db_sum:
 # print(programs)
 # print(fit_list)
 if n_cluster > 1:
-    spare = KeplarSpareseRegression(n_cluster, programs, fit_list, data, 5)
+    spare = KeplarSpareseRegression(n_cluster, programs, fit_list, data, 488)
     spare.do()
+    final_best_fit = spare.bestLassoFitness

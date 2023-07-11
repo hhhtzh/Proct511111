@@ -1,3 +1,4 @@
+import pandas as pd
 from pmlb import fetch_data
 from keplar.Algorithm.Alg import KeplarBingoAlg, GpBingoAlg
 
