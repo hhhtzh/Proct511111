@@ -1,5 +1,6 @@
 import random
 from abc import abstractmethod
+import time
 
 import numpy as np
 
@@ -271,11 +272,14 @@ class GpBingoAlg(Alg):
     def __init__(self, max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population):
         super().__init__(max_generation, up_op_list, down_op_list,
                          eva_op_list, error_tolerance, population)
+        self.best_fit = None
+        self.elapse_time = None
 
     def get_best_individual(self):
         return self.population.target_pop_list[self.population.get_tar_best()]
 
     def run(self):
+        t = time.time()
         generation_pop_size = self.population.get_pop_size()
         self.eval_op_list.do(self.population)
         now_error = self.population.get_best_fitness()
@@ -292,6 +296,8 @@ class GpBingoAlg(Alg):
         best_ind = str(self.get_best_individual())
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+        self.best_fit=now_error
+        self.elapse_time = time.time() - t
 
 
 class BingoAlg(Alg):
@@ -303,9 +309,13 @@ class BingoAlg(Alg):
                  NUM_POINTS=100,
                  START=-10,
                  STOP=10,
-                 ERROR_TOLERANCE=1e-6, metric="rmse",up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
+                 ERROR_TOLERANCE=1e-6, metric="rmse", up_op_list=None, down_op_list=None, eval_op_list=None,
+                 error_tolerance=None,
                  population=None):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.elapse_time = None
+        self.best_fit = None
+        self.best_ind = None
         self.island = None
         self.metric = metric
         self.ERROR_TOLERANCE = ERROR_TOLERANCE
@@ -319,12 +329,11 @@ class BingoAlg(Alg):
         self.operators = operators
         self.data = data
 
-    def report_island_status(self,test_island):
+    def report_island_status(self, test_island):
         print("-----  Generation %d  -----" % test_island.generational_age)
         print("Best individual:     ", test_island.get_best_individual())
         print("Best fitness:        ", test_island.get_best_fitness())
         print("Fitness evaluations: ", test_island.get_fitness_evaluation_count())
-
 
     def init_island(self):
         np.random.seed(4)
@@ -340,7 +349,7 @@ class BingoAlg(Alg):
 
         agraph_generator = AGraphGenerator(self.STACK_SIZE, component_generator)
 
-        fitness = ExplicitRegression(training_data=training_data,metric=self.metric)
+        fitness = ExplicitRegression(training_data=training_data, metric=self.metric)
         optimizer = ScipyOptimizer(fitness, method="lm")
         local_opt_fitness = LocalOptFitnessFunction(fitness, optimizer)
         evaluator = Evaluation(local_opt_fitness)
@@ -359,11 +368,14 @@ class BingoAlg(Alg):
         return island
 
     def run(self):
+        t = time.time()
         test_island = self.init_island()
         self.report_island_status(test_island)
         test_island.evolve_until_convergence(
             max_generations=1000, fitness_threshold=self.ERROR_TOLERANCE
         )
         self.report_island_status(test_island)
-        self.island=test_island
-
+        self.island = test_island
+        self.best_ind = test_island.get_best_individual()
+        self.best_fit = test_island.get_best_fitness()
+        self.elapse_time = time.time() - t

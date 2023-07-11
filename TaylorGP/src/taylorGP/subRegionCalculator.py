@@ -156,7 +156,7 @@ class subRegionCalculator:
             # 选择UCB值最大的子区间进行演化:ucbs[0]存储各个子区间的ucb值，[1]存储各子区间所代表结果的最优适应度，##[2]存储各子区间被选中次数，[3]表示总次数
             for i in range(len(self.ucbVal)):
                 self.ucbVal[i] = 1 / (self.rockBestFit[i] + 1) + self.lbd * math.sqrt(
-                    math.log(self.abRockSum + 300) / (self.abRockNum[i] + 300))
+                    math.log(self.abRockSum ) / (self.abRockNum[i] ))
             maxUCB = max(self.ucbVal)
             for ucb in self.ucbVal:
                 if abs(ucb - maxUCB) < 1e-5:
@@ -220,11 +220,11 @@ class subRegionCalculator:
             self.abRockNum[selectedRegionIndex] += 1
             self.abRockSum += 1
             parents, qualified_list, Y_pred = None, None, None
-            if get_value('FIRST_EVOLUTION_FLAG') != True:  # 除去第一次，以后演化基于之前的父代，并且若不不存在父代说明是低阶多项式不用演化直接跳过，此处也不影响MAB
+            if not get_value('FIRST_EVOLUTION_FLAG'):  # 除去第一次，以后演化基于之前的父代，并且若不不存在父代说明是低阶多项式不用演化直接跳过，此处也不影响MAB
                 subRegionFindBestFlag = self.tops[selectedRegionIndex][3]
                 qualified_list = self.tops[selectedRegionIndex][4]
                 Y_pred = self.tops[selectedRegionIndex][5]
-                if subRegionFindBestFlag == False:
+                if not subRegionFindBestFlag:
                     parents = self.tops[selectedRegionIndex][2]
                 else:
                     continue

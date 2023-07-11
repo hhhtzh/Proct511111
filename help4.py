@@ -1,3 +1,5 @@
+import csv
+import os
 import re
 
 import numpy as np
@@ -121,6 +123,11 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # sk.do(data)
 # for i in range(2):
 #     print("ee")
-a=[1,2,3]
-a.sort(reverse=True)
-print(a)
+# a = [1, 2, 3]
+# a = np.array(a).reshape(1, -1)
+# b = np.array([1, 1, 1]).reshape(1, -1)
+# a = np.vstack((a, b))
+# print(a)
+# a.sort(reverse=True)
+# print(a)
+
