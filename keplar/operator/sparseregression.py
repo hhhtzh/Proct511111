@@ -36,6 +36,10 @@ class KeplarSpareseRegression(Operator):
         self.bestLassoFitness = None
 
     def do(self, population=None):
+        self.bestLassoFitness = self.fit_list[0][0]
+        for i in self.fit_list:
+            if i[0] < self.bestLassoFitness:
+                self.bestLassoFitness = i[0]
         Y = self.dataSets.get_np_y()
         func_fund_list = []
         for i in range(self.func_fund_num):
@@ -57,3 +61,9 @@ class KeplarSpareseRegression(Operator):
             Y_pred = lasso_.predict(xtrain)
             rmseFitness = mean_squared_error(Y_pred, Y)
             self.curLassoCoef = lasso_.coef_
+            if rmseFitness < self.bestLassoFitness:
+                self.bestLassoFitness = rmseFitness
+                self.globalBestLassoCoef = self.curLassoCoef
+                if self.bestLassoFitness != float("inf"):
+                    print("结果提升为: ", self.bestLassoFitness)
+

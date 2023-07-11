@@ -12,37 +12,38 @@ from TaylorGP.src.taylorGP._global import set_value, _init
 from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
 from keplar.Algorithm.Alg import Alg
 from TaylorGP.src.taylorGP.utils import check_random_state
-from keplar.translator.translator import trans_taylor_program,taylor_trans_population
+from keplar.translator.translator import trans_taylor_program, taylor_trans_population
 # from TaylorGP.src.taylorGP.genetic import BaseSymbolic
 from TaylorGP.src.taylorGP.fitness import _mean_square_error, _weighted_spearman, _log_loss, _mean_absolute_error, \
     _Fitness
 import math
 
 
-
-
 class TayloGPAlg(Alg):
-    def __init__(self, generation,taylorGP_pre1,taylorGP_pre2, selector,creator,crossover,mutation,method_probs,taylorsort,evaluator):
-        self.generation=generation
-        self.taylorGP_pre1=taylorGP_pre1
-        self.taylorGP_pre2=taylorGP_pre2
-        self.selector=selector
-        self.creator=creator
-        self.crossover=crossover
-        self.mutation=mutation
-        self.method_probs=method_probs
-        self.evaluator=evaluator
-        self.taylorsort=taylorsort
-        self.parsimony_coefficient=0.001
+    def __init__(self, generation, taylorGP_pre1, taylorGP_pre2, selector, creator, crossover, mutation, method_probs,
+                 taylorsort, evaluator, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance,
+                 population):
+        super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.generation = generation
+        self.taylorGP_pre1 = taylorGP_pre1
+        self.taylorGP_pre2 = taylorGP_pre2
+        self.selector = selector
+        self.creator = creator
+        self.crossover = crossover
+        self.mutation = mutation
+        self.method_probs = method_probs
+        self.evaluator = evaluator
+        self.taylorsort = taylorsort
+        self.parsimony_coefficient = 0.001
         self.population_size = 1000
         self.run_details_ = {'generation': [],
-                                 'average_length': [],
-                                 'average_fitness': [],
-                                 'best_length': [],
-                                 'best_fitness': [],
-                                 'best_oob_fitness': [],
-                                 'generation_time': []}
-        self.max_samples =1.0
+                             'average_length': [],
+                             'average_fitness': [],
+                             'best_length': [],
+                             'best_fitness': [],
+                             'best_oob_fitness': [],
+                             'generation_time': []}
+        self.max_samples = 1.0
         self.verbose = 1
         self.stopping_criteria = 0.0
         self.sample_weight = None
@@ -50,9 +51,7 @@ class TayloGPAlg(Alg):
         # self.X =X
         # self.y =y 
 
-
-    
-    def print_details(self, run_details=None ,i =None):
+    def print_details(self, run_details=None, i=None):
         """A report of the progress of the evolution process.
 
         Parameters
@@ -80,7 +79,6 @@ class TayloGPAlg(Alg):
             #     remaining_time = '{0:.2f}s'.format(remaining_time)
             remaining_time = '{0:.2f}s'.format(0.0)
 
-
             oob_fitness = 'N/A'
             # line_format = '{:4d} {:8.2f} {:16g} {:8d} {:16g} {:>16} {:>10}'
             # if self.max_samples < 1.0:
@@ -96,7 +94,7 @@ class TayloGPAlg(Alg):
                                      remaining_time
                                      ))
 
-    def select_by_crowding_distance(self,population,front,reminder):
+    def select_by_crowding_distance(self, population, front, reminder):
         cur_population = copy.deepcopy([population[i] for i in front])
         cur_population.sort(key=lambda x: x.raw_fitness_)
         sorted1 = copy.deepcopy(cur_population)
@@ -106,16 +104,16 @@ class TayloGPAlg(Alg):
         distance[0] = 4444444444444444
         distance[len(front) - 1] = 4444444444444444
         fitness_ = [sorted1[i].raw_fitness_ for i in range(len(cur_population))]
-        length_ =  [sorted2[i].length_ for i in range(len(cur_population))]
-        maxFit,minFit,maxLen,minLen = max(fitness_),min(fitness_),max(length_),min(length_)
-        #第k个个体的距离就是front[k]的距离----dis[k]==front[k]
+        length_ = [sorted2[i].length_ for i in range(len(cur_population))]
+        maxFit, minFit, maxLen, minLen = max(fitness_), min(fitness_), max(length_), min(length_)
+        # 第k个个体的距离就是front[k]的距离----dis[k]==front[k]
         for k in range(1, len(front) - 1):
             distance[k] = distance[k] + (fitness_[k + 1] - fitness_[k - 1]) / (
-                        maxFit - minFit+0.01)
+                    maxFit - minFit + 0.01)
         for k in range(1, len(front) - 1):
             distance[k] = distance[k] + (length_[k + 1] - length_[k - 1]) / (
-                        maxLen - minLen+0.01)
-        index_ = sorted(range(len(distance)),key=lambda k:distance[k])
+                    maxLen - minLen + 0.01)
+        index_ = sorted(range(len(distance)), key=lambda k: distance[k])
         index_.reverse()
         reminderPop = [cur_population[i] for i in index_][:reminder]
         return reminderPop
@@ -123,7 +121,7 @@ class TayloGPAlg(Alg):
     def run(self):
         X, Y, qualified_list = self.taylorGP_pre1.do()
         self.taylorGP_pre2.get_value(X, Y, qualified_list)
-        X,y,params,population_size,seeds,qualified_list,function_set,n_features= self.taylorGP_pre2.do()
+        X, y, params, population_size, seeds, qualified_list, function_set, n_features = self.taylorGP_pre2.do()
         parents = None
 
         n_samples, n_features = X.shape
@@ -138,13 +136,13 @@ class TayloGPAlg(Alg):
             start_time = time()
             # if get_value('FIRST_EVOLUTION_FLAG') == False:
             if gen == 0:
-                parents = population_input #if第一轮，传的是空父母，如果第二轮，传的是非空父母，所以不用分开处理
-                if parents !=None:
+                parents = population_input  # if第一轮，传的是空父母，如果第二轮，传的是非空父母，所以不用分开处理
+                if parents != None:
                     self._programs.append(population_input)
                     best_program = parents[0]
                     best_program_fitness_ = parents[0]
                     continue
-            else:#针对第二代演化父母都已经发生改变了，与是不是第一轮没有关系
+            else:  # 针对第二代演化父母都已经发生改变了，与是不是第一轮没有关系
                 parents = self._programs[gen - 1]
                 # 已经是排过序的了！！！
                 # parents.sort(key=lambda x: x.raw_fitness_)
@@ -232,10 +230,3 @@ class TayloGPAlg(Alg):
                 best_fitness = fitness[np.argmin(fitness)]
                 if best_fitness <= self.stopping_criteria:
                     break
-
-
-
-
-
-        
-        

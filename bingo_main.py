@@ -18,5 +18,5 @@ for i in range(10):
 
 fit_pd = pd.DataFrame({'BingoCPP': fit_list})
 time_pd = pd.DataFrame({'BingoCPP': time_list})
-fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',')
-time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',')
+fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
+time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")
