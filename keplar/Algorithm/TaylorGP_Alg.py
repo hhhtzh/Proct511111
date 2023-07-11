@@ -26,9 +26,76 @@ from keplar.population.population import Population
 MAX_INT = np.iinfo(np.int32).max
 import itertools
 
+    
+def _parallel_evolve(n_programs, population, X, y, sample_weight, seeds, params,crossover,mutation):
+    """Private function used to build a batch of programs within a job."""
+    n_samples, n_features = X.shape
+    # Unpack parameters
+    tournament_size = params['tournament_size']
+    function_set = params['function_set']
+    arities = params['arities']
+    init_depth = params['init_depth']
+    init_method = params['init_method']
+    const_range = params['const_range']
+    metric = params['_metric']
+    transformer = params['_transformer']
+    parsimony_coefficient = params['parsimony_coefficient']
+    method_probs = params['method_probs']
+    p_point_replace = params['p_point_replace']
+    max_samples = params['max_samples']
+    feature_names = params['feature_names']
+    selected_space = params['selected_space']
+    qualified_list = params['qualified_list'] #合格判别标准
+    eq_write = params['eq_write'] #用于将所有生成的公式写入eq_write文件
+
+    max_samples = int(max_samples * n_samples)
+
+    def _tournament():
+        """Find the fittest individual from a sub-population."""
+        contenders = random_state.randint(0, len(parents),tournament_size)
+        fitness = [parents[p].fitness_ for p in contenders]
+        if metric.greater_is_better:
+            parent_index = contenders[np.argmax(fitness)]
+        else:
+            parent_index = contenders[np.argmin(fitness)]
+        return parents[parent_index], parent_index
+
+    # Build programs
+    programs = []
+    parents = population.target_pop_list
+
+    for i in range(n_programs):
+        random_state = check_random_state(i)
+
+        if parents is None:
+            program = None
+            genome = None
+        else:
+            method = random_state.uniform()
+            parent, parent_index = _tournament()
+            if method < method_probs[0]:
+
+                # crossover
+                donor, donor_index = _tournament()
+
+                crossover.get_value(random_state,parent,donor.program,i)
+                program, removed, remains = crossover.do(population)
+                # program =None
+
+                genome = {'method': 'Crossover',
+                        'parent_idx': parent_index,
+                        # 'parent_nodes': removed,
+                        'donor_idx': donor_index
+                        # 'donor_nodes': remains}
+                        }
+            elif method < method_probs[1]:
+                # subtree_mutation
+                mutation.get_value(1, random_state,  parent, i)
+                program, removed, _ = mutation.do(population)
+                # program =None
 
 
-
+# <<<<<<< HEAD
                 # program, removed, _ = parent.subtree_mutation(random_state)
                 genome = {'method': 'Subtree Mutation',
                         'parent_idx': parent_index,
@@ -138,11 +205,8 @@ class TayloGPAlg(Alg):
 
 
 
+    def _verbose_reporter(self, run_details=None):
 
-
-
-    
-    def print_details(self, run_details=None ,i =None):
         """A report of the progress of the evolution process.
 
         Parameters
@@ -164,11 +228,19 @@ class TayloGPAlg(Alg):
             gen = run_details['generation'][-1]
             # generation_time = run_details['generation_time'][-1]
             # remaining_time = (self.generations - gen - 1) * generation_time
+# <<<<<<< HEAD
             remaining_time = 0
             if remaining_time > 60:
                 remaining_time = '{0:.2f}m'.format(remaining_time / 60.0)
             else:
                 remaining_time = '{0:.2f}s'.format(remaining_time)
+# =======
+            # if remaining_time > 60:
+            #     remaining_time = '{0:.2f}m'.format(remaining_time / 60.0)
+            # else:
+            #     remaining_time = '{0:.2f}s'.format(remaining_time)
+            remaining_time = '{0:.2f}s'.format(0.0)
+# >>>>>>> c0ed278302bd149db82e0ea24012f794506aed24
 
             oob_fitness = 'N/A'
             line_format = '{:4d} {:8.2f} {:16g} {:8d} {:16g} {:>16} {:>10}'
@@ -182,9 +254,16 @@ class TayloGPAlg(Alg):
                                      run_details['best_length'][-1],
                                      run_details['best_fitness'][-1],
                                      oob_fitness,
-                                     remaining_time))
+# <<<<<<< HEAD
+#                                      remaining_time))
             
-    def select_by_crowding_distance(self,population,front,reminder):
+#     def select_by_crowding_distance(self,population,front,reminder):
+# =======
+                                     remaining_time
+                                     ))
+
+    def select_by_crowding_distance(self, population, front, reminder):
+# >>>>>>> c0ed278302bd149db82e0ea24012f794506aed24
         cur_population = copy.deepcopy([population[i] for i in front])
         cur_population.sort(key=lambda x: x.raw_fitness_)
         sorted1 = copy.deepcopy(cur_population)
@@ -211,8 +290,12 @@ class TayloGPAlg(Alg):
     def run(self):
         X, Y, qualified_list = self.taylorGP_pre1.do()
         self.taylorGP_pre2.get_value(X, Y, qualified_list)
-        X,y,params,population_size,seeds,qualified_list,function_set,n_features= self.taylorGP_pre2.do()
-        parents = None
+# <<<<<<< HEAD
+        X,y,params,population_size,seeds,qualified_list,function_set,n_features,sample_weight= self.taylorGP_pre2.do()
+# =======
+#         X, y, params, population_size, seeds, qualified_list, function_set, n_features = self.taylorGP_pre2.do()
+# >>>>>>> c0ed278302bd149db82e0ea24012f794506aed24
+#         parents = None
 
         n_samples, n_features = X.shape
         max_samples = params['max_samples']
@@ -237,7 +320,12 @@ class TayloGPAlg(Alg):
                     best_program = parents[0]
                     best_program_fitness_ = parents[0]
                     continue
-            else:#针对第二代演化父母都已经发生改变了，与是不是第一轮没有关系
+# <<<<<<< HEAD
+                self._verbose_reporter()
+#             else:#针对第二代演化父母都已经发生改变了，与是不是第一轮没有关系
+# =======
+#             else:  # 针对第二代演化父母都已经发生改变了，与是不是第一轮没有关系
+# >>>>>>> c0ed278302bd149db82e0ea24012f794506aed24
                 parents = self._programs[gen - 1]
                 # 已经是排过序的了！！！
                 # parents.sort(key=lambda x: x.raw_fitness_)
