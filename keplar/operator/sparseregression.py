@@ -25,6 +25,7 @@ from keplar.operator.operator import Operator
 class KeplarSpareseRegression(Operator):
     def __init__(self, n_cluster, ind_list, fit_list, dataSets, func_fund_num=488):
         super().__init__()
+        self.rockBestFit = []
         self.func_fund_num = func_fund_num
         self.dataSets = dataSets
         self.fit_list = fit_list
@@ -70,5 +71,9 @@ class KeplarSpareseRegression(Operator):
                 self.globalBestLassoCoef = self.curLassoCoef
                 if self.bestLassoFitness != float("inf"):
                     print("结果提升为: ", self.bestLassoFitness)
+        print(self.globalBestLassoCoef)
+        for i, coef in enumerate(self.globalBestLassoCoef):
+            if abs(coef) > 1e-5:
+                self.rockBestFit[i] = self.bestLassoFitness
         print("最终适应度为"+str(self.bestLassoFitness))
 
