@@ -130,6 +130,11 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # print(a)
 # a.sort(reverse=True)
 # print(a)
-a=1
-b=[0]*9
-print(b)
+# a=1
+# b=[0]*9
+# print(b)
+a=[1,1,1]
+
+for b,i in enumerate(a):
+    print("b:"+str(b))
+    print("i:"+str(i))

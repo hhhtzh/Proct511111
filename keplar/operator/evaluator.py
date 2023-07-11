@@ -22,7 +22,7 @@ class Evaluator(Operator):
 
 
 class BingoEvaluator(Evaluator):
-    def __init__(self, x, fit, optimizer_method, to_type, y=None, dx_dt=None, metric="mae"):
+    def __init__(self, x, fit, optimizer_method, to_type, y=None, dx_dt=None, metric="rmse"):
         super().__init__()
         self.metric = metric
         self.to_type = to_type
