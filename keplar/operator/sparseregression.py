@@ -23,7 +23,7 @@ from keplar.operator.operator import Operator
 
 
 class KeplarSpareseRegression(Operator):
-    def __init__(self, n_cluster, ind_list, fit_list, dataSets, func_fund_num=5):
+    def __init__(self, n_cluster, ind_list, fit_list, dataSets, func_fund_num=488):
         super().__init__()
         self.func_fund_num = func_fund_num
         self.dataSets = dataSets
@@ -52,11 +52,15 @@ class KeplarSpareseRegression(Operator):
         xtrain = eval.do()
         # print(xtrain)
         # print(func_fund_list)
-        if len(self.n_cluster) <= 5:
+        if self.n_cluster <= 5:
             alphas = [0, 0.2, 0.3, 0.6, 0.8, 1.0]
         else:
             alphas = [0.2, 0.3, 0.6, 0.8, 1.0]
         for alpha in alphas:
+            print(xtrain)
+            print(Y)
+            print(xtrain.shape)
+            print(Y.shape)
             lasso_ = Lasso(alpha=alpha).fit(xtrain, Y)
             Y_pred = lasso_.predict(xtrain)
             rmseFitness = mean_squared_error(Y_pred, Y)
@@ -66,4 +70,5 @@ class KeplarSpareseRegression(Operator):
                 self.globalBestLassoCoef = self.curLassoCoef
                 if self.bestLassoFitness != float("inf"):
                     print("结果提升为: ", self.bestLassoFitness)
+        print("最终适应度为"+str(self.bestLassoFitness))
 

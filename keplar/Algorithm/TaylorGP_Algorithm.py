@@ -289,6 +289,8 @@ class MTaylorGPAlg(Alg):
                  population=None,
                  recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn", mabPolicy="Greedy"):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.elapse_time = None
+        self.best_fit = None
         self.mabPolicy = mabPolicy
         self.SR_method = SR_method
         self.ds = ds
@@ -305,6 +307,7 @@ class MTaylorGPAlg(Alg):
                    x24, x25, x26, x27, x28, x29])
 
     def run(self):
+        t = time.time()
         np_x = self.ds.get_np_x()
         np_y = self.ds.get_np_y()
         np_y = np_y.reshape([-1, 1])
@@ -343,6 +346,8 @@ class MTaylorGPAlg(Alg):
                         exit()
                 print("Temp Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
             print("Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
+        self.best_fit = SRC.bestLassoFitness
+        self.elapse_time = time.time() - t
 
     """
         for fileNum in range(19,20):

@@ -19,6 +19,8 @@ class OperonAlg(Alg):
                  error_tolerance, population_size, threads_num, np_x, np_y, minL=1, maxL=50, maxD=10,
                  decimalPrecision=5, population=None):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.elapse_time = None
+        self.best_fit = None
         self.model_fit = None
         self.model_string = None
         self.population_size = population_size
@@ -34,6 +36,7 @@ class OperonAlg(Alg):
         self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
 
     def run(self):
+        t = time.time()
         selector = self.sel.do()
         target = self.ds.Variables[-1]
         eva = self.eval_op_list[0]
@@ -107,6 +110,7 @@ class OperonAlg(Alg):
                                                 reinsert)
         interval = 1 if config.Generations < max_ticks else int(np.round(config.Generations / max_ticks, 0))
 
+
         def report():
             global gen
             best = gp.BestModel
@@ -131,3 +135,5 @@ class OperonAlg(Alg):
         self.model_fit=model_fit
         print(f'\n{model_string}')
         print("最好适应度"+f'\n{model_fit}')
+        self.best_fit = model_fit
+        self.elapse_time = time.time() - t
