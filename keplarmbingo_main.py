@@ -65,5 +65,5 @@ if n_cluster > 1:
     final_best_fit = spare.bestLassoFitness
     rockBestFit = spare.rockBestFit
     ucb=KeplarJudgeUCB(n_cluster,abRockSum,abRockNum,rockBestFit)
-    ucb.do()
+    ucb.pos_do()
 

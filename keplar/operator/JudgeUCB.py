@@ -13,7 +13,7 @@ class KeplarJudgeUCB(Operator):
         self.n_cluster = subregion_num
         self.lbd = None
         self.rockBestFit = rockBestFit
-        self.ucbVal = None
+        self.ucbVal = []
 
     def pos_do(self):
         for i in range(self.n_cluster):

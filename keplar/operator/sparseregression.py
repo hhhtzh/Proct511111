@@ -65,15 +65,15 @@ class KeplarSpareseRegression(Operator):
             lasso_ = Lasso(alpha=alpha).fit(xtrain, Y)
             Y_pred = lasso_.predict(xtrain)
             rmseFitness = mean_squared_error(Y_pred, Y)
-            self.curLassoCoef = lasso_.coef_
+            # self.curLassoCoef = lasso_.coef_
             if rmseFitness < self.bestLassoFitness:
                 self.bestLassoFitness = rmseFitness
                 self.globalBestLassoCoef = self.curLassoCoef
                 if self.bestLassoFitness != float("inf"):
                     print("结果提升为: ", self.bestLassoFitness)
-        print(self.globalBestLassoCoef)
-        for i, coef in enumerate(self.globalBestLassoCoef):
-            if abs(coef) > 1e-5:
-                self.rockBestFit[i] = self.bestLassoFitness
+        # print(self.globalBestLassoCoef)
+        # for i, coef in enumerate(self.globalBestLassoCoef):
+        for i in range(self.n_cluster):
+            self.rockBestFit.append(self.bestLassoFitness)
         print("最终适应度为"+str(self.bestLassoFitness))
 
