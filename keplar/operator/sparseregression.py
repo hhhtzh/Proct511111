@@ -2,7 +2,7 @@ import math
 import random
 
 import numpy as np
-from sklearn.linear_model import Lasso
+from sklearn.linear_model import Lasso, LassoCV
 
 from sklearn.metrics import mean_squared_error
 from sklearn.svm._libsvm import predict
@@ -10,7 +10,7 @@ from sklearn.svm._libsvm import predict
 from TaylorGP.src.taylorGP.subRegionCalculator import CalFitness
 from keplar.operator.evaluator import MetricsBingoEvaluator
 from keplar.operator.operator import Operator
-
+from keplar.operator.predictor import MetricsBingoPredictor
 
 
 # class SparseRegression(Operator):
@@ -51,8 +51,10 @@ class KeplarSpareseRegression(Operator):
                 index = math.floor(random.random() * len(ind_arr))
                 func_fund.append(ind_arr[index])
             func_fund_list.append(func_fund)
-        eval = MetricsBingoEvaluator(self.dataSets, func_fund_list=func_fund_list)
-        xtrain = eval.do()
+        pred = MetricsBingoPredictor(self.dataSets, func_fund_list=func_fund_list)
+        xtrain = pred.do()
+        print(xtrain)
+        print(Y)
         # print(xtrain)
         # print(func_fund_list)
         if self.n_cluster <= 5:
@@ -60,14 +62,11 @@ class KeplarSpareseRegression(Operator):
         else:
             alphas = [0.2, 0.3, 0.6, 0.8, 1.0]
         for alpha in alphas:
-            print(xtrain)
-            print(Y)
-            print(xtrain.shape)
-            print(Y.shape)
             lasso_ = Lasso(alpha=alpha).fit(xtrain, Y)
             Y_pred = lasso_ .predict(xtrain)
+            print(Y_pred)
             rmseFitness = mean_squared_error(Y_pred, Y)
-            # self.curLassoCoef = lasso_.coef_
+            self.curLassoCoef = lasso_.coef_
             if rmseFitness < self.bestLassoFitness:
                 self.bestLassoFitness = rmseFitness
                 self.globalBestLassoCoef = self.curLassoCoef
@@ -78,4 +77,5 @@ class KeplarSpareseRegression(Operator):
         for i in range(self.n_cluster):
             self.rockBestFit.append(self.bestLassoFitness)
         print("最终适应度为"+str(self.bestLassoFitness))
+        print("coef:"+str(self.curLassoCoef))
 
