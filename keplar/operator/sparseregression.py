@@ -72,12 +72,14 @@ class KeplarSpareseRegression(Operator):
                 self.globalBestLassoCoef = self.curLassoCoef
                 if self.bestLassoFitness != float("inf"):
                     print("结果提升为: ", self.bestLassoFitness)
+
+                for i, coef in enumerate(self.globalBestLassoCoef):
+                    if abs(coef) > 1e-5:
+                        self.rockBestFit.append(self.bestLassoFitness)
         # print(self.globalBestLassoCoef)
         # for i, coef in enumerate(self.globalBestLassoCoef):
         print( self.globalBestLassoCoef)
-        for i, coef in enumerate(self.globalBestLassoCoef):
-            if abs(coef) > 1e-5:
-                self.rockBestFit.append(self.bestLassoFitness)
+
         print("最终适应度为"+str(self.bestLassoFitness))
         print("coef:"+str(self.curLassoCoef))
 
