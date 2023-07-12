@@ -5,10 +5,12 @@ import numpy as np
 from sklearn.linear_model import Lasso
 
 from sklearn.metrics import mean_squared_error
+from sklearn.svm._libsvm import predict
 
 from TaylorGP.src.taylorGP.subRegionCalculator import CalFitness
 from keplar.operator.evaluator import MetricsBingoEvaluator
 from keplar.operator.operator import Operator
+
 
 
 # class SparseRegression(Operator):
@@ -63,7 +65,7 @@ class KeplarSpareseRegression(Operator):
             print(xtrain.shape)
             print(Y.shape)
             lasso_ = Lasso(alpha=alpha).fit(xtrain, Y)
-            Y_pred = lasso_.predict(xtrain)
+            Y_pred = lasso_ .predict(xtrain)
             rmseFitness = mean_squared_error(Y_pred, Y)
             # self.curLassoCoef = lasso_.coef_
             if rmseFitness < self.bestLassoFitness:

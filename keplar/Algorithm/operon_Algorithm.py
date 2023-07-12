@@ -78,7 +78,7 @@ class OperonAlg(Alg):
             raise ValueError("Operon创建树的类型名称错误")
         config = Operon.GeneticAlgorithmConfig(generations=self.max_generation, max_evaluations=1000000,
                                                local_iterations=0,
-                                               population_size=1000, pool_size=1000, p_crossover=1.0, p_mutation=0.25,
+                                               population_size=128, pool_size=1000, p_crossover=1.0, p_mutation=0.25,
                                                epsilon=1e-5, seed=1, time_limit=86400)
         coeff_initializer = Operon.NormalCoefficientInitializer()
         coeff_initializer.ParameterizeDistribution(0, 1)
