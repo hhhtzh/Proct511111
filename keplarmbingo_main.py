@@ -3,6 +3,7 @@ import numpy as np
 from keplar.Algorithm.Alg import BingoAlg
 from keplar.Algorithm.operon_Algorithm import OperonAlg
 from keplar.data.data import Data
+from keplar.operator.JudgeUCB import KeplarJudgeUCB
 from keplar.operator.crossover import OperonCrossover
 from keplar.operator.evaluator import OperonEvaluator, MetricsBingoEvaluator
 from keplar.operator.mutation import OperonMutation
@@ -28,7 +29,8 @@ n_cluster = num
 programs = []
 fit_list = []
 top3s = []
-
+abRockSum = 0
+abRockNum = []
 for db_i in db_sum:
     data_i = Data("numpy", db_i, ["x1", "x2", "x3", "x4", 'y'])
     data_i.read_file()
@@ -37,8 +39,14 @@ for db_i in db_sum:
     if jd == "end":
         programs.append([taylor.program])
         fit_list.append([taylor.end_fitness])
+        abRockNum.append(100000)
+        abRockSum += 100000
     else:
-        bingo = BingoAlg(1000, data, operators=operators)
+        generation = 1000
+        pop_size = 128
+        abRockNum.append(generation * pop_size)
+        abRockSum += generation * pop_size
+        bingo = BingoAlg(generation, data, operators=operators, POP_SIZE=pop_size)
         bingo.run()
         bingo_top3 = bingo.island.get3top()
         top_str_ind = []
@@ -55,3 +63,6 @@ if n_cluster > 1:
     spare = KeplarSpareseRegression(n_cluster, programs, fit_list, data, 488)
     spare.do()
     final_best_fit = spare.bestLassoFitness
+    rockBestFit = spare.rockBestFit
+    ucb = KeplarJudgeUCB(n_cluster, abRockSum, abRockNum, rockBestFit)
+    ucb.pos_do()

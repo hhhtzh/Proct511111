@@ -18,7 +18,7 @@ data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 fit_list = []
 time_list = []
 data.read_file()
-data.set_xy("y")
+# data.set_xy("y")
 x = data.get_x()
 y = data.get_y()
 operators = ["+", "-", "*", "/", "^"]

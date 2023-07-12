@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from keplar.Algorithm.operon_Algorithm import OperonAlg
 from keplar.data.data import Data
@@ -11,9 +12,10 @@ from keplar.operator.selector import OperonSelector
 
 # data = Data("txt", "datasets/1.txt", ["x", "y"])
 # data = Data("txt", "datasets/2.txt", ["x0", "x1","x2","x3","x4","y"])
+
 data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 data.read_file()
-data.set_xy("y")
+# data.set_xy("y")
 fit_list = []
 time_list = []
 x = data.get_np_x()
@@ -27,4 +29,11 @@ op_up_list = [mutation, crossover]
 op_down_list = [reinsert]
 eva_list = [evaluator]
 op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, selector, 1e-5, 1000, 16, x, y)
-op_alg.run()
+for i in range(10):
+    op_alg.run()
+    fit_list.append(op_alg .best_fit)
+    time_list.append(op_alg .elapse_time)
+fit_pd = pd.DataFrame({'Operon': fit_list})
+time_pd = pd.DataFrame({'Operon': time_list})
+fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
+time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")

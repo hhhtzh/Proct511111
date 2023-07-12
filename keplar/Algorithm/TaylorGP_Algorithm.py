@@ -8,6 +8,7 @@ import numpy as np
 from numpy import shape
 from sympy import symbols
 
+from TaylorGP.TaylorGP2_KMEANS import Cal_fitness_Coef
 from TaylorGP.src.taylorGP._global import set_value, _init
 from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
 from keplar.Algorithm.Alg import Alg

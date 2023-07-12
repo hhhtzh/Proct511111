@@ -70,10 +70,10 @@ class KeplarBingoAlg(Alg):
                 self.up_op_list.do(self.population)
             self.eval_op_list.do(self.population)
             now_error = self.population.get_best_fitness()
-            best_ind = str(self.get_best_individual())
+            # best_ind = str(self.get_best_individual())
             self.age += 1
-            print("第" + f"{self.age}代种群，" +
-                  f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+            # print("第" + f"{self.age}代种群，" +
+            #       f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
         best_ind = str(self.get_best_individual())
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
@@ -120,6 +120,8 @@ class OperonBingoAlg(Alg):
     def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population, selector,
                  np_x, np_y, pool_size):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.elapse_time = None
+        self.best_fit = None
         self.pool_size = pool_size
         self.selector = selector
         self.np_y = np_y.reshape([-1, 1])
@@ -136,6 +138,7 @@ class OperonBingoAlg(Alg):
             return self.population.pop_list[best_num].format()
 
     def run(self):
+        t=time.time()
         for i in self.eval_op_list:
             i.do(self.population)
         now_error = self.population.get_best_fitness()
@@ -149,14 +152,16 @@ class OperonBingoAlg(Alg):
             reinserter = KeplarReinserter(pool_list, "self")
             reinserter.do(self.population)
             now_error = self.population.get_best_fitness()
-            best_ind = str(self.get_best_individual())
+            # best_ind = str(self.get_best_individual())
             self.age += 1
-            print("第" + f"{self.age}代种群，" +
-                  f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+            # print("第" + f"{self.age}代种群，" +
+            #       f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
         best_ind = str(self.get_best_individual())
 
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+        self.best_fit = now_error
+        self.elapse_time = time.time() - t
 
 
 class GplearnAlg(Alg):
@@ -294,10 +299,10 @@ class GpBingoAlg(Alg):
                 self.up_op_list.do(self.population)
             self.eval_op_list.do(self.population)
             now_error = self.population.get_best_fitness()
-            best_ind = str(self.get_best_individual())
+            # best_ind = str(self.get_best_individual())
             self.age += 1
-            print("第" + f"{self.age}代种群，" +
-                  f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+            # print("第" + f"{self.age}代种群，" +
+            #       f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
         best_ind = str(self.get_best_individual())
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")

@@ -5,10 +5,12 @@ import numpy as np
 from sklearn.linear_model import Lasso
 
 from sklearn.metrics import mean_squared_error
+from sklearn.svm._libsvm import predict
 
 from TaylorGP.src.taylorGP.subRegionCalculator import CalFitness
 from keplar.operator.evaluator import MetricsBingoEvaluator
 from keplar.operator.operator import Operator
+
 
 
 # class SparseRegression(Operator):
@@ -25,6 +27,7 @@ from keplar.operator.operator import Operator
 class KeplarSpareseRegression(Operator):
     def __init__(self, n_cluster, ind_list, fit_list, dataSets, func_fund_num=488):
         super().__init__()
+        self.rockBestFit = []
         self.func_fund_num = func_fund_num
         self.dataSets = dataSets
         self.fit_list = fit_list
@@ -62,13 +65,17 @@ class KeplarSpareseRegression(Operator):
             print(xtrain.shape)
             print(Y.shape)
             lasso_ = Lasso(alpha=alpha).fit(xtrain, Y)
-            Y_pred = lasso_.predict(xtrain)
+            Y_pred = lasso_ .predict(xtrain)
             rmseFitness = mean_squared_error(Y_pred, Y)
-            self.curLassoCoef = lasso_.coef_
+            # self.curLassoCoef = lasso_.coef_
             if rmseFitness < self.bestLassoFitness:
                 self.bestLassoFitness = rmseFitness
                 self.globalBestLassoCoef = self.curLassoCoef
                 if self.bestLassoFitness != float("inf"):
                     print("结果提升为: ", self.bestLassoFitness)
+        # print(self.globalBestLassoCoef)
+        # for i, coef in enumerate(self.globalBestLassoCoef):
+        for i in range(self.n_cluster):
+            self.rockBestFit.append(self.bestLassoFitness)
         print("最终适应度为"+str(self.bestLassoFitness))
 
