@@ -215,12 +215,12 @@ class TaylorGPEvaluator(Evaluator):
                 for i in range(lie_num):
                     self.feature_weight.append(1)
                 self.feature_weight = np.array(self.feature_weight)
-            z=0
+            z = 0
             for program in population.target_pop_list:
                 pred_y = program.execute(self.eval_x)
                 fitness = gp_fit(self.eval_y, pred_y, self.feature_weight)
                 fit_list.append(fitness)
-                z +=1
+                z += 1
                 print(z)
             if self.to_type == "taylorgp":
                 population.target_fit_list = fit_list
@@ -270,3 +270,5 @@ class MetricsBingoEvaluator(Evaluator):
             else:
                 np_xtrain = np.vstack((np_xtrain, np_arr))
         return np_xtrain
+
+
