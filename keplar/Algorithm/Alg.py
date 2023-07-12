@@ -299,10 +299,10 @@ class GpBingoAlg(Alg):
                 self.up_op_list.do(self.population)
             self.eval_op_list.do(self.population)
             now_error = self.population.get_best_fitness()
-            best_ind = str(self.get_best_individual())
+            # best_ind = str(self.get_best_individual())
             self.age += 1
-            print("第" + f"{self.age}代种群，" +
-                  f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+            # print("第" + f"{self.age}代种群，" +
+            #       f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
         best_ind = str(self.get_best_individual())
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")

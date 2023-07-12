@@ -25,6 +25,7 @@ class KeplarJudgeUCB(Operator):
         self.max_ucb = self.ucbVal[0]
         self.max_ucb_index = 0
         for i in range(self.n_cluster):
+            print(self.ucbVal[i])
             if self.ucbVal[i] > self.max_ucb:
                 self.max_ucb = self.ucbVal[i]
                 self.max_ucb_index = i
