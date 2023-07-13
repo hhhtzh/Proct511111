@@ -49,13 +49,13 @@ def WriteFile_X_Y_pred(SRC, fileNum, cluster, repeatNum):
     f.close()
 
 
-def Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration, clusters, repeatNum, Pop, fileNum,
+def Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration, clusters, repeatNum, Pop, fileNum, np_x,
                      SR_merhod="gplearn"):
     SRC = subRegionCalculator(dataSets, originalTaylorGPGen, mabPolicy="UCB", lbd=1)
-    countAvailableParameters = SRC.CalCountofAvailableParameters(clusters=clusters)
+    countAvailableParameters = SRC.CalCountofAvailableParameters(clusters=clusters, np_x=np_x)
     mabLoopNum = max(totalGeneration // originalTaylorGPGen // countAvailableParameters, 1)
     for cluster in clusters:
-        SRC.PreDbscan(-1, clusterMethod="KMEANS", n_clusters_=cluster)
+        SRC.PreDbscan(-1, clusterMethod="KMEANS", n_clusters_=cluster,data_x=np_x)
         SRC.firstMabFlag = True
         set_value('FIRST_EVOLUTION_FLAG', True)  # 进行每轮数据集演化前执行
         for tryNum in range(mabLoopNum):
