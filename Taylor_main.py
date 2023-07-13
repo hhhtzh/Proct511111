@@ -68,7 +68,7 @@ method_probs = np.array([p_crossover,
 taylorsort = TaylorSort()
 
 # 算法的全部流程
-gen = 10
+gen = 1000
 taylorGP = TayloGPAlg(gen, taylorGP_pre1, taylorGP_pre2, selector,
                       creator, crossover, mutation, method_probs, taylorsort, evaluator)
 

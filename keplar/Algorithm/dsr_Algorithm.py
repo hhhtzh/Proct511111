@@ -55,33 +55,34 @@ class uDsrAlgorithm(Alg):
             population = Population(len(self.T))             
             
             #创建population
-            udsr_creator = uDSR_Creator(self.T)
+            # udsr_creator = uDSR_Creator(self.T)
+            # T_new=udsr_creator.do(population)
             #对uDSR类型的编码进行转化population的编码
-            udsr_trans = DSRToKeplar(self.T)
+            # udsr_trans = DSRToKeplar(self.T)
 
-            # operators = ["+", "-", "*", "/"]
+            # # operators = ["+", "-", "*", "/"]
 
-            # creator = BingoCreator(50, operators, x, 10, "Bingo")
-            # population2 =creator.do()
+            # # creator = BingoCreator(50, operators, x, 10, "Bingo")
+            # # population2 =creator.do()
             
-            # evaluator = BingoEvaluator(x, "exp", "lm", y)
-            # crossover = BingoCrossover("Bingo")
-            # mutation = BingoMutation(x, operators, "Bingo")
-            # selector = BingoSelector(0.5, "tournament", "Bingo")
-            # gen_up_oplist = CompositeOp([crossover, mutation])
-            # gen_down_oplist = CompositeOpReturn([selector])
-            # gen_eva_oplist = CompositeOp([evaluator])
+            # # evaluator = BingoEvaluator(x, "exp", "lm", y)
+            # # crossover = BingoCrossover("Bingo")
+            # # mutation = BingoMutation(x, operators, "Bingo")
+            # # selector = BingoSelector(0.5, "tournament", "Bingo")
+            # # gen_up_oplist = CompositeOp([crossover, mutation])
+            # # gen_down_oplist = CompositeOpReturn([selector])
+            # # gen_eva_oplist = CompositeOp([evaluator])
 
-            # 在这一步可以将其他算法的poppulation传入，进行组合
-            trans_udsr = KeplarToDSR()
+            # # 在这一步可以将其他算法的poppulation传入，进行组合
+            # trans_udsr = KeplarToDSR()
 
-            udsr_list = [udsr_creator ,udsr_trans ,trans_udsr]
-            udsr_comop = uDsr_CompositeOp(udsr_list)
-            T_new = udsr_comop.do(population)
+            # udsr_list = [udsr_creator ,udsr_trans ,trans_udsr]
+            # udsr_comop = uDsr_CompositeOp(udsr_list)
+            # T_new = udsr_comop.do(population)
 
             #将新的population的编码转化为uDSR类型的编码
             for i in range(len(self.programs)):
-                self.programs[i].traversal = Program.library.tokenize(T_new[i])
+                self.programs[i].traversal = Program.library.tokenize(self.T[i])
 
 
             #一次迭代
