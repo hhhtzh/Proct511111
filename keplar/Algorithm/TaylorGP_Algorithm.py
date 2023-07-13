@@ -380,6 +380,7 @@ class MTaylorKMeansAlg(Alg):
 
     def run(self):
         dataSets = self.ds.get_np_ds()
+        x = self.ds.get_np_x()
         average_fitness = 0
         repeat = 2
         totalGeneration = 500
@@ -395,7 +396,7 @@ class MTaylorKMeansAlg(Alg):
         for repeatNum in range(repeat):
             time_start2 = time.time()
             bestLassoFitness, globalBestLassoCoef = Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration,
-                                                                     clusters, repeatNum, Pop, fileNum=1)
+                                                                     clusters, repeatNum, Pop, fileNum=1, np_x=x)
             average_fitness += bestLassoFitness
             time_end2 = time.time()
             print('current_time_cost', (time_end2 - time_start2) / 3600, 'hour')

@@ -16,15 +16,14 @@ class KeplarJudgeUCB(Operator):
         self.ucbVal = []
 
     def pos_do(self):
-        print(str(len(self.rockBestFit)))
-        for i in range(self.n_cluster):
+        for i in range(len(self.rockBestFit)):
             print(str(i))
             # self.ucbVal[i] = 1 / (self.rockBestFit[i] + 1) + self.lbd * math.sqrt(
             self.ucbVal.append(1 / (self.rockBestFit[i] + 1) + math.sqrt(
                 math.log(self.abRockSum) / (self.abRockNum[i])))
         self.max_ucb = self.ucbVal[0]
         self.max_ucb_index = 0
-        for i in range(self.n_cluster):
+        for i in range(len(self.ucbVal)):
             print(self.ucbVal[i])
             if self.ucbVal[i] > self.max_ucb:
                 self.max_ucb = self.ucbVal[i]
