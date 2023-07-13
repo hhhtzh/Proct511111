@@ -13,12 +13,11 @@ from .genetic1 import SymbolicRegressor
 from .calTaylor import Metrics2  # ,cal_Taylor_features
 from .calTaylor1 import Metrics
 from ._program import print_program
-from ._global import set_value, get_value
+from ._global import set_value, get_value, _init
 import numpy as np
 from sklearn.metrics import mean_squared_error  # 均方误差
 from sklearn.linear_model import LinearRegression
 from sympy import *
-
 
 def CalTaylorFeatures(f_taylor, _x, X, Y, population, Generation, Pop, repeatNum, eq_write):
     print('In CalTaylorFeatures')
@@ -181,7 +180,14 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
     :param SR_method:
 
     """
+    _init()
+    x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29 = symbols(
+        "x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,x28,x29 ")
 
+    set_value('_x',
+              [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22,
+               x23,
+               x24, x25, x26, x27, x28, x29])
     _x = get_value('_x')
     eqName = 'SubTaylorGP.out'  # eqName = fileName[:-4]+'.out' 原先的打印都是针对整体的，所以此处应该都用不上了
     eq_write = open(eqName, "w+")

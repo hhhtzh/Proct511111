@@ -47,7 +47,7 @@ class KeplarSpareseRegression(Operator):
                 self.bestLassoFitness = i[0]
         Y = self.dataSets.get_np_y()
         func_fund_list = []
-        for i in range(self.func_fund_num):
+        for i in range(self.n_cluster):
             func_fund = []
             for ind_arr in self.ind_list:
                 index = math.floor(random.random() * len(ind_arr))

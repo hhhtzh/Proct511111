@@ -173,9 +173,8 @@ def _parallel_evolve(n_programs, population, X, y, sample_weight, seeds, params,
 
 class TayloGPAlg(Alg):
     def __init__(self, generation, taylorGP_pre1, taylorGP_pre2, selector, creator, crossover, mutation, method_probs,
-                 taylorsort, evaluator, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance,
-                 population):
-        super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+                 taylorsort, evaluator):
+
         self.generation = generation
         self.taylorGP_pre1 = taylorGP_pre1
         self.taylorGP_pre2 = taylorGP_pre2

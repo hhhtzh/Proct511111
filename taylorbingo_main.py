@@ -12,7 +12,8 @@ from keplar.operator.mutation import BingoMutation
 from keplar.operator.selector import BingoSelector
 from keplar.operator.taylor_judge import TaylorJudge
 
-data = Data("txt", "datasets/1.txt",["x","y"])
+# data = Data("txt", "datasets/1.txt",["x","y"])
+data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 data.read_file()
 data.set_xy("y")
 x = data.get_x()

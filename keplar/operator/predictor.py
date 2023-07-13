@@ -32,6 +32,7 @@ class MetricsBingoPredictor(Evaluator):
                 bingo_ind = AGraph(equation=str(j))
                 bingo_ind._update()
                 arr = np.array(bingo_ind.evaluate_equation_at(x)).reshape(-1, 1)
+                print(np.shape(arr))
             if i == 0:
                 xtrain = arr
             else:
