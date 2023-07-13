@@ -173,9 +173,8 @@ def _parallel_evolve(n_programs, population, X, y, sample_weight, seeds, params,
 
 class TayloGPAlg(Alg):
     def __init__(self, generation, taylorGP_pre1, taylorGP_pre2, selector, creator, crossover, mutation, method_probs,
-                 taylorsort, evaluator, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance,
-                 population):
-        super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+                 taylorsort, evaluator):
+        # super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
         self.generation = generation
         self.taylorGP_pre1 = taylorGP_pre1
         self.taylorGP_pre2 = taylorGP_pre2
@@ -326,7 +325,7 @@ class TayloGPAlg(Alg):
 # =======
 #             else:  # 针对第二代演化父母都已经发生改变了，与是不是第一轮没有关系
 # >>>>>>> c0ed278302bd149db82e0ea24012f794506aed24
-                parents = self._programs[gen - 1]
+                # parents = self._programs[gen - 1]
                 # 已经是排过序的了！！！
                 # parents.sort(key=lambda x: x.raw_fitness_)
                 # np.random.shuffle(parents)
@@ -357,10 +356,11 @@ class TayloGPAlg(Alg):
 
             # Reduce, maintaining order across different n_jobs
             population.target_pop_list = list(itertools.chain.from_iterable(population.target_pop_list))
+            # population = list(itertools.chain.from_iterable(population))
 
-            if top1Flag:
-                population.target_pop_list.append(best_program_fitness_)
-                population.target_pop_list.append(best_program)
+            # if top1Flag:
+            #     population.target_pop_list.append(best_program_fitness_)
+            #     population.target_pop_list.append(best_program)
             fitness = [program.raw_fitness_ for program in population.target_pop_list]
             length = [program.length_ for program in population.target_pop_list]
 
