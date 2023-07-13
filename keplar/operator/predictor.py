@@ -26,14 +26,14 @@ class MetricsBingoPredictor(Evaluator):
         optimizer = ScipyOptimizer(fitness, method=self.optimizer_method)
         local_opt_fitness = LocalOptFitnessFunction(fitness, optimizer)
         evaluator = Evaluation(local_opt_fitness)
+        print("len_func_fund_list"+str(len(self.func_fund_list)))
         for i in range(len(self.func_fund_list)):
-
             for a, j in enumerate(self.func_fund_list[i]):
                 bingo_ind = AGraph(equation=str(j))
                 bingo_ind._update()
                 arr = np.array(bingo_ind.evaluate_equation_at(x)).reshape(-1, 1)
-                if i == 0:
-                    xtrain = arr
-                else:
-                    np.append(xtrain, arr, axis=1)
+            if i == 0:
+                xtrain = arr
+            else:
+                xtrain=np.append(xtrain, arr, axis=1)
         return xtrain

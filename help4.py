@@ -133,8 +133,14 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # a=1
 # b=[0]*9
 # print(b)
-a=[1,1,1]
-
-for b,i in enumerate(a):
-    print("b:"+str(b))
-    print("i:"+str(i))
+# a=[1,1,1]
+#
+# for b,i in enumerate(a):
+#     print("b:"+str(b))
+#     print("i:"+str(i))
+a = [[1], [1], [1]]
+a = np.array(a)
+print(np.shape(a))
+b = [[2], [1], [1]]
+c=np.append(a, b, axis=1)
+print(c)
