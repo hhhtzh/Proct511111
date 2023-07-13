@@ -75,10 +75,10 @@ mutation = TaylorGPMutation(1, random_state, pop_parent, pop_now_index)
 evaluator = TaylorGPEvaluator(
     "rmse", x_train, y_train, "taylorgp", feature_weight=None)
 
-p_crossover = 0.9,
+p_crossover = 0.7,
 p_subtree_mutation = 0.01,
 p_hoist_mutation = 0.01,
-p_point_mutation = 0.01,
+p_point_mutation = 0.3,
 
 method_probs = np.array([p_crossover,
                         p_subtree_mutation,
