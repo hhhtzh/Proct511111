@@ -85,12 +85,15 @@ class TaylorBingoAlg(Alg):
     def __init__(self, max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population, fe_list):
         super().__init__(max_generation, up_op_list, down_op_list,
                          eva_op_list, error_tolerance, population)
+        self.elapse_time = None
+        self.best_fit = None
         self.fe_list = fe_list
 
     def get_best_individual(self):
         return self.population.target_pop_list[self.population.get_tar_best()]
 
     def run(self):
+        t = time.time()
         for i in self.fe_list:
             result = i.do()
             if result == "end":
@@ -113,6 +116,8 @@ class TaylorBingoAlg(Alg):
         best_ind = str(self.get_best_individual())
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+        self.best_fit = now_error
+        self.elapse_time = time.time() - t
 
 
 class OperonBingoAlg(Alg):
