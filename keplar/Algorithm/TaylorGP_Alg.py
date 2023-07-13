@@ -323,9 +323,9 @@ class TayloGPAlg(Alg):
                 self._verbose_reporter()
 #             else:#针对第二代演化父母都已经发生改变了，与是不是第一轮没有关系
 # =======
-#             else:  # 针对第二代演化父母都已经发生改变了，与是不是第一轮没有关系
+            else:  # 针对第二代演化父母都已经发生改变了，与是不是第一轮没有关系
 # >>>>>>> c0ed278302bd149db82e0ea24012f794506aed24
-                # parents = self._programs[gen - 1]
+                parents = self._programs[gen - 1]
                 # 已经是排过序的了！！！
                 # parents.sort(key=lambda x: x.raw_fitness_)
                 # np.random.shuffle(parents)
@@ -358,9 +358,9 @@ class TayloGPAlg(Alg):
             population.target_pop_list = list(itertools.chain.from_iterable(population.target_pop_list))
             # population = list(itertools.chain.from_iterable(population))
 
-            # if top1Flag:
-            #     population.target_pop_list.append(best_program_fitness_)
-            #     population.target_pop_list.append(best_program)
+            if top1Flag:
+                population.target_pop_list.append(best_program_fitness_)
+                population.target_pop_list.append(best_program)
             fitness = [program.raw_fitness_ for program in population.target_pop_list]
             length = [program.length_ for program in population.target_pop_list]
 
