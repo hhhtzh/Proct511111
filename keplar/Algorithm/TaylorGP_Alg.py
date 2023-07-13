@@ -202,6 +202,9 @@ class TayloGPAlg(Alg):
         self.low_memory = True
         self._metric = None
 
+        self.best_fit = None
+        self.elapse_time = None
+
 
 
     def _verbose_reporter(self, run_details=None):
