@@ -91,7 +91,7 @@ import matplotlib.pyplot as plt
 
 def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOperon, fitnessMTaylorGp,
                      fitnessKeplarBingo,
-                     fitnessKeplarBingoCPP, fitnessTaylorBingo, fitnessBingoCPP, fitnessMTaylorKMeans, dataName, isAll: bool):
+                     fitnessKeplarBingoCPP, fitnessTaylorBingo, fitnessBingoCPP,  dataName, isAll: bool):
     # 设置中文和负号正常显示
     plt.rcParams['axes.unicode_minus'] = False
     plt.rcParams['pdf.fonttype'] = 42
@@ -108,16 +108,16 @@ def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOp
             'Bingo': fitnessBingo,
             'OperonBingo': fitnessOperonBingo,
             'MTaylorGp': fitnessMTaylorGp,
-            'MTaylorBingo': fitnessMTaylorBingo,
-            'MTaylorOperon': fitnessMTaylorOperon,
-            'MTaylorKMeans': fitnessMTaylorKMeans
+            'KeplarBingo': fitnessKeplarBingo,
+            'KeplarBingoCPP': fitnessKeplarBingoCPP,
+
         }
     else:
         data = {
             'MTaylorGp': fitnessMTaylorGp,
             'BingoCPP': fitnessBingoCPP,
             'Operon': fitnessOperon,
-            'MTaylorKMeans': fitnessMTaylorKMeans
+            'KeplarBingoCPP': fitnessKeplarBingoCPP
         }
     df = pd.DataFrame(data)
     fig, axes = plt.subplots()
@@ -151,16 +151,15 @@ def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOp
     plt.title("population_size=100\ngeneration=1000")
     if isAll == True:
         plt.xticks(np.arange(11), (
-            '', 'TaylorGP',
+            '',  'TaylorBingo',
             'BingoCPP',
             'Operon',
             'GpBingo',
             'Bingo',
             'OperonBingo',
             'MTaylorGp',
-            'MTaylorBingo',
-            'MTaylorOperon',
-            'MTaylorKMeans'),
+            'KeplarBingo',
+            'KeplarBingoCPP',''),
                    fontsize=7, rotation=30)
     else:
         plt.xticks(np.arange(5), (
@@ -177,6 +176,96 @@ def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOp
     else:
         figPath = os.path.join('IMG_COLOR', 'LOG_FOUR')
     plt.savefig(os.path.join(figPath, dataName + '.pdf'), dpi=720, bbox_inches='tight')
+    plt.close()
+
+
+def draw_time_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOperon, fitnessMTaylorGp,
+                     fitnessKeplarBingo,
+                     fitnessKeplarBingoCPP, fitnessTaylorBingo, fitnessBingoCPP,  dataName, isAll: bool):
+    # 设置中文和负号正常显示
+    plt.rcParams['axes.unicode_minus'] = False
+    plt.rcParams['pdf.fonttype'] = 42
+    plt.rcParams['ps.fonttype'] = 42
+
+    # 设置图形的显示风格
+    # plt.style.use('ggplot')
+    if isAll == True:
+        data = {
+            'TaylorBingo': fitnessTaylorBingo,
+            'BingoCPP': fitnessBingoCPP,
+            'Operon': fitnessOperon,
+            'GpBingo': fitnessGpBingo,
+            'Bingo': fitnessBingo,
+            'OperonBingo': fitnessOperonBingo,
+            'MTaylorGp': fitnessMTaylorGp,
+            'KeplarBingo': fitnessKeplarBingo,
+            'KeplarBingoCPP': fitnessKeplarBingoCPP,
+
+        }
+    else:
+        data = {
+            'MTaylorGp': fitnessMTaylorGp,
+            'BingoCPP': fitnessBingoCPP,
+            'Operon': fitnessOperon,
+            'KeplarBingoCPP': fitnessKeplarBingoCPP
+        }
+    df = pd.DataFrame(data)
+    fig, axes = plt.subplots()
+    # fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(9, 4))
+    bplot1 = axes.boxplot(df,  # 描点上色
+                          # notch=True,  # 箱体中位数凹陷
+                          vert=True,  # 设置箱体垂直
+                          patch_artist=True,  # 允许填充颜色
+                          showfliers=False,  # 不显示异常值
+                          widths=0.8,  # 箱体宽度
+                          medianprops={'color': 'black'})  # 设置中位数线的属性，线的类型和颜色
+    '''
+    bplot2 = axes[1].boxplot(df,
+                             notch=True,#箱体中位数凹陷
+                             vert=True,
+                             patch_artist=True,
+                             showfliers=False,
+                             widths=0.7,
+                             medianprops = {'color':'black'})    
+    '''
+
+    # 颜色填充
+    # colors = ['red','lightcoral','gold','yellow','lime','darkseagreen','cyan','deepskyblue'  ]
+    colors = ['red', 'lightcoral', 'gold', 'yellow', 'lime', 'darkseagreen', 'cyan', 'deepskyblue', 'darkorchid',
+              'hotpink']
+    # for bplot in (bplot1):
+    for patch, color in zip(bplot1['boxes'], colors):
+        patch.set_facecolor(color)
+    plt.grid(linestyle="--", alpha=0.3)
+    plt.ylabel("time( $s$)")
+    plt.title("population_size=100\ngeneration=1000")
+    if isAll == True:
+        plt.xticks(np.arange(11), (
+            '',  'TaylorBingo',
+            'BingoCPP',
+            'Operon',
+            'GpBingo',
+            'Bingo',
+            'OperonBingo',
+            'MTaylorGp',
+            'KeplarBingo',
+            'KeplarBingoCPP',''),
+                   fontsize=7, rotation=30)
+    else:
+        plt.xticks(np.arange(5), (
+            '', 'MTaylorGp',
+            'GPLearn',
+            'Operon',
+            'UDSR'),
+                   fontsize=7, rotation=30)
+    # plt.xticks(np.arange(5), (
+    #     '', 'TaylorGP', 'XGBoost', 'GSGP', 'BSR'),
+    #            fontsize=7, rotation=30)
+    if isAll == True:
+        figPath = os.path.join('IMG_COLOR', 'LOG')
+    else:
+        figPath = os.path.join('IMG_COLOR', 'LOG_FOUR')
+    plt.savefig(os.path.join(figPath, dataName + 'time'+'.pdf'), dpi=720, bbox_inches='tight')
     plt.close()
 
 

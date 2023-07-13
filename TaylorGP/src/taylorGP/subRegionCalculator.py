@@ -221,6 +221,15 @@ class subRegionCalculator:
             self.abRockSum += 1
             parents, qualified_list, Y_pred = None, None, None
             if not get_value('FIRST_EVOLUTION_FLAG'):  # 除去第一次，以后演化基于之前的父代，并且若不不存在父代说明是低阶多项式不用演化直接跳过，此处也不影响MAB
+                print(self.tops)
+                print(len(self.tops))
+                print(selectedRegionIndex)
+                if len(self.tops) != 1:
+                    if isinstance(self.tops[1], int):
+                        self.tops = self.tops[0]
+                print(self.tops)
+                print(len(self.tops))
+                print(selectedRegionIndex)
                 subRegionFindBestFlag = self.tops[selectedRegionIndex][3]
                 qualified_list = self.tops[selectedRegionIndex][4]
                 Y_pred = self.tops[selectedRegionIndex][5]
