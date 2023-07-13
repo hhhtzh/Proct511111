@@ -312,9 +312,8 @@ class MTaylorGPAlg(Alg):
         np_x = self.ds.get_np_x()
         np_y = self.ds.get_np_y()
         np_y = np_y.reshape([-1, 1])
-        self.ds = np.hstack([np_x, np_y])
         sys.setrecursionlimit(self.recursion_limit)
-        dataSets = self.ds
+        dataSets = np.hstack([np_x, np_y])
         print("维度： ", dataSets.shape[1] - 1)
         repeat = self.repeat
         totalGeneration = self.max_generation
@@ -331,7 +330,7 @@ class MTaylorGPAlg(Alg):
                 if epsilon == 1e-5:
                     SRC.PreDbscan(epsilon, noClusterFlag=True, clusterMethod="NOCLUSTER",
                                   data_x=np_x)  # 执行 OriginalTaylorGP
-                elif not SRC.PreDbscan(epsilon, clusterMethod="DBSCAN"):
+                elif not SRC.PreDbscan(epsilon, clusterMethod="DBSCAN",data_x=np_x):
                     print("聚类有问题")
                     continue
                 SRC.firstMabFlag = True
@@ -363,6 +362,8 @@ class MTaylorKMeansAlg(Alg):
                  population=None,
                  recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn", mabPolicy="Greedy"):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.best_fit = None
+        self.elapse_time = None
         self.mabPolicy = mabPolicy
         self.SR_method = SR_method
         self.ds = ds
@@ -379,6 +380,7 @@ class MTaylorKMeansAlg(Alg):
                    x24, x25, x26, x27, x28, x29])
 
     def run(self):
+        t=time.time()
         dataSets = self.ds.get_np_ds()
         x = self.ds.get_np_x()
         average_fitness = 0
@@ -403,3 +405,5 @@ class MTaylorKMeansAlg(Alg):
         time_end1 = time.time()
         print('average_time_cost', (time_end1 - time_start1) / 3600 / repeat, 'hour')
         print('average_fitness = ', average_fitness / repeat)
+        self.best_fit = average_fitness/ repeat
+        self.elapse_time = time.time() - t

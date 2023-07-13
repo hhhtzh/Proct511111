@@ -90,8 +90,8 @@ import matplotlib.pyplot as plt
 
 
 def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOperon, fitnessMTaylorGp,
-                     fitnessMTaylorBingo,
-                     fitnessMTaylorOperon, fitnessTaylorBingo, fitnessBingoCPP, fitnessMTaylorKMeans, dataName, isAll: bool):
+                     fitnessKeplarBingo,
+                     fitnessKeplarBingoCPP, fitnessTaylorBingo, fitnessBingoCPP, fitnessMTaylorKMeans, dataName, isAll: bool):
     # 设置中文和负号正常显示
     plt.rcParams['axes.unicode_minus'] = False
     plt.rcParams['pdf.fonttype'] = 42

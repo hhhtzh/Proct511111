@@ -4,14 +4,14 @@ from keplar.Algorithm.TaylorGP_Algorithm import MTaylorGPAlg
 from keplar.data.data import Data
 from keplar.population.population import Population
 
-# data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
-data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
+data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
+# data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 data.read_file()
-# data.set_xy("y")
+data.set_xy("y")
 pop = Population(100)
 fit_list = []
 time_list = []
-mt = MTaylorGPAlg(1000, data, population=pop)
+mt = MTaylorGPAlg(1000, data, population=pop,SR_method="Bingo")
 for i in range(10):
     mt.run()
     fit_list.append(mt.best_fit)
