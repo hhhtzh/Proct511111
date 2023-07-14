@@ -228,11 +228,18 @@ class subRegionCalculator:
                 #     if isinstance(self.tops[1], int):
                 #         self.tops = self.tops[0]
                 print(self.tops)
-                # print(len(self.tops))
-                # print(selectedRegionIndex)
-                subRegionFindBestFlag = self.tops[selectedRegionIndex][3]
-                qualified_list = self.tops[selectedRegionIndex][4]
-                Y_pred = self.tops[selectedRegionIndex][5]
+                print(len(self.tops))
+                print(selectedRegionIndex)
+                if len(self.tops) == 1:
+                    subRegionFindBestFlag = self.tops[selectedRegionIndex][3]
+                    qualified_list = self.tops[selectedRegionIndex][4]
+                    Y_pred = self.tops[selectedRegionIndex][5]
+                else:
+                    print(self.tops[1])
+                    subRegionFindBestFlag = self.tops[0][3]
+                    qualified_list = self.tops[0][4]
+                    Y_pred = self.tops[0][5]
+
                 if not subRegionFindBestFlag:
                     parents = self.tops[selectedRegionIndex][2]
                 else:
