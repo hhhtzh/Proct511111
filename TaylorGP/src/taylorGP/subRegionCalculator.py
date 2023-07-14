@@ -221,6 +221,16 @@ class subRegionCalculator:
             self.abRockNum[selectedRegionIndex] += 1
             self.abRockSum += 1
             parents, qualified_list, Y_pred = None, None, None
+
+            if self.abSelectedArm.count(1) > 1:
+                print("Pop,self.abSelectedArm.count(1),self.abSelectedArm", Pop, self.abSelectedArm.count(1),
+                      self.abSelectedArm, sep=" ")
+                Pop = max(Pop // self.abSelectedArm.count(1), 10)  # 种群大小至少为10
+                # [end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
+            top1 = OriginalTaylorGP(self.subRegions[selectedRegionIndex], Y_pred, parents, repeatNum,
+                                    self.originalTaylorGPGen, Pop, qualified_list=qualified_list,
+                                    SR_method=SR_method)  # top是list 0是适应度，1是公式 2是上轮最后一代种群
+            self.tops[selectedRegionIndex] = top1  # 由于MAB，所以选择性更新tops
             if not get_value('FIRST_EVOLUTION_FLAG'):  # 除去第一次，以后演化基于之前的父代，并且若不不存在父代说明是低阶多项式不用演化直接跳过，此处也不影响MAB
                 # print(self.tops)
                 # print(len(self.tops))
@@ -231,29 +241,21 @@ class subRegionCalculator:
                 print(self.tops)
                 print(len(self.tops))
                 print(selectedRegionIndex)
-                if len(self.tops) == 1:
-                    subRegionFindBestFlag = self.tops[selectedRegionIndex][3]
-                    qualified_list = self.tops[selectedRegionIndex][4]
-                    Y_pred = self.tops[selectedRegionIndex][5]
-                else:
-                    print(self.tops[1])
-                    subRegionFindBestFlag = self.tops[0][3]
-                    qualified_list = self.tops[0][4]
-                    Y_pred = self.tops[0][5]
+                # if len(self.tops) == 1:
+                subRegionFindBestFlag = self.tops[selectedRegionIndex][3]
+                qualified_list = self.tops[selectedRegionIndex][4]
+                Y_pred = self.tops[selectedRegionIndex][5]
+                # else:
+                #     print(self.tops[1])
+                #     subRegionFindBestFlag = self.tops[0][3]
+                #     qualified_list = self.tops[0][4]
+                #     Y_pred = self.tops[0][5]
 
                 if not subRegionFindBestFlag:
                     parents = self.tops[selectedRegionIndex][2]
                 else:
                     continue
-            if self.abSelectedArm.count(1) > 1:
-                print("Pop,self.abSelectedArm.count(1),self.abSelectedArm", Pop, self.abSelectedArm.count(1),
-                      self.abSelectedArm, sep=" ")
-                Pop = max(Pop // self.abSelectedArm.count(1), 10)  # 种群大小至少为10
-                # [end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
-            top1 = OriginalTaylorGP(self.subRegions[selectedRegionIndex], Y_pred, parents, repeatNum,
-                                    self.originalTaylorGPGen, Pop, qualified_list=qualified_list,
-                                    SR_method=SR_method)  # top是list 0是适应度，1是公式 2是上轮最后一代种群
-            self.tops[selectedRegionIndex] = top1  # 由于MAB，所以选择性更新tops
+
         set_value('FIRST_EVOLUTION_FLAG', False)
         return self.tops
 

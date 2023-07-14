@@ -277,7 +277,8 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
         end_fitness, programs, population, Y_pred = Taylor_Based_SR(_x, X, change_Y(Y, qualified_list), qualified_list,
                                                                     eq_write, population, Generation, Pop, repeatNum,
                                                                     qualified_list[2] < 1e-5, SR_method=SR_method)
-        if Y_pred.any() == "f_low_taylor": Y_pred = temp_Y_pred
+        if isinstance(Y_pred,str):
+            Y_pred = temp_Y_pred
         # Y_pred = programs[0].predict(X)
         print(end_fitness)
         print(programs)
