@@ -338,8 +338,9 @@ class MTaylorGPAlg(Alg):
                     continue
                 SRC.firstMabFlag = True
                 _init()
-                set_value('FIRST_EVOLUTION_FLAG', True)  # 进行每轮数据集演化前执行
+                  # 进行每轮数据集演化前执行
                 for tryNum in range(mabLoopNum):
+                    set_value('FIRST_EVOLUTION_FLAG', True)
                     SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method)
                     SRC.SubRegionPruning()
                     SRC.SparseRegression()

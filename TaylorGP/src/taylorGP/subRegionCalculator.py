@@ -216,7 +216,8 @@ class subRegionCalculator:
                                     x == 1]:  # 目前是使用串行演化，先这样不改了，后面看情况是否改为并行
             # top1 = OriginalTaylorGP(dataSets,repeatNum)#使用原始数据集测试代码流程是否正常
             print("len(self.subRegions): ", len(self.subRegions), " selectedRegionIndex", selectedRegionIndex)
-            if len(self.subRegions) <= selectedRegionIndex: break
+            if len(self.subRegions) <= selectedRegionIndex:
+                break
             self.abRockNum[selectedRegionIndex] += 1
             self.abRockSum += 1
             parents, qualified_list, Y_pred = None, None, None
