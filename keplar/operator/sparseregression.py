@@ -27,6 +27,7 @@ from keplar.operator.predictor import MetricsBingoPredictor
 class KeplarSpareseRegression(Operator):
     def __init__(self, n_cluster, ind_list, fit_list, dataSets, func_fund_num=488):
         super().__init__()
+        self.final_str_ind = None
         self.lasso_list = None
         self.rockBestFit = [1e+5] * n_cluster
         self.func_fund_num = func_fund_num
@@ -84,9 +85,11 @@ class KeplarSpareseRegression(Operator):
         print("coef:" + str(self.curLassoCoef))
         final_str_ind = ""
         for i in range(len(self.globalBestLassoCoef)):
-            temp_str_ind = "(" + str(self.globalBestLassoCoef[i]) + "*(" + str(self.ind_list[i][0]) + ")"
+            temp_str_ind = "(" + str(self.globalBestLassoCoef[i]) + "*(" + str(self.ind_list[i][0]) + ")"+")"
             if final_str_ind != "":
-                final_str_ind = final_str_ind + "+" + temp_str_ind
+                if self.globalBestLassoCoef[i] != 0:
+                    final_str_ind = final_str_ind + "+" + temp_str_ind
             else:
                 final_str_ind = temp_str_ind
+        self.final_str_ind = final_str_ind
         print(final_str_ind)

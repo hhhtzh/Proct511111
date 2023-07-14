@@ -272,3 +272,33 @@ class MetricsBingoEvaluator(Evaluator):
         return np_xtrain
 
 
+class SingleBingoEvaluator(Evaluator):
+    def __init__(self, data, equation,metric="rmse", optimizer_method="lm"):
+        super().__init__()
+        self.equation = equation
+        self.optimizer_method = optimizer_method
+        self.metric = metric
+        self.data = data
+
+    def do(self, population=None):
+        bingo_ind=AGraph(equation=self.equation)
+        bingo_pop=[bingo_ind]
+        x = self.data.get_np_x()
+        y = self.data.get_np_y()
+        training_data = ExplicitTrainingData(x, y)
+        fitness = ExplicitRegression(training_data=training_data, metric=self.metric)
+        if self.optimizer_method not in ["lm", "TNC", "BFGS", "L-BFGS-B", "CG", "SLSQP"]:
+            raise ValueError("优化方法名称未识别")
+        optimizer = ScipyOptimizer(fitness, method=self.optimizer_method)
+        local_opt_fitness = LocalOptFitnessFunction(fitness, optimizer)
+        evaluator = Evaluation(local_opt_fitness)
+        evaluator(bingo_pop)
+        bingo_ind=bingo_pop[0]
+        bingo_ind._update()
+        return bingo_ind.fitness
+
+
+
+
+
+

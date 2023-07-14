@@ -5,7 +5,7 @@ from keplar.Algorithm.operon_Algorithm import OperonAlg
 from keplar.data.data import Data
 from keplar.operator.JudgeUCB import KeplarJudgeUCB
 from keplar.operator.crossover import OperonCrossover
-from keplar.operator.evaluator import OperonEvaluator, MetricsBingoEvaluator
+from keplar.operator.evaluator import OperonEvaluator, MetricsBingoEvaluator, SingleBingoEvaluator
 from keplar.operator.mutation import OperonMutation
 from keplar.operator.reinserter import OperonReinserter
 from keplar.operator.selector import OperonSelector
@@ -64,5 +64,10 @@ if n_cluster > 1:
     spare.do()
     final_best_fit = spare.bestLassoFitness
     rockBestFit = spare.rockBestFit
-    # ucb = KeplarJudgeUCB(n_cluster, abRockSum, abRockNum, rockBestFit)
-    # ucb.pos_do()
+    final_equ=spare.final_str_ind
+    single_eval=SingleBingoEvaluator(data,final_equ)
+    final_fit=single_eval.do()
+    print("最终适应度:"+str(final_fit))
+
+    ucb = KeplarJudgeUCB(n_cluster, abRockSum, abRockNum, rockBestFit)
+    ucb.pos_do()
