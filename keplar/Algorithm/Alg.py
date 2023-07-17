@@ -398,7 +398,8 @@ class BingoAlg(Alg):
         self.report_island_status(test_island)
         self.island = test_island
         self.best_ind = test_island.get_best_individual()
-        self.best_fit = test_island.get_best_fitness()
+        eval = SingleBingoEvaluator(self.data, str(self.best_ind))
+        self.best_fit = eval.do()
         self.elapse_time = time.time() - t
 
 
@@ -474,5 +475,7 @@ class KeplarMBingo(Alg):
                 abRockNum = []
                 n_cluster = 1
             else:
+                if fit_list[0] < final_fit:
+                    final_fit = fit_list[0]
                 print(f"第{now_recursion}轮" + "适应度:" + str(final_fit))
             now_recursion += 1

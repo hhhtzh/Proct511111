@@ -13,10 +13,10 @@ bingo = BingoAlg(1000, data,
                  operators=["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^'])
 for i in range(10):
     bingo.run()
-    fit_list.append(bingo.island.get_best_fitness())
+    fit_list.append(bingo.best_fit)
     time_list.append(bingo.elapse_time)
 
-fit_pd = pd.DataFrame({'BingoCPP': fit_list})
-time_pd = pd.DataFrame({'BingoCPP': time_list})
+fit_pd = pd.DataFrame({'Bingo': fit_list})
+time_pd = pd.DataFrame({'Bingo': time_list})
 fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
 time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")
