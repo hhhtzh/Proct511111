@@ -7,7 +7,7 @@ from sklearn.linear_model import Lasso, LassoCV
 from sklearn.metrics import mean_squared_error
 from sklearn.svm._libsvm import predict
 
-from TaylorGP.src.taylorGP.subRegionCalculator import CalFitness
+
 from keplar.operator.evaluator import MetricsBingoEvaluator
 from keplar.operator.operator import Operator
 from keplar.operator.predictor import MetricsBingoPredictor
