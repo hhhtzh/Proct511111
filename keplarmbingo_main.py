@@ -67,7 +67,7 @@ if n_cluster > 1:
     final_equ=spare.final_str_ind
     single_eval=SingleBingoEvaluator(data,final_equ)
     final_fit=single_eval.do()
-    print("最终适应度:"+str(final_fit))
+    print("第“+”适应度:"+str(final_fit))
 
     ucb = KeplarJudgeUCB(n_cluster, abRockSum, abRockNum, rockBestFit)
     ucb.pos_do()

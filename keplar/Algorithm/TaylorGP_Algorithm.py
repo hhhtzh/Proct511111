@@ -21,8 +21,6 @@ from TaylorGP.src.taylorGP.fitness import _mean_square_error, _weighted_spearman
 import math
 
 
-
-
 class TayloGPAlg(Alg):
     def __init__(self, generation, taylorGP_pre1, taylorGP_pre2, selector, creator, crossover, mutation, method_probs,
                  taylorsort, evaluator):
@@ -324,6 +322,7 @@ class MTaylorGPAlg(Alg):
         Pop = self.population.pop_size  # 种群规模
         epsilons = [1e-5, 0.2, 1, 4, 10, 100]
         # time_start1 = time.time()
+        _init()
         for repeatNum in range(repeat):
             # time_start2 = time.time()
             SRC = subRegionCalculator(dataSets, originalTaylorGPGeneration, mabPolicy=self.mabPolicy)
@@ -337,10 +336,9 @@ class MTaylorGPAlg(Alg):
                     print("聚类有问题")
                     continue
                 SRC.firstMabFlag = True
-                _init()
-                  # 进行每轮数据集演化前执行
+                set_value('FIRST_EVOLUTION_FLAG', True)
+                # 进行每轮数据集演化前执行
                 for tryNum in range(mabLoopNum):
-                    set_value('FIRST_EVOLUTION_FLAG', True)
                     SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method)
                     SRC.SubRegionPruning()
                     SRC.SparseRegression()
@@ -361,12 +359,12 @@ class MTaylorGPAlg(Alg):
         """
 
 
-
 class MTaylorKMeansAlg(Alg):
     def __init__(self, max_generation, ds, up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
                  population=None,
-                 recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn", mabPolicy="Greedy"):
+                 recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn", mabPolicy="Greedy",recursionlimit=300):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.recursionlimit = recursionlimit
         self.best_fit = None
         self.elapse_time = None
         self.mabPolicy = mabPolicy
@@ -385,6 +383,7 @@ class MTaylorKMeansAlg(Alg):
                    x24, x25, x26, x27, x28, x29])
 
     def run(self):
+        sys.setrecursionlimit(self.recursionlimit)
         t = time.time()
         dataSets = self.ds.get_np_ds()
         x = self.ds.get_np_x()
