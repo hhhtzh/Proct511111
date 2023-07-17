@@ -144,7 +144,7 @@ class OperonBingoAlg(Alg):
             return self.population.pop_list[best_num].format()
 
     def run(self):
-        t=time.time()
+        t = time.time()
         for i in self.eval_op_list:
             i.do(self.population)
         now_error = self.population.get_best_fitness()
@@ -312,7 +312,7 @@ class GpBingoAlg(Alg):
         best_ind = str(self.get_best_individual())
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
-        self.best_fit=now_error
+        self.best_fit = now_error
         self.elapse_time = time.time() - t
 
 
@@ -398,13 +398,27 @@ class BingoAlg(Alg):
 
 
 class KeplarMBingo(Alg):
-    def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population,data):
+    def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population, data
+                 , recursion_limit=100):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.recursion_limit = recursion_limit
         self.data = data
 
-    def do(self,population):
+    def do(self, population):
         for i in [1e-5, 0.2, 1, 4, 10, 100]:
             dbscan = SklearnDBscan(eps=i)
             x, num = dbscan.do(self.data)
             if x:
                 break
+
+        db_sum = x
+        n_cluster = num
+        programs = []
+        fit_list = []
+        top3s = []
+        abRockSum = 0
+        abRockNum = []
+        epolusion = self.error_tolerance
+        final_fit = 100
+        recursion_limit = 10
+        now_recursion = 0
