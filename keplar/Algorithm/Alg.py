@@ -17,6 +17,7 @@ import pyoperon as Operon
 
 from keplar.operator.reinserter import KeplarReinserter
 from keplar.population.newisland import NewIsland
+from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
 
 
 # class SR_Alg(CompositeOp):
@@ -394,3 +395,16 @@ class BingoAlg(Alg):
         self.best_ind = test_island.get_best_individual()
         self.best_fit = test_island.get_best_fitness()
         self.elapse_time = time.time() - t
+
+
+class KeplarMBingo(Alg):
+    def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population,data):
+        super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.data = data
+
+    def do(self,population):
+        for i in [1e-5, 0.2, 1, 4, 10, 100]:
+            dbscan = SklearnDBscan(eps=i)
+            x, num = dbscan.do(self.data)
+            if x:
+                break

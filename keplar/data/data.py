@@ -41,10 +41,6 @@ class Data:
                 self.y = self.pd_data.iloc[:, -1]  # 提取最后一列作为目标变量
             except:
                 raise ValueError('TSV文件读取失败')
-
-
-
-
         else:
             raise ValueError("获取数据的方法选择错误")
 

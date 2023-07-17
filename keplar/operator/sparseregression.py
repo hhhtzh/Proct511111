@@ -84,6 +84,7 @@ class KeplarSpareseRegression(Operator):
         print("最好子空间适应度为" + str(self.bestLassoFitness))
         print("coef:" + str(self.curLassoCoef))
         final_str_ind = ""
+        print("ind_list"+str(self.ind_list))
         for i in range(len(self.globalBestLassoCoef)):
             temp_str_ind = "(" + str(self.globalBestLassoCoef[i]) + "*(" + str(self.ind_list[i][0]) + ")"+")"
             if final_str_ind != "":
