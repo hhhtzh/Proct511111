@@ -7,4 +7,4 @@ x=data.get_np_x()
 y=data.get_np_y()
 sr = SymbolicRegressor(population_size=128, generations=1000,
                        function_set=["add", "sub", "mul", "div", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^'])
-sr.fit()
+sr.fit(X=x,y=y)
