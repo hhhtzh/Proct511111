@@ -475,7 +475,8 @@ class KeplarMBingo(Alg):
                 abRockNum = []
                 n_cluster = 1
             else:
-                if fit_list[0] < final_fit:
-                    final_fit = fit_list[0]
+                print(fit_list)
+                if fit_list[0][0] < final_fit:
+                    final_fit = fit_list[0][0]
                 print(f"第{now_recursion}轮" + "适应度:" + str(final_fit))
             now_recursion += 1
