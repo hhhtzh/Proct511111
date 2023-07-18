@@ -68,7 +68,7 @@ method_probs = np.array([p_crossover,
 taylorsort = TaylorSort()
 
 # 算法的全部流程
-gen = 1000
+gen = 100
 taylorGP = TayloGPAlg(gen, taylorGP_pre1, taylorGP_pre2, selector,
                       creator, crossover, mutation, method_probs, taylorsort, evaluator)
 
@@ -81,6 +81,6 @@ for i in range(10):
     time_list.append(taylorGP .elapse_time)
 fit_pd = pd.DataFrame({'taylorGP': fit_list})
 time_pd = pd.DataFrame({'taylorGP': time_list})
-fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
-time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")
+# fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
+# time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")
 
