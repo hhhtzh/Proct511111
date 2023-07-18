@@ -29,3 +29,4 @@ class KeplarJudgeUCB(Operator):
                 self.max_ucb = self.ucbVal[i]
                 self.max_ucb_index = i
         print("最大UBC:" + str(self.ucbVal[0]) + "最大UCB子空间index" + str(self.max_ucb_index))
+        return self.max_ucb_index

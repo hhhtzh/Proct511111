@@ -11,6 +11,7 @@ from sympy import symbols
 from TaylorGP.TaylorGP2_KMEANS import Cal_fitness_Coef
 from TaylorGP.src.taylorGP._global import set_value, _init
 from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
+
 from keplar.Algorithm.Alg import Alg
 from TaylorGP.src.taylorGP.utils import check_random_state
 from keplar.translator.translator import trans_taylor_program, taylor_trans_population
@@ -321,6 +322,7 @@ class MTaylorGPAlg(Alg):
         Pop = self.population.pop_size  # 种群规模
         epsilons = [1e-5, 0.2, 1, 4, 10, 100]
         # time_start1 = time.time()
+        _init()
         for repeatNum in range(repeat):
             # time_start2 = time.time()
             SRC = subRegionCalculator(dataSets, originalTaylorGPGeneration, mabPolicy=self.mabPolicy)
@@ -330,12 +332,12 @@ class MTaylorGPAlg(Alg):
                 if epsilon == 1e-5:
                     SRC.PreDbscan(epsilon, noClusterFlag=True, clusterMethod="NOCLUSTER",
                                   data_x=np_x)  # 执行 OriginalTaylorGP
-                elif not SRC.PreDbscan(epsilon, clusterMethod="DBSCAN",data_x=np_x):
+                elif not SRC.PreDbscan(epsilon, clusterMethod="DBSCAN", data_x=np_x):
                     print("聚类有问题")
                     continue
                 SRC.firstMabFlag = True
-                _init()
-                set_value('FIRST_EVOLUTION_FLAG', True)  # 进行每轮数据集演化前执行
+                set_value('FIRST_EVOLUTION_FLAG', True)
+                # 进行每轮数据集演化前执行
                 for tryNum in range(mabLoopNum):
                     SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method)
                     SRC.SubRegionPruning()
@@ -360,8 +362,9 @@ class MTaylorGPAlg(Alg):
 class MTaylorKMeansAlg(Alg):
     def __init__(self, max_generation, ds, up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
                  population=None,
-                 recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn", mabPolicy="Greedy"):
+                 recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn", mabPolicy="Greedy",recursionlimit=300):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.recursionlimit = recursionlimit
         self.best_fit = None
         self.elapse_time = None
         self.mabPolicy = mabPolicy
@@ -380,7 +383,8 @@ class MTaylorKMeansAlg(Alg):
                    x24, x25, x26, x27, x28, x29])
 
     def run(self):
-        t=time.time()
+        sys.setrecursionlimit(self.recursionlimit)
+        t = time.time()
         dataSets = self.ds.get_np_ds()
         x = self.ds.get_np_x()
         average_fitness = 0
@@ -405,5 +409,5 @@ class MTaylorKMeansAlg(Alg):
         time_end1 = time.time()
         print('average_time_cost', (time_end1 - time_start1) / 3600 / repeat, 'hour')
         print('average_fitness = ', average_fitness / repeat)
-        self.best_fit = average_fitness/ repeat
+        self.best_fit = average_fitness / repeat
         self.elapse_time = time.time() - t

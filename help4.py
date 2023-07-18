@@ -140,7 +140,8 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 #     print("i:"+str(i))
 a = [[1], [1], [1]]
 a = np.array(a)
-print(np.shape(a))
-b = [[2], [1], [1]]
-c=np.append(a, b, axis=1)
-print(c)
+# print(np.shape(a))
+# b = [[2], [1], [1]]
+# c=np.append(a, b, axis=1)
+# print(c)
+print(a.any() == 0)

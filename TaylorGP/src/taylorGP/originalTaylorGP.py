@@ -19,6 +19,7 @@ from sklearn.metrics import mean_squared_error  # 均方误差
 from sklearn.linear_model import LinearRegression
 from sympy import *
 
+
 def CalTaylorFeatures(f_taylor, _x, X, Y, population, Generation, Pop, repeatNum, eq_write):
     print('In CalTaylorFeatures')
     metric = Metrics2(f_taylor, _x, X, Y)
@@ -111,10 +112,9 @@ def Taylor_Based_SR(_x, X, Y, qualified_list, eq_write, population, Gen, Pop, re
                 tops_fit.insert(0, f_low_taylor_mse)
                 tops_str.insert(0, f_low_taylor)
                 Y_pred = "f_low_taylor"
-                return tops_fit, [tops_str], population, Y_pred
+                return tops_fit, tops_str, population, Y_pred
             else:
-                return [est_gp._program.raw_fitness_], [
-                    print_program(est_gp._program.get_expression(), qualified_list, X, _x)]
+                return [f_low_taylor_mse], [f_low_taylor], None, Y_pred
         elif SR_method == "Bingo":
             operators = ['+', '-', '*', '/', 'sin', 'cos', 'log', 'exp', 'sqrt']
             x = X
@@ -130,16 +130,16 @@ def Taylor_Based_SR(_x, X, Y, qualified_list, eq_write, population, Gen, Pop, re
             population = creator.do()
             bgsr = KeplarBingoAlg(1000, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
             bgsr.run()
-            tops_fit=population.get_best_fitness()
-            tops_str=str(population.get_tar_best())
-            population=None
+            tops_fit = population.get_best_fitness()
+            tops_str = str(population.get_tar_best())
+            population = None
             if tops_fit > f_low_taylor_mse:
                 print(f_low_taylor, f_low_taylor_mse, sep='\n')
                 Y_pred = "f_low_taylor"
                 return [tops_fit], [tops_str], population, Y_pred
             else:
-                return [tops_fit],[print_program(tops_str, qualified_list, X,_x)]
-        elif SR_method=="Operon":
+                return [tops_fit], [print_program(tops_str, qualified_list, X, _x)]
+        elif SR_method == "Operon":
             x = X
             y = Y
             selector = OperonSelector(5)
@@ -249,7 +249,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
             metric.low_nmse = lr_nmse
             metric.f_low_taylor = sympify(f)
             temp_Y_pred = lr_Y_pred
-        if (rmseFlag == True): return metric.nmse
+        if rmseFlag == True: return metric.nmse
         # time_end2 = time()
         # print('Pretreatment_time_cost', (time_end2 - time_start2) / 3600, 'hour')
         # self.global_fitness, self.sympy_global_best = metric.low_nmse, metric.f_low_taylor
@@ -277,7 +277,8 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
         end_fitness, programs, population, Y_pred = Taylor_Based_SR(_x, X, change_Y(Y, qualified_list), qualified_list,
                                                                     eq_write, population, Generation, Pop, repeatNum,
                                                                     qualified_list[2] < 1e-5, SR_method=SR_method)
-        if Y_pred == "f_low_taylor": Y_pred = temp_Y_pred
+        if isinstance(Y_pred,str):
+            Y_pred = temp_Y_pred
         # Y_pred = programs[0].predict(X)
         print(end_fitness)
         print(programs)
