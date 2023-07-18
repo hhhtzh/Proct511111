@@ -27,6 +27,15 @@ class uDsrAlgorithm(Alg):
         self.csv_filename = csv_filename
         self.config_filename = config_filename
 
+    def calculate_rmse(actual_values, predicted_values):
+        actual_values = np.array(actual_values)
+        predicted_values = np.array(predicted_values)
+        # n = len(actual_values)
+        mse = np.mean((actual_values - predicted_values) ** 2)
+        rmse = np.sqrt(mse)
+        return rmse
+
+
     def run(self):
         # data = Data("csv", self.csv_filename,["x","y"])
         # data.read_file()
