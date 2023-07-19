@@ -17,6 +17,7 @@ class Statistic(Operator):
 class BingoStatistic(Statistic):
     def __init__(self, str_equ):
         super().__init__()
+        self.final_statis = None
         self.str_equ = str_equ
 
     def pos_do(self):
@@ -119,6 +120,7 @@ class BingoStatistic(Statistic):
                 now_num = final_statis[str_final]
                 now_num += 1
                 final_statis.update({str_final: now_num})
+        self.final_statis=final_statis
         print(final_statis)
 
 

@@ -7,10 +7,10 @@ from sklearn.linear_model import Lasso, LassoCV
 from sklearn.metrics import mean_squared_error
 from sklearn.svm._libsvm import predict
 
-
 from keplar.operator.evaluator import MetricsBingoEvaluator
 from keplar.operator.operator import Operator
 from keplar.operator.predictor import MetricsBingoPredictor
+from keplar.operator.statistic import BingoStatistic
 
 
 # class SparseRegression(Operator):
@@ -84,13 +84,31 @@ class KeplarSpareseRegression(Operator):
         print("最好子空间适应度为" + str(self.bestLassoFitness))
         print("coef:" + str(self.curLassoCoef))
         final_str_ind = ""
-        print("ind_list"+str(self.ind_list))
+        print("ind_list" + str(self.ind_list))
+        dict_arr = []
         for i in range(len(self.globalBestLassoCoef)):
-            temp_str_ind = "(" + str(self.globalBestLassoCoef[i]) + "*(" + str(self.ind_list[i][0]) + ")"+")"
+            str_equ = str(self.ind_list)
+            sta = BingoStatistic(str_equ)
+            dict1 = sta.final_statis
+            for key in dict1:
+                dict1[key] = dict1[key] * float(self.globalBestLassoCoef[i])
+            dict_arr.append(dict1)
+            temp_str_ind = "(" + str(self.globalBestLassoCoef[i]) + "*(" + str(self.ind_list[i][0]) + ")" + ")"
             if final_str_ind != "":
                 if self.globalBestLassoCoef[i] != 0:
                     final_str_ind = final_str_ind + "+" + temp_str_ind
             else:
                 final_str_ind = temp_str_ind
+        final_dict={}
+        for i in dict_arr:
+            for key in i:
+                if key not in final_dict:
+                    final_dict.update({key:i[key]})
+                else:
+                    now_num=final_dict[key]
+                    now_num+=i[key]
+                    final_dict.update({key:now_num})
+
         self.final_str_ind = final_str_ind
         print(final_str_ind)
+        print(final_dict)
