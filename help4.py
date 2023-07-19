@@ -7,6 +7,8 @@ import pandas as pd
 import pyoperon as Operon
 import conversion
 from numpy.random import RandomState
+from sympy import sympify, symbols
+from sympy import Integer
 
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.operator_definitions import INTEGER, CONSTANT
@@ -149,7 +151,16 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # c=np.append(a, b, axis=1)
 # print(c)
 # print(a.any() == 0)
-str1 = "X_2 + 0.22222222222222222222222 + sin(X_1)"
-sta=BingoStatistic(str1)
-sta.pos_do()
+str1 = "X_2 + X_1"
+# str1 = "X_1 + X_2 - X_1 +1.333333333333333333"
+x, y = symbols('X_1 X_2')
+strr = sympify(str1)
+print(strr)
 
+# sta = BingoStatistic(str1)
+# sta.pos_do()
+
+
+# dic = {'X_1': 0.444444}
+# print(dic)
+# print('X1' in dic)
