@@ -20,6 +20,7 @@ import pyoperon as Operon
 from keplar.operator.evaluator import SingleBingoEvaluator
 from keplar.operator.reinserter import KeplarReinserter
 from keplar.operator.sparseregression import KeplarSpareseRegression
+from keplar.operator.statistic import BingoStatistic
 from keplar.operator.taylor_judge import TaylorJudge
 from keplar.population.newisland import NewIsland
 from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
@@ -463,6 +464,8 @@ class KeplarMBingo(Alg):
                 rockBestFit = spare.rockBestFit
                 final_equ = spare.final_str_ind
                 single_eval = SingleBingoEvaluator(self.data, final_equ)
+                sta=BingoStatistic(final_equ)
+                sta.pos_do()
                 final_fit = single_eval.do()
                 print(f"第{now_recursion}轮" + "适应度:" + str(final_fit))
                 ucb = KeplarJudgeUCB(n_cluster, abRockSum, abRockNum, rockBestFit)
@@ -477,7 +480,8 @@ class KeplarMBingo(Alg):
             else:
                 print(fit_list)
                 for i in range(len(fit_list)):
-                    if fit_list[i][0] < final_fit:
-                        final_fit = fit_list[0][0]
+                    for j in range(len(fit_list[i])):
+                        if fit_list[i][j] < final_fit:
+                            final_fit = fit_list[i][j]
                 print(f"第{now_recursion}轮" + "适应度:" + str(final_fit))
             now_recursion += 1

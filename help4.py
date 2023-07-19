@@ -7,10 +7,16 @@ import pandas as pd
 import pyoperon as Operon
 import conversion
 from numpy.random import RandomState
+from sympy import sympify, symbols
+from sympy import Integer
 
 from bingo.symbolic_regression import AGraph
+from bingo.symbolic_regression.agraph.operator_definitions import INTEGER, CONSTANT
+from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens, infix_to_postfix, operators, \
+    functions, operator_map, var_or_const_pattern, int_pattern
 from keplar.data.data import Data
 from keplar.operator.creator import GpCreator
+from keplar.operator.statistic import BingoStatistic
 # from keplar.operator.feature_engineering import FeatureEngineering, TaylorFeature
 from keplar.population.individual import Individual
 from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
@@ -138,10 +144,23 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # for b,i in enumerate(a):
 #     print("b:"+str(b))
 #     print("i:"+str(i))
-a = [[1], [1], [1]]
-a = np.array(a)
+# a = [[1], [1], [1]]
+# a = np.array(a)
 # print(np.shape(a))
 # b = [[2], [1], [1]]
 # c=np.append(a, b, axis=1)
 # print(c)
-print(a.any() == 0)
+# print(a.any() == 0)
+str1 = "((X_3)(X_2 + X_1) + 21.058475977343992)(0.064736188414163)"
+
+x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9, x_10 = symbols('X_1 X_2 X_3 X_4 X_5 X_6 X_7 X_8 X_9 X_10')
+strr = sympify(str1)
+print(strr)
+#
+# sta = BingoStatistic(str1)
+# sta.pos_do()
+
+
+# dic = {'X_1': 0.444444}
+# print(dic)
+# print('X1' in dic)
