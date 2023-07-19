@@ -12,6 +12,7 @@ from keplar.operator.Taylor_prework import TaylorGP_Pre1, TaylorGP_pre2
 from TaylorGP.src.taylorGP.functions import _Function, _sympol_map
 from TaylorGP.src.taylorGP.utils import check_random_state
 from keplar.operator.TaylorSort import TaylorSort
+import pandas as pd
 
 
 data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
@@ -19,27 +20,6 @@ data.read_file()
 x_train = data.get_np_x()
 y_train = data.get_np_y()
 
-# data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
-# data.read_file()
-# data.set_xy("y")
-# x_train = data.get_np_x()
-# y_train = data.get_np_y()
-
-# data = Data("tsv", "datasets/F30.tsv", ["x1", "x2", "x3", "x4", 'y'])
-# data.read_file()
-# x_train = data.x
-# y_train = data.y
-# print(x_train)
-# x_train = data.get_np_x()
-# y_train = data.get_np_y()
-
-
-# data = Data("txt", "datasets/F30.tsv", ["x0", "x1", "y"])
-# data.read_file()
-# data.set_xy("y")
-# x_train = data.get_np_x()
-# y_train = data.get_np_y()
-# y_train = y_train.reshape([-1, 1])
 
 taylorGP_pre1 = TaylorGP_Pre1(x_train, y_train)
 X, Y, qualified_list = taylorGP_pre1.do()
@@ -88,8 +68,19 @@ method_probs = np.array([p_crossover,
 taylorsort = TaylorSort()
 
 # 算法的全部流程
-gen = 1000
+gen = 100
 taylorGP = TayloGPAlg(gen, taylorGP_pre1, taylorGP_pre2, selector,
                       creator, crossover, mutation, method_probs, taylorsort, evaluator)
 
-taylorGP.run()
+fit_list = []
+time_list = []
+for i in range(10):
+    taylorGP.run()
+
+    fit_list.append(taylorGP .best_fit)
+    time_list.append(taylorGP .elapse_time)
+fit_pd = pd.DataFrame({'taylorGP': fit_list})
+time_pd = pd.DataFrame({'taylorGP': time_list})
+# fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
+# time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")
+

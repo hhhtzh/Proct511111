@@ -59,8 +59,10 @@ def _parallel_evolve(n_programs, population, X, y, sample_weight, seeds, params,
         else:
             parent_index = contenders[np.argmin(fitness)]
         return parents[parent_index], parent_index
+
+    # Build programs
     programs = []
-    parents = population
+    parents = population.target_pop_list
 
     for i in range(n_programs):
         random_state = check_random_state(i)
@@ -82,12 +84,19 @@ def _parallel_evolve(n_programs, population, X, y, sample_weight, seeds, params,
 
                 genome = {'method': 'Crossover',
                           'parent_idx': parent_index,
+                          # 'parent_nodes': removed,
                           'donor_idx': donor_index
+                          # 'donor_nodes': remains}
                           }
             elif method < method_probs[1]:
                 # subtree_mutation
                 mutation.get_value(1, random_state,  parent, i)
                 program, removed, _ = mutation.do(population)
+                # program =None
+
+
+# <<<<<<< HEAD
+                # program, removed, _ = parent.subtree_mutation(random_state)
                 genome = {'method': 'Subtree Mutation',
                           'parent_idx': parent_index,
                           'parent_nodes': removed}
@@ -197,7 +206,6 @@ class TayloGPAlg(Alg):
         self.best_fit = None
         self.elapse_time = None
 
-
     def _verbose_reporter(self, run_details=None):
         """A report of the progress of the evolution process.
 
@@ -218,12 +226,22 @@ class TayloGPAlg(Alg):
         else:
             # Estimate remaining time for run
             gen = run_details['generation'][-1]
+            # generation_time = run_details['generation_time'][-1]
+            # remaining_time = (self.generations - gen - 1) * generation_time
+# <<<<<<< HEAD
             remaining_time = 0
             if remaining_time > 60:
                 remaining_time = '{0:.2f}m'.format(remaining_time / 60.0)
             else:
                 remaining_time = '{0:.2f}s'.format(remaining_time)
+# =======
+            # if remaining_time > 60:
+            #     remaining_time = '{0:.2f}m'.format(remaining_time / 60.0)
+            # else:
+            #     remaining_time = '{0:.2f}s'.format(remaining_time)
             remaining_time = '{0:.2f}s'.format(0.0)
+# >>>>>>> c0ed278302bd149db82e0ea24012f794506aed24
+
             oob_fitness = 'N/A'
             line_format = '{:4d} {:8.2f} {:16g} {:8d} {:16g} {:>16} {:>10}'
             if self.max_samples < 1.0:
@@ -236,6 +254,11 @@ class TayloGPAlg(Alg):
                                      run_details['best_length'][-1],
                                      run_details['best_fitness'][-1],
                                      oob_fitness,
+                                     # <<<<<<< HEAD
+                                     #                                      remaining_time))
+
+                                     #     def select_by_crowding_distance(self,population,front,reminder):
+                                     # =======
                                      remaining_time
                                      ))
 
@@ -269,7 +292,6 @@ class TayloGPAlg(Alg):
     def run(self):
         t = time.time()
 
-
         X, Y, qualified_list = self.taylorGP_pre1.do()
         self.taylorGP_pre2.get_value(X, Y, qualified_list)
 # <<<<<<< HEAD
@@ -290,20 +312,28 @@ class TayloGPAlg(Alg):
         best_program = None
         best_program_fitness_ = None
         population = Population(self.population_size)
-        # population.target_pop_list = None
+        population.target_pop_list = None
         for gen in range(self.generation):
             top1Flag = False
             # start_time = time()
             # if get_value('FIRST_EVOLUTION_FLAG') == False:
-
             if gen == 0:
-                parents = None
+                parents = population_input  # if第一轮，传的是空父母，如果第二轮，传的是非空父母，所以不用分开处理
+                if parents != None:
+                    self._programs.append(population_input)
+                    best_program = parents[0]
+                    best_program_fitness_ = parents[0]
+                    continue
+                else:
+                    self._programs.append(None)
+# <<<<<<< HEAD
                 self._verbose_reporter()
-
-            else:
-                # print('gen:', gen)
-                parents = self._programs[gen - 1]               
-                # parents = self._programs[gen - 1]
+#             else:#针对第二代演化父母都已经发生改变了，与是不是第一轮没有关系
+# =======
+            else:  # 针对第二代演化父母都已经发生改变了，与是不是第一轮没有关系
+                # >>>>>>> c0ed278302bd149db82e0ea24012f794506aed24
+                parents = self._programs[gen - 1]
+                # 已经是排过序的了！！！
                 # parents.sort(key=lambda x: x.raw_fitness_)
                 # np.random.shuffle(parents)
                 top1Flag = True
@@ -312,13 +342,11 @@ class TayloGPAlg(Alg):
             random_state = check_random_state(None)
 
             seeds = random_state.randint(MAX_INT, size=self.population_size)
-            population = Population(self.population_size)
-
 
             population.target_pop_list = Parallel(n_jobs=n_jobs,
                                                   verbose=int(self.verbose > 1))(
                 delayed(_parallel_evolve)(n_programs[i],
-                                          parents,
+                                          population,
                                           X,
                                           y,
                                           sample_weight,
@@ -327,7 +355,6 @@ class TayloGPAlg(Alg):
                                           self.crossover,
                                           self.mutation)
                 for i in range(n_jobs))
-
             population.target_pop_list = list(itertools.chain.from_iterable(population.target_pop_list))
             if top1Flag:
                 population.target_pop_list.append(best_program_fitness_)
@@ -344,7 +371,7 @@ class TayloGPAlg(Alg):
             fitness_ = [program.fitness_ for program in population.target_pop_list]
             self._programs.append(population.target_pop_list)
 
-            # Remove old programs that didn't make it into the new population.target_pop_list.
+            # Remove old programs that didn't make it into the new population.
 
             if not self.low_memory:
                 for old_gen in np.arange(gen, 0, -1):
@@ -394,5 +421,7 @@ class TayloGPAlg(Alg):
                 best_fitness = fitness[np.argmin(fitness)]
                 if best_fitness <= self.stopping_criteria:
                     break
+
+
 
         self.elapse_time = time.time() - t
