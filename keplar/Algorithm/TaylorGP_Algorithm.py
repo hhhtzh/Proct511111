@@ -350,7 +350,7 @@ class MTaylorGPAlg(Alg):
                 print("Temp Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
             print("Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
         self.best_fit = SRC.bestLassoFitness
-        self.best_ind=SRC.tops[SRC.globalBestLassoCoef]
+        self.best_ind=SRC.tops[SRC.globalBestLassoCoef[0]]
         print("best_ind"+str(self.best_ind))
         self.elapse_time = time.time() - t
 

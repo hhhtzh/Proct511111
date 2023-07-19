@@ -151,12 +151,12 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # c=np.append(a, b, axis=1)
 # print(c)
 # print(a.any() == 0)
-str1 = "X_2 + X_1"
-# str1 = "X_1 + X_2 - X_1 +1.333333333333333333"
-x, y = symbols('X_1 X_2')
+str1 = "((X_3)(X_2 + X_1) + 21.058475977343992)(0.064736188414163)"
+
+x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9, x_10 = symbols('X_1 X_2 X_3 X_4 X_5 X_6 X_7 X_8 X_9 X_10')
 strr = sympify(str1)
 print(strr)
-
+#
 # sta = BingoStatistic(str1)
 # sta.pos_do()
 

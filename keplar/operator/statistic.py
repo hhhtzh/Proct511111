@@ -1,3 +1,5 @@
+from sympy import sympify, symbols
+
 from bingo.symbolic_regression.agraph.operator_definitions import INTEGER, CONSTANT
 from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens, operators, operator_map, \
     functions, var_or_const_pattern, int_pattern, infix_to_postfix
@@ -35,8 +37,6 @@ class BingoStatistic(Statistic):
             if token in operators:
                 operands = stack.pop(), stack.pop()
                 command = [operator_map[token], operands[1], operands[0]]
-                print(token)
-                print(command)
                 if token=="*":
                     if command_array[command[1]][0]==1 and command_array[command[2]][0]==0 and command_array[command[2]][1]==command_array[command[2]][2]:
                         str_temp = "X_" + str(command_array[command[2]][1])
