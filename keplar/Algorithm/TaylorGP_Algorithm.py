@@ -291,6 +291,7 @@ class MTaylorGPAlg(Alg):
                  population=None,
                  recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn", mabPolicy="Greedy"):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.best_ind = None
         self.elapse_time = None
         self.best_fit = None
         self.mabPolicy = mabPolicy
@@ -349,6 +350,8 @@ class MTaylorGPAlg(Alg):
                 print("Temp Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
             print("Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
         self.best_fit = SRC.bestLassoFitness
+        self.best_ind=SRC.tops[SRC.globalBestLassoCoef]
+        print("best_ind"+str(self.best_ind))
         self.elapse_time = time.time() - t
 
     """

@@ -477,7 +477,8 @@ class KeplarMBingo(Alg):
             else:
                 print(fit_list)
                 for i in range(len(fit_list)):
-                    if fit_list[i][0] < final_fit:
-                        final_fit = fit_list[0][0]
+                    for j in range(len(fit_list[i])):
+                        if fit_list[i][j] < final_fit:
+                            final_fit = fit_list[i][j]
                 print(f"第{now_recursion}轮" + "适应度:" + str(final_fit))
             now_recursion += 1
