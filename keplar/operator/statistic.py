@@ -38,8 +38,9 @@ class BingoStatistic(Statistic):
             if token in operators:
                 operands = stack.pop(), stack.pop()
                 command = [operator_map[token], operands[1], operands[0]]
-                if token=="*":
-                    if command_array[command[1]][0]==1 and command_array[command[2]][0]==0 and command_array[command[2]][1]==command_array[command[2]][2]:
+                if token == "*":
+                    if command_array[command[1]][0] == 1 and command_array[command[2]][0] == 0 and \
+                            command_array[command[2]][1] == command_array[command[2]][2]:
                         str_temp = "X_" + str(command_array[command[2]][1])
                         if str_temp not in final_statis:
                             final_statis.update({str_temp: constants[command_array[command[1]][1]]})
@@ -47,10 +48,11 @@ class BingoStatistic(Statistic):
                             now_num = final_statis[str_temp]
                             now_num += constants[command_array[command[1]][1]]
                             final_statis.update({str_temp: now_num})
-                    elif command_array[command[2]][0]==1 and command_array[command[1]][0]==0 and command_array[command[1]][1]==command_array[command[1]][2]:
+                    elif command_array[command[2]][0] == 1 and command_array[command[1]][0] == 0 and \
+                            command_array[command[1]][1] == command_array[command[1]][2]:
                         str_temp = "X_" + str(command_array[command[1]][1])
                         if str_temp not in final_statis:
-                            final_statis.update({str_temp: constants[command_array[command[1]][1]]})
+                            final_statis.update({str_temp: constants[command_array[command[2]][1]]})
                         else:
                             now_num = final_statis[str_temp]
                             now_num += constants[command_array[command[1]][1]]
@@ -91,7 +93,7 @@ class BingoStatistic(Statistic):
                 command_array.append(command)
                 stack.append(i)
                 i += 1
-        print(command_array)
+        # print(command_array)
 
         for i in command_array:
             if i[0] == 0 and i[1] == i[2]:
@@ -106,23 +108,19 @@ class BingoStatistic(Statistic):
         reversed_dict = dict((value, key) for key, value in command_to_i.items())
 
         for i in func_with_x:
-            str_final=i[0]+'('+i[1]+')'
+            str_final = i[0] + '(' + i[1] + ')'
             if i[1] in final_statis:
                 now_num = final_statis[i[1]]
                 now_num -= 1
-                if now_num ==0:
+                if now_num == 0:
                     del final_statis[i[1]]
                 else:
                     final_statis.update({i[1]: now_num})
             if str_final not in final_statis:
-                final_statis.update({str_final:1})
+                final_statis.update({str_final: 1})
             else:
                 now_num = final_statis[str_final]
                 now_num += 1
                 final_statis.update({str_final: now_num})
-        self.final_statis=final_statis
+        self.final_statis = final_statis
         print(final_statis)
-
-
-
-

@@ -24,6 +24,7 @@ from keplar.operator.statistic import BingoStatistic
 from keplar.operator.taylor_judge import TaylorJudge
 from keplar.population.newisland import NewIsland
 from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
+from keplar.preoperator.ml.sklearnkmeans import SklearnKmeans
 
 
 # class SR_Alg(CompositeOp):
@@ -414,7 +415,7 @@ class KeplarMBingo(Alg):
 
     def run(self):
         for i in [1e-5, 0.2, 1, 4, 10, 100]:
-            dbscan = SklearnDBscan(eps=i)
+            dbscan = SklearnKmeans(3)
             x, num = dbscan.do(self.data)
             if x:
                 break
@@ -478,7 +479,6 @@ class KeplarMBingo(Alg):
                 abRockNum = []
                 n_cluster = 1
             else:
-                print(fit_list)
                 for i in range(len(fit_list)):
                     for j in range(len(fit_list[i])):
                         if fit_list[i][j] < final_fit:

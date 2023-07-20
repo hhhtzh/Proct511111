@@ -87,8 +87,9 @@ class KeplarSpareseRegression(Operator):
         print("ind_list" + str(self.ind_list))
         dict_arr = []
         for i in range(len(self.globalBestLassoCoef)):
-            str_equ = str(self.ind_list)
+            str_equ = str(self.ind_list[i][0])
             sta = BingoStatistic(str_equ)
+            sta.pos_do()
             dict1 = sta.final_statis
             for key in dict1:
                 dict1[key] = dict1[key] * float(self.globalBestLassoCoef[i])
@@ -99,16 +100,16 @@ class KeplarSpareseRegression(Operator):
                     final_str_ind = final_str_ind + "+" + temp_str_ind
             else:
                 final_str_ind = temp_str_ind
-        final_dict={}
+        final_dict = {}
         for i in dict_arr:
             for key in i:
                 if key not in final_dict:
-                    final_dict.update({key:i[key]})
+                    final_dict.update({key: i[key]})
                 else:
-                    now_num=final_dict[key]
-                    now_num+=i[key]
-                    final_dict.update({key:now_num})
+                    now_num = final_dict[key]
+                    now_num += i[key]
+                    final_dict.update({key: now_num})
 
         self.final_str_ind = final_str_ind
-        print(final_str_ind)
-        print(final_dict)
+        # print(final_str_ind)
+        print("final::::" + str(final_dict))

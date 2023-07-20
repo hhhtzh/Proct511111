@@ -32,7 +32,7 @@ class SklearnDBscan(PreOperator):
         if n_clusters_ < 1:
             print("划分数据集失败")
             return False, 0
-        return db_sum,n_clusters_
+        return db_sum, n_clusters_
         # print(n_clusters_)
         # print(core_samples_mask)
         # print(labels)
