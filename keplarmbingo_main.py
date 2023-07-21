@@ -19,7 +19,7 @@ from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
 # data.set_xy("y")
 data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
 data.read_file()
-operators = ["+", "-", "*", "/", "sin", "exp"]
+operators = ["+", "-", "*", "/", "sin", "exp", "sqrt", "^"]
 population = Population(128)
 kmb = KeplarMBingo(1000, None, None, None, 0.1, population, data, operators)
 kmb.run()
