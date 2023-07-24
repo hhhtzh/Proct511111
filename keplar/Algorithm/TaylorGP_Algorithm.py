@@ -354,6 +354,7 @@ class MTaylorGPAlg(Alg):
         print("best_ind"+str(self.best_ind))
         dict_arr=SRC.dict_arr
         final_dict = {}
+        print(dict_arr)
         for i in dict_arr:
             for key in i:
                 if key not in final_dict:

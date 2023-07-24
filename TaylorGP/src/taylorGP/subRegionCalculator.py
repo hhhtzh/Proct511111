@@ -6,7 +6,7 @@ import random
 from sklearn.cluster import DBSCAN, KMeans
 from sklearn.metrics import mean_squared_error
 
-from keplar.operator.statistic import BingoStatistic
+from keplar.operator.statistic import TaylorStatistic
 from ._global import get_value, set_value
 from .originalTaylorGP import OriginalTaylorGP
 from sympy import sympify
@@ -427,7 +427,7 @@ class subRegionCalculator:
                 print(str_eq)
                 strx_ = re.sub(r'x(\d{1})', r'x_\1', str_eq)
                 print(strx_)
-                sta = BingoStatistic(strx_)
+                sta = TaylorStatistic(strx_)
                 sta.pos_do()
                 dict1 = sta.final_statis
                 print(dict1)

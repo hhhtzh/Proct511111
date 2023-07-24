@@ -4,6 +4,7 @@ from bingo.symbolic_regression.agraph.operator_definitions import INTEGER, CONST
 from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens, operators, operator_map, \
     functions, var_or_const_pattern, int_pattern, infix_to_postfix
 from keplar.operator.operator import Operator
+from keplar.translator.translator import is_float
 
 
 class Statistic(Operator):
@@ -21,9 +22,46 @@ class TaylorStatistic(Statistic):
         self.str_equ = str_equ
 
     def pos_do(self):
+        final_statis = {}
         str1 = self.str_equ
         list_equ = eq_string_to_infix_tokens(str1)
         print(list_equ)
+        for token in range(len(list_equ)):
+            if is_float(list_equ[token]) and list_equ[token - 1] != "^" and token != len(list_equ) - 1:
+                print(float(list_equ[token]))
+                if list_equ[token + 3] != "*" and list_equ[token + 3] != "^":
+                    print("**" + list_equ[token])
+                    print(list_equ[token + 2])
+                    str_temp = list_equ[token + 2]
+                    this_num = float(list_equ[token])
+                    if token != 0:
+                        if list_equ[token - 1] == "-":
+                            this_num = this_num * (-1)
+                    if str_temp not in final_statis:
+                        final_statis.update({str_temp: this_num})
+                    else:
+                        now_num = final_statis[str_temp]
+                        now_num += this_num
+                        final_statis.update({str_temp: now_num})
+                else:
+                    this_num = float(list_equ[token])
+                    if token != 0:
+                        if list_equ[token - 1] == "-":
+                            this_num = this_num * (-1)
+                    i = token + 2
+                    while list_equ[i] != "+" and list_equ[i] != "-":
+                        i += 1
+                    now_list = list_equ[token + 2:i]
+                    now_str = ''.join(now_list)
+                    if now_str not in final_statis:
+                        final_statis.update({now_str: this_num})
+                    else:
+                        now_num = final_statis[now_str]
+                        now_num += this_num
+                        final_statis.update({now_str: now_num})
+
+        print(final_statis)
+        self.final_statis = final_statis
 
 
 class BingoStatistic(Statistic):
