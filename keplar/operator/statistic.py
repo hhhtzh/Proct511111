@@ -13,8 +13,19 @@ class Statistic(Operator):
     def do(self, population):
         raise NotImplementedError
 
+
 class TaylorStatistic(Statistic):
-    def __
+    def __init__(self, str_equ):
+        super().__init__()
+        self.final_statis = None
+        self.str_equ = str_equ
+
+    def pos_do(self):
+        str1 = self.str_equ
+        list_equ = eq_string_to_infix_tokens(str1)
+        print(list_equ)
+
+
 class BingoStatistic(Statistic):
     def __init__(self, str_equ):
         super().__init__()
@@ -58,7 +69,7 @@ class BingoStatistic(Statistic):
                             now_num = final_statis[str_temp]
                             now_num += constants[command_array[command[1]][1]]
                             final_statis.update({str_temp: now_num})
-                elif token=="^":
+                elif token == "^":
                     print(command)
 
             elif token in functions:

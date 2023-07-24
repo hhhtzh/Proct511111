@@ -16,7 +16,7 @@ from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_t
     functions, operator_map, var_or_const_pattern, int_pattern
 from keplar.data.data import Data
 from keplar.operator.creator import GpCreator
-from keplar.operator.statistic import BingoStatistic
+from keplar.operator.statistic import BingoStatistic, TaylorStatistic
 # from keplar.operator.feature_engineering import FeatureEngineering, TaylorFeature
 from keplar.population.individual import Individual
 from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
@@ -157,8 +157,7 @@ str1 = re.sub(r'x(\d{1})', r'x_\1', str1)
 # x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9, x_10 = symbols('X_1 X_2 X_3 X_4 X_5 X_6 X_7 X_8 X_9 X_10')
 # str2 = sympify(str1)
 # print(str2)
-# #
-sta = BingoStatistic(str1)
+sta = TaylorStatistic(str1)
 sta.pos_do()
 # for cluster in range(0, 10):
 #     print(cluster)
