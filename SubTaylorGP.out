@@ -1,2 +1,2 @@
 Gen|Top1|Length1|Fitness1|Top2|Length2|Fitness2|Top3|Length3|Fitness3|Top4|Length4|Fitness4|Top5|Length5|Fitness5|Top6|Length6|Fitness6|Top7|Length7|Fitness7|Top8|Length8|Fitness8|Top9|Length9|Fitness9|Top10|Length10|Fitness10
--1|0.05506430868167212*x0**2 + 0.06266550028371443*x0*x1 - 0.5367647058823524*x0 + 0.0462573292982789*x1**2 - 0.50563883109513883*x1 - 0.49999999999999956*x2 - 0.5665192926045014*x3 + 12.194935691318325|10|0.281250000000000|
+-1|-0.5*x0**2 + 3.0*x0*x1 - 12.0*x0 - 0.75*x1**2 - 7.75*x1 - 0.5*x2 - 0.5*x3 + 67.0|10|0|

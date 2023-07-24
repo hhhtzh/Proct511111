@@ -142,7 +142,7 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # a=[1,1,1]
 #
 # for b,i in enumerate(a):
-#     print("b:"+str(b))
+#     print("b:"+str(b)) 
 #     print("i:"+str(i))
 # a = [[1], [1], [1]]
 # a = np.array(a)
@@ -151,16 +151,17 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # c=np.append(a, b, axis=1)
 # print(c)
 # print(a.any() == 0)
-# str1 = "((X_3)(X_2 + X_1) + 21.058475977343992)(0.064736188414163)"
+str1 = "0.16666666666666784*x0**2 - 12.407407407407417*x0*x1 + 1.5555555555555585*x0*x2 + 53.53703703703706*x0 + 9.407407407407414*x1**2 - 39.111111111111131*x1 - 9.0000000000000175*x2 - 1.3333333333333333*x3 + 17.703703703703748"
+str1 = re.sub(r'x(\d{1})', r'x_\1', str1)
 #
 # x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9, x_10 = symbols('X_1 X_2 X_3 X_4 X_5 X_6 X_7 X_8 X_9 X_10')
-# strr = sympify(str1)
-# print(strr)
+# str2 = sympify(str1)
+# print(str2)
 # #
-# sta = BingoStatistic(str1)
-# sta.pos_do()
-for cluster in range(0, 10):
-    print(cluster)
+sta = BingoStatistic(str1)
+sta.pos_do()
+# for cluster in range(0, 10):
+#     print(cluster)
 
 # dic = {'X_1': 0.444444}
 # print(dic)

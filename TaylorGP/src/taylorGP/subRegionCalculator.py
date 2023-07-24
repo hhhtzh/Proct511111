@@ -1,9 +1,12 @@
 import math
+import re
 
 import numpy as np
 import random
 from sklearn.cluster import DBSCAN, KMeans
 from sklearn.metrics import mean_squared_error
+
+from keplar.operator.statistic import BingoStatistic
 from ._global import get_value, set_value
 from .originalTaylorGP import OriginalTaylorGP
 from sympy import sympify
@@ -47,6 +50,7 @@ class subRegionCalculator:
     name = 'Calculate Subregions things and MAB parameters'
 
     def __init__(self, dataSets, originalTaylorGPGeneration, mabPolicy="Greedy", lbd=1):
+        self.dict_arr = None
         self.dataSets = dataSets
         self.subRegions = None
         self.tops = None  # self.tops = [[subtops]] top = [[fits],[eqs]]
@@ -357,6 +361,20 @@ class subRegionCalculator:
                         self.Cal_X_Y_pred()  # 更新self.globalBest_X_Y_pred
             # print("Final Fitness",self.bestLassoFitness, " Selected SubRegon Index: ", self.globalBestLassoCoef)
             self.UpdateAvgRewards()
+            for i in range(len(self.globalBestLassoCoef)):
+                for j in self.dict_arr:
+                    for key in j:
+                        j[key] = j[key] * float(self.globalBestLassoCoef[i])
+            final_dict = {}
+            for i in self.dict_arr:
+                for key in i:
+                    if key not in final_dict:
+                        final_dict.update({key: i[key]})
+                    else:
+                        now_num = final_dict[key]
+                        now_num += i[key]
+                        final_dict.update({key: now_num})
+            print("final::::" + str(final_dict))
         except BaseException:
             print("TypeError: can't convert complex to float")
             self.curLassoCoef = [1] * len(self.subRegions)  # 保证下轮对所有子块都进行更新.
@@ -401,13 +419,26 @@ class subRegionCalculator:
         numberOfCombinations = 5
         X_Trains = []
         num = 100000
+        dict_arr = []
         for num in range(numberOfCombinations):
             index = 0
             for i, top in enumerate(self.tops):  # self.tops = [[subtops]] top = [[fits],[eqs],[population]]
+                str_eq = str(top[1][index])
+                print(str_eq)
+                strx_ = re.sub(r'x(\d{1})', r'x_\1', str_eq)
+                print(strx_)
+                sta = BingoStatistic(strx_)
+                sta.pos_do()
+                dict1 = sta.final_statis
+                print(dict1)
+                dict_arr.append(dict1)
                 if not bestFlag:
                     index = math.floor(random.random() * len(top[1]))
                 try:
                     tempArr = np.array(CalFitness(eq=top[1][index], dataSet=self.dataSets, IsPred=True)).reshape(-1, 1)
+
+
+
                 except BaseException:  # 此公式不适用于完整数据集，需要跳过
                     num += 1
                     continue
@@ -421,6 +452,8 @@ class subRegionCalculator:
             except BaseException:
                 print("没有找到适用于完整数据集的公式")
 
+            self.dict_arr=dict_arr
+            print("dict_arr:"+str(self.dict_arr))
             return X_Trains
 
     def MAB(self, bestIndividualIndex, policy="epsilonGreedy"):

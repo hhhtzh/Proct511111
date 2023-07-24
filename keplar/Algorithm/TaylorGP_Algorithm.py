@@ -352,6 +352,17 @@ class MTaylorGPAlg(Alg):
         self.best_fit = SRC.bestLassoFitness
         self.best_ind=SRC.tops[SRC.globalBestLassoCoef[0]]
         print("best_ind"+str(self.best_ind))
+        dict_arr=SRC.dict_arr
+        final_dict = {}
+        for i in dict_arr:
+            for key in i:
+                if key not in final_dict:
+                    final_dict.update({key: i[key]})
+                else:
+                    now_num = final_dict[key]
+                    now_num += i[key]
+                    final_dict.update({key: now_num})
+        print("final::::" + str(final_dict))
         self.elapse_time = time.time() - t
 
     """
