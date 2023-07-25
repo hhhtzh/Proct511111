@@ -279,10 +279,9 @@ class subRegionCalculator:
         print("Pruning")
         pruningFlag = False
         for i in range(len(self.subRegions) - 1, 0, -1):  # 从len-1到0，左闭右开
+            print("subregion:" + str(self.subRegions[i]))
             try:
                 # if self.final_dict is not None:
-                print("subregion:" + str(self.subRegions[i]))
-
                 if self.EvaluateNearRegionFitness(i - 1, i):  # 使用 i-1块的最优个体测试i块
                     self.DelRegionParameters(i)
                     pruningFlag = True
