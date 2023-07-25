@@ -350,9 +350,9 @@ class MTaylorGPAlg(Alg):
                 print("Temp Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
             print("Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
         self.best_fit = SRC.bestLassoFitness
-        self.best_ind=SRC.tops[SRC.globalBestLassoCoef[0]]
-        print("best_ind"+str(self.best_ind))
-        dict_arr=SRC.dict_arr
+        self.best_ind = SRC.tops[SRC.globalBestLassoCoef[0]]
+        print("best_ind" + str(self.best_ind))
+        dict_arr = SRC.dict_arr
         final_dict = {}
         print(dict_arr)
         for i in dict_arr:
@@ -377,7 +377,8 @@ class MTaylorGPAlg(Alg):
 class MTaylorKMeansAlg(Alg):
     def __init__(self, max_generation, ds, up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
                  population=None,
-                 recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn", mabPolicy="Greedy",recursionlimit=300):
+                 recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn", mabPolicy="Greedy",
+                 recursionlimit=300):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
         self.recursionlimit = recursionlimit
         self.best_fit = None

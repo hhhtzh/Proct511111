@@ -50,6 +50,7 @@ class subRegionCalculator:
     name = 'Calculate Subregions things and MAB parameters'
 
     def __init__(self, dataSets, originalTaylorGPGeneration, mabPolicy="Greedy", lbd=1):
+        self.final_dict = None
         self.dict_arr = None
         self.dataSets = dataSets
         self.subRegions = None
@@ -279,6 +280,9 @@ class subRegionCalculator:
         pruningFlag = False
         for i in range(len(self.subRegions) - 1, 0, -1):  # 从len-1到0，左闭右开
             try:
+                # if self.final_dict is not None:
+                print("subregion:" + str(self.subRegions[i]))
+
                 if self.EvaluateNearRegionFitness(i - 1, i):  # 使用 i-1块的最优个体测试i块
                     self.DelRegionParameters(i)
                     pruningFlag = True
@@ -375,6 +379,7 @@ class subRegionCalculator:
                         now_num += i[key]
                         final_dict.update({key: now_num})
             print("final::::" + str(final_dict))
+            self.final_dict = final_dict
         except BaseException:
             print("TypeError: can't convert complex to float")
             self.curLassoCoef = [1] * len(self.subRegions)  # 保证下轮对所有子块都进行更新.
@@ -452,8 +457,8 @@ class subRegionCalculator:
             except BaseException:
                 print("没有找到适用于完整数据集的公式")
 
-            self.dict_arr=dict_arr
-            print("dict_arr:"+str(self.dict_arr))
+            self.dict_arr = dict_arr
+            print("dict_arr:" + str(self.dict_arr))
             return X_Trains
 
     def MAB(self, bestIndividualIndex, policy="epsilonGreedy"):
