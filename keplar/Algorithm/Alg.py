@@ -409,11 +409,14 @@ class KeplarMBingo(Alg):
     def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population, data
                  , operators, recursion_limit=10):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.best_fit = None
+        self.elapse_time = None
         self.operators = operators
         self.recursion_limit = recursion_limit
         self.data = data
 
     def run(self):
+        t = time.time()
         for i in [1e-5, 0.2, 1, 4, 10, 100]:
             dbscan = SklearnKmeans(3)
             x, num = dbscan.do(self.data)
@@ -465,7 +468,7 @@ class KeplarMBingo(Alg):
                 rockBestFit = spare.rockBestFit
                 final_equ = spare.final_str_ind
                 single_eval = SingleBingoEvaluator(self.data, final_equ)
-                sta=BingoStatistic(final_equ)
+                sta = BingoStatistic(final_equ)
                 sta.pos_do()
                 final_fit = single_eval.do()
                 print(f"第{now_recursion}轮" + "适应度:" + str(final_fit))
@@ -485,3 +488,5 @@ class KeplarMBingo(Alg):
                             final_fit = fit_list[i][j]
                 print(f"第{now_recursion}轮" + "适应度:" + str(final_fit))
             now_recursion += 1
+        self.elapse_time = time.time() - t
+        self.best_fit = final_fit

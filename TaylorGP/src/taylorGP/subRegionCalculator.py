@@ -243,9 +243,9 @@ class subRegionCalculator:
                 # if len(self.tops) != 1:
                 #     if isinstance(self.tops[1], int):
                 #         self.tops = self.tops[0]
-                print(self.tops)
-                print(len(self.tops))
-                print(selectedRegionIndex)
+                # print(self.tops)
+                # print(len(self.tops))
+                # print(selectedRegionIndex)
                 # if len(self.tops) == 1:
                 subRegionFindBestFlag = self.tops[selectedRegionIndex][3]
                 qualified_list = self.tops[selectedRegionIndex][4]
@@ -277,7 +277,11 @@ class subRegionCalculator:
             tops:更新后的子块与对应topk个体
         """
         print("Pruning")
-        print("subregion:" + str(self.subRegions))
+        # print("subregion:" + str(self.subRegions))
+        for i in range(len(self.subRegions)):
+            print(i)
+            # eq_str = str(self.tops[i][1][0])
+            # print("pruning_eq_str:" + str(eq_str))
         pruningFlag = False
         for i in range(len(self.subRegions) - 1, 0, -1):  # 从len-1到0，左闭右开
             try:
