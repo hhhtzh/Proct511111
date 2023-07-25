@@ -277,10 +277,13 @@ class subRegionCalculator:
             tops:更新后的子块与对应topk个体
         """
         print("Pruning")
+        print("subregion:" + str(self.subRegions))
         pruningFlag = False
         for i in range(len(self.subRegions) - 1, 0, -1):  # 从len-1到0，左闭右开
-            print("subregion:" + str(self.subRegions[i]))
             try:
+                if self.final_dict is not None:
+                    eq_str=str(self.tops[i][1][0])
+                    print("pruning_eq_str:"+str(eq_str))
                 # if self.final_dict is not None:
                 if self.EvaluateNearRegionFitness(i - 1, i):  # 使用 i-1块的最优个体测试i块
                     self.DelRegionParameters(i)
