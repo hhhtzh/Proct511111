@@ -153,17 +153,20 @@ data.read_file()
 # c=np.append(a, b, axis=1)
 # print(c)
 # print(a.any() == 0)
-str1 = "((X_1)(X_2) - (X_2) - (-57.169905482966946))((0.01143875346584301)(X_3))"
-str2="-0.8749999999999968*x0**2 + 1.749999999999993*x0*x1 - 2.999999999999993*x0*x2 + 15.87499999999997*x0 + 1.4583333333333247*x1**2 - 24.208333333333211*x1 + 17.99999999999996*x2 + 0.9999999999999982*x3 - 34.000000000000105"
-str2 = re.sub(r'x(\d{1})', r'x_\1', str2)
-eval=SingleBingoEvaluator(data=data,equation=str2)
-fit=eval.do()
-print(fit)
+str1 = "((X_1)*(X_2) - (X_2) - (-57.169905482966946))((0.01143875346584301)(X_3))"
+str3="(sqrt((X_2)(6.847460619528528 + (X_1)(X_3))))/(2.6348796890765738)"
+str2="-0.8749999999999968*x0**2 + 1.749999999999993*x0*x1 - 2.999999999999993*x0*x2 + 15.87499999999997*x0 + " \
+     "1.4583333333333247*x1**2 - 24.208333333333211*x1 + 17.99999999999996*x2 + 0.9999999999999982*x3 - " \
+     "34.000000000000105"
+# str2 = re.sub(r'x(\d{1})', r'x_\1', str2)
+# eval=SingleBingoEvaluator(data=data,equation=str2)
+# fit=eval.do()
+# print(fit)
 # x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9, x_10 = symbols('X_1 X_2 X_3 X_4 X_5 X_6 X_7 X_8 X_9 X_10')
 # str2 = sympify(str1)
 # print(str2)
-# sta = BingoStatistic(str1)
-# sta.pos_do()
+sta = BingoStatistic(str1)
+sta.pos_do()
 # for cluster in range(0, 10):
 #     print(cluster)
 

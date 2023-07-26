@@ -35,6 +35,9 @@ class OperonAlg(Alg):
         np_y = np_y.reshape([-1, 1])
         self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
 
+    def get3top(self):
+
+
     def run(self):
         t = time.time()
         selector = self.sel.do()

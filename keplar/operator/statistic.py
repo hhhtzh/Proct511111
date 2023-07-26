@@ -89,6 +89,7 @@ class BingoStatistic(Statistic):
                 operands = stack.pop(), stack.pop()
                 command = [operator_map[token], operands[1], operands[0]]
                 if token == "*":
+                    print(command_to_i)
                     if command_array[command[1]][0] == 1 :
                         print("1")
                         print(command)

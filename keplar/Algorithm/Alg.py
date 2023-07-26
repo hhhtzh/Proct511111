@@ -11,14 +11,18 @@ from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
 from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
 from bingo.symbolic_regression import ExplicitTrainingData, ComponentGenerator, AGraphCrossover, AGraphMutation, \
     ExplicitRegression, AGraphGenerator
+from keplar.Algorithm.operon_Algorithm import OperonAlg
 from keplar.data.data import Data
 from keplar.operator.JudgeUCB import KeplarJudgeUCB
 from keplar.operator.composite_operator import CompositeOp
 # from keplar.operator.reinserter import OperonReinserter, KeplarReinserter
 import pyoperon as Operon
 
-from keplar.operator.evaluator import SingleBingoEvaluator
-from keplar.operator.reinserter import KeplarReinserter
+from keplar.operator.crossover import OperonCrossover
+from keplar.operator.evaluator import SingleBingoEvaluator, OperonEvaluator
+from keplar.operator.mutation import OperonMutation
+from keplar.operator.reinserter import KeplarReinserter, OperonReinserter
+from keplar.operator.selector import OperonSelector
 from keplar.operator.sparseregression import KeplarSpareseRegression
 from keplar.operator.statistic import BingoStatistic
 from keplar.operator.taylor_judge import TaylorJudge
@@ -451,6 +455,102 @@ class KeplarMBingo(Alg):
                     abRockSum += generation * pop_size
                     bingo = BingoAlg(generation, self.data, operators=self.operators, POP_SIZE=pop_size)
                     bingo.run()
+                    bingo_top3 = bingo.island.get3top()
+                    top_str_ind = []
+                    top_fit_list = []
+                    for i in bingo_top3:
+                        top_str_ind.append(str(i))
+                        top_fit_list.append(i.fitness)
+                    programs.append(top_str_ind)
+                    fit_list.append(top_fit_list)
+
+            # print(programs)
+            # print(fit_list)
+            if n_cluster > 1:
+                spare = KeplarSpareseRegression(n_cluster, programs, fit_list, self.data, 488)
+                spare.do()
+                rockBestFit = spare.rockBestFit
+                final_equ = spare.final_str_ind
+                single_eval = SingleBingoEvaluator(self.data, final_equ)
+                sta = BingoStatistic(final_equ)
+                sta.pos_do()
+                final_fit = single_eval.do()
+                print(f"第{now_recursion}轮" + "适应度:" + str(final_fit))
+                ucb = KeplarJudgeUCB(n_cluster, abRockSum, abRockNum, rockBestFit)
+                max_ucb_index = ucb.pos_do()
+                db_s = db_sum[max_ucb_index]
+                db_sum = [db_s]
+                programs = []
+                fit_list = []
+                abRockSum = 0
+                abRockNum = []
+                n_cluster = 1
+            else:
+                for i in range(len(fit_list)):
+                    for j in range(len(fit_list[i])):
+                        if fit_list[i][j] < final_fit:
+                            final_fit = fit_list[i][j]
+                print(f"第{now_recursion}轮" + "适应度:" + str(final_fit))
+            now_recursion += 1
+        self.elapse_time = time.time() - t
+        self.best_fit = final_fit
+
+
+class KeplarMOperon(Alg):
+
+    def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population, data
+                 , operators, recursion_limit=10):
+        super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.best_fit = None
+        self.elapse_time = None
+        self.operators = operators
+        self.recursion_limit = recursion_limit
+        self.data = data
+
+    def run(self):
+        t = time.time()
+        for i in [1e-5, 0.2, 1, 4, 10, 100]:
+            dbscan = SklearnKmeans(3)
+            x, num = dbscan.do(self.data)
+            if x:
+                break
+        db_sum = x
+        n_cluster = num
+        programs = []
+        fit_list = []
+        abRockSum = 0
+        abRockNum = []
+        epolusion = self.error_tolerance
+        final_fit = 100
+        recursion_limit = 10
+        now_recursion = 1
+        while epolusion < final_fit and now_recursion <= recursion_limit:
+            for db_i in db_sum:
+                print("数据shape" + str(np.shape(db_i)))
+                data_i = Data("numpy", db_i, ["x1", "x2", "x3", "x4", 'y'])
+                data_i.read_file()
+                taylor = TaylorJudge(data_i, "taylorgp")
+                jd = taylor.do()
+                if jd == "end":
+                    programs.append([taylor.program])
+                    fit_list.append([taylor.end_fitness])
+                    abRockNum.append(100000)
+                    abRockSum += 100000
+                else:
+                    generation = self.max_generation
+                    pop_size = self.population.pop_size
+                    abRockNum.append(generation * pop_size)
+                    abRockSum += generation * pop_size
+                    selector = OperonSelector(5)
+                    evaluator = OperonEvaluator("RMSE", x, y, 0.5, True, "Operon")
+                    crossover = OperonCrossover(x, y, "Operon")
+                    mutation = OperonMutation(1, 1, 1, 0.5, x, y, 10, 50, "balanced", "Operon")
+                    reinsert = OperonReinserter(None, "ReplaceWorst", 10, "Operon", x, y)
+                    op_up_list = [mutation, crossover]
+                    op_down_list = [reinsert]
+                    eva_list = [evaluator]
+                    op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, selector, 1e-5, 1000, 16, x, y)
+                    op_alg.run()
                     bingo_top3 = bingo.island.get3top()
                     top_str_ind = []
                     top_fit_list = []
