@@ -89,24 +89,33 @@ class BingoStatistic(Statistic):
                 operands = stack.pop(), stack.pop()
                 command = [operator_map[token], operands[1], operands[0]]
                 if token == "*":
-                    if command_array[command[1]][0] == 1 and command_array[command[2]][0] == 0 and \
-                            command_array[command[2]][1] == command_array[command[2]][2]:
-                        str_temp = "X_" + str(command_array[command[2]][1])
-                        if str_temp not in final_statis:
-                            final_statis.update({str_temp: constants[command_array[command[1]][1]]})
-                        else:
-                            now_num = final_statis[str_temp]
-                            now_num += constants[command_array[command[1]][1]]
-                            final_statis.update({str_temp: now_num})
-                    elif command_array[command[2]][0] == 1 and command_array[command[1]][0] == 0 and \
-                            command_array[command[1]][1] == command_array[command[1]][2]:
-                        str_temp = "X_" + str(command_array[command[1]][1])
-                        if str_temp not in final_statis:
-                            final_statis.update({str_temp: constants[command_array[command[2]][1]]})
-                        else:
-                            now_num = final_statis[str_temp]
-                            now_num += constants[command_array[command[1]][1]]
-                            final_statis.update({str_temp: now_num})
+                    if command_array[command[1]][0] == 1 :
+                        print("1")
+                        print(command)
+                        print(command[2])
+                        print(stack)
+                        #     and command_array[command[2]][0] == 0 and \
+                        #     command_array[command[2]][1] == command_array[command[2]][2]:
+                        # str_temp = "X_" + str(command_array[command[2]][1])
+                        # if str_temp not in final_statis:
+                        #     final_statis.update({str_temp: constants[command_array[command[1]][1]]})
+                        # else:
+                        #     now_num = final_statis[str_temp]
+                        #     now_num += constants[command_array[command[1]][1]]
+                        #     final_statis.update({str_temp: now_num})
+                    elif command_array[command[2]][0] == 1:
+                        print("2")
+                        print(command)
+                        print(command[1])
+                        #     and command_array[command[1]][0] == 0 and \
+                        #     command_array[command[1]][1] == command_array[command[1]][2]:
+                        # str_temp = "X_" + str(command_array[command[1]][1])
+                        # if str_temp not in final_statis:
+                        #     final_statis.update({str_temp: constants[command_array[command[2]][1]]})
+                        # else:
+                        #     now_num = final_statis[str_temp]
+                        #     now_num += constants[command_array[command[1]][1]]
+                        #     final_statis.update({str_temp: now_num})
                 elif token == "^":
                     print(command)
 

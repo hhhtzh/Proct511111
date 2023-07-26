@@ -1,4 +1,5 @@
 import random
+import re
 import sys
 import time
 import argparse
@@ -14,6 +15,7 @@ from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
 
 from keplar.Algorithm.Alg import Alg
 from TaylorGP.src.taylorGP.utils import check_random_state
+from keplar.operator.evaluator import SingleBingoEvaluator
 from keplar.translator.translator import trans_taylor_program, taylor_trans_population
 # from TaylorGP.src.taylorGP.genetic import BaseSymbolic
 from TaylorGP.src.taylorGP.fitness import _mean_square_error, _weighted_spearman, _log_loss, _mean_absolute_error, \
@@ -351,7 +353,7 @@ class MTaylorGPAlg(Alg):
             print("Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
         self.best_fit = SRC.bestLassoFitness
         self.best_ind = SRC.tops[SRC.globalBestLassoCoef[0]]
-        print("best_ind" + str(self.best_ind))
+        print("best_ind" + str(self.best_ind[1][0]))
         dict_arr = SRC.dict_arr
         final_dict = {}
         print(dict_arr)
@@ -365,6 +367,11 @@ class MTaylorGPAlg(Alg):
                     final_dict.update({key: now_num})
         print("final::::" + str(final_dict))
         self.elapse_time = time.time() - t
+        str_eq=str(self.best_ind[1][0])
+        str_eq = re.sub(r'x(\d{1})', r'x_\1', str_eq)
+        eval = SingleBingoEvaluator(data=self.ds, equation=str_eq)
+        fit = eval.do()
+        self.best_fit = fit
 
     """
         for fileNum in range(19,20):

@@ -16,6 +16,7 @@ from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_t
     functions, operator_map, var_or_const_pattern, int_pattern
 from keplar.data.data import Data
 from keplar.operator.creator import GpCreator
+from keplar.operator.evaluator import SingleBingoEvaluator
 from keplar.operator.statistic import BingoStatistic, TaylorStatistic
 # from keplar.operator.feature_engineering import FeatureEngineering, TaylorFeature
 from keplar.population.individual import Individual
@@ -100,7 +101,8 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # ws=Operon.OffspringGeneratorBase.Prepare(const_list)
 # rd=RandomState(100)
 # print(rd.random(2))
-# data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
+data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
+data.read_file()
 # data.read_file()
 # ty=TaylorFeature(data,"test1")
 # ty.do()
@@ -151,14 +153,17 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # c=np.append(a, b, axis=1)
 # print(c)
 # print(a.any() == 0)
-str1 = "0.16666666666666784*x0**2 - 12.407407407407417*x0*x1 + 1.5555555555555585*x0*x2 + 53.53703703703706*x0 + 9.407407407407414*x1**2 - 39.111111111111131*x1 - 9.0000000000000175*x2 - 1.3333333333333333*x3 + 17.703703703703748"
-str1 = re.sub(r'x(\d{1})', r'x_\1', str1)
-#
+str1 = "((X_1)(X_2) - (X_2) - (-57.169905482966946))((0.01143875346584301)(X_3))"
+str2="-0.8749999999999968*x0**2 + 1.749999999999993*x0*x1 - 2.999999999999993*x0*x2 + 15.87499999999997*x0 + 1.4583333333333247*x1**2 - 24.208333333333211*x1 + 17.99999999999996*x2 + 0.9999999999999982*x3 - 34.000000000000105"
+str2 = re.sub(r'x(\d{1})', r'x_\1', str2)
+eval=SingleBingoEvaluator(data=data,equation=str2)
+fit=eval.do()
+print(fit)
 # x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9, x_10 = symbols('X_1 X_2 X_3 X_4 X_5 X_6 X_7 X_8 X_9 X_10')
 # str2 = sympify(str1)
 # print(str2)
-sta = TaylorStatistic(str1)
-sta.pos_do()
+# sta = BingoStatistic(str1)
+# sta.pos_do()
 # for cluster in range(0, 10):
 #     print(cluster)
 
