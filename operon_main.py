@@ -29,11 +29,12 @@ op_up_list = [mutation, crossover]
 op_down_list = [reinsert]
 eva_list = [evaluator]
 op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, selector, 1e-5, 1000, 16, x, y)
-for i in range(10):
-    op_alg.run()
-    fit_list.append(op_alg .best_fit)
-    time_list.append(op_alg .elapse_time)
-fit_pd = pd.DataFrame({'Operon': fit_list})
-time_pd = pd.DataFrame({'Operon': time_list})
-fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
-time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")
+# for i in range(10):
+op_alg.run()
+print(op_alg.model_string)
+#     fit_list.append(op_alg .best_fit)
+#     time_list.append(op_alg .elapse_time)
+# fit_pd = pd.DataFrame({'Operon': fit_list})
+# time_pd = pd.DataFrame({'Operon': time_list})
+# fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
+# time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")

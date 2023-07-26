@@ -11,7 +11,6 @@ from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
 from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
 from bingo.symbolic_regression import ExplicitTrainingData, ComponentGenerator, AGraphCrossover, AGraphMutation, \
     ExplicitRegression, AGraphGenerator
-from keplar.Algorithm.operon_Algorithm import OperonAlg
 from keplar.data.data import Data
 from keplar.operator.JudgeUCB import KeplarJudgeUCB
 from keplar.operator.composite_operator import CompositeOp

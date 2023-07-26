@@ -35,8 +35,7 @@ class OperonAlg(Alg):
         np_y = np_y.reshape([-1, 1])
         self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
 
-    def get3top(self):
-
+    # def get3top(self):
 
     def run(self):
         t = time.time()
@@ -65,7 +64,7 @@ class OperonAlg(Alg):
             ValueError("误差矩阵类型错误")
         evaluator = Operon.Evaluator(problem, interpreter, error_metric,
                                      True)  # initialize evaluator, use linear scaling = True
-        evaluator.Budget = 10000 * 10000 # computational budget
+        evaluator.Budget = 10000 * 10000  # computational budget
         evaluator.LocalOptimizationIterations = 0
         mut = self.up_op_list[0]
         cro = self.up_op_list[1]
@@ -113,7 +112,6 @@ class OperonAlg(Alg):
                                                 reinsert)
         interval = 1 if config.Generations < max_ticks else int(np.round(config.Generations / max_ticks, 0))
 
-
         def report():
             global gen
             best = gp.BestModel
@@ -133,10 +131,12 @@ class OperonAlg(Alg):
         # get the best solution and print it
         best = gp.BestModel
         model_string = Operon.InfixFormatter.Format(best.Genotype, self.ds, 6)
-        model_fit=best.GetFitness(0)
-        self.model_string=model_string
-        self.model_fit=model_fit
+        model_fit = best.GetFitness(0)
+        self.model_string = model_string
+        self.model_fit = model_fit
         print(f'\n{model_string}')
-        print("最好适应度"+f'\n{model_fit}')
+        print("最好适应度" + f'\n{model_fit}')
         self.best_fit = model_fit
         self.elapse_time = time.time() - t
+        for i in gp.Individuals:
+            print(i.GetFitness(0))
