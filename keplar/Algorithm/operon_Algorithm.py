@@ -8,6 +8,8 @@ from keplar.Algorithm.Alg import Alg
 from keplar.operator.creator import OperonCreator
 import pyoperon as Operon
 
+from keplar.utils.utils import  operon_topk
+
 gen = 0
 max_ticks = 50
 
@@ -34,8 +36,10 @@ class OperonAlg(Alg):
         self.np_y = np_y
         np_y = np_y.reshape([-1, 1])
         self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
+        self.ind_list = []
 
-    # def get3top(self):
+    def get_n_top(self, n=3):
+        operon_topk(self.ind_list, n)
 
     def run(self):
         t = time.time()
@@ -138,5 +142,4 @@ class OperonAlg(Alg):
         print("最好适应度" + f'\n{model_fit}')
         self.best_fit = model_fit
         self.elapse_time = time.time() - t
-        for i in gp.Individuals:
-            print(i.GetFitness(0))
+        self.ind_list=gp.Individuals
