@@ -196,6 +196,7 @@ class TayloGPAlg(Alg):
 
         self.best_fit = None
         self.elapse_time = None
+        # self.best_fit = None
 
 
     def _verbose_reporter(self, run_details=None):
@@ -394,5 +395,7 @@ class TayloGPAlg(Alg):
                 best_fitness = fitness[np.argmin(fitness)]
                 if best_fitness <= self.stopping_criteria:
                     break
+
+        self.best_fit =  best_fitness
 
         self.elapse_time = time.time() - t

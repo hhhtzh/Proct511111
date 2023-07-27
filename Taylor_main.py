@@ -81,6 +81,6 @@ for i in range(10):
     time_list.append(taylorGP .elapse_time)
 fit_pd = pd.DataFrame({'taylorGP': fit_list})
 time_pd = pd.DataFrame({'taylorGP': time_list})
-# fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
-# time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")
+fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
+time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")
 
