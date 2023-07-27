@@ -5,10 +5,23 @@ import time
 import numpy as np
 
 from keplar.Algorithm.Alg import Alg
+from keplar.data.data import Data
+from keplar.operator.JudgeUCB import KeplarJudgeUCB
 from keplar.operator.creator import OperonCreator
 import pyoperon as Operon
 
-from keplar.utils.utils import  operon_topk
+from keplar.operator.crossover import OperonCrossover
+from keplar.operator.evaluator import OperonEvaluator, SingleBingoEvaluator
+from keplar.operator.mutation import OperonMutation
+from keplar.operator.reinserter import OperonReinserter
+from keplar.operator.selector import OperonSelector
+from keplar.operator.sparseregression import KeplarSpareseRegression
+from keplar.operator.statistic import BingoStatistic
+from keplar.operator.taylor_judge import TaylorJudge
+from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
+from keplar.preoperator.ml.sklearnkmeans import SklearnKmeans
+from keplar.translator.translator import trans_op1
+from keplar.utils.utils import find_k_smallest_elements
 
 gen = 0
 max_ticks = 50
@@ -39,7 +52,11 @@ class OperonAlg(Alg):
         self.ind_list = []
 
     def get_n_top(self, n=3):
-        operon_topk(self.ind_list, n)
+        result = find_k_smallest_elements(self.ind_list, n)
+        for i in result:
+            print(i.GetFitness(0))
+            print(Operon.InfixFormatter.Format(i.Genotype, self.ds, 6))
+        return result
 
     def run(self):
         t = time.time()
@@ -142,4 +159,107 @@ class OperonAlg(Alg):
         print("最好适应度" + f'\n{model_fit}')
         self.best_fit = model_fit
         self.elapse_time = time.time() - t
-        self.ind_list=gp.Individuals
+        self.ind_list = gp.Individuals
+
+
+class KeplarMOperon(Alg):
+
+    def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population, data
+                 , operators, recursion_limit=10):
+        super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.best_fit = None
+        self.elapse_time = None
+        self.operators = operators
+        self.recursion_limit = recursion_limit
+        self.data = data
+
+    def run(self):
+        t = time.time()
+        dbscan = SklearnDBscan()
+        x, num = dbscan.do(self.data)
+        db_sum = x
+        n_cluster = num
+        programs = []
+        fit_list = []
+        abRockSum = 0
+        abRockNum = []
+        epolusion = self.error_tolerance
+        final_fit = 100
+        recursion_limit = 10
+        now_recursion = 1
+        while epolusion < final_fit and now_recursion <= recursion_limit:
+            for db_i in db_sum:
+                print("数据shape" + str(np.shape(db_i)))
+                data_i = Data("numpy", db_i, ["x1", "x2", "x3", "x4", 'y'])
+                data_i.read_file()
+                ds_x = data_i.get_np_x()
+                ds_y = data_i.get_np_y()
+                ds_xy = data_i.get_np_ds()
+                ds_xy = Operon.Dataset(ds_xy)
+                # taylor = TaylorJudge(data_i, "taylorgp")
+                # jd = taylor.do()
+                # if jd == "end":
+                #     programs.append([taylor.program])
+                #     fit_list.append([taylor.end_fitness])
+                #     abRockNum.append(100000)
+                #     abRockSum += 100000
+                # else:
+                generation = self.max_generation
+                pop_size = self.population.pop_size
+                abRockNum.append(generation * pop_size)
+                abRockSum += generation * pop_size
+                selector = OperonSelector(5)
+                evaluator = OperonEvaluator("RMSE", ds_x, ds_y, 0.5, True, "Operon")
+                crossover = OperonCrossover(ds_x, ds_y, "Operon")
+                mutation = OperonMutation(1, 1, 1, 0.5, ds_x, ds_y, 10, 50, "balanced", "Operon")
+                reinsert = OperonReinserter(None, "ReplaceWorst", 10, "Operon", ds_x, ds_y)
+                op_up_list = [mutation, crossover]
+                op_down_list = [reinsert]
+                eva_list = [evaluator]
+                op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, selector, 1e-5, 1000, 16, ds_x, ds_y)
+                op_alg.run()
+                op_top3 = op_alg.get_n_top()
+                top_str_ind = []
+                top_fit_list = []
+                for i in op_top3:
+                    top_str_ind.append(str(Operon.InfixFormatter.Format(i.Genotype, ds_xy, 6)))
+                    top_fit_list.append(i.GetFitness(0))
+                programs.append(top_str_ind)
+                fit_list.append(top_fit_list)
+
+            # print(programs)
+            # print(fit_list)
+            if n_cluster > 1:
+                spare = KeplarSpareseRegression(n_cluster, programs, fit_list, self.data, 488)
+                spare.do()
+                rockBestFit = spare.rockBestFit
+                final_equ = spare.final_str_ind
+                final_equ = trans_op1(final_equ)
+                single_eval = SingleBingoEvaluator(self.data, final_equ)
+                sta = BingoStatistic(final_equ)
+                sta.pos_do()
+                final_fit = single_eval.do()
+                print(f"第{now_recursion}轮" + "最好个体" + str(final_equ) + "适应度:" + str(final_fit))
+                ucb = KeplarJudgeUCB(n_cluster, abRockSum, abRockNum, rockBestFit)
+                max_ucb_index = ucb.pos_do()
+                db_s = db_sum[max_ucb_index]
+                db_sum = [db_s]
+                programs = []
+                fit_list = []
+                abRockSum = 0
+                abRockNum = []
+                n_cluster = 1
+            else:
+                best_i = 0
+                best_j = 0
+                for i in range(len(fit_list)):
+                    for j in range(len(fit_list[i])):
+                        if fit_list[i][j] < final_fit:
+                            final_fit = fit_list[i][j]
+                            best_i = 1
+                            best_j = j
+                final_equ = programs[best_j][best_j]
+                print(f"第{now_recursion}轮" + "适应度:" + str(final_fit)+"最好个体:"+str(final_equ))
+            now_recursion += 1
+        self.elapse_time = time.time() - t
+        self.best_fit = final_fit

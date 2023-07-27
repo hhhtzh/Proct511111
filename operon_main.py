@@ -28,10 +28,11 @@ reinsert = OperonReinserter(None, "ReplaceWorst", 10, "Operon", x, y)
 op_up_list = [mutation, crossover]
 op_down_list = [reinsert]
 eva_list = [evaluator]
-op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, selector, 1e-5, 1000, 16, x, y)
+op_alg = OperonAlg(10000, op_up_list, op_down_list, eva_list, selector, 1e-5, 1000, 16, x, y)
 # for i in range(10):
 op_alg.run()
-print(op_alg.model_string)
+# print(op_alg.model_string)
+# op_alg.get_n_top()
 #     fit_list.append(op_alg .best_fit)
 #     time_list.append(op_alg .elapse_time)
 # fit_pd = pd.DataFrame({'Operon': fit_list})

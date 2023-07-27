@@ -9,14 +9,15 @@ Vladislavleva = pd.read_csv('result/pmlb_1027_result.csv')
 #                  "vlsdislavleva", isAll=True)
 draw_box_diagram(Vladislavleva['GpBingo'], Vladislavleva['Bingo'], Vladislavleva['OperonBingo'],
                  Vladislavleva['Operon'], Vladislavleva['MTaylor'], Vladislavleva['KeplarBingo'],
-                 Vladislavleva['KeplarBingoCPP'], Vladislavleva['TaylorBingo'], Vladislavleva['BingoCPP'],Vladislavleva['KeplarMBingo'],
+                 Vladislavleva['KeplarBingoCPP'], Vladislavleva['TaylorBingo'], Vladislavleva['BingoCPP'],
+                 Vladislavleva['KeplarMBingo'],Vladislavleva['KeplarMOperon'],
                  "vlsdislavleva", isAll=True)
-
 pmlb_time = pd.read_csv('result/pmlb_1027_time_result.csv')
 draw_time_box_diagram(pmlb_time['GpBingo'], pmlb_time['Bingo'], pmlb_time['OperonBingo'],
-                 pmlb_time['Operon'], pmlb_time['MTaylor'], pmlb_time['KeplarBingo'],
-                 pmlb_time['KeplarBingoCPP'], pmlb_time['TaylorBingo'], pmlb_time['BingoCPP'],Vladislavleva['KeplarMBingo'],
-                 "vlsdislavleva", isAll=True)
+                      pmlb_time['Operon'], pmlb_time['MTaylor'], pmlb_time['KeplarBingo'],
+                      pmlb_time['KeplarBingoCPP'], pmlb_time['TaylorBingo'], pmlb_time['BingoCPP'],
+                      pmlb_time['KeplarMBingo'],pmlb_time['KeplarMOperon'],
+                      "vlsdislavleva", isAll=True)
 
 # draw_box_diagram(addLog(GECCO['TaylorGP']), addLog(GECCO['GPLearn']), addLog(GECCO['FFX']),
 #                  addLog(GECCO['LinearRegression']), addLog(GECCO['KernelRidge']), addLog(GECCO['RF']),

@@ -413,7 +413,7 @@ class MTaylorKMeansAlg(Alg):
         dataSets = self.ds.get_np_ds()
         x = self.ds.get_np_x()
         average_fitness = 0
-        repeat = 2
+        repeat = 1
         totalGeneration = 500
         originalTaylorGPGen = 10
         Pop = 1000  # 种群规模

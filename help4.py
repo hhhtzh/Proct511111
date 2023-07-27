@@ -166,7 +166,9 @@ str2="-0.8749999999999968*x0**2 + 1.749999999999993*x0*x1 - 2.999999999999993*x0
 # str2 = sympify(str1)
 # print(str2)
 sta = BingoStatistic(str1)
-sta.pos_do()
+
+if not sta.pos_do():
+    print("ii")
 # for cluster in range(0, 10):
 #     print(cluster)
 

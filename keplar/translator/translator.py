@@ -508,13 +508,13 @@ def postfix_to_infix(expression):
 #     return str(ind)
 
 
-# def trans_op(equ):
-#     equ1 = re.sub(r'X(\d{3})', r'X_\1', equ)
-#     equ1 = re.sub(r'X(\d{2})', r'X_\1', equ1)
-#     equ1 = re.sub(r'X(\d{1})', r'X_\1', equ1)
-#     pattern = r'(X_\d+)'
-#     output_string = re.sub(pattern, lambda m: m.group(1)[:-1] + str(int(m.group(1)[-1]) - 1), equ1)
-#     return output_string
+def trans_op1(equ):
+    equ1 = re.sub(r'X(\d{3})', r'X_\1', equ)
+    equ1 = re.sub(r'X(\d{2})', r'X_\1', equ1)
+    equ1 = re.sub(r'X(\d{1})', r'X_\1', equ1)
+    pattern = r'(X_\d+)'
+    output_string = re.sub(pattern, lambda m: m.group(1)[:-1] + str(int(m.group(1)[-1]) - 1), equ1)
+    return output_string
 
 def op_postfix_to_prefix(node_list):
     stack = []
