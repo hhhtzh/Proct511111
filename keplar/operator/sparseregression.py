@@ -114,19 +114,19 @@ class KeplarSpareseRegression(Operator):
         # print(final_str_ind)
         print("final::::" + str(final_dict))
 
-class KeplarReinForceSpareRegression(Operator):
-    def __init__(self, n_cluster, ind_list, fit_list, dataSets, func_fund_num=488):
-        super().__init__()
-        self.final_str_ind = None
-        self.lasso_list = None
-        self.rockBestFit = [1e+5] * n_cluster
-        self.func_fund_num = func_fund_num
-        self.dataSets = dataSets
-        self.fit_list = fit_list
-        self.ind_list = ind_list
-        self.n_cluster = n_cluster
-        self.BestClusters = None
-        self.globalBestLassoCoef = None
-        self.curLassoCoef = []
-        self.bestLassoFitness = None
+# class KeplarReinForceSpareRegression(Operator):
+#     def __init__(self, n_cluster, ind_list, fit_list, dataSets, func_fund_num=488):
+#         super().__init__()
+#         self.final_str_ind = None
+#         self.lasso_list = None
+#         self.rockBestFit = [1e+5] * n_cluster
+#         self.func_fund_num = func_fund_num
+#         self.dataSets = dataSets
+#         self.fit_list = fit_list
+#         self.ind_list = ind_list
+#         self.n_cluster = n_cluster
+#         self.BestClusters = None
+#         self.globalBestLassoCoef = None
+#         self.curLassoCoef = []
+#         self.bestLassoFitness = None
 

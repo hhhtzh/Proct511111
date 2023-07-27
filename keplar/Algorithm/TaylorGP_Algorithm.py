@@ -290,9 +290,10 @@ class TayloGPAlg(Alg):
 
 class MTaylorGPAlg(Alg):
     def __init__(self, max_generation, ds, up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
-                 population=None,
+                 population=None,NewSparseRegressionFlag=False,
                  recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn", mabPolicy="Greedy"):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.NewSparseRegressionFlag = NewSparseRegressionFlag
         self.best_ind = None
         self.elapse_time = None
         self.best_fit = None
@@ -328,7 +329,8 @@ class MTaylorGPAlg(Alg):
         _init()
         for repeatNum in range(repeat):
             # time_start2 = time.time()
-            SRC = subRegionCalculator(dataSets, originalTaylorGPGeneration, mabPolicy=self.mabPolicy)
+            SRC = subRegionCalculator(dataSets, originalTaylorGPGeneration, mabPolicy=self.mabPolicy,
+                                      NewSparseRegressionFlag=self.NewSparseRegressionFlag)
             countAvailableParameters = SRC.CalCountofAvailableParameters(epsilons=epsilons, np_x=np_x)
             mabLoopNum = max(totalGeneration // originalTaylorGPGeneration // countAvailableParameters, 1)
             for epsilon in epsilons:

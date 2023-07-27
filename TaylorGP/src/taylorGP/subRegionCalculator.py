@@ -49,7 +49,9 @@ def _calY(_x, f, X=None):
 class subRegionCalculator:
     name = 'Calculate Subregions things and MAB parameters'
 
-    def __init__(self, dataSets, originalTaylorGPGeneration, mabPolicy="Greedy", lbd=1):
+    def __init__(self, dataSets, originalTaylorGPGeneration, mabPolicy="Greedy", lbd=1, NewSparseRegressionFlag=False):
+        self.isolate_symbol_list = None
+        self.NewSparseRegressionFlag = NewSparseRegressionFlag
         self.final_dict = None
         self.dict_arr = None
         self.dataSets = dataSets
@@ -286,8 +288,8 @@ class subRegionCalculator:
         for i in range(len(self.subRegions) - 1, 0, -1):  # 从len-1到0，左闭右开
             try:
                 if self.final_dict is not None:
-                    eq_str=str(self.tops[i][1][0])
-                    print("pruning_eq_str:"+str(eq_str))
+                    eq_str = str(self.tops[i][1][0])
+                    print("pruning_eq_str:" + str(eq_str))
                 # if self.final_dict is not None:
                 if self.EvaluateNearRegionFitness(i - 1, i):  # 使用 i-1块的最优个体测试i块
                     self.DelRegionParameters(i)
@@ -350,31 +352,7 @@ class subRegionCalculator:
             self.globalBest_X_Y_pred = [[X, self.tops[0][5]]]
             return
         X_trains = self.CalXOfLasso()  # 将各子块的top3个体按7:2:1的概率执行稀疏回归-->改为最优+随机 组合
-        try:
-            for X_train in X_trains:
-                if not X_train: continue
-                if len(self.subRegions) <= 5:
-                    alphas = [0, 0.2, 0.3, 0.6, 0.8, 1.0]
-                else:
-                    alphas = [0.2, 0.3, 0.6, 0.8, 1.0]
-                for alpha in alphas:
-                    lasso_ = Lasso(alpha=alpha).fit(X_train, self.Y)
-                    Y_pred = lasso_.predict(X_train)
-                    rmseFitness = mean_squared_error(Y_pred, self.Y)
-                    self.curLassoCoef = lasso_.coef_
-                    if rmseFitness < self.bestLassoFitness:
-                        self.bestLassoFitness = rmseFitness
-                        self.globalBestLassoCoef = self.curLassoCoef
-                        if self.bestLassoFitness != float("inf"):
-                            print("结果提升为: ", self.bestLassoFitness)
-                        self.UpdateRockBestFit()
-                        self.Cal_X_Y_pred()  # 更新self.globalBest_X_Y_pred
-            # print("Final Fitness",self.bestLassoFitness, " Selected SubRegon Index: ", self.globalBestLassoCoef)
-            self.UpdateAvgRewards()
-            for i in range(len(self.globalBestLassoCoef)):
-                for j in self.dict_arr:
-                    for key in j:
-                        j[key] = j[key] * float(self.globalBestLassoCoef[i])
+        if self.NewSparseRegressionFlag:
             final_dict = {}
             for i in self.dict_arr:
                 for key in i:
@@ -384,11 +362,76 @@ class subRegionCalculator:
                         now_num = final_dict[key]
                         now_num += i[key]
                         final_dict.update({key: now_num})
-            print("final::::" + str(final_dict))
-            self.final_dict = final_dict
-        except BaseException:
-            print("TypeError: can't convert complex to float")
-            self.curLassoCoef = [1] * len(self.subRegions)  # 保证下轮对所有子块都进行更新.
+            isolate_symbol_list = []
+            for key in final_dict:
+                str_eq = str(final_dict[key]) + "*" + str(key)
+                isolate_symbol_list.append(str_eq)
+            self.isolate_symbol_list=isolate_symbol_list
+            X_trains=self.NewCalLasso()
+            try:
+                for X_train in X_trains:
+                    if not X_train: continue
+                    if len(self.subRegions) <= 5:
+                        alphas = [0, 0.2, 0.3, 0.6, 0.8, 1.0]
+                    else:
+                        alphas = [0.2, 0.3, 0.6, 0.8, 1.0]
+                    for alpha in alphas:
+                        lasso_ = Lasso(alpha=alpha).fit(X_train, self.Y)
+                        Y_pred = lasso_.predict(X_train)
+                        rmseFitness = mean_squared_error(Y_pred, self.Y)
+                        self.curLassoCoef = lasso_.coef_
+                        if rmseFitness < self.bestLassoFitness:
+                            self.bestLassoFitness = rmseFitness
+                            self.globalBestLassoCoef = self.curLassoCoef
+                            if self.bestLassoFitness != float("inf"):
+                                print("结果提升为: ", self.bestLassoFitness)
+                            self.UpdateRockBestFit()
+                            self.Cal_X_Y_pred()  # 更新self.globalBest_X_Y_pred
+                # print("Final Fitness",self.bestLassoFitness, " Selected SubRegon Index: ", self.globalBestLassoCoef)
+                self.UpdateAvgRewards()
+            except BaseException:
+                print("TypeError: can't convert complex to float")
+                self.curLassoCoef = [1] * len(self.subRegions)  # 保证下轮对所有子块都进行更新.
+        else:
+            try:
+                for X_train in X_trains:
+                    if not X_train: continue
+                    if len(self.subRegions) <= 5:
+                        alphas = [0, 0.2, 0.3, 0.6, 0.8, 1.0]
+                    else:
+                        alphas = [0.2, 0.3, 0.6, 0.8, 1.0]
+                    for alpha in alphas:
+                        lasso_ = Lasso(alpha=alpha).fit(X_train, self.Y)
+                        Y_pred = lasso_.predict(X_train)
+                        rmseFitness = mean_squared_error(Y_pred, self.Y)
+                        self.curLassoCoef = lasso_.coef_
+                        if rmseFitness < self.bestLassoFitness:
+                            self.bestLassoFitness = rmseFitness
+                            self.globalBestLassoCoef = self.curLassoCoef
+                            if self.bestLassoFitness != float("inf"):
+                                print("结果提升为: ", self.bestLassoFitness)
+                            self.UpdateRockBestFit()
+                            self.Cal_X_Y_pred()  # 更新self.globalBest_X_Y_pred
+                # print("Final Fitness",self.bestLassoFitness, " Selected SubRegon Index: ", self.globalBestLassoCoef)
+                self.UpdateAvgRewards()
+                for i in range(len(self.globalBestLassoCoef)):
+                    for j in self.dict_arr:
+                        for key in j:
+                            j[key] = j[key] * float(self.globalBestLassoCoef[i])
+                final_dict = {}
+                for i in self.dict_arr:
+                    for key in i:
+                        if key not in final_dict:
+                            final_dict.update({key: i[key]})
+                        else:
+                            now_num = final_dict[key]
+                            now_num += i[key]
+                            final_dict.update({key: now_num})
+                print("final::::" + str(final_dict))
+                self.final_dict = final_dict
+            except BaseException:
+                print("TypeError: can't convert complex to float")
+                self.curLassoCoef = [1] * len(self.subRegions)  # 保证下轮对所有子块都进行更新.
 
     def Cal_X_Y_pred(self):
         """
@@ -465,6 +508,31 @@ class subRegionCalculator:
 
             self.dict_arr = dict_arr
             print("dict_arr:" + str(self.dict_arr))
+            return X_Trains
+
+    def NewCalLasso(self):
+        global arr
+        bestFlag = True
+        numberOfCombinations = 5
+        X_Trains = []
+        num = 100000
+        dict_arr = []
+        for i, top in enumerate(self.isolate_symbol_list):
+            str_eq = str(top)
+            try:
+                tempArr = np.array(CalFitness(eq=str_eq, dataSet=self.dataSets, IsPred=True)).reshape(-1, 1)
+            except BaseException:  # 此公式不适用于完整数据集，需要跳过
+                num += 1
+                continue
+            if i == 0:
+                arr = tempArr
+            else:
+                arr = np.append(arr, tempArr, axis=1)
+            bestFlag = False  # 第一次按index = 0 最优个体处理，以后按随机选取
+            try:
+                X_Trains.extend([arr])
+            except BaseException:
+                print("没有找到适用于完整数据集的公式")
             return X_Trains
 
     def MAB(self, bestIndividualIndex, policy="epsilonGreedy"):
