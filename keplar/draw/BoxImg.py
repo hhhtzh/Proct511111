@@ -91,7 +91,7 @@ import matplotlib.pyplot as plt
 
 def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOperon, fitnessMTaylorGp,
                      fitnessKeplarBingo,
-                     fitnessKeplarBingoCPP, fitnessTaylorBingo, fitnessBingoCPP, fitnessKeplarMBingo,fitnessKeplarMOperon, dataName, isAll: bool):
+                     fitnessKeplarBingoCPP, fitnessTaylorBingo, fitnessBingoCPP, fitnessKeplarMBingo,fitnessKeplarMOperon, fitnseeNewMTaylor,dataName, isAll: bool):
     # 设置中文和负号正常显示
     plt.rcParams['axes.unicode_minus'] = False
     plt.rcParams['pdf.fonttype'] = 42
@@ -112,6 +112,7 @@ def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOp
             'KeplarBingoCPP': fitnessKeplarBingoCPP,
             'KeplarMBingo':fitnessKeplarMBingo,
             'KeplarMOperon':fitnessKeplarMOperon,
+            'MTaylor(with new sparse)':fitnseeNewMTaylor,
 
         }
     else:
@@ -150,9 +151,9 @@ def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOp
         patch.set_facecolor(color)
     plt.grid(linestyle="--", alpha=0.3)
     plt.ylabel("Score( $RMSE$)")
-    plt.title("population_size=100\ngeneration=1000")
+    plt.title("population_size=128\ngeneration=1000")
     if isAll == True:
-        plt.xticks(np.arange(12), (
+        plt.xticks(np.arange(13), (
             '',  'TaylorBingo',
             'BingoCPP',
             'Operon',
@@ -161,7 +162,7 @@ def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOp
             'OperonBingo',
             'MTaylorGp',
             'KeplarBingo',
-            'KeplarBingoCPP','KeplarMBingo', 'KeplarMOperon'),
+            'KeplarBingoCPP','KeplarMBingo', 'KeplarMOperon','MTaylor(with new sparse)'),
                    fontsize=7, rotation=30)
     else:
         plt.xticks(np.arange(5), (
@@ -183,7 +184,7 @@ def draw_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOp
 
 def draw_time_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitnessOperon, fitnessMTaylorGp,
                      fitnessKeplarBingo,
-                     fitnessKeplarBingoCPP, fitnessTaylorBingo, fitnessBingoCPP, fitnessKeplarMBingo, fitnessKeplarMOperon,dataName, isAll: bool):
+                     fitnessKeplarBingoCPP, fitnessTaylorBingo, fitnessBingoCPP, fitnessKeplarMBingo, fitnessKeplarMOperon,fitnseeNewMTaylor,dataName, isAll: bool):
     # 设置中文和负号正常显示
     plt.rcParams['axes.unicode_minus'] = False
     plt.rcParams['pdf.fonttype'] = 42
@@ -204,6 +205,7 @@ def draw_time_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitn
             'KeplarBingoCPP': fitnessKeplarBingoCPP,
             'KeplarMBingo':fitnessKeplarMBingo,
             'KeplarMOperon': fitnessKeplarMOperon,
+            'MTaylor(with new sparse)': fitnseeNewMTaylor,
 
         }
     else:
@@ -242,9 +244,9 @@ def draw_time_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitn
         patch.set_facecolor(color)
     plt.grid(linestyle="--", alpha=0.3)
     plt.ylabel("time( $s$)")
-    plt.title("population_size=100\ngeneration=1000")
+    plt.title("population_size=128\ngeneration=1000")
     if isAll == True:
-        plt.xticks(np.arange(12), (
+        plt.xticks(np.arange(13), (
             '',  'TaylorBingo',
             'BingoCPP',
             'Operon',
@@ -253,7 +255,7 @@ def draw_time_box_diagram(fitnessGpBingo, fitnessBingo, fitnessOperonBingo, fitn
             'OperonBingo',
             'MTaylorGp',
             'KeplarBingo',
-            'KeplarBingoCPP','KeplarMBingo', 'KeplarBingoCPP'),
+            'KeplarBingoCPP','KeplarMBingo', 'KeplarMOperon','MTaylor(with new sparse)'),
                    fontsize=7, rotation=30)
     else:
         plt.xticks(np.arange(5), (

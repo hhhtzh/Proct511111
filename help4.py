@@ -45,7 +45,7 @@ from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
 # dict={"11":2}
 # print(dict["11"])
 # str_equ="(X_1)((X_1 - ((X_1)/(X_1)))((X_1)(X_1)) - (X_0 - (X_0)))"
-from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_func
+from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_func, trans_op1, trans_op2
 
 # def prefix_to_postfix(expression):
 #     stack = []
@@ -153,22 +153,26 @@ data.read_file()
 # c=np.append(a, b, axis=1)
 # print(c)
 # print(a.any() == 0)
-str1 = "((X_1)*(X_2) - (X_2) - (-57.169905482966946))((0.01143875346584301)(X_3))"
+str1 = "0.6011560693641608*x0**3 + 0.7225433526011544*x0**2*x1 + 0.00226680267482582*x0**2*x2 - 12.15935622804032*x0**2 + 0.5693641618497095*x0*x1**2 - 0.1556160036268847*x0*x1*x2 - 12.55961691034792*x0*x1 + 0.2322906041029134*x0*x2**2 - 0.8638218293097488*x0*x2 + 0.20231213872832335*x0*x3 + 89.987192564886985*x0 + 0.5196118909991743*x1**3 + 0.06793324266122511*x1**2*x2 - 11.525448907886846*x1**2 + 0.26592428879066154*x1*x2**2 - 2.3880624504136827*x1*x2 + 0.6820809248554924*x1*x3 + 94.508856721879364*x1 - 0.08093902300804774*x2**3 - 1.891561827042956*x2**2 + 0.5260115606936419*x2*x3 + 15.67149778986735*x2 + 0.1556160036268847*x3**2 - 8.4063243794627774*x3 - 302.5455951166587"
 str3="(sqrt((X_2)(6.847460619528528 + (X_1)(X_3))))/(2.6348796890765738)"
 str2="-0.8749999999999968*x0**2 + 1.749999999999993*x0*x1 - 2.999999999999993*x0*x2 + 15.87499999999997*x0 + " \
      "1.4583333333333247*x1**2 - 24.208333333333211*x1 + 17.99999999999996*x2 + 0.9999999999999982*x3 - " \
      "34.000000000000105"
 # str2 = re.sub(r'x(\d{1})', r'x_\1', str2)
-# eval=SingleBingoEvaluator(data=data,equation=str2)
+
 # fit=eval.do()
 # print(fit)
 # x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9, x_10 = symbols('X_1 X_2 X_3 X_4 X_5 X_6 X_7 X_8 X_9 X_10')
 # str2 = sympify(str1)
 # print(str2)
-sta = BingoStatistic(str1)
-
-if not sta.pos_do():
-    print("ii")
+# sta = BingoStatistic(str1)
+#
+# if not sta.pos_do():
+#     print("ii")
+str1=trans_op2(str1)
+eval=SingleBingoEvaluator(data=data,equation=str1)
+fit=eval.do()
+print(fit)
 # for cluster in range(0, 10):
 #     print(cluster)
 

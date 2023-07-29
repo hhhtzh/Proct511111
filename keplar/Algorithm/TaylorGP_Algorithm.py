@@ -16,7 +16,7 @@ from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
 from keplar.Algorithm.Alg import Alg
 from TaylorGP.src.taylorGP.utils import check_random_state
 from keplar.operator.evaluator import SingleBingoEvaluator
-from keplar.translator.translator import trans_taylor_program, taylor_trans_population
+from keplar.translator.translator import trans_taylor_program, taylor_trans_population, trans_op1, trans_op2
 # from TaylorGP.src.taylorGP.genetic import BaseSymbolic
 from TaylorGP.src.taylorGP.fitness import _mean_square_error, _weighted_spearman, _log_loss, _mean_absolute_error, \
     _Fitness
@@ -416,7 +416,7 @@ class MTaylorKMeansAlg(Alg):
         repeat = 1
         totalGeneration = 500
         originalTaylorGPGen = 10
-        Pop = 1000  # 种群规模
+        Pop = self.population.pop_size  # 种群规模
         if dataSets.shape[1] - 1 == 1:
             clusters = [1]
         elif dataSets.shape[1] - 1 == 2:
@@ -426,7 +426,7 @@ class MTaylorKMeansAlg(Alg):
         time_start1 = time.time()
         for repeatNum in range(repeat):
             time_start2 = time.time()
-            bestLassoFitness, globalBestLassoCoef = Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration,
+            bestLassoFitness, globalBestLassoCoef,best_ind = Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration,
                                                                      clusters, repeatNum, Pop, fileNum=1, np_x=x)
             average_fitness += bestLassoFitness
             time_end2 = time.time()
@@ -434,5 +434,8 @@ class MTaylorKMeansAlg(Alg):
         time_end1 = time.time()
         print('average_time_cost', (time_end1 - time_start1) / 3600 / repeat, 'hour')
         print('average_fitness = ', average_fitness / repeat)
-        self.best_fit = average_fitness / repeat
+        best_ind=trans_op2(best_ind)
+        eval = SingleBingoEvaluator(data=self.ds, equation=best_ind)
+        fit = eval.do()
+        self.best_fit = fit
         self.elapse_time = time.time() - t

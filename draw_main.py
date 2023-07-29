@@ -10,13 +10,13 @@ Vladislavleva = pd.read_csv('result/pmlb_1027_result.csv')
 draw_box_diagram(Vladislavleva['GpBingo'], Vladislavleva['Bingo'], Vladislavleva['OperonBingo'],
                  Vladislavleva['Operon'], Vladislavleva['MTaylor'], Vladislavleva['KeplarBingo'],
                  Vladislavleva['KeplarBingoCPP'], Vladislavleva['TaylorBingo'], Vladislavleva['BingoCPP'],
-                 Vladislavleva['KeplarMBingo'],Vladislavleva['KeplarMOperon'],
+                 Vladislavleva['KeplarMBingo'],Vladislavleva['KeplarMOperon'],Vladislavleva['MTaylor(With new Sparse)'],
                  "vlsdislavleva", isAll=True)
 pmlb_time = pd.read_csv('result/pmlb_1027_time_result.csv')
 draw_time_box_diagram(pmlb_time['GpBingo'], pmlb_time['Bingo'], pmlb_time['OperonBingo'],
                       pmlb_time['Operon'], pmlb_time['MTaylor'], pmlb_time['KeplarBingo'],
                       pmlb_time['KeplarBingoCPP'], pmlb_time['TaylorBingo'], pmlb_time['BingoCPP'],
-                      pmlb_time['KeplarMBingo'],pmlb_time['KeplarMOperon'],
+                      pmlb_time['KeplarMBingo'],pmlb_time['KeplarMOperon'],pmlb_time['MTaylor(With new Sparse)'],
                       "vlsdislavleva", isAll=True)
 
 # draw_box_diagram(addLog(GECCO['TaylorGP']), addLog(GECCO['GPLearn']), addLog(GECCO['FFX']),

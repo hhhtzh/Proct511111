@@ -1,6 +1,6 @@
 import pandas as pd
 
-from keplar.Algorithm.operon_Algorithm import KeplarMOperon
+from keplar.Algorithm.operon_Algorithm import KeplarOperon
 from keplar.data.data import Data
 from keplar.population.population import Population
 
@@ -10,7 +10,7 @@ data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 data.read_file()
 operators = ["+", "-", "*", "/", "sin", "exp", "sqrt", "^"]
 population = Population(128)
-kmo = KeplarMOperon(1000, None, None, None, 0.1, population, data, operators)
+kmo = KeplarOperon(1000, None, None, None, 0.1, population, data, operators)
 for i in range(10):
     kmo.run()
     fit_list.append(kmo.best_fit)

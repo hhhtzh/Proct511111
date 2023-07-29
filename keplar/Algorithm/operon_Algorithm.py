@@ -162,7 +162,7 @@ class OperonAlg(Alg):
         self.ind_list = gp.Individuals
 
 
-class KeplarMOperon(Alg):
+class KeplarOperon(Alg):
 
     def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population, data
                  , operators, recursion_limit=10):
@@ -229,37 +229,48 @@ class KeplarMOperon(Alg):
 
             # print(programs)
             # print(fit_list)
-            if n_cluster > 1:
-                spare = KeplarSpareseRegression(n_cluster, programs, fit_list, self.data, 488)
-                spare.do()
-                rockBestFit = spare.rockBestFit
-                final_equ = spare.final_str_ind
-                final_equ = trans_op1(final_equ)
-                single_eval = SingleBingoEvaluator(self.data, final_equ)
-                sta = BingoStatistic(final_equ)
-                sta.pos_do()
-                final_fit = single_eval.do()
-                print(f"第{now_recursion}轮" + "最好个体" + str(final_equ) + "适应度:" + str(final_fit))
-                ucb = KeplarJudgeUCB(n_cluster, abRockSum, abRockNum, rockBestFit)
-                max_ucb_index = ucb.pos_do()
-                db_s = db_sum[max_ucb_index]
-                db_sum = [db_s]
-                programs = []
-                fit_list = []
-                abRockSum = 0
-                abRockNum = []
-                n_cluster = 1
-            else:
-                best_i = 0
-                best_j = 0
-                for i in range(len(fit_list)):
-                    for j in range(len(fit_list[i])):
-                        if fit_list[i][j] < final_fit:
-                            final_fit = fit_list[i][j]
-                            best_i = 1
-                            best_j = j
-                final_equ = programs[best_j][best_j]
-                print(f"第{now_recursion}轮" + "适应度:" + str(final_fit)+"最好个体:"+str(final_equ))
+            # if n_cluster > 1:
+            #
+            #     spare = KeplarSpareseRegression(n_cluster, programs, fit_list, self.data, 488)
+            #     spare.do()
+            #     rockBestFit = spare.rockBestFit
+            #     final_equ = spare.final_str_ind
+            #     final_equ = trans_op1(final_equ)
+            #     single_eval = SingleBingoEvaluator(self.data, final_equ)
+            #     sta = BingoStatistic(final_equ)
+            #     sta.pos_do()
+            #     final_fit = single_eval.do()
+            #     print(f"第{now_recursion}轮" + "最好个体" + str(final_equ) + "适应度:" + str(final_fit))
+            #     ucb = KeplarJudgeUCB(n_cluster, abRockSum, abRockNum, rockBestFit)
+            #     max_ucb_index = ucb.pos_do()
+            #     db_s = db_sum[max_ucb_index]
+            #     db_sum = [db_s]
+            #     programs = []
+            #     fit_list = []
+            #     abRockSum = 0
+            #     abRockNum = []
+            #     n_cluster = 1
+            # else:
+            best_i = 0
+            best_j = 0
+            for i in range(len(fit_list)):
+                for j in range(len(fit_list[i])):
+                    if fit_list[i][j] < final_fit:
+                        final_fit = fit_list[i][j]
+                        best_i = 1
+                        best_j = j
+            final_equ = programs[best_j][best_j]
+            print(f"第{now_recursion}轮" + "适应度:" + str(final_fit) + "最好个体:" + str(final_equ))
             now_recursion += 1
         self.elapse_time = time.time() - t
         self.best_fit = final_fit
+
+
+class KeplarMOperon(Alg):
+
+    def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population, data):
+        super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
+        self.data = data
+
+    def run(self):
+

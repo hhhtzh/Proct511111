@@ -58,6 +58,7 @@ def Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration, clusters, r
         SRC.PreDbscan(-1, clusterMethod="KMEANS", n_clusters_=cluster, data_x=np_x)
         SRC.firstMabFlag = True
         set_value('FIRST_EVOLUTION_FLAG', True)  # 进行每轮数据集演化前执行
+        print("mabLoopNum:"+str(mabLoopNum))
         for tryNum in range(mabLoopNum):
             SRC.CalTops(repeatNum, Pop, SR_method=SR_merhod)
             SRC.SubRegionPruning()
@@ -73,8 +74,10 @@ def Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration, clusters, r
     print("FinalFitness", SRC.bestLassoFitness, "SelectedGlobalBestLassoCoef:", SRC.globalBestLassoCoef, sep=" ")
 
     WriteFile_X_Y_pred(SRC, fileNum, cluster, repeatNum)
+    best_ind = SRC.tops[SRC.globalBestLassoCoef[0]]
+    print("best_ind" + str(best_ind[1][0]))
 
-    return SRC.bestLassoFitness, SRC.globalBestLassoCoef
+    return SRC.bestLassoFitness, SRC.globalBestLassoCoef,str(best_ind[1][0])
 
 
 def TaylorGP2Master(fileNum):  # 核心代码
