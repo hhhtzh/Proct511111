@@ -17,8 +17,8 @@ for i in range(10):
     fit_list.append(bingo.best_fit)
     time_list.append(bingo.elapse_time)
 
-fit_pd = pd.DataFrame({'Bingo': fit_list})
-time_pd = pd.DataFrame({'Bingo': time_list})
+fit_pd = pd.DataFrame({'BingoCPP': fit_list})
+time_pd = pd.DataFrame({'BingoCPP': time_list})
 fit_pd.to_csv(r"result/vla_5.csv", sep=',', mode="a")
 time_pd.to_csv(r"result/vla_5_time.csv", sep=',', mode="a")
 # str2 = str(bingo.best_ind)

@@ -403,8 +403,7 @@ class BingoAlg(Alg):
         self.report_island_status(test_island)
         self.island = test_island
         self.best_ind = test_island.get_best_individual()
-        eval = SingleBingoEvaluator(self.data, str(self.best_ind))
-        self.best_fit = eval.do()
+        self.best_fit = test_island.get_best_fitness()
         self.elapse_time = time.time() - t
 
 
