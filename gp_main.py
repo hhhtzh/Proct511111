@@ -3,7 +3,7 @@ from keplar.data.data import Data
 from keplar.operator.evaluator import SingleBingoEvaluator
 from keplar.translator.translator import gp_to_bingo, gp_to_bingo1
 
-data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
+data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4",'y'])
 data.read_file()
 x = data.get_np_x()
 y = data.get_np_y()
