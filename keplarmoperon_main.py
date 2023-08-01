@@ -7,7 +7,7 @@ from keplar.population.population import Population
 
 fit_list = []
 time_list = []
-data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3","x4", 'y'])
+data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
 data.read_file()
 print(np.shape(data.get_np_ds()))
 operators = ["+", "-", "*", "/", "sin", "exp", "sqrt", "^"]

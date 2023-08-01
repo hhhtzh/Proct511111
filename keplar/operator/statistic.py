@@ -64,6 +64,17 @@ class TaylorStatistic(Statistic):
         self.final_statis = final_statis
 
 
+
+class OperonStatistic(Statistic):
+    def __init__(self):
+        super().__init__()
+
+    def pos_do(self):
+        pass
+
+
+
+
 class BingoStatistic(Statistic):
     def __init__(self, str_equ):
         super().__init__()

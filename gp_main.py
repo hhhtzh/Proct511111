@@ -22,6 +22,7 @@ for i in range(10):
     t1=time()
     tt = sr.fit(X=x, y=y)
     aa = gp_to_bingo1(str(tt))
+    print(aa)
     eval = SingleBingoEvaluator(data, equation=str(aa))
     fit=eval.do()
     fit_list.append(fit)

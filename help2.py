@@ -59,6 +59,8 @@ tree_initializer.ParameterizeDistribution(minL, maxL)
 tree_initializer.MaxDepth = maxD
 rng = Operon.RomuTrio(random.randint(1, 1000000))
 a = tree_initializer(rng)
+str1=Operon.TreeFormatter.Format(a,ds,5)
+print(str1)
 
 # define a coefficient initializer (this will initialize the coefficients in the tree)
 coeff_initializer = Operon.NormalCoefficientInitializer()

@@ -420,7 +420,7 @@ class KeplarMBingo(Alg):
     def run(self):
         t = time.time()
         for i in [0.2, 1, 4, 10, 100]:
-            dbscan = SklearnDBscan()
+            dbscan = SklearnDBscan(0)
             x, num = dbscan.do(self.data)
             if num:
                 break

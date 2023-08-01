@@ -13,12 +13,12 @@ from keplar.operator.mutation import BingoMutation
 from keplar.operator.selector import BingoSelector
 
 # data = Data("txt", "datasets/1.txt",["x","y"])
-# data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
-data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
+data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
+# data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 fit_list = []
 time_list = []
 data.read_file()
-# data.set_xy("y")
+data.set_xy("y")
 x = data.get_x()
 y = data.get_y()
 operators = ["+", "-", "*", "/", "^"]
@@ -39,5 +39,5 @@ for i in range(10):
     time_list.append(bgsr.elapse_time)
 fit_pd = pd.DataFrame({'KeplarBingo': fit_list})
 time_pd = pd.DataFrame({'KeplarBingo': time_list})
-fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
-time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")
+fit_pd.to_csv(r"result/vla_5.csv", sep=',', mode="a")
+time_pd.to_csv(r"result/vla_5_time.csv", sep=',', mode="a")

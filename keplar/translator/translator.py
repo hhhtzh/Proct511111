@@ -507,7 +507,11 @@ def postfix_to_infix(expression):
 #     ind._update()
 #     return str(ind)
 
-
+def trans_op0(equ):
+    equ1 = re.sub(r'X(\d{3})', r'X_\1', equ)
+    equ1 = re.sub(r'X(\d{2})', r'X_\1', equ1)
+    equ1 = re.sub(r'X(\d{1})', r'X_\1', equ1)
+    return equ1
 def trans_op1(equ):
     equ1 = re.sub(r'X(\d{3})', r'X_\1', equ)
     equ1 = re.sub(r'X(\d{2})', r'X_\1', equ1)
