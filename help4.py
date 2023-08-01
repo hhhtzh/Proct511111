@@ -14,6 +14,8 @@ from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.operator_definitions import INTEGER, CONSTANT
 from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens, infix_to_postfix, operators, \
     functions, operator_map, var_or_const_pattern, int_pattern
+from gplearn._program import _Program
+from gplearn.functions import sqrt1, add2, mul2, div2
 from keplar.data.data import Data
 from keplar.operator.creator import GpCreator
 from keplar.operator.evaluator import SingleBingoEvaluator
@@ -45,7 +47,8 @@ from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
 # dict={"11":2}
 # print(dict["11"])
 # str_equ="(X_1)((X_1 - ((X_1)/(X_1)))((X_1)(X_1)) - (X_0 - (X_0)))"
-from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_func, trans_op1, trans_op2
+from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_func, trans_op1, trans_op2, bingo_to_gp, \
+    infix_to_prefix
 
 # def prefix_to_postfix(expression):
 #     stack = []
@@ -101,8 +104,8 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # ws=Operon.OffspringGeneratorBase.Prepare(const_list)
 # rd=RandomState(100)
 # print(rd.random(2))
-data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
-data.read_file()
+# data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
+# data.read_file()
 # data.read_file()
 # ty=TaylorFeature(data,"test1")
 # ty.do()
@@ -125,11 +128,13 @@ data.read_file()
 # b=a.pop(1)
 # print(b)
 # print(a)
-sk=SklearnDBscan()
-ds = data.get_np_ds()
-# print(ds[:, :-1])
-end1=sk.do(data)
-print(end1)
+# sk=SklearnDBscan()
+# ds = data.get_np_ds()
+# # print(ds[:, :-1])
+# end1=sk.do(data)
+# print(end1)
+# s = np.power(2, 3)
+# print(s)
 # for i in range(2):
 #     print("ee")
 # a = [1, 2, 3]
@@ -155,7 +160,33 @@ print(end1)
 # print(c)
 # print(a.any() == 0)
 # str1 = "0.6011560693641608*x0**3 + 0.7225433526011544*x0**2*x1 + 0.00226680267482582*x0**2*x2 - 12.15935622804032*x0**2 + 0.5693641618497095*x0*x1**2 - 0.1556160036268847*x0*x1*x2 - 12.55961691034792*x0*x1 + 0.2322906041029134*x0*x2**2 - 0.8638218293097488*x0*x2 + 0.20231213872832335*x0*x3 + 89.987192564886985*x0 + 0.5196118909991743*x1**3 + 0.06793324266122511*x1**2*x2 - 11.525448907886846*x1**2 + 0.26592428879066154*x1*x2**2 - 2.3880624504136827*x1*x2 + 0.6820809248554924*x1*x3 + 94.508856721879364*x1 - 0.08093902300804774*x2**3 - 1.891561827042956*x2**2 + 0.5260115606936419*x2*x3 + 15.67149778986735*x2 + 0.1556160036268847*x3**2 - 8.4063243794627774*x3 - 302.5455951166587"
-# str3="(sqrt((X_2)(6.847460619528528 + (X_1)(X_3))))/(2.6348796890765738)"
+
+
+str3 = "(sqrt((X_2)(6.847460619528528 + (X_1)(X_3))))/(2.6348796890765738)"
+# str3 = "(0.5418360278299557)+(0.7777)"
+# str3="2"
+tk = bingo_to_gp(str3)
+tk = eq_string_to_infix_tokens(tk)
+print(tk)
+tk = infix_to_prefix(tk)
+print(tk)
+new_list = [sqrt1 if x == 'sqrt' else x for x in new_list]
+new_list = [add2 if x == '+' else x for x in new_list]
+new_list = [mul2 if x == '*' else x for x in new_list]
+new_list = [div2 if x == '/' else x for x in new_list]
+print(new_list)
+
+print(new_list)
+# new_list = [0.7, 0.7, 'add']
+gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt"],
+                   arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1},
+                   init_depth=[3, 3], init_method="half and half", n_features=4, const_range=[0, 1], metric="rmse",
+                   p_point_replace=0.4, parsimony_coefficient=0.01, random_state=1, program=new_list)
+
+# my_list = ['apple', 'banana', 'orange', 'pear']
+# new_list = [add2 if x == 'banana' else x for x in my_list]
+# print(new_list)
+
 # str2="-0.8749999999999968*x0**2 + 1.749999999999993*x0*x1 - 2.999999999999993*x0*x2 + 15.87499999999997*x0 + " \
 #      "1.4583333333333247*x1**2 - 24.208333333333211*x1 + 17.99999999999996*x2 + 0.9999999999999982*x3 - " \
 #      "34.000000000000105"
@@ -180,4 +211,3 @@ print(end1)
 # dic = {'X_1': 0.444444}
 # print(dic)
 # print('X1' in dic)
-

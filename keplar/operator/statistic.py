@@ -194,3 +194,10 @@ class BingoStatistic(Statistic):
                 final_statis.update({str_final: now_num})
         self.final_statis = final_statis
         print(final_statis)
+
+
+class GpStatistic(Statistic):
+    def __init__(self):
+        super().__init__()
+
+

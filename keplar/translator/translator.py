@@ -431,9 +431,17 @@ class KeplarToDSR():
 
 
 def gp_to_bingo1(gp_equ):
+    strx_ = re.sub(r'X(\d{3})', r'X_\1', gp_equ)
+    strx_ = re.sub(r'X(\d{2})', r'X_\1', gp_equ)
     strx_ = re.sub(r'X(\d{1})', r'X_\1', gp_equ)
     return strx_
 
+
+def bingo_to_gp(bg_equ):
+    strx_ = re.sub(r'X_(\d{3})', r'X\1', bg_equ)
+    strx_ = re.sub(r'X_(\d{2})', r'X\1', strx_)
+    strx_ = re.sub(r'X_(\d{1})', r'X\1', strx_)
+    return strx_
 
 def gp_to_bingo(gp_equ):
     strx_ = re.sub(r'X(\d{1})', r'X_\1', gp_equ)

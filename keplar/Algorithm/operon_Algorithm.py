@@ -585,7 +585,8 @@ class KeplarMOperon2(Alg):
                 ucb = KeplarJudgeUCB(n_cluster, abRockSum, abRockNum, rockBestFit)
                 max_ucb_index = ucb.pos_do()
                 selected_index = max_ucb_index
-                pruning = MOperonPruning(fit_list, n_cluster, now_recursion, self.recursion_limit)
+                pruning = MOperonPruning(fit_list, n_cluster, now_recursion, self.recursion_limit,programs,op_list,abRockSum,abRockNum)
+                pruning.pos_do()
             else:
                 for i in range(len(fit_list)):
                     for j in range(len(fit_list[i])):
