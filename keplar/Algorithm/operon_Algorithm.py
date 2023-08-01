@@ -351,8 +351,9 @@ class KeplarMOperon(Alg):
                         op_up_list = [mutation, crossover]
                         op_down_list = [reinsert]
                         eva_list = [evaluator]
+                        x_shape = np.shape(ds_x[0])[0]
                         op_alg = OperonAlg(generation, op_up_list, op_down_list, eva_list, selector, 1e-5,
-                                           pop_size, 16, ds_x, ds_y)
+                                           pop_size, 16, ds_x, ds_y, data_i,x_shape)
                         op_alg.run()
                         op_top3 = op_alg.get_n_top(self.top_n)
                         top_str_ind = []

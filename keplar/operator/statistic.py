@@ -64,15 +64,12 @@ class TaylorStatistic(Statistic):
         self.final_statis = final_statis
 
 
-
 class OperonStatistic(Statistic):
     def __init__(self):
         super().__init__()
 
     def pos_do(self):
         pass
-
-
 
 
 class BingoStatistic(Statistic):
@@ -101,7 +98,7 @@ class BingoStatistic(Statistic):
                 command = [operator_map[token], operands[1], operands[0]]
                 if token == "*":
                     print(command_to_i)
-                    if command_array[command[1]][0] == 1 :
+                    if command_array[command[1]][0] == 1:
                         print("1")
                         print(command)
                         print(command[2])
