@@ -20,7 +20,7 @@ from gplearn.functions import sqrt1, add2, mul2, div2
 from keplar.data.data import Data
 from keplar.operator.creator import GpCreator
 from keplar.operator.evaluator import SingleBingoEvaluator
-from keplar.operator.statistic import BingoStatistic, TaylorStatistic
+from keplar.operator.statistic import BingoStatistic, TaylorStatistic, GpStatistic
 # from keplar.operator.feature_engineering import FeatureEngineering, TaylorFeature
 from keplar.population.individual import Individual
 from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
@@ -163,7 +163,7 @@ from keplar.translator.translator import prefix_to_postfix, bingo_infixstr_to_fu
 # str1 = "0.6011560693641608*x0**3 + 0.7225433526011544*x0**2*x1 + 0.00226680267482582*x0**2*x2 - 12.15935622804032*x0**2 + 0.5693641618497095*x0*x1**2 - 0.1556160036268847*x0*x1*x2 - 12.55961691034792*x0*x1 + 0.2322906041029134*x0*x2**2 - 0.8638218293097488*x0*x2 + 0.20231213872832335*x0*x3 + 89.987192564886985*x0 + 0.5196118909991743*x1**3 + 0.06793324266122511*x1**2*x2 - 11.525448907886846*x1**2 + 0.26592428879066154*x1*x2**2 - 2.3880624504136827*x1*x2 + 0.6820809248554924*x1*x3 + 94.508856721879364*x1 - 0.08093902300804774*x2**3 - 1.891561827042956*x2**2 + 0.5260115606936419*x2*x3 + 15.67149778986735*x2 + 0.1556160036268847*x3**2 - 8.4063243794627774*x3 - 302.5455951166587"
 
 
-str3 = "(sqrt((X_2)(6.847460619528528 + (X_1)(X_3))))+((2.666666)(X_1))"
+str3 = "(sqrt((X_2)(6.847460619528528 + (X_1)(X_3)))) - ((2.666666)(X_1))"
 # str3 = "(0.5418360278299557)+(0.7777)"
 # str3="2"
 tk = bingo_to_gp(str3)
@@ -181,92 +181,103 @@ print(tk)
 #
 # print(new_list)
 # # new_list = [0.7, 0.7, 'add']
-gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt"],
-                   arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1},
+gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt","neg"],
+                   arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1,"neg":1},
                    init_depth=[3, 3], init_method="half and half", n_features=4, const_range=[0, 1], metric="rmse",
                    p_point_replace=0.4, parsimony_coefficient=0.01, random_state=1, program=tk)
-data = gp_prog.export_graphviz()
-print(data)
-print(type(data))
-list_str = data.split('\n')
-print(list_str)
-list_str = list_str[2:-1]
-print(list_str)
-lable_list = []
-arrow_list = []
-for tk in list_str:
-    if '[' in tk:
-        lable_list.append(tk)
-    elif "->" in tk:
-        arrow_list.append(tk)
-    else:
-        ValueError(f"出错了token{tk}")
-print(lable_list)
-print(arrow_list)
-lable_num_list = []
-lable_name_list = []
-for i in lable_list:
-    temp_list = i.split(" ")
-    print(temp_list)
-    num_str = temp_list[0]
-    lable_num_list.append(int(num_str))
-    print(lable_num_list)
-    name_temp = temp_list[1]
-    name_temp_str = ""
-    read_flag = False
-    for j in name_temp:
-        if not read_flag and j == '"':
-            read_flag = True
-        elif read_flag and j != '"':
-            name_temp_str += j
-        elif read_flag and j == '"':
-            break
-        else:
-            continue
-    lable_name_list.append(name_temp_str)
-print(lable_name_list)
-node_dict = {}
-for i in range(len(lable_name_list)):
-    node_dict.update({lable_num_list[i]: lable_name_list[i]})
-print(node_dict)
-new_arrow_list = []
-left_arrow_list = []
-right_arrow_list = []
-for i in arrow_list:
-    str_temp = i.split(' ')
-    new_arrow_list.append(str_temp[0] + str_temp[1] + str_temp[2])
-    left_arrow_list.append(str_temp[0])
-    right_arrow_list.append(str_temp[2])
-print(new_arrow_list)
-print(left_arrow_list)
-print(right_arrow_list)
-new_tree = []
-while True:
-    if lable_name_list[0] != 'sub' and lable_name_list[0] != 'add':
-        break
-    elif lable_name_list[0] == 'add':
-        left_add_index = []
-        for i in range(len(left_arrow_list)):
-            if left_arrow_list[i] == '0':
-                left_add_index.append(i)
-        right_add_list = [right_arrow_list[left_add_index[0]], right_arrow_list[left_add_index[1]]]
-        mid_point = int(right_add_list[0]) - int(right_add_list[1])
-        if mid_point < 0:
-            mid_point *= (-1)
-        new_tree.append(lable_name_list[1:mid_point + 1])
-        new_tree.append(lable_name_list[mid_point + 1:])
-        break
 
-print(new_tree)
-temp_=[]
-for i in new_tree:
-    temp_.append(lable_list_to_gp_list(i))
-print(temp_[0])
-gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt"],
-                   arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1},
-                   init_depth=[3, 3], init_method="half and half", n_features=4, const_range=[0, 1], metric="rmse",
-                   p_point_replace=0.4, parsimony_coefficient=0.01, random_state=1, program=temp_[1])
+# sta=GpStatistic(gp_prog)
 data = gp_prog.export_graphviz()
+gra = graphviz.Source(data)
+gra.view()
+# new_list=sta.pos_do()
+# for i in new_list:
+#     data=i.export_graphviz()
+#     gra = graphviz.Source(data)
+#     gra.view()
+
+# data = gp_prog.export_graphviz()
+# print(data)
+# print(type(data))
+# list_str = data.split('\n')
+# print(list_str)
+# list_str = list_str[2:-1]
+# print(list_str)
+# lable_list = []
+# arrow_list = []
+# for tk in list_str:
+#     if '[' in tk:
+#         lable_list.append(tk)
+#     elif "->" in tk:
+#         arrow_list.append(tk)
+#     else:
+#         ValueError(f"出错了token{tk}")
+# print(lable_list)
+# print(arrow_list)
+# lable_num_list = []
+# lable_name_list = []
+# for i in lable_list:
+#     temp_list = i.split(" ")
+#     print(temp_list)
+#     num_str = temp_list[0]
+#     lable_num_list.append(int(num_str))
+#     print(lable_num_list)
+#     name_temp = temp_list[1]
+#     name_temp_str = ""
+#     read_flag = False
+#     for j in name_temp:
+#         if not read_flag and j == '"':
+#             read_flag = True
+#         elif read_flag and j != '"':
+#             name_temp_str += j
+#         elif read_flag and j == '"':
+#             break
+#         else:
+#             continue
+#     lable_name_list.append(name_temp_str)
+# print(lable_name_list)
+# node_dict = {}
+# for i in range(len(lable_name_list)):
+#     node_dict.update({lable_num_list[i]: lable_name_list[i]})
+# print(node_dict)
+# new_arrow_list = []
+# left_arrow_list = []
+# right_arrow_list = []
+# for i in arrow_list:
+#     str_temp = i.split(' ')
+#     new_arrow_list.append(str_temp[0] + str_temp[1] + str_temp[2])
+#     left_arrow_list.append(str_temp[0])
+#     right_arrow_list.append(str_temp[2])
+# print(new_arrow_list)
+# print(left_arrow_list)
+# print(right_arrow_list)
+# new_tree = []
+# while True:
+#     if lable_name_list[0] != 'sub' and lable_name_list[0] != 'add':
+#         break
+#     elif lable_name_list[0] == 'add':
+#         left_add_index = []
+#         for i in range(len(left_arrow_list)):
+#             if left_arrow_list[i] == '0':
+#                 left_add_index.append(i)
+#         right_add_list = [right_arrow_list[left_add_index[0]], right_arrow_list[left_add_index[1]]]
+#         mid_point = int(right_add_list[0]) - int(right_add_list[1])
+#         if mid_point < 0:
+#             mid_point *= (-1)
+#         new_tree.append(lable_name_list[1:mid_point + 1])
+#         new_tree.append(lable_name_list[mid_point + 1:])
+#         break
+#
+# print(new_tree)
+# temp_=[]
+# for i in new_tree:
+#     temp_.append(lable_list_to_gp_list(i))
+# print(temp_[0])
+# gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt"],
+#                    arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1},
+#                    init_depth=[3, 3], init_method="half and half", n_features=4, const_range=[0, 1], metric="rmse",
+#                    p_point_replace=0.4, parsimony_coefficient=0.01, random_state=1, program=temp_[1])
+# data = gp_prog.export_graphviz()
 
 # for key, value in node_dict.items():
 #     if value == 'sub' or value == 'add':
@@ -286,8 +297,7 @@ data = gp_prog.export_graphviz()
 #     if(tk[0])
 
 
-gra = graphviz.Source(data)
-gra.view()
+
 # my_list = ['apple', 'banana', 'orange', 'pear']
 # new_list = [add2 if x == 'banana' else x for x in my_list]
 # print(new_list)

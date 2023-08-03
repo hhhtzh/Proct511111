@@ -6,7 +6,7 @@ import pyoperon as Operon
 from TaylorGP.src.taylorGP._program import _Program
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
-from gplearn.functions import _Function, sqrt1, add2, mul2, div2, sub2
+from gplearn.functions import _Function, sqrt1, add2, mul2, div2, sub2, neg1
 from keplar.population.function import arity_map, operator_map3, _function_map, map_F1, Operator_map_S, \
     operator_map_dsr, operator_map_dsr2
 from keplar.population.individual import Individual
@@ -622,18 +622,19 @@ def lable_list_to_gp_list(lable_list):
         if lable_list[i][0] == 'X':
             lable_list[i] = int(lable_list[i][1:])
         elif is_float(lable_list[i]):
-            lable_list[i]=float(lable_list[i])
-        elif lable_list[i]=='add':
-            lable_list[i]=add2
-        elif lable_list[i]=='sub':
-            lable_list[i]=sub2
-        elif lable_list[i]=='mul':
-            lable_list[i]=mul2
-        elif lable_list[i]=='div':
-            lable_list[i]=div2
-        elif lable_list[i]=='sqrt':
-            lable_list[i]=sqrt1
-
+            lable_list[i] = float(lable_list[i])
+        elif lable_list[i] == 'add':
+            lable_list[i] = add2
+        elif lable_list[i] == 'sub':
+            lable_list[i] = sub2
+        elif lable_list[i] == 'mul':
+            lable_list[i] = mul2
+        elif lable_list[i] == 'div':
+            lable_list[i] = div2
+        elif lable_list[i] == 'sqrt':
+            lable_list[i] = sqrt1
+        elif lable_list[i] == 'neg':
+            lable_list[i] = neg1
 
     return lable_list
 

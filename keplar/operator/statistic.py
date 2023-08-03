@@ -288,15 +288,29 @@ class GpStatistic(Statistic):
                 new_tree.append(lable_name_list[1:mid_point + 1])
                 new_tree.append(lable_name_list[mid_point + 1:])
                 break
+            elif lable_name_list[0] == 'sub':
+                left_add_index = []
+                for i in range(len(left_arrow_list)):
+                    if left_arrow_list[i] == '0':
+                        left_add_index.append(i)
+                right_add_list = [right_arrow_list[left_add_index[0]], right_arrow_list[left_add_index[1]]]
+                mid_point = int(right_add_list[0]) - int(right_add_list[1])
+                if mid_point < 0:
+                    mid_point *= (-1)
+                new_tree.append(lable_name_list[1:mid_point + 1])
+                temp_right = lable_name_list[mid_point + 1:]
+                temp_right = ['neg'] + temp_right
+                new_tree.append(temp_right)
+                break
 
         print(new_tree)
         temp_ = []
         for i in new_tree:
             temp_.append(lable_list_to_gp_list(i))
-        new_gpprog_list=[]
+        new_gpprog_list = []
         for i in temp_:
-            gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt"],
-                               arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1},
+            gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt","neg"],
+                               arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1,"neg":1},
                                init_depth=[3, 3], init_method="half and half", n_features=4, const_range=[0, 1],
                                metric="rmse",
                                p_point_replace=0.4, parsimony_coefficient=0.01, random_state=1, program=i)
