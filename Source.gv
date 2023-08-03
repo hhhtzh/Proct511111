@@ -1,26 +1,4 @@
 digraph program {
 node [style=filled]
-0 [label="sub", fillcolor="#136ed4"] ;
-1 [label="sqrt", fillcolor="#136ed4"] ;
-2 [label="mul", fillcolor="#136ed4"] ;
-3 [label="X2", fillcolor="#60a6f6"] ;
-4 [label="add", fillcolor="#136ed4"] ;
-5 [label="6.847", fillcolor="#60a6f6"] ;
-6 [label="mul", fillcolor="#136ed4"] ;
-7 [label="X1", fillcolor="#60a6f6"] ;
-8 [label="X3", fillcolor="#60a6f6"] ;
-6 -> 8 ;
-6 -> 7 ;
-4 -> 6 ;
-4 -> 5 ;
-2 -> 4 ;
-2 -> 3 ;
-1 -> 2 ;
-9 [label="mul", fillcolor="#136ed4"] ;
-10 [label="2.667", fillcolor="#60a6f6"] ;
-11 [label="X1", fillcolor="#60a6f6"] ;
-9 -> 11 ;
-9 -> 10 ;
-0 -> 9 ;
-0 -> 1 ;
+0 [label="X1", fillcolor="#60a6f6"] ;
 }

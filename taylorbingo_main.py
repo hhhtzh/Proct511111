@@ -14,9 +14,10 @@ from keplar.operator.selector import BingoSelector
 from keplar.operator.taylor_judge import TaylorJudge
 
 # data = Data("txt", "datasets/1.txt",["x","y"])
-data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
+data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
+# data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 data.read_file()
-# data.set_xy("y")
+data.set_xy("y")
 x = data.get_x()
 y = data.get_y()
 fit_list = []
@@ -24,7 +25,7 @@ time_list = []
 operators =["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^']
 taylor = TaylorJudge(data, "taylorgp")
 fe_list = [taylor]
-creator = BingoCreator(50, operators, x, 10, "Bingo")
+creator = BingoCreator(128, operators, x, 10, "Bingo")
 evaluator = BingoEvaluator(x, "exp", "lm", "Bingo",y)
 crossover = BingoCrossover("Bingo")
 mutation = BingoMutation(x, operators, "Bingo")
@@ -34,7 +35,7 @@ gen_down_oplist = CompositeOpReturn([selector])
 gen_eva_oplist = CompositeOp([evaluator])
 for i in range(10):
     population = creator.do()
-    bgsr = TaylorBingoAlg(100, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population, fe_list)
+    bgsr = TaylorBingoAlg(1000, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population, fe_list)
     bgsr.run()
     fit_list.append(bgsr.best_fit)
     time_list.append(bgsr.elapse_time)
