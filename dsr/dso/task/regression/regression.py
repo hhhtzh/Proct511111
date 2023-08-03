@@ -268,6 +268,15 @@ class RegressionTask(HierarchicalTask):
             })
 
         return info
+    
+    
+    def evaluate_nmse(self, p):
+        y_hat = p.execute(self.X_test)
+        if p.invalid:
+            nmse_test = None
+        else:
+            nmse_test = np.mean((self.y_test - y_hat) ** 2) 
+        return nmse_test
 
 
 def make_regression_metric(name, y_train, *args):

@@ -450,6 +450,18 @@ class Program(object):
 
             # Return final reward after optimizing
             return self.task.reward_function(self)
+        
+    @cached_property
+    def nmse(self):
+        """Evaluates and returns the reward of the program"""
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+
+            # Optimize any PlaceholderConstants
+            self.optimize()
+
+            # Return final reward after optimizing
+            return self.task.evaluate_nmse(self)
 
     @cached_property
     def complexity(self):
@@ -505,6 +517,7 @@ class Program(object):
         """
 
         print("\tReward: {}".format(self.r))
+        print("\tnmse: {}".format(self.nmse))
         print("\tCount Off-policy: {}".format(self.off_policy_count))
         print("\tCount On-policy: {}".format(self.on_policy_count))
         print("\tOriginally on Policy: {}".format(self.originally_on_policy))

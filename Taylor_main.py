@@ -14,9 +14,13 @@ from TaylorGP.src.taylorGP.utils import check_random_state
 from keplar.operator.TaylorSort import TaylorSort
 import pandas as pd
 
+# data = Data("txt", "datasets/1.txt", ["x", "y"])
+data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
 
-data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
+# data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
 data.read_file()
+data.set_xy("y")
+
 x_train = data.get_np_x()
 y_train = data.get_np_y()
 
@@ -81,6 +85,8 @@ for i in range(10):
     time_list.append(taylorGP .elapse_time)
 fit_pd = pd.DataFrame({'taylorGP': fit_list})
 time_pd = pd.DataFrame({'taylorGP': time_list})
-fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
-time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")
+# fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
+# time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")
+fit_pd.to_csv(r"result/vla_5.csv", sep=',', mode="a")
+time_pd.to_csv(r"result/vla_5_time.csv", sep=',', mode="a")
 
