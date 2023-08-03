@@ -290,7 +290,7 @@ class TayloGPAlg(Alg):
 
 class MTaylorGPAlg(Alg):
     def __init__(self, max_generation, ds, up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
-                 population=None,NewSparseRegressionFlag=False,
+                 population=None, NewSparseRegressionFlag=False,
                  recursion_limit=300, repeat=1, originalTaylorGPGeneration=20, SR_method="gplearn", mabPolicy="Greedy"):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
         self.NewSparseRegressionFlag = NewSparseRegressionFlag
@@ -354,7 +354,10 @@ class MTaylorGPAlg(Alg):
                 print("Temp Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
             print("Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
         self.best_fit = SRC.bestLassoFitness
-        self.best_ind = SRC.tops[SRC.globalBestLassoCoef[0]]
+        if isinstance(SRC.globalBestLassoCoef, list):
+            self.best_ind = SRC.tops[SRC.globalBestLassoCoef[0]]
+        else:
+            self.best_ind = SRC.tops[SRC.globalBestLassoCoef]
         print("best_ind" + str(self.best_ind[1][0]))
         dict_arr = SRC.dict_arr
         final_dict = {}
@@ -369,7 +372,7 @@ class MTaylorGPAlg(Alg):
                     final_dict.update({key: now_num})
         print("final::::" + str(final_dict))
         self.elapse_time = time.time() - t
-        str_eq=str(self.best_ind[1][0])
+        str_eq = str(self.best_ind[1][0])
         str_eq = re.sub(r'x(\d{1})', r'x_\1', str_eq)
         eval = SingleBingoEvaluator(data=self.ds, equation=str_eq)
         fit = eval.do()
@@ -426,15 +429,17 @@ class MTaylorKMeansAlg(Alg):
         time_start1 = time.time()
         for repeatNum in range(repeat):
             time_start2 = time.time()
-            bestLassoFitness, globalBestLassoCoef,best_ind = Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration,
-                                                                     clusters, repeatNum, Pop, fileNum=1, np_x=x)
+            bestLassoFitness, globalBestLassoCoef, best_ind = Cal_fitness_Coef(dataSets, originalTaylorGPGen,
+                                                                               totalGeneration,
+                                                                               clusters, repeatNum, Pop, fileNum=1,
+                                                                               np_x=x)
             average_fitness += bestLassoFitness
             time_end2 = time.time()
             print('current_time_cost', (time_end2 - time_start2) / 3600, 'hour')
         time_end1 = time.time()
         print('average_time_cost', (time_end1 - time_start1) / 3600 / repeat, 'hour')
         print('average_fitness = ', average_fitness / repeat)
-        best_ind=trans_op2(best_ind)
+        best_ind = trans_op2(best_ind)
         eval = SingleBingoEvaluator(data=self.ds, equation=best_ind)
         fit = eval.do()
         self.best_fit = fit

@@ -6,7 +6,7 @@ import pyoperon as Operon
 from TaylorGP.src.taylorGP._program import _Program
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
-from gplearn.functions import _Function
+from gplearn.functions import _Function, sqrt1, add2, mul2, div2, sub2
 from keplar.population.function import arity_map, operator_map3, _function_map, map_F1, Operator_map_S, \
     operator_map_dsr, operator_map_dsr2
 from keplar.population.individual import Individual
@@ -443,6 +443,7 @@ def bingo_to_gp(bg_equ):
     strx_ = re.sub(r'X_(\d{1})', r'X\1', strx_)
     return strx_
 
+
 def gp_to_bingo(gp_equ):
     strx_ = re.sub(r'X(\d{1})', r'X_\1', gp_equ)
     strx_ = re.sub(r'-(\d{1}).(\d{3})', r'sub(0.000,\1.\2)', strx_)
@@ -520,6 +521,8 @@ def trans_op0(equ):
     equ1 = re.sub(r'X(\d{2})', r'X_\1', equ1)
     equ1 = re.sub(r'X(\d{1})', r'X_\1', equ1)
     return equ1
+
+
 def trans_op1(equ):
     equ1 = re.sub(r'X(\d{3})', r'X_\1', equ)
     equ1 = re.sub(r'X(\d{2})', r'X_\1', equ1)
@@ -528,6 +531,7 @@ def trans_op1(equ):
     output_string = re.sub(pattern, lambda m: m.group(1)[:-1] + str(int(m.group(1)[-1]) - 1), equ1)
     return output_string
 
+
 def trans_op2(equ):
     equ1 = re.sub(r'x(\d{3})', r'X_\1', equ)
     equ1 = re.sub(r'x(\d{2})', r'X_\1', equ1)
@@ -535,6 +539,7 @@ def trans_op2(equ):
     pattern = r'(x_\d+)'
     output_string = re.sub(pattern, lambda m: m.group(1)[:-1] + str(int(m.group(1)[-1]) - 1), equ1)
     return output_string
+
 
 def op_postfix_to_prefix(node_list):
     stack = []
@@ -567,6 +572,70 @@ def op_postfix_to_prefix(node_list):
         else:
             new_node_list.append(item)
     return new_node_list
+
+
+def bgpostfix_to_gpprefix(post_equ_list):
+    stack = []
+    new_list = [sqrt1 if x == 'sqrt' else x for x in post_equ_list]
+    new_list = [add2 if x == '+' else x for x in new_list]
+    new_list = [sub2 if x == '-' else x for x in new_list]
+    new_list = [mul2 if x == '*' else x for x in new_list]
+    new_list = [div2 if x == '/' else x for x in new_list]
+    for token in new_list:
+        if isinstance(token, _Function):
+            if token.arity == 1:
+                operand1 = stack.pop()
+                sub_stack = []
+                sub_stack.append(token)
+                sub_stack.append(operand1)
+                stack.append(sub_stack)
+            elif token.arity == 2:
+                operand2 = stack.pop()
+                operand1 = stack.pop()
+                sub_stack = []
+                sub_stack.append(token)
+                sub_stack.append(operand1)
+                sub_stack.append(operand2)
+                stack.append(sub_stack)
+            else:
+                raise ValueError("Arity>=3")
+        else:
+            if token[0] == 'x':
+                token = token[1:]
+                token = int(token)
+            else:
+                token = float(token)
+            stack.append(token)
+    new_node_list = []
+    stack1 = [stack]
+    while stack1:
+        item = stack1.pop()
+        if isinstance(item, list):
+            stack1.extend(reversed(item))
+        else:
+            new_node_list.append(item)
+    return new_node_list
+
+
+def lable_list_to_gp_list(lable_list):
+    for i in range(len(lable_list)):
+        if lable_list[i][0] == 'X':
+            lable_list[i] = int(lable_list[i][1:])
+        elif is_float(lable_list[i]):
+            lable_list[i]=float(lable_list[i])
+        elif lable_list[i]=='add':
+            lable_list[i]=add2
+        elif lable_list[i]=='sub':
+            lable_list[i]=sub2
+        elif lable_list[i]=='mul':
+            lable_list[i]=mul2
+        elif lable_list[i]=='div':
+            lable_list[i]=div2
+        elif lable_list[i]=='sqrt':
+            lable_list[i]=sqrt1
+
+
+    return lable_list
 
 
 def trans_op(op_tree, variable_list):

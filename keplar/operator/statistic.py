@@ -3,8 +3,10 @@ from sympy import sympify, symbols
 from bingo.symbolic_regression.agraph.operator_definitions import INTEGER, CONSTANT
 from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens, operators, operator_map, \
     functions, var_or_const_pattern, int_pattern, infix_to_postfix
+from gplearn._program import _Program
+from gplearn.functions import _Function
 from keplar.operator.operator import Operator
-from keplar.translator.translator import is_float
+from keplar.translator.translator import is_float, lable_list_to_gp_list
 
 
 class Statistic(Operator):
@@ -26,6 +28,17 @@ class TaylorStatistic(Statistic):
         str1 = self.str_equ
         list_equ = eq_string_to_infix_tokens(str1)
         print(list_equ)
+        if is_float(list_equ[0]) and (list_equ[1] == '+' or list_equ[1] == '-'):
+            bug_num = list_equ[0]
+            list_equ = list_equ[1:]
+            list_equ.append('+')
+            list_equ.append(bug_num)
+            if list_equ[0] == '+':
+                list_equ = list_equ[1:]
+            elif list_equ[0] == '-':
+                new_num = float(list_equ[1]) * (-1)
+                list_equ[1] = str(new_num)
+                list_equ = list_equ[1:]
         for token in range(len(list_equ)):
             if is_float(list_equ[token]) and list_equ[token - 1] != "^" and token != len(list_equ) - 1:
                 print(float(list_equ[token]))
@@ -197,7 +210,140 @@ class BingoStatistic(Statistic):
 
 
 class GpStatistic(Statistic):
-    def __init__(self):
+    def __init__(self, gp_program):
         super().__init__()
+        self.gp_program = gp_program
+        if not isinstance(self.gp_program, _Program):
+            raise ValueError("输入类型必须为gplearn的program类型")
 
+    def pos_do(self):
+        data = self.gp_program.export_graphviz()
+        print(data)
+        print(type(data))
+        list_str = data.split('\n')
+        print(list_str)
+        list_str = list_str[2:-1]
+        print(list_str)
+        lable_list = []
+        arrow_list = []
+        for tk in list_str:
+            if '[' in tk:
+                lable_list.append(tk)
+            elif "->" in tk:
+                arrow_list.append(tk)
+            else:
+                ValueError(f"出错了token{tk}")
+        print(lable_list)
+        print(arrow_list)
+        lable_num_list = []
+        lable_name_list = []
+        for i in lable_list:
+            temp_list = i.split(" ")
+            print(temp_list)
+            num_str = temp_list[0]
+            lable_num_list.append(int(num_str))
+            print(lable_num_list)
+            name_temp = temp_list[1]
+            name_temp_str = ""
+            read_flag = False
+            for j in name_temp:
+                if not read_flag and j == '"':
+                    read_flag = True
+                elif read_flag and j != '"':
+                    name_temp_str += j
+                elif read_flag and j == '"':
+                    break
+                else:
+                    continue
+            lable_name_list.append(name_temp_str)
+        print(lable_name_list)
+        node_dict = {}
+        for i in range(len(lable_name_list)):
+            node_dict.update({lable_num_list[i]: lable_name_list[i]})
+        print(node_dict)
+        new_arrow_list = []
+        left_arrow_list = []
+        right_arrow_list = []
+        for i in arrow_list:
+            str_temp = i.split(' ')
+            new_arrow_list.append(str_temp[0] + str_temp[1] + str_temp[2])
+            left_arrow_list.append(str_temp[0])
+            right_arrow_list.append(str_temp[2])
+        print(new_arrow_list)
+        print(left_arrow_list)
+        print(right_arrow_list)
+        new_tree = []
+        while True:
+            if lable_name_list[0] != 'sub' and lable_name_list[0] != 'add':
+                break
+            elif lable_name_list[0] == 'add':
+                left_add_index = []
+                for i in range(len(left_arrow_list)):
+                    if left_arrow_list[i] == '0':
+                        left_add_index.append(i)
+                right_add_list = [right_arrow_list[left_add_index[0]], right_arrow_list[left_add_index[1]]]
+                mid_point = int(right_add_list[0]) - int(right_add_list[1])
+                if mid_point < 0:
+                    mid_point *= (-1)
+                new_tree.append(lable_name_list[1:mid_point + 1])
+                new_tree.append(lable_name_list[mid_point + 1:])
+                break
 
+        print(new_tree)
+        temp_ = []
+        for i in new_tree:
+            temp_.append(lable_list_to_gp_list(i))
+        new_gpprog_list=[]
+        for i in temp_:
+            gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt"],
+                               arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1},
+                               init_depth=[3, 3], init_method="half and half", n_features=4, const_range=[0, 1],
+                               metric="rmse",
+                               p_point_replace=0.4, parsimony_coefficient=0.01, random_state=1, program=i)
+            new_gpprog_list.append(gp_prog)
+        return new_gpprog_list
+
+    #     terminals = []
+    #     if fade_nodes is None:
+    #         fade_nodes = []
+    #     output = 'digraph program {\nnode [style=filled]\n'
+    #     for i, node in enumerate(self.gp_program._program):
+    #         fill = '#cecece'
+    #         if isinstance(node, _Function):
+    #             if i not in fade_nodes:
+    #                 fill = '#136ed4'
+    #             terminals.append([node.arity, i])
+    #             output += ('%d [label="%s", fillcolor="%s"] ;\n'
+    #                        % (i, node.name, fill))
+    #         else:
+    #             if i not in fade_nodes:
+    #                 fill = '#60a6f6'
+    #             if isinstance(node, int):
+    #                 if self.feature_names is None:
+    #                     feature_name = 'X%s' % node
+    #                 else:
+    #                     feature_name = self.feature_names[node]
+    #                 output += ('%d [label="%s", fillcolor="%s"] ;\n'
+    #                            % (i, feature_name, fill))
+    #             else:
+    #                 output += ('%d [label="%.3f", fillcolor="%s"] ;\n'
+    #                            % (i, node, fill))
+    #             if i == 0:
+    #                 # A degenerative program of only one node
+    #                 return output + '}'
+    #             terminals[-1][0] -= 1
+    #             terminals[-1].append(i)
+    #             while terminals[-1][0] == 0:
+    #                 output += '%d -> %d ;\n' % (terminals[-1][1],
+    #                                             terminals[-1][-1])
+    #                 terminals[-1].pop()
+    #                 if len(terminals[-1]) == 2:
+    #                     parent = terminals[-1][-1]
+    #                     terminals.pop()
+    #                     if not terminals:
+    #                         return output + '}'
+    #                     terminals[-1].append(parent)
+    #                     terminals[-1][0] -= 1
+    #
+    #     # We should never get here
+    #     return None

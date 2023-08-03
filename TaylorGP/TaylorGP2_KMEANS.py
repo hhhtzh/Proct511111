@@ -74,7 +74,12 @@ def Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration, clusters, r
     print("FinalFitness", SRC.bestLassoFitness, "SelectedGlobalBestLassoCoef:", SRC.globalBestLassoCoef, sep=" ")
 
     WriteFile_X_Y_pred(SRC, fileNum, cluster, repeatNum)
-    best_ind = SRC.tops[SRC.globalBestLassoCoef[0]]
+    if isinstance(SRC.globalBestLassoCoef,list):
+        best_ind = SRC.tops[SRC.globalBestLassoCoef[0]]
+    elif isinstance(SRC.globalBestLassoCoef,int):
+        best_ind=SRC.tops[SRC.globalBestLassoCoef]
+    else:
+        raise ValueError("SRC.globalBestLassoCoef的类型有问题:"+f"{type(SRC.globalBestLassoCoef)}")
     print("best_ind" + str(best_ind[1][0]))
 
     return SRC.bestLassoFitness, SRC.globalBestLassoCoef,str(best_ind[1][0])

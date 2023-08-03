@@ -7,6 +7,7 @@ from sklearn.cluster import DBSCAN, KMeans
 from sklearn.metrics import mean_squared_error
 
 from keplar.operator.statistic import TaylorStatistic
+from keplar.translator.translator import is_float
 from ._global import get_value, set_value
 from .originalTaylorGP import OriginalTaylorGP
 from sympy import sympify
@@ -366,8 +367,8 @@ class subRegionCalculator:
             for key in final_dict:
                 str_eq = str(final_dict[key]) + "*" + str(key)
                 isolate_symbol_list.append(str_eq)
-            self.isolate_symbol_list=isolate_symbol_list
-            X_trains=self.NewCalLasso()
+            self.isolate_symbol_list = isolate_symbol_list
+            X_trains = self.NewCalLasso()
             try:
                 for X_train in X_trains:
                     if not X_train: continue

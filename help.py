@@ -65,9 +65,9 @@ from keplar.translator.translator import to_op, trans_op
 # x,y = fetch_data('1027_ESL', return_X_y=True, local_cache_dir='./datasets')
 # x=np.array(x)
 # y=np.array(y).reshape(-1,1)
-D=fetch_data('1027_ESL', return_X_y=False, local_cache_dir='./datasets').to_numpy()
-# # initialize a dataset from a numpy array
-ds = Operon.Dataset(D)
+# D=fetch_data('1027_ESL', return_X_y=False, local_cache_dir='./datasets').to_numpy()
+# # # initialize a dataset from a numpy array
+# ds = Operon.Dataset(D)
 
 # x1=ds.GetVariable("X1")
 # nd1 = Operon.Node.Constant(111.4449)
@@ -87,9 +87,10 @@ ds = Operon.Dataset(D)
 # print(len(tr.Nodes))
 
 # print(x1.Hash)
-print(ds.VariableNames)
+# print(ds.VariableNames)
 
-
+ds=[0,1,-1,2,3]
+print(ds[1:])
 # 143321629840518241 X1
 # 2673900822390960787 X4
 # 3663239364975845540 X2
