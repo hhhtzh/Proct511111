@@ -125,6 +125,13 @@ class RegressionTask(HierarchicalTask):
             self.y_test_noiseless = self.y_test
 
         # Save time by only computing data variances once
+        # print(self.y_test.shape)  # 检查数组的形状
+        # print(self.y_test.dtype)  # 检查数组的数据类型
+        # print(np.isnan(self.y_test).sum() > 0)  # 检查是否存在缺失值
+
+        # print(np.isnan(self.y_test).any())  # 检查是否存在缺失值
+
+
         self.var_y_test = np.var(self.y_test)
         self.var_y_test_noiseless = np.var(self.y_test_noiseless)
 
@@ -269,7 +276,7 @@ class RegressionTask(HierarchicalTask):
 
         return info
     
-    
+
     def evaluate_nmse(self, p):
         y_hat = p.execute(self.X_test)
         if p.invalid:
