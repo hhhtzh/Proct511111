@@ -11,7 +11,6 @@ from keplar.operator.operator import Operator
 from keplar.population.population import Population
 from keplar.translator.translator import bingo_infixstr_to_func
 
-
 import pyoperon as Operon
 
 from keplar.translator.translator import bingo_infixstr_to_func
@@ -64,14 +63,14 @@ class BingoSelector(Operator):
         if self.to_type != "Bingo":
             new_pop_list = []
             for i in new_bingo_pop:
-                equ=str(i)
-                func,const_array=bingo_infixstr_to_func(equ)
-                ind=Individual(func)
-                ind.const_array=const_array
+                equ = str(i)
+                func, const_array = bingo_infixstr_to_func(equ)
+                ind = Individual(func)
+                ind.const_array = const_array
                 ind.set_fitness(i.fitness)
                 new_pop_list.append(ind)
             new_pop.initial(new_pop_list)
-            new_pop.pop_type="self"
+            new_pop.pop_type = "self"
         else:
             new_pop.pop_type = "Bingo"
             new_pop.target_pop_list = new_bingo_pop
@@ -88,20 +87,19 @@ class OperonSelector(Selector):
         self.selector = Operon.TournamentSelector(objective_index=0)
         self.selector.TournamentSize = 5
         return self.selector
-    
+
 
 class TaylorGPSelector(Selector):
-    def __init__(self,random_state,tournament_size,greater_is_better):
+    def __init__(self, random_state, tournament_size, greater_is_better):
         super().__init__()
-        self.random_state=random_state
-        self.tournament_size=tournament_size
-        self.greater_is_better =greater_is_better
+        self.random_state = random_state
+        self.tournament_size = tournament_size
+        self.greater_is_better = greater_is_better
 
-    def get_value(self,random_state,tournament_size):
-        self.random_state=random_state
-        self.tournament_size=tournament_size
+    def get_value(self, random_state, tournament_size):
+        self.random_state = random_state
+        self.tournament_size = tournament_size
         # self.greater_is_better =greater_is_better
-    
 
     def do(self, population=None):
         # print("8888888")
@@ -126,5 +124,3 @@ class TaylorGPSelector(Selector):
             parent_index = contenders[np.argmin(fitness)]
         # print("77777")
         return population.target_pop_list[parent_index], parent_index
-
-

@@ -416,8 +416,7 @@ class MTaylorKMeansAlg(Alg):
         dataSets = self.ds.get_np_ds()
         x = self.ds.get_np_x()
         average_fitness = 0
-        repeat = 1
-        totalGeneration = 500
+        totalGeneration = self.max_generation
         originalTaylorGPGen = 10
         Pop = self.population.pop_size  # 种群规模
         if dataSets.shape[1] - 1 == 1:
@@ -427,7 +426,7 @@ class MTaylorKMeansAlg(Alg):
         else:
             clusters = [1, 2, 4, 8, 16]
         time_start1 = time.time()
-        for repeatNum in range(repeat):
+        for repeatNum in range(self.repeat):
             time_start2 = time.time()
             bestLassoFitness, globalBestLassoCoef, best_ind = Cal_fitness_Coef(dataSets, originalTaylorGPGen,
                                                                                totalGeneration,
@@ -437,8 +436,8 @@ class MTaylorKMeansAlg(Alg):
             time_end2 = time.time()
             print('current_time_cost', (time_end2 - time_start2) / 3600, 'hour')
         time_end1 = time.time()
-        print('average_time_cost', (time_end1 - time_start1) / 3600 / repeat, 'hour')
-        print('average_fitness = ', average_fitness / repeat)
+        print('average_time_cost', (time_end1 - time_start1) / 3600 / self.repeat, 'hour')
+        print('average_fitness = ', average_fitness / self.repeat)
         best_ind = trans_op2(best_ind)
         eval = SingleBingoEvaluator(data=self.ds, equation=best_ind)
         fit = eval.do()

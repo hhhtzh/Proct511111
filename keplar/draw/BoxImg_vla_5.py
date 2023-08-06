@@ -91,7 +91,7 @@ import matplotlib.pyplot as plt
 
 def draw_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
                       fitnessKeplarBingoCPP, fitnessKeplarBingo, fitnessOperon,
-                      fitnessKeplarMBingo, fitnessKeplarMOperon, fitnessGpBingo,dataName, isAll: bool):
+                      fitnessKeplarMBingo, fitnessKeplarMOperon, fitnessGpBingo,fitnessTaylorBingo,fitnessuDSR,dataName, isAll: bool):
     # 设置中文和负号正常显示
     plt.rcParams['axes.unicode_minus'] = False
     plt.rcParams['pdf.fonttype'] = 42
@@ -110,6 +110,8 @@ def draw_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
             'KeplarMBingo':fitnessKeplarMBingo,
             'KeplarMOperon':fitnessKeplarMOperon,
             'Gplearn': fitnessGplearn,
+            'TaylorBingo':fitnessTaylorBingo,
+            'uDSR':fitnessuDSR,
 
         }
     else:
@@ -150,7 +152,7 @@ def draw_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
     plt.ylabel("Score( $RMSE$)")
     plt.title("population_size=128\ngeneration=1000")
     if isAll == True:
-        plt.xticks(np.arange(10), (
+        plt.xticks(np.arange(12), (
              '','BingoCPP',
             'Operon',
             'GpBingo',
@@ -159,7 +161,7 @@ def draw_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
             'KeplarBingoCPP',
             'KeplarMBingo',
             'KeplarMOperon',
-            'Gplearn',),fontsize=7, rotation=30)
+            'Gplearn','TaylorBingo','uDSR'),fontsize=7, rotation=30)
     else:
         plt.xticks(np.arange(5), (
             '', 'MTaylorGp',
@@ -180,7 +182,7 @@ def draw_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
 
 def draw_time_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
                       fitnessKeplarBingoCPP, fitnessKeplarBingo, fitnessOperon,
-                      fitnessKeplarMBingo, fitnessKeplarMOperon, fitnessGpBingo,dataName, isAll: bool):
+                      fitnessKeplarMBingo, fitnessKeplarMOperon, fitnessGpBingo,fitnessTaylorBingo,fitnessuDSR,dataName, isAll: bool):
     # 设置中文和负号正常显示
     plt.rcParams['axes.unicode_minus'] = False
     plt.rcParams['pdf.fonttype'] = 42
@@ -199,6 +201,8 @@ def draw_time_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
             'KeplarMBingo':fitnessKeplarMBingo,
             'KeplarMOperon': fitnessKeplarMOperon,
             'Gplearn':fitnessGplearn,
+            'TaylorBingo': fitnessTaylorBingo,
+            'uDSR': fitnessuDSR,
 
         }
     else:
@@ -238,7 +242,7 @@ def draw_time_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
     plt.ylabel("time( $s$)")
     plt.title("population_size=128\ngeneration=1000")
     if isAll == True:
-        plt.xticks(np.arange(10), (
+        plt.xticks(np.arange(12), (
              '','BingoCPP',
             'Operon',
             'GpBingo',
@@ -247,7 +251,7 @@ def draw_time_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
             'KeplarBingoCPP',
             'KeplarMBingo',
             'KeplarMOperon',
-            'Gplearn',),fontsize=7, rotation=30)
+            'Gplearn','TaylorBingo','uDSR'),fontsize=7, rotation=30)
     else:
         plt.xticks(np.arange(5), (
             '', 'MTaylorGp',

@@ -11,9 +11,11 @@ Vladislavleva = pd.read_csv('result/vla_5.csv')
 draw_box_diagram_vla_5(Vladislavleva['Bingo'], Vladislavleva['Gplearn'], Vladislavleva['BingoCPP'],
                        Vladislavleva['KeplarBingoCPP'], Vladislavleva['KeplarBingo'], Vladislavleva['Operon'],
                        Vladislavleva['KeplarMBingo'], Vladislavleva['KeplarMOperon'], Vladislavleva['GpBingo'],
+                       Vladislavleva['TaylorBingo'], Vladislavleva['uDSR'],
                        "vla_5", isAll=True)
 pmlb_time = pd.read_csv('result/vla_5_time.csv')
 draw_time_box_diagram_vla_5(pmlb_time['Bingo'], pmlb_time['Gplearn'], pmlb_time['BingoCPP'],
                             pmlb_time['KeplarBingoCPP'], pmlb_time['KeplarBingo'], pmlb_time['Operon'],
                             pmlb_time['KeplarMBingo'], pmlb_time['KeplarMOperon'], pmlb_time['GpBingo'],
+                            pmlb_time['TaylorBingo'], pmlb_time['uDSR'],
                             "vla_5", isAll=True)

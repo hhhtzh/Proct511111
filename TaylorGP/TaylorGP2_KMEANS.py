@@ -50,7 +50,7 @@ def WriteFile_X_Y_pred(SRC, fileNum, cluster, repeatNum):
 
 
 def Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration, clusters, repeatNum, Pop, fileNum, np_x,
-                     SR_merhod="gplearn"):
+                     SR_method="gplearn"):
     SRC = subRegionCalculator(dataSets, originalTaylorGPGen, mabPolicy="UCB", lbd=1)
     countAvailableParameters = SRC.CalCountofAvailableParameters(clusters=clusters, np_x=np_x)
     mabLoopNum = max(totalGeneration // originalTaylorGPGen // countAvailableParameters, 1)
@@ -60,7 +60,7 @@ def Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration, clusters, r
         set_value('FIRST_EVOLUTION_FLAG', True)  # 进行每轮数据集演化前执行
         print("mabLoopNum:"+str(mabLoopNum))
         for tryNum in range(mabLoopNum):
-            SRC.CalTops(repeatNum, Pop, SR_method=SR_merhod)
+            SRC.CalTops(repeatNum, Pop, SR_method=SR_method)
             SRC.SubRegionPruning()
             SRC.SparseRegression()
             if SRC.bestLassoFitness < 1e-5:
@@ -80,6 +80,7 @@ def Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration, clusters, r
         best_ind=SRC.tops[SRC.globalBestLassoCoef]
     else:
         raise ValueError("SRC.globalBestLassoCoef的类型有问题:"+f"{type(SRC.globalBestLassoCoef)}")
+    print(best_ind)
     print("best_ind" + str(best_ind[1][0]))
 
     return SRC.bestLassoFitness, SRC.globalBestLassoCoef,str(best_ind[1][0])

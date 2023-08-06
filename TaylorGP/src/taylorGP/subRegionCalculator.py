@@ -117,7 +117,7 @@ class subRegionCalculator:
                         self.subRegions = [self.dataSets]
                     else:
                         return False
-                elif (n_clusters_ < 1):
+                elif n_clusters_ < 1:
                     return False
                 n_noise_ = list(labels).count(-1)
 
@@ -288,9 +288,6 @@ class subRegionCalculator:
         pruningFlag = False
         for i in range(len(self.subRegions) - 1, 0, -1):  # 从len-1到0，左闭右开
             try:
-                if self.final_dict is not None:
-                    eq_str = str(self.tops[i][1][0])
-                    print("pruning_eq_str:" + str(eq_str))
                 # if self.final_dict is not None:
                 if self.EvaluateNearRegionFitness(i - 1, i):  # 使用 i-1块的最优个体测试i块
                     self.DelRegionParameters(i)
@@ -305,6 +302,9 @@ class subRegionCalculator:
             print("Having pruning")
         else:
             print("NO pruning")
+
+    def NewPruning(self):
+        pass
 
     def DelRegionParameters(self, index):
         """
@@ -405,7 +405,22 @@ class subRegionCalculator:
                         lasso_ = Lasso(alpha=alpha).fit(X_train, self.Y)
                         Y_pred = lasso_.predict(X_train)
                         rmseFitness = mean_squared_error(Y_pred, self.Y)
+                        print("uuuuuu")
+                        print(lasso_.coef_)
                         self.curLassoCoef = lasso_.coef_
+                        worest_index = 0
+                        worest_flag = True
+                        for i in range(len(self.curLassoCoef)):
+                            worest_flag = True
+                            for j in self.curLassoCoef:
+                                if self.curLassoCoef[i] >= j / 2:
+                                    worest_flag = False
+                                    worest_index = i
+                                    break
+                            if worest_flag:
+                                break
+                        if worest_flag:
+                            self.DelRegionParameters(worest_index)
                         if rmseFitness < self.bestLassoFitness:
                             self.bestLassoFitness = rmseFitness
                             self.globalBestLassoCoef = self.curLassoCoef
@@ -415,24 +430,27 @@ class subRegionCalculator:
                             self.Cal_X_Y_pred()  # 更新self.globalBest_X_Y_pred
                 # print("Final Fitness",self.bestLassoFitness, " Selected SubRegon Index: ", self.globalBestLassoCoef)
                 self.UpdateAvgRewards()
-                for i in range(len(self.globalBestLassoCoef)):
-                    for j in self.dict_arr:
-                        for key in j:
-                            j[key] = j[key] * float(self.globalBestLassoCoef[i])
-                final_dict = {}
-                for i in self.dict_arr:
-                    for key in i:
-                        if key not in final_dict:
-                            final_dict.update({key: i[key]})
-                        else:
-                            now_num = final_dict[key]
-                            now_num += i[key]
-                            final_dict.update({key: now_num})
-                print("final::::" + str(final_dict))
-                self.final_dict = final_dict
+
+                # for i in range(len(self.globalBestLassoCoef)):
+                #     for j in self.dict_arr:
+                #         for key in j:
+                #             j[key] = j[key] * float(self.globalBestLassoCoef[i])
+                # final_dict = {}
+                # for i in self.dict_arr:
+                #     for key in i:
+                #         if key not in final_dict:
+                #             final_dict.update({key: i[key]})
+                #         else:
+                #             now_num = final_dict[key]
+                #             now_num += i[key]
+                #             final_dict.update({key: now_num})
+
+
             except BaseException:
                 print("TypeError: can't convert complex to float")
                 self.curLassoCoef = [1] * len(self.subRegions)  # 保证下轮对所有子块都进行更新.
+        print("final::::" + str(final_dict))
+        self.final_dict = final_dict
 
     def Cal_X_Y_pred(self):
         """

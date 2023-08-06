@@ -180,6 +180,7 @@ def bingo_infixstr_to_func(equ):
     post_equ = infix_to_postfix(list_infix)
     stack = []
     const_array = []
+    print(post_equ)
     for node in post_equ:
         if node in ["+", "-", "*", "/", "^"] or node.isalpha():
             arity = arity_map[operator_map3[node]]
@@ -204,6 +205,7 @@ def bingo_infixstr_to_func(equ):
             const_array.append(float(node))
             stack.append(const_code + 3000)
         else:
+            print(node)
             var_code = int(node[2:]) + 5000 + 1
             stack.append(var_code)
     new_func_list = []
