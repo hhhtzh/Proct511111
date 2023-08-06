@@ -123,8 +123,11 @@ def bingo_infixstr_to_func(equ):
     x_start = False
     num_start = False
     i = 0
+    print(equ)
+    equ = re.sub(r"(\d{1})e", r"\1", equ)
     equ = re.sub(r"\(-", r'(0-', equ)
     equ = re.sub(r"-(\d{1})", r"0 - \1", equ)
+    print(equ)
     while i < len(equ):
         if op_start:
             if equ[i].isalnum():
@@ -180,7 +183,6 @@ def bingo_infixstr_to_func(equ):
     post_equ = infix_to_postfix(list_infix)
     stack = []
     const_array = []
-    print(post_equ)
     for node in post_equ:
         if node in ["+", "-", "*", "/", "^"] or node.isalpha():
             arity = arity_map[operator_map3[node]]
@@ -205,7 +207,6 @@ def bingo_infixstr_to_func(equ):
             const_array.append(float(node))
             stack.append(const_code + 3000)
         else:
-            print(node)
             var_code = int(node[2:]) + 5000 + 1
             stack.append(var_code)
     new_func_list = []

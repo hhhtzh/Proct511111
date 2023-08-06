@@ -393,6 +393,8 @@ class subRegionCalculator:
             except BaseException:
                 print("TypeError: can't convert complex to float")
                 self.curLassoCoef = [1] * len(self.subRegions)  # 保证下轮对所有子块都进行更新.
+            print("final::::" + str(final_dict))
+            self.final_dict = final_dict
         else:
             try:
                 for X_train in X_trains:
@@ -449,8 +451,7 @@ class subRegionCalculator:
             except BaseException:
                 print("TypeError: can't convert complex to float")
                 self.curLassoCoef = [1] * len(self.subRegions)  # 保证下轮对所有子块都进行更新.
-        print("final::::" + str(final_dict))
-        self.final_dict = final_dict
+
 
     def Cal_X_Y_pred(self):
         """

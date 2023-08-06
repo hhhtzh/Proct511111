@@ -34,5 +34,5 @@ for i in range(10):
     time_list.append(alg.elapse_time)
 fit_pd = pd.DataFrame({'OperonBingo': fit_list})
 time_pd = pd.DataFrame({'OperonBingo': time_list})
-fit_pd.to_csv(r"result/pmlb_1027_result.csv", sep=',', mode="a")
-time_pd.to_csv(r"result/pmlb_1027_time_result.csv", sep=',', mode="a")
+fit_pd.to_csv(r"result/vla_5.csv", sep=',', mode="a")
+time_pd.to_csv(r"result/vla_5_time.csv", sep=',', mode="a")

@@ -354,23 +354,25 @@ class MTaylorGPAlg(Alg):
                 print("Temp Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
             print("Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
         self.best_fit = SRC.bestLassoFitness
-        if isinstance(SRC.globalBestLassoCoef, list):
-            self.best_ind = SRC.tops[SRC.globalBestLassoCoef[0]]
-        else:
-            self.best_ind = SRC.tops[SRC.globalBestLassoCoef]
+        # if isinstance(SRC.globalBestLassoCoef, list):
+        #     print(SRC.globalBestLassoCoef)
+        #     print(SRC.tops)
+        self.best_ind = SRC.tops[SRC.globalBestLassoCoef[0]-1]
+        # else:
+        #     self.best_ind = SRC.tops[SRC.globalBestLassoCoef]
         print("best_ind" + str(self.best_ind[1][0]))
         dict_arr = SRC.dict_arr
         final_dict = {}
-        print(dict_arr)
-        for i in dict_arr:
-            for key in i:
-                if key not in final_dict:
-                    final_dict.update({key: i[key]})
-                else:
-                    now_num = final_dict[key]
-                    now_num += i[key]
-                    final_dict.update({key: now_num})
-        print("final::::" + str(final_dict))
+        # print(dict_arr)
+        # for i in dict_arr:
+        #     for key in i:
+        #         if key not in final_dict:
+        #             final_dict.update({key: i[key]})
+        #         else:
+        #             now_num = final_dict[key]
+        #             now_num += i[key]
+        #             final_dict.update({key: now_num})
+        # print("final::::" + str(final_dict))
         self.elapse_time = time.time() - t
         str_eq = str(self.best_ind[1][0])
         str_eq = re.sub(r'x(\d{1})', r'x_\1', str_eq)
