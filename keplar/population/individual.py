@@ -10,19 +10,18 @@ class Individual:
         self.func = func
         self.evaluated = False
         self.fitness = None
-        
+
         if const_array is None:
             self.const_array = []
         else:
             self.const_array = const_array
 
-
-        #genome每个个体的信息记录，它包括parent的元数据以及为产生当前程序而执行的遗传操作
-        #example：
-        #gnome = {'method': 'Hoist Mutation',
+        # genome每个个体的信息记录，它包括parent的元数据以及为产生当前程序而执行的遗传操作
+        # example：
+        # gnome = {'method': 'Hoist Mutation',
         #        'parent_idx': parent_index,
         #         parent_nodes': removed}
-        self.genome=None
+        self.genome = None
 
     def format(self):
         stack = []

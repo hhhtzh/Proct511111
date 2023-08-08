@@ -12,13 +12,15 @@ pop = Population(128)
 fit_list = []
 time_list = []
 mt = MTaylorGPAlg(1000, data, population=pop)
-# for i in range(10):
-mt.run()
-    # fit_list.append(mt.best_fit)
-    # time_list.append(mt.elapse_time)
-print(mt.best_fit)
-print(mt.elapse_time)
+for i in range(9):
+    mt.run()
+    fit_list.append(mt.best_fit)
+    time_list.append(mt.elapse_time)
+# print(mt.best_fit)
+# print(mt.elapse_time)
 # fit_pd = pd.DataFrame({'MTaylor(with new sparse)': fit_list})
 # time_pd = pd.DataFrame({'MTaylor(with new sparse)': time_list})
-# fit_pd.to_csv(r"result/vla_5.csv", sep=',', mode="a")
-# time_pd.to_csv(r"result/vla_5_time.csv", sep=',', mode="a")
+fit_pd = pd.DataFrame({'MTaylor': fit_list})
+time_pd = pd.DataFrame({'MTaylor': time_list})
+fit_pd.to_csv(r"result/vla_5.csv", sep=',', mode="a")
+time_pd.to_csv(r"result/vla_5_time.csv", sep=',', mode="a")

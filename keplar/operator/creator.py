@@ -407,3 +407,16 @@ class TaylorGPCreator(Creator):
 
         return population,self.sample_weight
 
+
+class WeightCreator(Creator):
+    def __init__(self,operators,x_num,pred_max_lenth):
+        super().__init__()
+        self.pred_lenth = pred_max_lenth
+        self.x_num = x_num
+        self.operators = operators
+
+    def do(self,population=None):
+        pass
+
+
+

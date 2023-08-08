@@ -21,7 +21,8 @@ from keplar.preoperator.ml.sklearndbscan import SklearnDBscan
 fit_list = []
 time_list = []
 # data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
-data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
+data = Data("txt", "datasets/vla/two/1.txt", ["x0", "x1", "y"])
+# data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
 data.read_file()
 data.set_xy("y")
 # data.read_file()
@@ -34,5 +35,7 @@ for i in range(10):
     time_list.append(kmb.elapse_time)
 fit_pd = pd.DataFrame({'KeplarMBingo': fit_list})
 time_pd = pd.DataFrame({'KeplarMBingo': time_list})
+# fit_pd.to_csv(r"result/vla_5.csv", sep=',', mode="a")
+# time_pd.to_csv(r"result/vla_5_time.csv", sep=',', mode="a")
 fit_pd.to_csv(r"result/vla_5.csv", sep=',', mode="a")
 time_pd.to_csv(r"result/vla_5_time.csv", sep=',', mode="a")
