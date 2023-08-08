@@ -10,7 +10,8 @@ from keplar.translator.translator import gp_to_bingo, gp_to_bingo1
 
 # data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
 # data.read_file()
-data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
+# data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
+data = Data("txt", "datasets/vla/two/1.txt", ["x0", "x1", "y"])
 data.read_file()
 data.set_xy("y")
 fit_list = []

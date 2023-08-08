@@ -9,11 +9,14 @@ from bingo.local_optimizers.local_opt_fitness import LocalOptFitnessFunction
 from bingo.local_optimizers.scipy_optimizer import ScipyOptimizer
 from bingo.symbolic_regression import ExplicitTrainingData, ExplicitRegression, ImplicitRegression, \
     ImplicitTrainingData, AGraph
+from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens, infix_to_postfix
+from gplearn._program import _Program
+from gplearn.fitness import _root_mean_square_error
 from keplar.operator.operator import Operator
 import pyoperon as Operon
 
 from keplar.population.individual import Individual
-from keplar.translator.translator import trans_op, to_bingo, trans_gp
+from keplar.translator.translator import trans_op, to_bingo, trans_gp, bingo_to_gp, bgpostfix_to_gpprefix
 
 
 class Evaluator(Operator):
@@ -139,47 +142,98 @@ class OperonEvaluator(Evaluator):
             pass
 
 
-class TaylorGPEvaluator1(Evaluator):
-    def __init__(self, method, eval_x, eval_y, to_type, feature_weight=None):
+class GpEvaluator(Evaluator):
+    def __init__(self, eval_x, eval_y, to_type, feature_weight=None, metric="rmse"):
         self.to_type = to_type
         self.feature_weight = feature_weight
         super().__init__()
         self.eval_y = np.array(eval_y)
         self.eval_x = np.array(eval_x)
-        self.method = method
+        self.metric = metric
 
     def do(self, population):
-        if self.method == "mse":
+        if self.metric == "mse":
             fct = _mean_square_error
-        elif self.method == "rmse":
-            fct = _weighted_spearman
-        elif self.method == "log":
+        elif self.metric == "rmse":
+            fct = _root_mean_square_error
+        elif self.metric == "log":
             fct = _log_loss
-        elif self.method == "mae":
+        elif self.metric == "mae":
             fct = _mean_absolute_error
         else:
             raise ValueError("gplearn评估模块计算误差方法设置错误")
 
-        if population.pop_type == "taylorgp":
+        if population.pop_type == "gplearn":
             fit_list = []
             gp_fit = _Fitness(fct, False)
             lie_num = self.eval_x.shape[1]
             if self.feature_weight is None:
                 self.feature_weight = []
-                for i in range(lie_num):
+                for i in range(1024):
                     self.feature_weight.append(1)
                 self.feature_weight = np.array(self.feature_weight)
             for program in population.target_pop_list:
-                pred_y = program.execute(self.eval_x)
-                fitness = gp_fit(self.eval_y, pred_y, self.feature_weight)
+                pred_y = program.execute(self.eval_x).reshape(-1, 1)
+                eva_y=self.eval_y.reshape(-1, 1)
+                fw=self.feature_weight.reshape(-1,1)
+                # print(np.shape(eva_y))
+                # print(np.shape(pred_y))
+                # print(np.shape(fw))
+                fitness = gp_fit(eva_y, pred_y.reshape(-1, 1),fw)
                 fit_list.append(fitness)
-            if self.to_type == "taylorgp":
-                population.target_fit_list = fit_list
-            else:
+
+            population.target_fit_list = fit_list
+            if self.to_type != "gplearn":
+                # print("ooooooooooooooooo")
                 population.pop_type = "self"
+                # print(len(population.target_pop_list))
+                # print(len(population.target_fit_list))
                 for i in range(len(population.target_pop_list)):
                     ind = trans_gp(population.target_pop_list[i])
+                    ind.fitness = population.target_fit_list[i]
                     population.pop_list.append(ind)
+        elif population.pop_type == "Bingo":
+            # print("ooooooooooooooooooo")
+            fit_list = []
+            gp_fit = _Fitness(fct, False)
+            lie_num = self.eval_x.shape[1]
+            if self.feature_weight is None:
+                self.feature_weight = []
+                for i in range(1024):
+                    self.feature_weight.append(1)
+                self.feature_weight = np.array(self.feature_weight)
+            gp_programs = []
+            for program in population.target_pop_list:
+                tk = bingo_to_gp(str(program))
+                tk = eq_string_to_infix_tokens(str(tk))
+                # print(tk)
+                tk = infix_to_postfix(tk)
+                # print(tk)
+                tk = bgpostfix_to_gpprefix(tk)
+                print(tk)
+                gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt", "neg", "power","sin"],
+                                   arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1, "neg": 1,
+                                            "power": 2,"sin":1},
+                                   init_depth=[3, 3], init_method="half and half", n_features=4, const_range=[0, 1],
+                                   metric="rmse",
+                                   p_point_replace=0.4, parsimony_coefficient=0.01, random_state=1, program=tk)
+                gp_programs.append(gp_prog)
+            for program in gp_programs:
+                eva_y = self.eval_y.reshape(-1, 1)
+                fw = self.feature_weight.reshape(-1, 1)
+                pred_y = program.execute(self.eval_x).reshape(-1, 1)
+                fitness = gp_fit(eva_y, pred_y, fw)
+                fit_list.append(fitness)
+            population.target_pop_list = gp_programs
+            population.target_fit_list = fit_list
+            if self.to_type != "gplearn":
+                # print("jjjjjjjjjjjjjjjjjjjjjjjj")
+                for i, gp_program in enumerate(population.target_pop_list):
+                    ind = trans_gp(gp_program)
+                    ind.fitness = population.target_fit_list[i]
+                    population.pop_list.append(ind)
+                    population.pop_type = "self"
+                    population.pop_size = len(population.pop_list)
         else:
             pass
 
@@ -273,7 +327,7 @@ class MetricsBingoEvaluator(Evaluator):
 
 
 class SingleBingoEvaluator(Evaluator):
-    def __init__(self, data, equation,metric="rmse", optimizer_method="lm"):
+    def __init__(self, data, equation, metric="rmse", optimizer_method="lm"):
         super().__init__()
         self.equation = equation
         self.optimizer_method = optimizer_method
@@ -281,8 +335,8 @@ class SingleBingoEvaluator(Evaluator):
         self.data = data
 
     def do(self, population=None):
-        bingo_ind=AGraph(equation=self.equation)
-        bingo_pop=[bingo_ind]
+        bingo_ind = AGraph(equation=self.equation)
+        bingo_pop = [bingo_ind]
         x = self.data.get_np_x()
         y = self.data.get_np_y()
         training_data = ExplicitTrainingData(x, y)
@@ -293,12 +347,6 @@ class SingleBingoEvaluator(Evaluator):
         local_opt_fitness = LocalOptFitnessFunction(fitness, optimizer)
         evaluator = Evaluation(local_opt_fitness)
         evaluator(bingo_pop)
-        bingo_ind=bingo_pop[0]
+        bingo_ind = bingo_pop[0]
         bingo_ind._update()
         return bingo_ind.fitness
-
-
-
-
-
-

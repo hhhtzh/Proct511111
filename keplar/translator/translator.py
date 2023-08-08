@@ -6,9 +6,9 @@ import pyoperon as Operon
 from TaylorGP.src.taylorGP._program import _Program
 from bingo.symbolic_regression import AGraph
 from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
-from gplearn.functions import _Function, sqrt1, add2, mul2, div2, sub2, neg1
+from gplearn.functions import _Function, sqrt1, add2, mul2, div2, sub2, neg1, power2, exp1, sin1, cos1, log1
 from keplar.population.function import arity_map, operator_map3, _function_map, map_F1, Operator_map_S, \
-    operator_map_dsr, operator_map_dsr2
+    operator_map_dsr, operator_map_dsr2, Operator_map_S1
 from keplar.population.individual import Individual
 
 from TaylorGP.src.taylorGP.functions import _function_map
@@ -371,7 +371,7 @@ def trans_gp(gp_program):
     for i, node in enumerate(gp_program.program):
         if isinstance(node, _Function):
             op_name = node.name
-            op_code = Operator_map_S[op_name]
+            op_code = Operator_map_S1[op_name]
             func.append(op_code)
         else:
             if isinstance(node, int):
@@ -584,6 +584,11 @@ def bgpostfix_to_gpprefix(post_equ_list):
     new_list = [sub2 if x == '-' else x for x in new_list]
     new_list = [mul2 if x == '*' else x for x in new_list]
     new_list = [div2 if x == '/' else x for x in new_list]
+    new_list = [power2 if x == '^' else x for x in new_list]
+    new_list = [exp1 if x == 'exp' else x for x in new_list]
+    new_list = [sin1 if x == 'sin' else x for x in new_list]
+    new_list = [cos1 if x == 'cos' else x for x in new_list]
+    new_list = [log1 if x == 'log' else x for x in new_list]
     for token in new_list:
         if isinstance(token, _Function):
             if token.arity == 1:

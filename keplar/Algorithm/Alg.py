@@ -326,6 +326,38 @@ class GpBingoAlg(Alg):
         self.elapse_time = time.time() - t
 
 
+class GpBingo2Alg(Alg):
+    def __init__(self, max_generation, up_op_list, down_op_list, eva_op_list, error_tolerance, population):
+        super().__init__(max_generation, up_op_list, down_op_list,
+                         eva_op_list, error_tolerance, population)
+        self.best_fit = None
+        self.elapse_time = None
+
+    def get_best_individual(self):
+        return self.population.target_pop_list[self.population.get_tar_best()]
+
+    def run(self):
+        t = time.time()
+        generation_pop_size = self.population.get_pop_size()
+        self.eval_op_list.do(self.population)
+        now_error = self.population.get_best_fitness()
+        while self.age < self.max_generation and now_error >= self.error_tolerance or str(now_error) == "nan":
+            self.population = self.down_op_list.do(self.population)
+            while generation_pop_size > self.population.get_pop_size():
+                self.up_op_list.do(self.population)
+            self.eval_op_list.do(self.population)
+            now_error = self.population.get_best_fitness()
+            # best_ind = str(self.get_best_individual())
+            self.age += 1
+            # print("第" + f"{self.age}代种群，" +
+            #       f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+        best_ind = str(self.get_best_individual())
+        print("迭代结束，共迭代" + f"{self.age}代" +
+              f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+        self.best_fit = now_error
+        self.elapse_time = time.time() - t
+
+
 class BingoAlg(Alg):
 
     def __init__(self, max_generation, data, operators, POP_SIZE=128,
@@ -444,14 +476,14 @@ class KeplarMBingo(Alg):
                 if taylor_flag:
                     jd = taylor.do()
                 else:
-                    jd="not end"
+                    jd = "not end"
                 if jd == "end":
                     programs.append([taylor.program])
                     fit_list.append([taylor.end_fitness])
                     abRockNum.append(100000)
                     abRockSum += 100000
                 else:
-                    taylor_flag=False
+                    taylor_flag = False
                     generation = self.max_generation
                     pop_size = self.population.pop_size
                     abRockNum.append(generation * pop_size)
@@ -497,6 +529,3 @@ class KeplarMBingo(Alg):
             now_recursion += 1
         self.elapse_time = time.time() - t
         self.best_fit = final_fit
-
-
-

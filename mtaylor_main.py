@@ -11,7 +11,7 @@ data.set_xy("y")
 pop = Population(128)
 fit_list = []
 time_list = []
-mt = MTaylorGPAlg(1000, data, population=pop)
+mt = MTaylorGPAlg(1000, data, population=pop,NewSparseRegressionFlag=True)
 for i in range(9):
     mt.run()
     fit_list.append(mt.best_fit)

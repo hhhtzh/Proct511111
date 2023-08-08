@@ -11,7 +11,7 @@ data.read_file()
 data.set_xy("y")
 fit_list = []
 time_list = []
-bingo = BingoAlg(1000, data,
+bingo = BingoAlg(10, data,
                  operators=["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^'])
 for i in range(10):
     bingo.run()
