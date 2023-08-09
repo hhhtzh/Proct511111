@@ -166,10 +166,11 @@ class GpEvaluator(Evaluator):
         if population.pop_type == "gplearn":
             fit_list = []
             gp_fit = _Fitness(fct, False)
-            lie_num = self.eval_x.shape[1]
+            lie_num = self.eval_x.shape[0]
             if self.feature_weight is None:
                 self.feature_weight = []
-                for i in range(1024):
+                print(lie_num)
+                for i in range(lie_num):
                     self.feature_weight.append(1)
                 self.feature_weight = np.array(self.feature_weight)
             for program in population.target_pop_list:
@@ -196,10 +197,10 @@ class GpEvaluator(Evaluator):
             # print("ooooooooooooooooooo")
             fit_list = []
             gp_fit = _Fitness(fct, False)
-            lie_num = self.eval_x.shape[1]
+            lie_num = self.eval_x.shape[0]
             if self.feature_weight is None:
                 self.feature_weight = []
-                for i in range(1024):
+                for i in range(lie_num):
                     self.feature_weight.append(1)
                 self.feature_weight = np.array(self.feature_weight)
             gp_programs = []
@@ -210,7 +211,7 @@ class GpEvaluator(Evaluator):
                 tk = infix_to_postfix(tk)
                 # print(tk)
                 tk = bgpostfix_to_gpprefix(tk)
-                print(tk)
+                # print(tk)
                 gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt", "neg", "power","sin"],
                                    arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1, "neg": 1,
                                             "power": 2,"sin":1},
