@@ -34,14 +34,14 @@ class PairwiseAtomicPotential(VectorBasedFunction):
 
     Parameters
     ----------
-    training_data : PairwiseAtomicTrainingData
+    NAStraining_data : PairwiseAtomicTrainingData
                    data that is used in fitness evaluation.  Must have
                    attributes r, potential_energy and config_lims_r.
     """
 
     def evaluate_fitness_vector(self, individual):
         """Evaluates the fitness of an individual based on how well
-        `training_data`'s total potential energies are matched by the
+        `NAStraining_data`'s total potential energies are matched by the
         summation of pairwise energies calculated by the individual.
 
         fitness = sum(abs(sum(:math:`f(r_i)`) - :math:`U_{{true}_i}`))

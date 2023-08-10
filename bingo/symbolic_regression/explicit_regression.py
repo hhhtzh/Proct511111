@@ -40,14 +40,14 @@ class ExplicitRegression(VectorGradientMixin, VectorBasedFunction):
     def evaluate_fitness_vector(self, individual):
         """ Traditional fitness evaluation for symbolic regression
 
-        fitness = y - f(x) where x and y are in the training_data (i.e.
-        training_data.x and training_data.y) and the function f is defined by
+        fitness = y - f(x) where x and y are in the NAStraining_data (i.e.
+        NAStraining_data.x and NAStraining_data.y) and the function f is defined by
         the input Equation individual.
 
         Parameters
         ----------
         individual : Equation
-            individual whose fitness is evaluated on `training_data`
+            individual whose fitness is evaluated on `NAStraining_data`
 
         Returns
         -------
@@ -64,8 +64,8 @@ class ExplicitRegression(VectorGradientMixin, VectorBasedFunction):
     def get_fitness_vector_and_jacobian(self, individual):
         r"""Fitness and jacobian evaluation of individual
 
-        fitness = y - f(x) where x and y are in the training_data (i.e.
-        training_data.x and training_data.y) and the function f is defined by
+        fitness = y - f(x) where x and y are in the NAStraining_data (i.e.
+        NAStraining_data.x and NAStraining_data.y) and the function f is defined by
         the input Equation individual.
 
         jacobian = [[:math:`df_1/dc_1`, :math:`df_1/dc_2`, ...],
@@ -78,7 +78,7 @@ class ExplicitRegression(VectorGradientMixin, VectorBasedFunction):
         Parameters
         ----------
         individual : Equation
-            individual whose fitness will be evaluated on `training_data`
+            individual whose fitness will be evaluated on `NAStraining_data`
             and whose constants will be used for evaluating the jacobian
 
         Returns

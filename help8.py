@@ -1,4 +1,3 @@
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -19,27 +18,26 @@ class PerformancePredictor(nn.Module):
         x = self.softmax(x)
         return x
 
-
-# 定义演化算法的选择器
+# 定义演化算法的选择函数
 def select_algorithm(predictor, input_data):
     with torch.no_grad():
         algorithm_probabilities = predictor(input_data)
         selected_algorithm = torch.argmax(algorithm_probabilities).item()
     return selected_algorithm
 
-
 # 模拟训练数据和演化算法选择
-training_data = torch.randn(1000, 3)  # 特征数量需要根据实际情况调整
+num_generations = 488  # 修改为你的数据集行数
+input_size = 5  # 修改为你的输入特征维度
+training_data = torch.randn(num_generations, input_size)  # 数据集大小为 (num_generations, input_size)
 # data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 # data.read_file()
 # dataSet = data.get_np_ds()
 # training_data = torch.tensor(dataSet)
-# training_data=training_data.to(torch.float32)
-# print(np.shape(dataSet))
-algorithm_labels = torch.randint(3, (1000,))  # 演化算法的实际选择
-# algorithm_labels=algorithm_labels.to(torch.float32)
+# training_data=training_data.to(tensor.f)
+algorithm_labels = torch.randint(3, (num_generations,))  # 演化算法的实际选择
+
 # 创建可微神经网络实例
-predictor = PerformancePredictor(input_size=3)
+predictor = PerformancePredictor(input_size=input_size)
 
 # 定义损失函数和优化器
 criterion = nn.CrossEntropyLoss()
@@ -57,6 +55,8 @@ for epoch in range(num_epochs):
 print("Training Finished!")
 
 # 在每一代中选择演化算法
-for generation in range(1000):
+for generation in range(num_generations):
+    print(training_data[generation].unsqueeze(0))
     selected_algorithm = select_algorithm(predictor, training_data[generation].unsqueeze(0))
-    print(f"Generation {generation + 1}: Selected Algorithm {selected_algorithm + 1}")
+    print(f"Generation {generation+1}: Selected Algorithm {selected_algorithm+1}")
+

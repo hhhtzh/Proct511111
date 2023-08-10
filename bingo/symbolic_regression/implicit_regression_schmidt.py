@@ -24,7 +24,7 @@ class ImplicitRegressionSchmidt(VectorBasedFunction):
 
     Parameters
     ----------
-    training_data : ImplicitTrainingData
+    NAStraining_data : ImplicitTrainingData
         data that is used in fitness evaluation.  Must have attributes x and
         dx_dt.
     """
@@ -36,17 +36,17 @@ class ImplicitRegressionSchmidt(VectorBasedFunction):
 
         fitness = :math:`-\frac{1}{N} \sum_{i=1}^N \log \left(1 + |
         \frac{\Delta x_i}{\Delta y_i} + \frac{\delta x_i}{\delta y_i}| \right)`
-        for each :math:`x` and :math:`y` pair in training_data.x where
-        :math:`N` is the length of the training_data,
+        for each :math:`x` and :math:`y` pair in NAStraining_data.x where
+        :math:`N` is the length of the NAStraining_data,
         :math:`\frac{\Delta x_i}{\Delta y_i} = \frac{dx/dt}{dy/dt}` from
-        training_data.dx_dt, and :math:`\frac{\delta x_i}{\delta y_i} =
+        NAStraining_data.dx_dt, and :math:`\frac{\delta x_i}{\delta y_i} =
         \frac{\delta f / \delta y}{\delta f / \delta x}` from the input
-        Equation individual's output on training_data.x.
+        Equation individual's output on NAStraining_data.x.
 
         Parameters
         ----------
         individual : Equation
-            individual whose fitness is evaluated on `training_data`
+            individual whose fitness is evaluated on `NAStraining_data`
 
         Returns
         -------

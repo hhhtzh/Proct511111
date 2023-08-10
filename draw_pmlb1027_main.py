@@ -7,8 +7,8 @@ Vladislavleva = pd.read_csv('result/pmlb_1027_result.csv')
 #                  addLog(Vladislavleva['Operon']), addLog(Vladislavleva['MTaylorGp']), addLog(Vladislavleva['MTaylorBingo']),
 #                  addLog(Vladislavleva['MTaylorOperon']), addLog(Vladislavleva['TaylorBingo']), addLog(Vladislavleva['BingoCPP']), addLog(Vladislavleva['UDSR']),
 #                  "vlsdislavleva", isAll=True)
-draw_box_diagram(Vladislavleva['GpBingo'], Vladislavleva['Bingo'], Vladislavleva['OperonBingo'],
-                 Vladislavleva['Operon'], Vladislavleva['MTaylor'], Vladislavleva['KeplarBingo'],
+draw_box_diagram(Vladislavleva['KeplarBingo'], Vladislavleva['Bingo'], Vladislavleva['Gplearn'],
+                 Vladislavleva['KeplarMBingo'], Vladislavleva['Operon'], Vladislavleva['KeplarBingo'],
                  Vladislavleva['KeplarBingoCPP'], Vladislavleva['TaylorBingo'], Vladislavleva['BingoCPP'],
                  Vladislavleva['KeplarMBingo'],Vladislavleva['KeplarMOperon'],Vladislavleva['MTaylor(With new Sparse)'],
                  "vlsdislavleva", isAll=True)

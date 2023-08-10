@@ -11,8 +11,8 @@ class BenchmarkTest:
     train_function : callable
         The function used to train (run) the evolutionary algorithm based on
         some input data. The function should have the following signature:
-        equ, aux = train_function(training_data) where equ is an `Equation`,
-        aux is auxiliary training info (any type), and training_data is
+        equ, aux = train_function(NAStraining_data) where equ is an `Equation`,
+        aux is auxiliary training info (any type), and NAStraining_data is
         `TrainingData`.
     score_function : callable
         The function used to score an evolutionary algorithm based on some

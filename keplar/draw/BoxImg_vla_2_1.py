@@ -89,10 +89,9 @@ import matplotlib.pyplot as plt
 #     plt.close()
 
 
-def draw_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
-                           fitnessKeplarBingoCPP, fitnessKeplarBingo, fitnessOperon,
-                           fitnessKeplarMBingo, fitnessKeplarMOperon, fitnessGpBingo, fitnessTaylorBingo, fitnessuDSR,
-                           fitnessMTaylorKMeans, fitnessOperonBingo, fitnessMTaylor, dataName, isAll: bool):
+def draw_box_diagram_vla_2_1(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
+                      fitnessKeplarBingoCPP, fitnessKeplarBingo, fitnessOperon,
+                      fitnessKeplarMBingo, fitnessKeplarMOperon, fitnessGpBingo,fitnessTaylorBingo,fitnessuDSR,dataName, isAll: bool):
     # 设置中文和负号正常显示
     plt.rcParams['axes.unicode_minus'] = False
     plt.rcParams['pdf.fonttype'] = 42
@@ -108,14 +107,11 @@ def draw_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
             'Bingo': fitnessBingo,
             'KeplarBingo': fitnessKeplarBingo,
             'KeplarBingoCPP': fitnessKeplarBingoCPP,
-            'KeplarMBingo': fitnessKeplarMBingo,
-            'KeplarMOperon': fitnessKeplarMOperon,
+            'KeplarMBingo':fitnessKeplarMBingo,
+            'KeplarMOperon':fitnessKeplarMOperon,
             'Gplearn': fitnessGplearn,
-            'TaylorBingo': fitnessTaylorBingo,
-            'uDSR': fitnessuDSR,
-            'mTaylorKMeans': fitnessMTaylorKMeans,
-            'OperonBingo': fitnessOperonBingo,
-            'MTaylor': fitnessMTaylor,
+            'TaylorBingo':fitnessTaylorBingo,
+            'uDSR':fitnessuDSR,
 
         }
     else:
@@ -156,8 +152,8 @@ def draw_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
     plt.ylabel("Score( $RMSE$)")
     plt.title("population_size=128\ngeneration=1000")
     if isAll == True:
-        plt.xticks(np.arange(15), (
-            '', 'BingoCPP',
+        plt.xticks(np.arange(12), (
+             '','BingoCPP',
             'Operon',
             'GpBingo',
             'Bingo',
@@ -165,9 +161,7 @@ def draw_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
             'KeplarBingoCPP',
             'KeplarMBingo',
             'KeplarMOperon',
-            'Gplearn', 'TaylorBingo', 'uDSR', 'mTaylorKMeans',
-            'OperonBingo',
-            'MTaylor'), fontsize=7, rotation=30)
+            'Gplearn','TaylorBingo','uDSR'),fontsize=7, rotation=30)
     else:
         plt.xticks(np.arange(5), (
             '', 'MTaylorGp',
@@ -187,10 +181,8 @@ def draw_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
 
 
 def draw_time_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
-                                fitnessKeplarBingoCPP, fitnessKeplarBingo, fitnessOperon,
-                                fitnessKeplarMBingo, fitnessKeplarMOperon, fitnessGpBingo, fitnessTaylorBingo,
-                                fitnessuDSR, fitnessMTaylorKMeans, fitnessOperonBingo, fitnessMTaylor, dataName,
-                                isAll: bool):
+                      fitnessKeplarBingoCPP, fitnessKeplarBingo, fitnessOperon,
+                      fitnessKeplarMBingo, fitnessKeplarMOperon, fitnessGpBingo,fitnessTaylorBingo,fitnessuDSR,dataName, isAll: bool):
     # 设置中文和负号正常显示
     plt.rcParams['axes.unicode_minus'] = False
     plt.rcParams['pdf.fonttype'] = 42
@@ -206,14 +198,11 @@ def draw_time_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
             'Bingo': fitnessBingo,
             'KeplarBingo': fitnessKeplarBingo,
             'KeplarBingoCPP': fitnessKeplarBingoCPP,
-            'KeplarMBingo': fitnessKeplarMBingo,
+            'KeplarMBingo':fitnessKeplarMBingo,
             'KeplarMOperon': fitnessKeplarMOperon,
-            'Gplearn': fitnessGplearn,
+            'Gplearn':fitnessGplearn,
             'TaylorBingo': fitnessTaylorBingo,
             'uDSR': fitnessuDSR,
-            'mTaylorKMeans': fitnessMTaylorKMeans,
-            'OperonBingo': fitnessOperonBingo,
-            'MTaylor': fitnessMTaylor,
 
         }
     else:
@@ -252,9 +241,9 @@ def draw_time_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
     plt.grid(linestyle="--", alpha=0.3)
     plt.ylabel("time( $s$)")
     plt.title("population_size=128\ngeneration=1000")
-    if isAll:
-        plt.xticks(np.arange(15), (
-            '', 'BingoCPP',
+    if isAll == True:
+        plt.xticks(np.arange(12), (
+             '','BingoCPP',
             'Operon',
             'GpBingo',
             'Bingo',
@@ -262,9 +251,7 @@ def draw_time_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
             'KeplarBingoCPP',
             'KeplarMBingo',
             'KeplarMOperon',
-            'Gplearn', 'TaylorBingo', 'uDSR', 'mTaylorKMeans',
-            'OperonBingo',
-            'MTaylor'), fontsize=7, rotation=30)
+            'Gplearn','TaylorBingo','uDSR'),fontsize=7, rotation=30)
     else:
         plt.xticks(np.arange(5), (
             '', 'MTaylorGp',
@@ -279,7 +266,7 @@ def draw_time_box_diagram_vla_5(fitnessBingo, fitnessGplearn, fitnessBingoCPP,
         figPath = os.path.join('IMG_COLOR', 'LOG')
     else:
         figPath = os.path.join('IMG_COLOR', 'LOG_FOUR')
-    plt.savefig(os.path.join(figPath, dataName + 'time' + '.pdf'), dpi=720, bbox_inches='tight')
+    plt.savefig(os.path.join(figPath, dataName + 'time'+'.pdf'), dpi=720, bbox_inches='tight')
     plt.close()
 
 

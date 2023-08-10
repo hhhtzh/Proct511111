@@ -24,8 +24,8 @@ class ImplicitRegression(VectorBasedFunction):
 
     Fitness of this metric is related to the cos of angle between between
     :math:`df_dx(x)` and :math:`dx_dt`. :math:`df_dx(x)` is calculated
-    through derivatives of the input Equation individual at training_data.x.
-    :math:`dx_dt` is from training_data.dx_dt.
+    through derivatives of the input Equation individual at NAStraining_data.x.
+    :math:`dx_dt` is from NAStraining_data.dx_dt.
 
     Different normalization and error checking are available.
 
@@ -46,12 +46,12 @@ class ImplicitRegression(VectorBasedFunction):
         Evaluates the fitness of the input Equation individual based
         on the cos of the angle between :math:`df_dx(x)` and :math:`dx_dt`.
         Where :math:`df_dx` comes from the equation's output w.r.t.
-        training_data.x and :math:`dx_dt` is training_data.dx_dt.
+        NAStraining_data.x and :math:`dx_dt` is NAStraining_data.dx_dt.
 
         Parameters
         ----------
         individual : Equation
-            individual whose fitness is evaluated on `training_data`
+            individual whose fitness is evaluated on `NAStraining_data`
 
         Returns
         -------

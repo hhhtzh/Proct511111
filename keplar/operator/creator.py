@@ -11,7 +11,7 @@ from TaylorGP.src.taylorGP.calTaylor import Metrics
 from bingo.symbolic_regression.agraph.string_parsing import postfix_to_command_array_and_constants
 from gplearn.fitness import _Fitness, _fitness_map
 from gplearn.genetic import SymbolicRegressor, BaseSymbolic, MAX_INT
-from  gplearn.genetic import _parallel_evolve as gp_pe
+from gplearn.genetic import _parallel_evolve as gp_pe
 from gplearn.utils import _partition_estimators, check_random_state
 from keplar.population.function import _function_map
 from bingo.symbolic_regression import ComponentGenerator, AGraphGenerator, AGraph
@@ -19,17 +19,14 @@ from keplar.population.individual import Individual
 from keplar.operator.operator import Operator
 
 from keplar.population.population import Population
-from keplar.translator.translator import trans_gp, trans_op, bingo_infixstr_to_func, to_bingo,trans_taylor_program
+from keplar.translator.translator import trans_gp, trans_op, bingo_infixstr_to_func, to_bingo, trans_taylor_program
 import pyoperon as Operon
 from TaylorGP.src.taylorGP.functions import _Function, _sympol_map
-from joblib import Parallel, delayed #自动创建进程池执行并行化操作
+from joblib import Parallel, delayed  # 自动创建进程池执行并行化操作
 import itertools
 from TaylorGP.src.taylorGP.genetic import alarm_handler, MAX_INT, _parallel_evolve, BaseEstimator, BaseSymbolic
-from TaylorGP.src.taylorGP._program import _Program,print_program
+from TaylorGP.src.taylorGP._program import _Program, print_program
 import math
-
-
-
 
 
 class Creator(Operator):
@@ -146,7 +143,7 @@ class GpCreator(Creator):
         params['method_probs'] = None
         params['_transformer'] = None
         params['selected_space'] = None
-        params['qualified_list']=None
+        params['qualified_list'] = None
         self._arities = {}
         for function in self._function_set:
             arity = function.arity
@@ -162,12 +159,12 @@ class GpCreator(Creator):
         population = Parallel(n_jobs=n_jobs,
                               verbose=True)(
             delayed(gp_pe)(n_programs[i],
-                                      parents,
-                                      self.x,
-                                      self.y,
-                                      self.sample_weight,
-                                      seeds[starts[i]:starts[i + 1]],
-                                      params)
+                           parents,
+                           self.x,
+                           self.y,
+                           self.sample_weight,
+                           seeds[starts[i]:starts[i + 1]],
+                           params)
             for i in range(n_jobs))
         for i in population:
             for j in i:
@@ -256,31 +253,27 @@ class uDSR_Creator(Creator):
 
 
 class TaylorGPCreator(Creator):
-    def __init__(self, X,y,params,gen,population_size,program,to_type):
+    def __init__(self, X, y, params, gen, population_size, program, to_type):
         super().__init__()
-        self.X= X
-        self.y=y
+        self.X = X
+        self.y = y
         self.params = params
-        self.gen=gen
+        self.gen = gen
         self.to_type = to_type
-        self.random_state =None
-        self.population_size=population_size
-        self.n_jobs =1
+        self.random_state = None
+        self.population_size = population_size
+        self.n_jobs = 1
         self.verbose = 0
         self.sample_weight = None
-        self.program =program
+        self.program = program
 
-
-    def get_value(self,X,y,params,gen,population_size,program):
-        self.X= X
-        self.y=y
+    def get_value(self, X, y, params, gen, population_size, program):
+        self.X = X
+        self.y = y
         self.params = params
-        self.gen=gen
-        self.population_size=population_size
-        self.program =program
-
-
-
+        self.gen = gen
+        self.population_size = population_size
+        self.program = program
 
     def do(self, population=None):
 
@@ -291,7 +284,7 @@ class TaylorGPCreator(Creator):
         random_state = check_random_state(self.random_state)
 
         n_jobs, n_programs, starts = _partition_estimators(
-                self.population_size, self.n_jobs)
+            self.population_size, self.n_jobs)
         seeds = random_state.randint(MAX_INT, size=self.population_size)
         n_samples, n_features = self.X.shape
         # Unpack parameters
@@ -309,34 +302,34 @@ class TaylorGPCreator(Creator):
         max_samples = self.params['max_samples']
         feature_names = self.params['feature_names']
         selected_space = self.params['selected_space']
-        qualified_list = self.params['qualified_list'] #合格判别标准
-        eq_write = self.params['eq_write'] #用于将所有生成的公式写入eq_write文件
+        qualified_list = self.params['qualified_list']  # 合格判别标准
+        eq_write = self.params['eq_write']  # 用于将所有生成的公式写入eq_write文件
 
         max_samples = int(max_samples * n_samples)
 
-        programs=[]
+        programs = []
         n_pop = self.population_size
         # for i in range(n_pop):
-        i=0
-        while i != 1000 :
+        i = 0
+        while i != 1000:
             genome = None
             program = _Program(function_set=function_set,
-                            arities=arities,
-                            init_depth=init_depth,
-                            init_method=init_method,
-                            n_features=n_features,
-                            metric=metric,
-                            transformer=transformer,
-                            const_range=const_range,
-                            p_point_replace=p_point_replace,
-                            parsimony_coefficient=parsimony_coefficient,
-                            feature_names=feature_names,
-                            random_state=random_state,
-                            program=self.program,
-                            selected_space = selected_space,
-                            qualified_list = qualified_list,
-                            X =self.X,
-                            eq_write =  eq_write)
+                               arities=arities,
+                               init_depth=init_depth,
+                               init_method=init_method,
+                               n_features=n_features,
+                               metric=metric,
+                               transformer=transformer,
+                               const_range=const_range,
+                               p_point_replace=p_point_replace,
+                               parsimony_coefficient=parsimony_coefficient,
+                               feature_names=feature_names,
+                               random_state=random_state,
+                               program=self.program,
+                               selected_space=selected_space,
+                               qualified_list=qualified_list,
+                               X=self.X,
+                               eq_write=eq_write)
             program.parents = genome
 
             # Draw samples, using sample weights, and then fit
@@ -345,17 +338,17 @@ class TaylorGPCreator(Creator):
             else:
                 curr_sample_weight = self.sample_weight.copy()
             oob_sample_weight = curr_sample_weight.copy()
-            
+
             indices, not_indices = program.get_all_indices(n_samples,
-                                                        max_samples,
-                                                        random_state)
+                                                           max_samples,
+                                                           random_state)
 
             curr_sample_weight[not_indices] = 0
             oob_sample_weight[indices] = 0
 
             program.raw_fitness_ = program.raw_fitness(self.X, self.y, curr_sample_weight)
-   
-            if math.isnan(program.raw_fitness_) or math.isinf(program.raw_fitness_) or program.length_ >500:
+
+            if math.isnan(program.raw_fitness_) or math.isinf(program.raw_fitness_) or program.length_ > 500:
                 # i =i- 1
                 # i -= 1
                 # idx = i
@@ -366,21 +359,19 @@ class TaylorGPCreator(Creator):
             # program.fitness_ = program.fitness(parsimony_coefficient)
             program.fitness_ = program.raw_fitness_
 
-            population.target_fit_list.append(program.raw_fitness_) 
-
+            population.target_fit_list.append(program.raw_fitness_)
 
             # print("test111")
             # print(program.fitness_)
             if max_samples < n_samples:
                 # Calculate OOB fitness
                 program.oob_fitness_ = program.raw_fitness(self.X, self.y, oob_sample_weight)
-            
+
             # if idx == i:
             #     print("????")
             population.target_append(program)
-            
 
-            i+=1
+            i += 1
         #     eq=[]
         #     if self.to_type == "Taylor":
         #         for i, node in enumerate(program.program):
@@ -405,18 +396,16 @@ class TaylorGPCreator(Creator):
         # population.set_pop_size(self.population_size)
         # print(population.pop_size)
 
-        return population,self.sample_weight
+        return population, self.sample_weight
 
 
 class WeightCreator(Creator):
-    def __init__(self,operators,x_num,pred_max_lenth):
+    def __init__(self, operators, x_num, pred_max_length, pop_size):
         super().__init__()
-        self.pred_lenth = pred_max_lenth
+        self.pred_max_length = pred_max_length
         self.x_num = x_num
         self.operators = operators
 
-    def do(self,population=None):
-        pass
-
-
+    def do(self, population=None):
+        pop_size = []
 
