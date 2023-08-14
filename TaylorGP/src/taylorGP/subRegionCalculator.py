@@ -9,7 +9,7 @@ from sklearn.metrics import mean_squared_error
 from keplar.operator.statistic import TaylorStatistic
 from keplar.translator.translator import is_float
 from ._global import get_value, set_value
-from .originalTaylorGP import OriginalTaylorGP
+from .originalTaylorGP1 import OriginalTaylorGP
 from sympy import sympify
 from sklearn.linear_model import Lasso
 
