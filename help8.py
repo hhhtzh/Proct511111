@@ -26,8 +26,8 @@ def select_algorithm(predictor, input_data):
     return selected_algorithm
 
 # 模拟训练数据和演化算法选择
-num_generations = 488  # 修改为你的数据集行数
-input_size = 5  # 修改为你的输入特征维度
+num_generations = 1000  # 修改为你的数据集行数
+input_size = 6  # 修改为你的输入特征维度
 training_data = torch.randn(num_generations, input_size)  # 数据集大小为 (num_generations, input_size)
 # data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 # data.read_file()

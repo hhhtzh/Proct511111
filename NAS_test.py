@@ -30,6 +30,7 @@ def select_algorithm(predictor, input_data):
 
 # 模拟训练数据和演化算法选择
 training_data = torch.randn(1000, 3)  # 特征数量需要根据实际情况调整
+print(training_data)
 # data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 # data.read_file()
 # dataSet = data.get_np_ds()
