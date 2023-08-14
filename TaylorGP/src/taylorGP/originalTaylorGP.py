@@ -789,10 +789,10 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
     #     end_fitness, programs,population = CalTaylorFeatures(metric.f_taylor, _x[:X.shape[1]], X, Y, population,Generation,Pop, repeatNum, eq_write)
     if end_fitness is None:
 
-        end_fitness,programs,population,Y_pred= Taylor_Based_SR(_x,X,change_Y(Y),qualified_list,
-                                                                eq_write,population,Generation,
-                                                                Pop,repeatNum,
-                                                                qualified_list[2] < 1e-5, SR_method=SR_method)
+        # end_fitness,programs,population,Y_pred= Taylor_Based_SR(_x,X,change_Y(Y),qualified_list,
+        #                                                         eq_write,population,Generation,
+        #                                                         Pop,repeatNum,
+        #                                                         qualified_list[2] < 1e-5, SR_method=SR_method)
         A=CalTaylorFeaturesGraph(metric.taylor_num,metric.f_taylor,
                             #    _x[:X.shape[1]],
                                _x,
