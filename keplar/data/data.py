@@ -14,6 +14,7 @@ class Data:
         self.y = None
 
     def read_file(self):
+        np.set_printoptions(suppress=True)
         if self.type == "csv":
             try:
                 self.pd_data = pd.read_csv(self.file_path)
@@ -22,6 +23,9 @@ class Data:
         elif self.type == "txt":
             self.pd_data = pd.DataFrame(
                 pd.read_table(self.file_path, sep='  ', header=None, engine='python', names=self.names))
+        elif self.type == "txt_pmlb":
+            self.pd_data = pd.DataFrame(
+                pd.read_table(self.file_path, sep=' ', header=None, engine='python', names=self.names))
         elif self.type == "pmlb":
             try:
                 self.pd_data = fetch_data(str(self.file_path), local_cache_dir='./datasets', return_X_y=False)
@@ -49,6 +53,9 @@ class Data:
         for dt1 in self.pd_data.columns:
             self.ft_str.append(str(dt1))
 
+
+
+
     def get_col(self, str):
         return self.pd_data.loc[str]
 
@@ -66,12 +73,14 @@ class Data:
 
     def get_np_x(self):
         if self.x is not None:
+            np.set_printoptions(suppress=True)
             return np.array(self.x)
         else:
             raise ValueError("数据集xy未设置")
 
     def get_np_y(self):
         if self.y is not None:
+            np.set_printoptions(suppress=True)
             return np.array(self.y)
         else:
             raise ValueError("数据集xy未设置")

@@ -826,128 +826,131 @@ def to_op(ind, np_x, np_y):
         # print(Operon.InfixFormatter.Format(op_tree, ds, 5))
         return op_tree
 
-    # op_al = ""
-    # x_al = ""
-    # num_al = ""
-    # op_start = False
-    # x_start = False
-    # num_start = False
-    # i = 0
-    # while i < len(equ):
-    #     if op_start:
-    #         if equ[i].isalnum():
-    #             op_al = op_al + str(equ[i])
-    #             i = i + 1
-    #         else:
-    #             list_infix.append(op_al)
-    #             op_al = ""
-    #             op_start = False
-    #     elif x_start:
-    #         if equ[i] == "_":
-    #             x_al = x_al + "_"
-    #             i = i + 1
-    #         elif equ[i].isdigit():
-    #             x_al = x_al + str(equ[i])
-    #             i = i + 1
-    #         else:
-    #             list_infix.append(x_al)
-    #             x_al = ""
-    #             x_start = False
-    #     elif num_start:
-    #         if equ[i].isdigit() or equ[i] == ".":
-    #             num_al = num_al + str(equ[i])
-    #             i = i + 1
-    #         else:
-    #             list_infix.append(num_al)
-    #             num_al = ""
-    #             num_start = False
-    #     else:
-    #         if equ[i].isalpha() and equ[i] != "X":
-    #             op_start = True
-    #             op_al = str(equ[i])
-    #             i = i + 1
-    #         elif equ[i] == " ":
-    #             continue
-    #         elif equ[i] == "X":
-    #             x_start = True
-    #             x_al = "X"
-    #             i = i + 1
-    #         elif equ[i].isdigit():
-    #             num_start = True
-    #             num_al = str(equ[i])
-    #             i = i + 1
-    #         else:
-    #             list_infix.append(str(equ[i]))
-    #             i = i + 1
-    # if num_al != "":
-    #     list_infix.append(num_al)
-    # if x_al != "":
-    #     list_infix.append(x_al)
-    # if op_al != "":
-    #     list_infix.append(op_al)
-    # post_equ = infix_to_postfix(list_infix)
-    # print(post_equ)
-    # node_list = []
-    # var_hash = []
-    # variables = ds.Variables
-    # for var in variables:
-    #     hash_ = var.Hash
-    #     var_hash.append(hash_)
-    # for token in post_equ:
-    #     if is_float(token):
-    #         node = Operon.Node.Constant(float(token))
-    #         node_list.append(node)
-    #     elif token[0] == 'x' and token[1] == '_':
-    #         var_num_str = token[2:]
-    #         var_num = int(var_num_str)
-    #         node = Operon.Node.Variable(1)
-    #         node.HashValue = var_hash[var_num]
-    #         node_list.append(node)
-    #     elif token == '+':
-    #         node = Operon.Node.Add()
-    #         node_list.append(node)
-    #     elif token == '-':
-    #         node = Operon.Node.Sub()
-    #         node_list.append(node)
-    #     elif token == '*':
-    #         node = Operon.Node.Mul()
-    #         node_list.append(node)
-    #     elif token == '/':
-    #         node = Operon.Node.Div()
-    #         node_list.append(node)
-    #     elif token == '^':
-    #         node = Operon.Node.Pow()
-    #         node_list.append(node)
-    #     elif token == 'exp':
-    #         node = Operon.Node.Exp()
-    #         node_list.append(node)
-    #     elif token == 'log':
-    #         node = Operon.Node.Log()
-    #         node_list.append(node)
-    #     elif token == 'sin':
-    #         node = Operon.Node.Sin()
-    #         node_list.append(node)
-    #     elif token == 'cos':
-    #         node = Operon.Node.Cos()
-    #         node_list.append(node)
-    #     elif token == 'tan':
-    #         node = Operon.Node.Tan()
-    #         node_list.append(node)
-    #     elif token == 'tanh':
-    #         node = Operon.Node.Tanh()
-    #         node_list.append(node)
-    #     elif token == 'sqrt':
-    #         node = Operon.Node.Sqrt()
-    #         node_list.append(node)
-    #     elif token == 'cbrt':
-    #         node = Operon.Node.Cbrt()
-    #         node_list.append(node)
-    #     elif token == 'dyn':
-    #         node = Operon.Node.Dyn()
-    #         node_list.append(node)
-    #     else:
-    #         raise ValueError(f"通用个体转换为Operon个体时未识别,未识别字符为{token}")
-    # op_tree = Operon.Tree(node_list)
-    # op_tree.UpdateNodes()
-    # print(Operon.InfixFormatter.Format(op_tree, ds, 5))
-    # return op_tree
+
+def equ_to_op(equ,ds):
+    list_infix = []
+    op_al = ""
+    x_al = ""
+    num_al = ""
+    op_start = False
+    x_start = False
+    num_start = False
+    i = 0
+    while i < len(equ):
+        if op_start:
+            if equ[i].isalnum():
+                op_al = op_al + str(equ[i])
+                i = i + 1
+            else:
+                list_infix.append(op_al)
+                op_al = ""
+                op_start = False
+        elif x_start:
+            if equ[i] == "_":
+                x_al = x_al + "_"
+                i = i + 1
+            elif equ[i].isdigit():
+                x_al = x_al + str(equ[i])
+                i = i + 1
+            else:
+                list_infix.append(x_al)
+                x_al = ""
+                x_start = False
+        elif num_start:
+            if equ[i].isdigit() or equ[i] == ".":
+                num_al = num_al + str(equ[i])
+                i = i + 1
+            else:
+                list_infix.append(num_al)
+                num_al = ""
+                num_start = False
+        else:
+            if equ[i].isalpha() and equ[i] != "X":
+                op_start = True
+                op_al = str(equ[i])
+                i = i + 1
+            elif equ[i] == " ":
+                continue
+            elif equ[i] == "X":
+                x_start = True
+                x_al = "X"
+                i = i + 1
+            elif equ[i].isdigit():
+                num_start = True
+                num_al = str(equ[i])
+                i = i + 1
+            else:
+                list_infix.append(str(equ[i]))
+                i = i + 1
+    if num_al != "":
+        list_infix.append(num_al)
+    if x_al != "":
+        list_infix.append(x_al)
+    if op_al != "":
+        list_infix.append(op_al)
+    post_equ = infix_to_postfix(list_infix)
+    print(post_equ)
+    node_list = []
+    var_hash = []
+    variables = ds.Variables
+    for var in variables:
+        hash_ = var.Hash
+        var_hash.append(hash_)
+    for token in post_equ:
+        if is_float(token):
+            node = Operon.Node.Constant(float(token))
+            node_list.append(node)
+        elif token[0] == 'x' and token[1] == '_':
+            var_num_str = token[2:]
+            var_num = int(var_num_str)
+            node = Operon.Node.Variable(1)
+            node.HashValue = var_hash[var_num]
+            node_list.append(node)
+        elif token == '+':
+            node = Operon.Node.Add()
+            node_list.append(node)
+        elif token == '-':
+            node = Operon.Node.Sub()
+            node_list.append(node)
+        elif token == '*':
+            node = Operon.Node.Mul()
+            node_list.append(node)
+        elif token == '/':
+            node = Operon.Node.Div()
+            node_list.append(node)
+        elif token == '^':
+            node = Operon.Node.Pow()
+            node_list.append(node)
+        elif token == 'exp':
+            node = Operon.Node.Exp()
+            node_list.append(node)
+        elif token == 'log':
+            node = Operon.Node.Log()
+            node_list.append(node)
+        elif token == 'sin':
+            node = Operon.Node.Sin()
+            node_list.append(node)
+        elif token == 'cos':
+            node = Operon.Node.Cos()
+            node_list.append(node)
+        elif token == 'tan':
+            node = Operon.Node.Tan()
+            node_list.append(node)
+        elif token == 'tanh':
+            node = Operon.Node.Tanh()
+            node_list.append(node)
+        elif token == 'sqrt':
+            node = Operon.Node.Sqrt()
+            node_list.append(node)
+        elif token == 'cbrt':
+            node = Operon.Node.Cbrt()
+            node_list.append(node)
+        elif token == 'dyn':
+            node = Operon.Node.Dyn()
+            node_list.append(node)
+        else:
+            raise ValueError(f"通用个体转换为Operon个体时未识别,未识别字符为{token}")
+    op_tree = Operon.Tree(node_list)
+    op_tree.UpdateNodes()
+    print(Operon.InfixFormatter.Format(op_tree, ds, 5))
+    return op_tree

@@ -17,6 +17,7 @@ class CheckPopulation(Operator):
             for ind in population.pop_list:
                 length_list.append(len(ind.func))
                 fit_list.append(ind.fitness)
+            print(fit_list)
             np_length = np.array(length_list)
             np_fit = np.array(fit_list)
             max_length = np.max(np_length)

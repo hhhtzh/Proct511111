@@ -1,5 +1,6 @@
 import math
 import re
+from _decimal import Decimal
 
 import numpy as np
 import random
@@ -110,7 +111,6 @@ class subRegionCalculator:
                 n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
                 print("原始数据聚类", n_clusters_, "块")
 
-                # 聚类过多或过少则舍掉,只统计一次聚类为1的结果
                 if n_clusters_ == 1:
                     if not self.oneSubRegionFlag:
                         self.oneSubRegionFlag = True
@@ -226,8 +226,7 @@ class subRegionCalculator:
             print("len(self.subRegions): ", len(self.subRegions), " selectedRegionIndex", selectedRegionIndex)
             if len(self.subRegions) <= selectedRegionIndex:
                 break
-            self.abRockNum[selectedRegionIndex] += 1
-            self.abRockSum += 1
+
             parents, qualified_list, Y_pred = None, None, None
 
             if self.abSelectedArm.count(1) > 1:
@@ -235,6 +234,8 @@ class subRegionCalculator:
                       self.abSelectedArm, sep=" ")
                 Pop = max(Pop // self.abSelectedArm.count(1), 10)  # 种群大小至少为10
                 # [end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
+            self.abRockNum[selectedRegionIndex] += Pop*self.originalTaylorGPGen
+            self.abRockSum += Pop*self.originalTaylorGPGen
             top1 = OriginalTaylorGP(self.subRegions[selectedRegionIndex], Y_pred, parents, repeatNum,
                                     self.originalTaylorGPGen, Pop, qualified_list=qualified_list,
                                     SR_method=SR_method)  # top是list 0是适应度，1是公式 2是上轮最后一代种群
@@ -571,6 +572,7 @@ class subRegionCalculator:
         if epsilons is not None:
             for epsilon in epsilons:
                 if epsilon == 1e-5: continue
+                np.set_printoptions(suppress=True)
                 if self.PreDbscan(epsilon, clusterMethod="DBSCAN", data_x=np_x):
                     count += 1
             return count + 1
