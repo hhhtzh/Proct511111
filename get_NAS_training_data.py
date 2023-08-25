@@ -1,12 +1,12 @@
 import csv
 
-from keplar.Algorithm.Alg import KeplarBingoAlg
+from keplar.Algorithm.Alg import KeplarBingoAlg, GpBingo2Alg, OperonBingoAlg
 from keplar.data.data import Data
 from keplar.operator.check_pop import CheckPopulation
 from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
 from keplar.operator.creator import GpCreator, OperonCreator, BingoCreator
 from keplar.operator.crossover import BingoCrossover
-from keplar.operator.evaluator import BingoEvaluator, OperonEvaluator
+from keplar.operator.evaluator import BingoEvaluator, OperonEvaluator, GpEvaluator
 from keplar.operator.mutation import BingoMutation
 from keplar.operator.selector import BingoSelector
 
@@ -29,13 +29,24 @@ bg_selector = BingoSelector(0.5, "tournament", "Bingo")
 kb_gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
 kb_gen_down_oplist = CompositeOpReturn([bg_selector])
 kb_gen_eva_oplist = CompositeOp([bg_evaluator])
+gp_evaluator = GpEvaluator(x, y, "Bingo", metric="rmse")
+gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
+gen_down_oplist = CompositeOpReturn([bg_selector])
+gen_eva_oplist = CompositeOp([gp_evaluator])
 for _ in range(1000):
     evaluator.do(population)
     ck = CheckPopulation(data)
     list1 = ck.do(population)
     print(list1)
-    bgsr = KeplarBingoAlg(1, kb_gen_up_oplist, kb_gen_down_oplist, kb_gen_eva_oplist, 0.1, population)
+    population1=population
+    population2=population
+    population3=population
+    bgsr = KeplarBingoAlg(1, kb_gen_up_oplist, kb_gen_down_oplist, kb_gen_eva_oplist, 0.001, population1)
     bgsr.one_gen_run()
+    gpbg2=GpBingo2Alg(1, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population2)
+    gpbg2.one_gen_run()
+    opbg=OperonBingoAlg(1, op_up_list, None, eval_op_list, -10, population, select, x, y, 128)
+
 
 header = ["BestFit", 'WorstFit', 'MeanFit', 'Longest', 'shortest', 'MeanLength', 'SelectedLable']
 with open('NAStraining_data/recursion_training.csv', 'w', encoding='utf-8') as file_obj:

@@ -64,7 +64,6 @@ class BingoEvaluator(Evaluator):
                 population.target_pop_list = bingo_pop
                 population.pop_type = "Bingo"
                 for i in range(len(bingo_pop)):
-
                     population.target_fit_list.append(bingo_pop[i].fitness)
 
         else:
@@ -74,7 +73,6 @@ class BingoEvaluator(Evaluator):
             #     print(str(i))
             evaluator(population=bingo_pop)
             for i in range(len(bingo_pop)):
-
                 population.target_fit_list.append(bingo_pop[i].fitness)
 
 
@@ -87,8 +85,8 @@ class OperonEvaluator(Evaluator):
         self.error_metric = error_metric
         np_y = np_y.reshape([-1, 1])
         self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
-        self.np_x=np_x
-        self.np_y=np_y
+        self.np_x = np_x
+        self.np_y = np_y
 
     def do(self, population):
         if not isinstance(self.if_linear_scaling, bool):
@@ -207,26 +205,20 @@ class OperonSingleEvaluator(Evaluator):
             error_metric = Operon.C2()
         else:
             ValueError("误差矩阵类型错误")
-        print("22")
         target = self.ds.Variables[-1]
         inputs = Operon.VariableCollection(v for v in self.ds.Variables if v.Name != target.Name)
         rng = Operon.RomuTrio(random.randint(1, 1000000))
         training_range = Operon.Range(0, int(self.ds.Rows * self.training_p))
-        print("44")
         test_range = Operon.Range(int(self.ds.Rows * self.training_p), self.ds.Rows)
         problem = Operon.Problem(self.ds, inputs, target.Name, training_range, test_range)
-        print("33")
         evaluator = Operon.Evaluator(problem, interpreter, error_metric, self.if_linear_scaling)
         ind = Operon.Individual()
-        print("55")
         equ = re.sub(r'x_', r'X_', self.op_equ)
         func_list, const_array = bingo_infixstr_to_func(equ)
         ind1 = Individual(func=func_list, const_array=const_array)
         tree = to_op(ind1, self.np_x, self.np_y)
         ind.Genotype = tree
-        print("ll")
         ea = evaluator(rng, ind)
-        print("kk")
         fit = ea[0]
         return fit
 
@@ -258,7 +250,6 @@ class GpEvaluator(Evaluator):
             lie_num = self.eval_x.shape[0]
             if self.feature_weight is None:
                 self.feature_weight = []
-                print(lie_num)
                 for i in range(lie_num):
                     self.feature_weight.append(1)
                 self.feature_weight = np.array(self.feature_weight)
@@ -350,7 +341,6 @@ class TaylorGPEvaluator(Evaluator):
             raise ValueError("gplearn评估模块计算误差方法设置错误")
 
         if population.pop_type == "taylorgp":
-            print("xxxxxxx")
             fit_list = []
             gp_fit = _Fitness(fct, False)
             lie_num = self.eval_x.shape[1]

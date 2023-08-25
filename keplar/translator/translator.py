@@ -752,11 +752,11 @@ def to_op(ind, np_x, np_y):
             str_op = map_F1[int_i]
             list_prefix.append(str_op)
         elif 3000 <= int_i < 5000:
-            str_con = str(ind.const_array[int_i - 3000])
-            list_prefix.append(str_con)
-        elif int_i >= 5000:
-            str_x = "X_" + str(int_i - 5000)
+            str_x = "X_" + str(int_i - 3000)
             list_prefix.append(str_x)
+        elif int_i >= 5000:
+            str_con = str(ind.const_array[int_i - 5000])
+            list_prefix.append(str_con)
 
         else:
             raise ValueError("留空")
