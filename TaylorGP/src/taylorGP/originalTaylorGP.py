@@ -19,6 +19,520 @@ from sklearn.metrics import mean_squared_error  # 均方误差
 from sklearn.linear_model import LinearRegression
 from sympy import *
 
+from sympy import sympify, symbols, Add
+
+def collect_terms(expression_str, _x, threshold=0.001):
+    # 使用 sympify 将字符串表达式转换为 Sympy 表达式
+    expression = sympify(expression_str)
+
+    # 解析额外的变量 _x 中包含的变量
+    extra_vars = symbols(_x)
+
+    # 分割表达式为多个项
+    terms = expression.as_ordered_terms()
+
+    # 初始化用于存放仅含有 _x 中变量的项的字典
+    x_terms_dict = {str(x): [] for x in extra_vars}
+
+    for term in terms:
+        # 获取系数
+        coeff = term.as_coefficients_dict()
+        all_vars = term.free_symbols
+
+        # 检查项是否只含有一个 _x 中的变量，并且所有变量在 extra_vars 中
+        if len(all_vars) == 1 and all_vars.intersection(extra_vars):
+            # 去除系数小于 threshold 的项
+            if abs(coeff[1]) >= threshold:
+                var_name = str(all_vars.pop())
+                x_terms_dict[var_name].append(term)
+
+    # 将仅含有 _x 中各个变量的项分别组合成公式
+    x_expressions = {var_name: Add(*terms_list).simplify() for var_name, terms_list in x_terms_dict.items()}
+
+    return x_expressions
+
+def filter_equation(equation_string):
+    # 将方程按加号分割成项的列表
+    terms = equation_string.split(" + ")
+
+    # 初始化一个空列表，用于存储满足条件的项
+    filtered_terms = []
+
+    # 遍历每一项，并检查系数是否小于0.01
+    for term in terms:
+        # 寻找"x"的位置，将系数和变量分割开
+        x_index = term.find("*x")
+        if x_index == -1:  # 没有找到"x"，说明是常数项
+            coefficient_str = term
+            variable = ""
+        else:
+            coefficient_str = term[:x_index]
+            variable = term[x_index:]
+
+        # 处理系数
+        coefficient = float(coefficient_str) if coefficient_str else 1.0
+
+        # 将系数小于0.01的项添加到新的列表中
+        if abs(coefficient) < 0.01:
+            continue
+        filtered_terms.append(term)
+
+    # 生成新的方程
+    new_equation = " + ".join(filtered_terms)
+
+    return new_equation
+
+def split_formula(formula):
+    formula = formula.replace(" ", "")
+    formula = "+" + formula.strip()
+
+    terms = []
+    term = ""
+    operator = "+"
+
+    for i in range(len(formula)):
+        char = formula[i]
+        if char == "+" or char == "-":
+            if term != "":
+                terms.append(operator + term)
+            term = ""
+            operator = char
+        else:
+            term += char
+
+    if term != "":
+        terms.append(operator + term)
+
+    return terms
+
+
+def assign_terms_to_equations(terms, subsets):
+    equations = {}
+    equations[0] = [] # 用于存储不属于任何子集的项
+
+    for term in terms:
+        subsets_count = 0
+        subset_index = -1
+        is_exclusive = False
+        is_inclusive = True
+
+        for i, subset in enumerate(subsets):
+            equations[i] = []
+            if any(element in term for element in subset):
+                subsets_count += 1
+                subset_index = i
+                is_inclusive = False
+
+
+        if subsets_count == 1:
+            is_exclusive = True
+
+
+
+        for i, subset in enumerate(subsets):
+            if i != subset_index:
+                if any(element in term for element in subset):
+                    is_exclusive = False
+                    break
+
+        if is_exclusive:
+            if subset_index not in equations:
+                equations[subset_index] = []
+            
+            equations[subset_index].append(term)
+
+        if is_inclusive:
+            equations[0].append(term)
+
+    formula = ""
+
+    for subset_index, equation_terms in equations.items():
+        equation = "".join(equation_terms)
+        # print("subset_index",subset_index)
+        formula += equation + "\n"
+        # formula += equation + "\n" if equation else " \n" 
+
+    # for subset_index in range(len(subsets)):
+
+    # for i, subset in enumerate(subsets):
+    #     # print("fff",i)
+    #     if equations[i]:
+    #         equation = "".join(equations[i])
+    #     else:
+    #         equation = None
+    #     formula += equation + "\n" if equation else "NONE\n" 
+
+
+
+
+    return formula.strip()
+
+def CalTaylorFeaturesGraph(taylor_num,f_taylor, _x, X, Y, qualified_list, eq_write, population, Gen, Pop, repeatNum, low_polynomial,
+                    SR_method="gplearn"):
+    print('In CalTaylorFeaturesGraph')
+    G = nx.Graph()
+    
+    metric = Metrics2(f_taylor,_x,X,Y)
+    if metric.judge_Low_polynomial():
+        return [metric.low_nmse], [metric.f_low_taylor],None
+    
+    #我的python也还不熟练，暂时用简易易理解的方式实现
+    if X.shape[1]>1:
+        k=2
+        if X.shape[1] == 2:
+            G.add_nodes_from(['x0', 'x1'])
+
+            # 添加连接关系
+            num = 0
+            for x_0 in range(2):
+                x_1 = k - x_0
+                num+=1
+                #x_0
+                if all(x in [0, 1] for x in [x_0, x_1]):
+                    
+                    if abs(taylor_num[num]) >= 0.01:
+                        if x_0 == 1 and x_1 == 1:
+                            G.add_edge('x0', 'x1')
+
+        if X.shape[1] == 3:
+            # 添加连接关系
+            G.add_nodes_from(['x0', 'x1', 'x2'])
+            num = 0
+            for x_0 in range(2):
+                for x_1 in range(2):
+                    x_2 = k - x_0 - x_1
+                    #使用num判断taylor_num的哪一个值
+                    num+=1
+                    '''
+                    根据前面的判断,只有当x_0,x_1,x_2都是0或者1的时候才会添加边,这个边代表着这三个变量的关系,且因为k=2
+                    所以有且仅有两个变量为1,其余变量为0,这两个变量之间的关系就是这个边的关系
+                    '''
+                    if all(x in [0, 1] for x in [x_0, x_1, x_2]):
+                        #判断taylor_num的值是否小于阈值,如果小于阈值,则添加边
+                        if abs(taylor_num[num]) >= 0.01:
+                            if x_0 == 1 and x_1 == 1:
+                                G.add_edge('x0', 'x1')
+                            if x_0 == 1 and x_2 == 1:
+                                G.add_edge('x0', 'x2')
+                            if x_1 == 1 and x_2 == 1:
+                                G.add_edge('x1', 'x2')
+
+        if X.shape[1] == 4:
+            G.add_nodes_from(['x0', 'x1', 'x2', 'x3'])
+
+            # 添加连接关系
+            num = 0
+            for x_0 in range(2):
+                for x_1 in range(2):
+                    for x_2 in range(2):
+                        x_3 = k - x_0 - x_1 - x_2
+                        num+=1
+                        if all(x in [0, 1] for x in [x_0, x_1, x_2, x_3]):
+                            if abs(taylor_num[num]) >= 0.01:
+                                if x_0 == 1 and x_1 == 1:
+                                    G.add_edge('x0', 'x1')
+                                if x_0 == 1 and x_2 == 1:
+                                    G.add_edge('x0', 'x2')
+                                if x_0 == 1 and x_3 == 1:
+                                    G.add_edge('x0', 'x3')
+                                if x_1 == 1 and x_2 == 1:
+                                    G.add_edge('x1', 'x2')
+                                if x_1 == 1 and x_3 == 1:
+                                    G.add_edge('x1', 'x3')
+                                if x_2 == 1 and x_3 == 1:
+                                    G.add_edge('x2', 'x3')
+        if X.shape[1] == 5:
+            G.add_nodes_from(['x0', 'x1', 'x2', 'x3', 'x4'])
+
+            # 添加连接关系
+            num = 0
+            for x_0 in range(2):
+                for x_1 in range(2):
+                    for x_2 in range(2):
+                        for x_3 in range(2):
+                            x_4 = k - x_0 - x_1 - x_2 - x_3
+                            num+=1
+                            if all(x in [0, 1] for x in [x_0, x_1, x_2, x_3, x_4]):
+                                if abs(taylor_num[num]) >= 0.01:
+                                    if x_0 == 1 and x_1 == 1:
+                                        G.add_edge('x0', 'x1')
+                                    if x_0 == 1 and x_2 == 1:
+                                        G.add_edge('x0', 'x2')
+                                    if x_0 == 1 and x_3 == 1:
+                                        G.add_edge('x0', 'x3')
+                                    if x_0 == 1 and x_4 == 1:
+                                        G.add_edge('x0', 'x4')
+                                    if x_1 == 1 and x_2 == 1:
+                                        G.add_edge('x1', 'x2')
+                                    if x_1 == 1 and x_3 == 1:
+                                        G.add_edge('x1', 'x3')
+                                    if x_1 == 1 and x_4 == 1:
+                                        G.add_edge('x1', 'x4')
+                                    if x_2 == 1 and x_3 == 1:
+                                        G.add_edge('x2', 'x3')
+                                    if x_2 == 1 and x_4 == 1:
+                                        G.add_edge('x2', 'x4')
+                                    if x_3 == 1 and x_4 == 1:
+                                        G.add_edge('x3', 'x4')
+        if X.shape[1] == 6:
+            G.add_nodes_from(['x0', 'x1', 'x2', 'x3', 'x4', 'x5'])
+
+            for x_0 in range(2):
+                for x_1 in range(2):
+                    for x_2 in range(2):
+                        for x_3 in range(2):
+                            for x_4 in range(2):
+                                x_5 = k - x_0 - x_1 - x_2 - x_3 - x_4
+                                if all(x in [0, 1] for x in [x_0, x_1, x_2, x_3, x_4, x_5]):
+                                    if abs(taylor_num[num]) >= 0.01:
+                                        connections = [('x0', 'x1'), ('x0', 'x2'), ('x0', 'x3'), ('x0', 'x4'), ('x0', 'x5'),
+                                                    ('x1', 'x2'), ('x1', 'x3'), ('x1', 'x4'), ('x1', 'x5'),
+                                                    ('x2', 'x3'), ('x2', 'x4'), ('x2', 'x5'),
+                                                    ('x3', 'x4'), ('x3', 'x5'),
+                                                    ('x4', 'x5')]
+                                        for connection in connections:
+                                            if eval(f'x_{connection[0][1]}') == 1 and eval(f'x_{connection[1][1]}') == 1:
+                                                G.add_edge(connection[0], connection[1])
+
+
+        if X.shape[1] == 7:
+            G.add_nodes_from(['x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6'])
+            # 添加连接关系
+            for x_0 in range(2):
+                for x_1 in range(2):
+                    for x_2 in range(2):
+                        for x_3 in range(2):
+                            for x_4 in range(2):
+                                for x_5 in range(2):
+                                    x_6 = k - x_0 - x_1 - x_2 - x_3 - x_4 - x_5
+                                    if all(x in [0, 1] for x in [x_0, x_1, x_2, x_3, x_4, x_5, x_6]):
+                                        if abs(taylor_num[num]) >= 0.01:
+                                            connections = [('x0', 'x1'), ('x0', 'x2'), ('x0', 'x3'), ('x0', 'x4'),
+                                                           ('x0', 'x5'), ('x0', 'x6'),
+                                                           ('x1', 'x2'), ('x1', 'x3'), ('x1', 'x4'), ('x1', 'x5'),
+                                                           ('x1', 'x6'),
+                                                           ('x2', 'x3'), ('x2', 'x4'), ('x2', 'x5'), ('x2', 'x6'),
+                                                           ('x3', 'x4'), ('x3', 'x5'), ('x3', 'x6'),
+                                                           ('x4', 'x5'), ('x4', 'x6'),
+                                                           ('x5', 'x6')]
+                                            for connection in connections:
+                                                if eval(f'x_{connection[0][1]}') == 1 and eval(
+                                                        f'x_{connection[1][1]}') == 1:
+                                                    G.add_edge(connection[0], connection[1])
+                                            
+        if X.shape[1] == 8:
+            G.add_nodes_from(['x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7'])
+            connections = [('x0', 'x1'), ('x0', 'x2'), ('x0', 'x3'), ('x0', 'x4'), ('x0', 'x5'), ('x0', 'x6'),('x0', 'x7'),
+                           ('x1', 'x2'), ('x1', 'x3'), ('x1', 'x4'), ('x1', 'x5'), ('x1', 'x6'), ('x1', 'x7'),
+                           ('x2', 'x3'), ('x2', 'x4'), ('x2', 'x5'), ('x2', 'x6'), ('x2', 'x7'),
+                           ('x3', 'x4'), ('x3', 'x5'), ('x3', 'x6'), ('x3', 'x7'),
+                           ('x4', 'x5'), ('x4', 'x6'), ('x4', 'x7'),
+                           ('x5', 'x6'), ('x5', 'x7'),
+                           ('x6', 'x7')]
+            # 添加连接关系
+            for x_0 in range(2):
+                for x_1 in range(2):
+                    for x_2 in range(2):
+                        for x_3 in range(2):
+                            for x_4 in range(2):
+                                for x_5 in range(2):
+                                    for x_6 in range(2):
+                                        x_7 = k - x_0 - x_1 - x_2 - x_3 - x_4 - x_5 - x_6
+                                        if all(x in [0, 1] for x in [x_0, x_1, x_2, x_3, x_4, x_5, x_6, x_7]):
+                                            if abs(taylor_num[num]) >= 0.01:
+                                                for connection in connections:
+                                                    if eval(f'x_{connection[0][1]}') == 1 and eval(
+                                                            f'x_{connection[1][1]}') == 1:
+                                                        G.add_edge(connection[0], connection[1])
+        if X.shape[1] == 9:
+            G.add_nodes_from(['x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7','x8'])
+            connections = [('x0', 'x1'), ('x0', 'x2'), ('x0', 'x3'), ('x0', 'x4'),
+                            ('x0', 'x5'), ('x0', 'x6'), ('x0', 'x7'), ('x0', 'x8'),
+                            ('x1', 'x2'), ('x1', 'x3'), ('x1', 'x4'), ('x1', 'x5'),
+                            ('x1', 'x6'), ('x1', 'x7'), ('x1', 'x8'),
+                            ('x2', 'x3'), ('x2', 'x4'), ('x2', 'x5'), ('x2', 'x6'),
+                            ('x2', 'x7'), ('x2', 'x8'),
+                            ('x3', 'x4'), ('x3', 'x5'), ('x3', 'x6'), ('x3', 'x7'),
+                            ('x3', 'x8'),
+                            ('x4', 'x5'), ('x4', 'x6'), ('x4', 'x7'), ('x4', 'x8'),
+                            ('x5', 'x6'), ('x5', 'x7'), ('x5', 'x8'),
+                            ('x6', 'x7'), ('x6', 'x8'),
+                            ('x7', 'x8')]
+            # 添加连接关系
+            for x_0 in range(2):
+                for x_1 in range(2):
+                    for x_2 in range(2):
+                        for x_3 in range(2):
+                            for x_4 in range(2):
+                                for x_5 in range(2):
+                                    for x_6 in range(2):
+                                        for x_7 in range(2):
+                                            x_8 = k - x_0 - x_1 - x_2 - x_3 - x_4 - x_5 - x_6 - x_7
+                                            if all(x in [0, 1] for x in [x_0, x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8]):
+                                                if abs(taylor_num[num]) >= 0.01:
+                                                    for connection in connections:
+                                                        if eval(f'x_{connection[0][1]}') == 1 and eval(
+                                                                f'x_{connection[1][1]}') == 1:
+                                                            G.add_edge(connection[0], connection[1])
+        if X.shape[1] == 10:
+            G.add_nodes_from(['x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7','x8','x9'])
+            connections = [('x0', 'x1'), ('x0', 'x2'), ('x0', 'x3'), ('x0', 'x4'),
+                            ('x0', 'x5'), ('x0', 'x6'), ('x0', 'x7'), ('x0', 'x8'),
+                            ('x0', 'x9'),
+                            ('x1', 'x2'), ('x1', 'x3'), ('x1', 'x4'), ('x1', 'x5'),
+                            ('x1', 'x6'), ('x1', 'x7'), ('x1', 'x8'), ('x1', 'x9'),
+                            ('x2', 'x3'), ('x2', 'x4'), ('x2', 'x5'), ('x2', 'x6'),
+                            ('x2', 'x7'), ('x2', 'x8'), ('x2', 'x9'),
+                            ('x3', 'x4'), ('x3', 'x5'), ('x3', 'x6'), ('x3', 'x7'),
+                            ('x3', 'x8'), ('x3', 'x9'),
+                            ('x4', 'x5'), ('x4', 'x6'), ('x4', 'x7'), ('x4', 'x8'),
+                            ('x4', 'x9'),
+                            ('x5', 'x6'), ('x5', 'x7'), ('x5', 'x8'), ('x5', 'x9'),
+                            ('x6', 'x7'), ('x6', 'x8'), ('x6', 'x9'),
+                            ('x7', 'x8'), ('x7', 'x9'),
+                            ('x8', 'x9')]
+
+            # 添加连接关系
+            for x_0 in range(2):
+                for x_1 in range(2):
+                    for x_2 in range(2):
+                        for x_3 in range(2):
+                            for x_4 in range(2):
+                                for x_5 in range(2):
+                                    for x_6 in range(2):
+                                        for x_7 in range(2):
+                                            for x_8 in range(2):
+                                                x_9 = k - x_0 - x_1 - x_2 - x_3 - x_4 - x_5 - x_6 - x_7 - x_8
+                                                if all(x in [0, 1] for x in [x_0, x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9]):
+                                                    if abs(taylor_num[num]) >= 0.01:
+                                                        for connection in connections:
+                                                            if eval(f'x_{connection[0][1]}') == 1 and eval(
+                                                                    f'x_{connection[1][1]}') == 1:
+                                                                G.add_edge(connection[0], connection[1])
+
+    subgraphs = list(nx.connected_components(G))
+    num_subgraphs = len(subgraphs)
+
+    print("图的节点集合:", G.nodes)
+
+
+
+    # # 划分子式
+    for i, subgraph in enumerate(subgraphs):
+        x_variables =  [x for x in _x if str(x) in subgraph]
+        print(f"子图{i+1}的变量集合：{x_variables}")
+        print(len(x_variables))
+        print(x_variables[0])
+        # print(x_variables[1])
+        if f_taylor == None:
+                f_taylor = self.f_taylor
+
+        # print(f"子图{i+1}的方程为：{f_taylor}")
+
+
+
+
+        f= sympify(f_taylor)
+
+        # 分割表达式为多个项
+        terms = f.as_ordered_terms()
+
+        # 打印分割后的各项
+        for term in terms:
+            print(term)
+
+        print(f"子图{i+1}的方程为：{f}")
+        metric.varNum =2
+
+        y_pred = metric._calY(f, _x)
+
+        nmse = mean_squared_error(Y, y_pred)
+
+    print(f"子图{i+1}XXX的方程为：{f}")
+    print(f"子图{i+1}的方程的NMSE为：{nmse}")
+
+
+
+    # 生成新的方程
+    #对于这样的项-1.0866452424638696e-5*x0**2我们首先要判断其系数是否小于0.01,如果小于0.01则将其舍弃
+    f_new = filter_equation(str(f))
+
+    print(f"子图{i+1}X的方程为：{f_new}")
+
+    terms = split_formula(str(f_new))
+
+    print(f"子图{i+1}的方程的项数为：{len(terms)}")
+    print(f"子图{i+1}的方程的项为：{terms}")
+
+    equations = assign_terms_to_equations(terms, subgraphs)
+    print(f"Equations: {equations}")
+
+    func = []
+    y_pred = []
+    # for i, subgraph in enumerate(subgraphs):
+    #     x_variables = [x for x in _x if str(x) in subgraph]
+
+    print(f"子图的变量集合：{x_variables}")
+
+    for i, subgraph in enumerate(subgraphs):
+        equations_temp = copy.deepcopy(equations)
+        print(f"equations_temp",equations_temp)
+        x_variables =  [x for x in _x if str(x) in subgraph]
+        print(f"子图{i+1}WW的变量集合：{x_variables}")
+        # x_variables =  [x for x in _x if str(x) in subgraphs]
+
+        # print(f"子图{i+1}Q的变量集合：{x_variables}")
+
+
+        if equations_temp.split('\n')[i] !="NONE":
+            equation_str = equations_temp.split('\n')[i]
+        else:
+            print("yyyy")
+            continue
+
+
+        # vars = symbols(' '.join(subgraphs[i]))
+        print(f"equation_str: {equation_str}")
+        func.append(sympify(equation_str))
+        # func= sympify(equation_str)
+        print(func[i])
+
+        
+        # print(f"子图{i+1}的方程为：{func}")
+
+        # print(f"x_variables: {x_variables[i]}")
+
+        result = metric._calY(func[i], _x)  # Remove unnecessary indexing
+        if isinstance(result, list):
+            y_pred.extend(result)  # Extend the list if result is a list
+        else:
+            y_pred.append(result)  # Append to the list if result is not a list
+
+        # print(f"y_pred: {y_pred}")
+
+        # nmse = mean_squared_error(Y,y_pred)
+        # print(f"子图{i+1}的方程的NMSE为：{nmse}")
+
+        # end_fitness, programs,population,Y_pred= Taylor_Based_SR(x_variables,X,metric.change_Y(Y),qualified_list,eq_write,population,Generation,Pop,repeatNum,low_polynomial)
+        end_fitness, programs,population,Y_pred= Taylor_Based_SR(_x,X,change_Y(Y),qualified_list,eq_write,Pop,Generation,repeatNum,qualified_list[2] < 1e-5, SR_method=SR_method)
+        end_fitness, programs, population, Y_pred = Taylor_Based_SR(_x, X, change_Y(Y, qualified_list), qualified_list,
+                                                                    eq_write, population, Generation, Pop, repeatNum,
+                                                                    qualified_list[2] < 1e-5, SR_method=SR_method)
+        # print(f"子图{i+1}的方程的fitness为：{end_fitness}")
+        # print(programs.get_expression())
+
+
+        
+    if num_subgraphs == 1:
+        print("图是连通的,没有划分子图！")
+        return False
+    
+    else:
+        print("图是不连通的,划分子图如下：")
+        for i, subgraph in enumerate(subgraphs):
+            print(f"子图{i+1}的节点集合：{subgraph}")
+
+        return True
 
 def CalTaylorFeatures(f_taylor, _x, X, Y, population, Generation, Pop, repeatNum, eq_write):
     print('In CalTaylorFeatures')
@@ -274,9 +788,20 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
     # elif metric.nihe_flag and (metric.judge_additi_separability() or metric.judge_multi_separability()):
     #     end_fitness, programs,population = CalTaylorFeatures(metric.f_taylor, _x[:X.shape[1]], X, Y, population,Generation,Pop, repeatNum, eq_write)
     if end_fitness is None:
-        end_fitness, programs, population, Y_pred = Taylor_Based_SR(_x, X, change_Y(Y, qualified_list), qualified_list,
-                                                                    eq_write, population, Generation, Pop, repeatNum,
-                                                                    qualified_list[2] < 1e-5, SR_method=SR_method)
+
+        # end_fitness,programs,population,Y_pred= Taylor_Based_SR(_x,X,change_Y(Y),qualified_list,
+        #                                                         eq_write,population,Generation,
+        #                                                         Pop,repeatNum,
+        #                                                         qualified_list[2] < 1e-5, SR_method=SR_method)
+        A=CalTaylorFeaturesGraph(metric.taylor_num,metric.f_taylor,
+                            #    _x[:X.shape[1]],
+                               _x,
+                               X,Y,population,Generation,
+                               Pop,repeatNum,
+                               eq_write,qualified_list,qualified_list[2] <1e-5,SR_method=SR_method)
+        # end_fitness, programs, population, Y_pred = Taylor_Based_SR(_x, X, change_Y(Y, qualified_list), qualified_list,
+        #                                                             eq_write, population, Generation, Pop, repeatNum,
+        #                                                             qualified_list[2] < 1e-5, SR_method=SR_method)
         if isinstance(Y_pred,str):
             Y_pred = temp_Y_pred
         # Y_pred = programs[0].predict(X)
