@@ -14,6 +14,7 @@ from keplar.population.individual import Individual
 from TaylorGP.src.taylorGP.functions import _function_map
 
 
+#Operon从X_1开始
 # 该函数是将种群中的一个个体转化成TaylorGP中的program格式
 def trans_taylor_program(ind):
     length = len(ind.func)
@@ -123,11 +124,11 @@ def bingo_infixstr_to_func(equ):
     x_start = False
     num_start = False
     i = 0
-    print(equ)
+    # print(equ)
     equ = re.sub(r"(\d{1})e", r"\1", equ)
     equ = re.sub(r"\(-", r'(0-', equ)
     equ = re.sub(r"-(\d{1})", r"0 - \1", equ)
-    print(equ)
+    # print(equ)
     while i < len(equ):
         if op_start:
             if equ[i].isalnum():
@@ -184,7 +185,11 @@ def bingo_infixstr_to_func(equ):
     stack = []
     const_array = []
     for node in post_equ:
+        if str(node) == "nan":
+            node = "0"
+
         if node in ["+", "-", "*", "/", "^"] or node.isalpha():
+            # print(node)
             arity = arity_map[operator_map3[node]]
             if arity == 1:
                 operand1 = stack.pop()
@@ -205,9 +210,9 @@ def bingo_infixstr_to_func(equ):
         elif is_float(node):
             const_code = len(const_array)
             const_array.append(float(node))
-            stack.append(const_code + 3000)
+            stack.append(const_code + 5000)
         else:
-            var_code = int(node[2:]) + 5000 + 1
+            var_code = int(node[2:]) + 3000
             stack.append(var_code)
     new_func_list = []
     stack1 = [stack]
@@ -752,7 +757,7 @@ def to_op(ind, np_x, np_y):
             str_op = map_F1[int_i]
             list_prefix.append(str_op)
         elif 3000 <= int_i < 5000:
-            str_x = "X_" + str(int_i - 3000)
+            str_x = "X_" + str(int_i - 2999)
             list_prefix.append(str_x)
         elif int_i >= 5000:
             str_con = str(ind.const_array[int_i - 5000])
@@ -827,7 +832,7 @@ def to_op(ind, np_x, np_y):
         return op_tree
 
 
-def equ_to_op(equ,ds):
+def equ_to_op(equ, ds):
     list_infix = []
     op_al = ""
     x_al = ""

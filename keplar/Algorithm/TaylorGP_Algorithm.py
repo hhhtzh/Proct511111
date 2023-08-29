@@ -313,6 +313,8 @@ class MTaylorGPAlg(Alg):
                    x24, x25, x26, x27, x28, x29])
 
     def run(self):
+        flag1 = False
+        flag2 = False
         np.set_printoptions(suppress=True)
         t = time.time()
         np_x = self.ds.get_np_x()
@@ -335,6 +337,8 @@ class MTaylorGPAlg(Alg):
             countAvailableParameters = SRC.CalCountofAvailableParameters(epsilons=epsilons, np_x=np_x)
             mabLoopNum = max(totalGeneration // originalTaylorGPGeneration // countAvailableParameters, 1)
             for epsilon in epsilons:
+                if flag1:
+                    break
                 if epsilon == 1e-5:
                     SRC.PreDbscan(epsilon, noClusterFlag=True, clusterMethod="NOCLUSTER",
                                   data_x=np_x)  # 执行 OriginalTaylorGP
@@ -351,14 +355,15 @@ class MTaylorGPAlg(Alg):
                     if SRC.bestLassoFitness < 1e-5:
                         print("Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ",
                               SRC.globalBestLassoCoef)
-                        exit()
+                        flag1 = True
+                        break
                 print("Temp Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
             print("Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
             self.best_fit = SRC.bestLassoFitness
         # if isinstance(SRC.globalBestLassoCoef, list):
         #     print(SRC.globalBestLassoCoef)
         #     print(SRC.tops)
-        self.best_ind = SRC.tops[SRC.globalBestLassoCoef[0]-1]
+        self.best_ind = SRC.tops[SRC.globalBestLassoCoef[0] - 1]
         # else:
         #     self.best_ind = SRC.tops[SRC.globalBestLassoCoef]
         print("best_ind" + str(self.best_ind[1][0]))
@@ -377,7 +382,7 @@ class MTaylorGPAlg(Alg):
         self.elapse_time = time.time() - t
         str_eq = str(self.best_ind[1][0])
         str_eq = re.sub(r'x(\d{1})', r'x_\1', str_eq)
-        self.best_ind=str_eq
+        self.best_ind = str_eq
         # eval = SingleBingoEvaluator(data=self.ds, equation=str_eq)
         # fit = eval.do()
         # self.best_fit = fit

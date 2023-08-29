@@ -74,6 +74,13 @@ class BingoEvaluator(Evaluator):
             evaluator(population=bingo_pop)
             for i in range(len(bingo_pop)):
                 population.target_fit_list.append(bingo_pop[i].fitness)
+            if self.to_type != "Bingo":
+                for i in range(len(bingo_pop)):
+                    func,const_arr=bingo_infixstr_to_func(str(bingo_pop[i]))
+                    ind=Individual(func=func,const_array=const_arr)
+                    ind.set_fitness(bingo_pop[i].fitness)
+                    population.pop_list.append(ind)
+                population.pop_type = "self"
 
 
 class OperonEvaluator(Evaluator):
@@ -124,6 +131,7 @@ class OperonEvaluator(Evaluator):
             for i in ind_list:
                 ea = evaluator(rng, i)
                 fit_list.append(ea[0])
+            # print(fit_list)
             if self.to_type == "Operon":
                 population.target_fit_list = fit_list
                 population.pop_type = "Operon"
@@ -136,6 +144,7 @@ class OperonEvaluator(Evaluator):
                     func, const_array = trans_op(operon_ind_list[i], var_list)
                     kep_ind = Individual(func)
                     kep_ind.const_array = const_array
+                    # print(fit_list[i])
                     kep_ind.set_fitness(fit_list[i])
                     kep_pop_list.append(kep_ind)
                 population.pop_list = kep_pop_list
@@ -147,6 +156,7 @@ class OperonEvaluator(Evaluator):
             ind_list = []
             fit_list = []
             for ind in population.pop_list:
+                # print(ind.format())
                 tree = to_op(ind, self.np_x, self.np_y)
                 tree_list.append(tree)
             for i in tree_list:
@@ -155,7 +165,12 @@ class OperonEvaluator(Evaluator):
                 ind_list.append(ind)
             for i in ind_list:
                 ea = evaluator(rng, i)
+                # print(ea)
                 fit_list.append(ea[0])
+            # for i in range(len(fit_list)):
+            #     print(population.pop_list[i].format())
+            #     print(population.pop_list[i].func)
+            #     print(fit_list[i])
             if self.to_type == "Operon":
                 population.target_fit_list = fit_list
                 population.pop_type = "Operon"
@@ -215,6 +230,7 @@ class OperonSingleEvaluator(Evaluator):
         ind = Operon.Individual()
         equ = re.sub(r'x_', r'X_', self.op_equ)
         func_list, const_array = bingo_infixstr_to_func(equ)
+        # print(func_list)
         ind1 = Individual(func=func_list, const_array=const_array)
         tree = to_op(ind1, self.np_x, self.np_y)
         ind.Genotype = tree

@@ -202,7 +202,31 @@ class OperonBingoAlg(Alg):
         self.best_fit = now_error
         self.elapse_time = time.time() - t
 
-    def one_gen_run
+    def one_gen_run(self):
+        t = time.time()
+        # now_error = self.population.get_best_fitness()
+        pool_list = self.selector.do(self.population)
+        while len(pool_list.target_pop_list) < self.pool_size:
+            for i in self.up_op_list:
+                i.do(pool_list)
+        for i in self.eval_op_list:
+            i.do(pool_list)
+        reinserter = KeplarReinserter(pool_list, "self")
+        reinserter.do(self.population)
+        now_error = self.population.get_best_fitness()
+        # for i in self.population.pop_list:
+        #     print(i.fitness)
+        # print("is 0"+str(now_error))
+        # best_ind = str(self.get_best_individual())
+        self.age += 1
+        # print("第" + f"{self.age}代种群，" +
+        #       f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+        best_ind = str(self.get_best_individual())
+
+        print("迭代结束，共迭代" + f"{self.age}代" +
+              f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+        self.best_fit = now_error
+        self.elapse_time = time.time() - t
 
 
 class GplearnAlg(Alg):

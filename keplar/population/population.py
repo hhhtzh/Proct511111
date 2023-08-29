@@ -40,7 +40,7 @@ class Population:
         best_fitness = self.target_fit_list[0]
         best_index=0
         for j in range(len(self.target_fit_list)):
-            if self.target_fit_list[j] < best_fitness:
+            if self.target_fit_list[j] < best_fitness and str(self.target_fit_list[j])!="nan":
                 best_fitness = self.target_fit_list[j]
                 best_index=j
         return best_index
@@ -49,7 +49,7 @@ class Population:
         best_index = 0
         best_fitness = self.pop_list[0].get_fitness()
         for j in range(len(self.pop_list)):
-            if self.pop_list[j].get_fitness() < best_fitness:
+            if self.pop_list[j].get_fitness() < best_fitness and str(self.pop_list[j].get_fitness())!="nan":
                 best_fitness = self.pop_list[j].get_fitness()
                 best_index = j
         return best_index

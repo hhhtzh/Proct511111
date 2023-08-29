@@ -10,12 +10,13 @@ from keplar.operator.mutation import OperonMutation
 from keplar.operator.selector import BingoSelector
 
 # data = Data("txt", "datasets/1.txt", ["x", "y"])
-# data=Data("pmlb","1027_ESL",["x1","x2","x3",'y'])
-data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
+data=Data("pmlb","1027_ESL",["x1","x2","x3",'y'])
+# data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
+# data = Data("pmlb", "529_pollen", ["x1", "x2", "x3", "x4", 'y'])
 fit_list = []
 time_list = []
 data.read_file()
-data.set_xy("y")
+# data.set_xy("y")
 x = data.get_np_x()
 y = data.get_np_y()
 creator = OperonCreator("balanced", x, y, 128, "Operon")
@@ -28,8 +29,8 @@ mutation = OperonMutation(0.6, 0.7, 0.8, 0.8, x, y, 10, 50, "balanced", "Operon"
 op_up_list = [mutation, crossover]
 for i in range(10):
     population = creator.do()
-    alg = OperonBingoAlg(1000, op_up_list, None, eval_op_list, -10, population, select, x, y, 100)
-    alg.run()
+    alg = OperonBingoAlg(1, op_up_list, None, eval_op_list, -10, population, select, x, y, 128)
+    alg.one_gen_run()
     fit_list.append(alg.best_fit)
     time_list.append(alg.elapse_time)
 fit_pd = pd.DataFrame({'OperonBingo': fit_list})
