@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from keplar.Algorithm.operon_Algorithm import KeplarOperon, KeplarMOperon
+from keplar.Algorithm.operon_Algorithm import OperonPlus, KeplarMOperon
 from keplar.data.data import Data
 from keplar.population.population import Population
 

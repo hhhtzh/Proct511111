@@ -178,7 +178,7 @@ class OperonAlg(Alg):
         self.ind_list = gp.Individuals
 
 
-class KeplarOperon(Alg):
+class OperonPlus(Alg):
 
     def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population, data
                  , operators, recursion_limit=10):

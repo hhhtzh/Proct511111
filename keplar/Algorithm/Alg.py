@@ -68,7 +68,7 @@ class KeplarBingoAlg(Alg):
         self.best_fit = None
 
     def get_best_individual(self):
-        if self.population!="self":
+        if self.population != "self":
             return self.population.target_pop_list[self.population.get_tar_best()]
         else:
             return self.population.pop_list[self.population.get_best()]
@@ -154,7 +154,7 @@ class TaylorBingoAlg(Alg):
         self.elapse_time = time.time() - t
 
 
-class OperonBingoAlg(Alg):
+class KeplarOperonAlg(Alg):
 
     def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population, selector,
                  np_x, np_y, pool_size):
@@ -181,8 +181,14 @@ class OperonBingoAlg(Alg):
         for i in self.eval_op_list:
             i.do(self.population)
         now_error = self.population.get_best_fitness()
+        start_error = now_error
+        search_sum = 0
+        former_error = now_error
+        tansuo_cishu = 0
         while self.age < self.max_generation and now_error >= self.error_tolerance or str(now_error) == "nan":
             pool_list = self.selector.do(self.population)
+            tansuo_cishu += self.pool_size - len(pool_list.target_pop_list)
+            search_sum = tansuo_cishu
             while len(pool_list.target_pop_list) < self.pool_size:
                 for i in self.up_op_list:
                     i.do(pool_list)
@@ -191,14 +197,17 @@ class OperonBingoAlg(Alg):
             reinserter = KeplarReinserter(pool_list, "self")
             reinserter.do(self.population)
             now_error = self.population.get_best_fitness()
-            # best_ind = str(self.get_best_individual())
+            chazhi = former_error - now_error
+            former_error = now_error
+            best_ind = str(self.get_best_individual())
             self.age += 1
-            # print("第" + f"{self.age}代种群，" +
-            #       f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+            bizhi = chazhi / tansuo_cishu
+            print("第" + f"{self.age}代种群，" +
+                  f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}" + f"适应度下降与探索次数比值为{bizhi}")
         best_ind = str(self.get_best_individual())
 
         print("迭代结束，共迭代" + f"{self.age}代" +
-              f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+              f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}"+ f"适应度下降与总共探索次数比值为{(start_error-now_error)/search_sum}")
         self.best_fit = now_error
         self.elapse_time = time.time() - t
 

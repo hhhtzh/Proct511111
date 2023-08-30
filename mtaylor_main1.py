@@ -7,10 +7,10 @@ from keplar.population.population import Population
 
 # data = Data("txt_pmlb", "datasets/pmlb/val/197_cpu_act.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13", "x14", "x15", "x16", "x17", "x18", "x19", "x20","y"])
 # data = Data("txt_pmlb", "datasets/pmlb/val/503_wind.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13","y"])
-data = Data("txt_pmlb", "datasets/pmlb/train/294_satellite_image.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13", "x14", "x15", "x16", "x17", "x18", "x19", "x20","x21", "x22", "x23", "x24", "x25", "x26", "x27", "x28", "x29","x30", "x31", "x32", "x33", "x34", "x35", "y"])
+# data = Data("txt_pmlb", "datasets/pmlb/train/294_satellite_image.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13", "x14", "x15", "x16", "x17", "x18", "x19", "x20","x21", "x22", "x23", "x24", "x25", "x26", "x27", "x28", "x29","x30", "x31", "x32", "x33", "x34", "x35", "y"])
 # data = Data("txt", "datasets/vla/two/1.txt", ["x0", "x1", "y"])
 # data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
-# data = Data("txt_pmlb", "datasets/pmlb/train/529_pollen.txt", ["x0", "x1", "x2", "x3", "y"])
+data = Data("txt_pmlb", "datasets/feynman/train/feynman-i.12.5.txt", ["x0", "x1", "y"])
 np.set_printoptions(suppress=True)
 data.read_file()
 data.set_xy("y")

@@ -1,6 +1,6 @@
 import csv
 
-from keplar.Algorithm.Alg import KeplarBingoAlg, GpBingo2Alg, OperonBingoAlg
+from keplar.Algorithm.Alg import KeplarBingoAlg, GpBingo2Alg, KeplarOperonAlg
 from keplar.data.data import Data
 from keplar.operator.check_pop import CheckPopulation
 from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
@@ -69,7 +69,7 @@ for _ in range(1000):
     bgsr.one_gen_run()
     gpbg2 = GpBingo2Alg(1, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population2)
     gpbg2.one_gen_run()
-    opbg = OperonBingoAlg(1, op_up_list, None, eval_op_list, -10, population3, select, x, y, 128)
+    opbg = KeplarOperonAlg(1, op_up_list, None, eval_op_list, -10, population3, select, x, y, 128)
     opbg.one_gen_run()
     temp_pop_list.append(population1)
     temp_pop_list.append(population2)
