@@ -74,6 +74,8 @@ class BingoSelector(Operator):
             new_pop.pop_type = "self"
         else:
             new_pop.pop_type = "Bingo"
+
+
             new_pop.target_pop_list = new_bingo_pop
         return new_pop
 
@@ -131,6 +133,43 @@ class OperonSelector(Selector):
 
 
 class TaylorGPSelector(Selector):
+    def __init__(self, random_state, tournament_size, greater_is_better):
+        super().__init__()
+        self.random_state = random_state
+        self.tournament_size = tournament_size
+        self.greater_is_better = greater_is_better
+
+    def get_value(self, random_state, tournament_size):
+        self.random_state = random_state
+        self.tournament_size = tournament_size
+        # self.greater_is_better =greater_is_better
+
+    def do(self, population=None):
+        # print("8888888")
+        # print(population.pop_size)
+        contenders = self.random_state.randint(1, population.pop_size, self.tournament_size)
+        # print(contenders)
+        # for p in contenders:
+        #     print(p)
+        #     print(population.target_fit_list[p])
+        # print("kkkk")
+        # print(population.target_fit_list[999])
+        # print("kkkk")
+        # print(contenders)
+        # print(population.pop_size)
+        # print(population.target_pop_list[999].fitness_)
+        # print(population.target_pop_list[1].fitness_)
+
+        fitness = [population.target_pop_list[p].raw_fitness_ for p in contenders]
+        if self.greater_is_better:
+            parent_index = contenders[np.argmax(fitness)]
+        else:
+            parent_index = contenders[np.argmin(fitness)]
+        # print("77777")
+        return population.target_pop_list[parent_index], parent_index
+
+
+class GpSelector(Selector):
     def __init__(self, random_state, tournament_size, greater_is_better):
         super().__init__()
         self.random_state = random_state

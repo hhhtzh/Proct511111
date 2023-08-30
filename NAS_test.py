@@ -21,7 +21,7 @@ class PerformancePredictor(nn.Module):
 
 
 # 定义演化算法的选择器
-def select_algorithm(predictor, input_data):
+def select_algorithm(predictor, input_data ):
     with torch.no_grad():
         algorithm_probabilities = predictor(input_data)
         selected_algorithm = torch.argmax(algorithm_probabilities).item()
