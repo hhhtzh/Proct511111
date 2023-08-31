@@ -136,6 +136,7 @@ df_sum = df_sum.loc[df_sum['algorithm'] != "DSR"]
 # rename
 df_sum['*algorithm*'] = df_sum['algorithm'].apply(lambda x: rename_algos[x] if x in rename_algos else x)
 # add implementation
+print(df_sum['*algorithm*'])
 df_sum['*algorithm*'] = df_sum['*algorithm*'].apply(lambda x: x if x in our_impl else "*" + x)
 
 data = df_sum.copy()  # .loc[df_sum.algorithm.isin(symbolic_algs)]
@@ -165,7 +166,7 @@ for el in range(levels):
     PFs.append(PF)
 i = 0
 pareto_data.loc[:, 'pareto_rank'] = pareto_ranks
-print(pareto_data.loc[:, 'pareto_rank'])
+# print(pareto_data.loc[:, 'pareto_rank'])
 for pfset in PFs:
     xset, yset = [], []
 
@@ -284,8 +285,8 @@ for alg, dg in data.groupby('*algorithm*'):
     y = dg[ycol].median()
     _, sdx, ciux, cilx = bootstrap(dg[xcol].values, fn=np.median, n=1000)
     _, sdy, ciuy, cily = bootstrap(dg[ycol].values, fn=np.median, n=1000)
-    print(len(cmap))
-    print(int(pareto_data.loc[alg, 'pareto_rank']))
+    # print(len(cmap))
+    # print(int(pareto_data.loc[alg, 'pareto_rank']))
 
     # plt.plot(
     #     [cilx, ciux],

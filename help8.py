@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -10,7 +12,7 @@ from keplar.data.data import Data
 class PerformancePredictor(nn.Module):
     def __init__(self, input_size):
         super(PerformancePredictor, self).__init__()
-        self.fc = nn.Linear(input_size, 3)  # 预测每个演化算法的性能
+        self.fc = nn.Linear(input_size, 7)  # 预测每个演化算法的性能
         self.softmax = nn.Softmax(dim=1)  # 在输出层使用softmax函数
 
     def forward(self, x):
@@ -27,14 +29,20 @@ def select_algorithm(predictor, input_data):
 
 # 模拟训练数据和演化算法选择
 num_generations = 1000  # 修改为你的数据集行数
-input_size = 6  # 修改为你的输入特征维度
-training_data = torch.randn(num_generations, input_size)  # 数据集大小为 (num_generations, input_size)
+input_size = 7  # 修改为你的输入特征维度
+data = pd.read_csv("NAStraining_data/recursion_training2.csv")
+x = data.drop(['SelectedLable'], axis=1)
+x = np.array(x, dtype=float)
+y = data['SelectedLable']  # label值
+list1 = y.to_list()
+arr = np.array(list1, dtype=float)
+training_data = torch.from_numpy(x).float()   # 数据集大小为 (num_generations, input_size)
 # data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 # data.read_file()
 # dataSet = data.get_np_ds()
 # training_data = torch.tensor(dataSet)
 # training_data=training_data.to(tensor.f)
-algorithm_labels = torch.randint(3, (num_generations,))  # 演化算法的实际选择
+algorithm_labels =torch.from_numpy(arr).float()  # 演化算法的实际选择
 
 # 创建可微神经网络实例
 predictor = PerformancePredictor(input_size=input_size)
@@ -48,6 +56,8 @@ num_epochs = 100
 for epoch in range(num_epochs):
     optimizer.zero_grad()
     predicted_probabilities = predictor(training_data)
+    predicted_probabilities = predicted_probabilities.type(torch.float32)
+    algorithm_labels = algorithm_labels.type(torch.long)
     loss = criterion(predicted_probabilities, algorithm_labels)
     loss.backward()
     optimizer.step()

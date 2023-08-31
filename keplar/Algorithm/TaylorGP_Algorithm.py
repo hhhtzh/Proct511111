@@ -384,7 +384,7 @@ class MTaylorGPAlg(Alg):
         str_eq = re.sub(r'x(\d{1})', r'x_\1', str_eq)
         self.best_ind = str_eq
         # eval = SingleBingoEvaluator(data=self.ds, equation=str_eq)
-        # fit = eval.do()
+        # fit = eval.do()F
         # self.best_fit = fit
 
     """
