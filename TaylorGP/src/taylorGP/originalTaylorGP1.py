@@ -11,7 +11,7 @@ from keplar.operator.reinserter import OperonReinserter
 from keplar.operator.selector import BingoSelector, OperonSelector
 from .genetic1 import SymbolicRegressor
 from .calTaylor import Metrics2  # ,cal_Taylor_features
-from .calTaylor1 import Metrics
+from .calTaylor_GetTaylor import Metrics
 from ._program import print_program
 from ._global import set_value, get_value, _init
 import numpy as np
@@ -180,6 +180,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
     :param SR_method:
 
     """
+    # print('In OriginalTaylorGP')
     _init()
     x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29 = symbols(
         "x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,x28,x29 ")
@@ -198,22 +199,25 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
     end_fitness, program, findBestFlag, Y_pred, temp_Y_pred = None, None, False, None, copy.deepcopy(Y_pred)
     if qualified_list == None:  # 保证泰勒多项式不用重复计算
         Metric = []
-        for linalg in ["solve", "lstsq"]:
-            loopNum = 0
-            while True:
-                metric = Metrics(varNum=X.shape[1], dataSet=X_Y, linalg=linalg)
-                loopNum += 1
-                Metric.append(metric)
-                if loopNum == 5 and X.shape[1] <= 2:
-                    break
-                elif loopNum == 4 and (X.shape[1] > 2 and X.shape[1] <= 3):
-                    break
-                elif loopNum == 3 and (X.shape[1] > 3 and X.shape[1] <= 4):
-                    break
-                elif loopNum == 2 and (X.shape[1] > 4):
-                    break
-        Metric.sort(key=lambda x: x.low_nmse)
-        metric = Metric[0]
+        # for linalg in ["solve", "lstsq"]:
+        #     loopNum = 0
+        #     while True:
+        #         metric = Metrics(varNum=X.shape[1], dataSet=X_Y, linalg=linalg)
+        #         loopNum += 1
+        #         Metric.append(metric)
+        #         if loopNum == 5 and X.shape[1] <= 2:
+        #             break
+        #         elif loopNum == 4 and (X.shape[1] > 2 and X.shape[1] <= 3):
+        #             break
+        #         elif loopNum == 3 and (X.shape[1] > 3 and X.shape[1] <= 4):
+        #             break
+        #         elif loopNum == 2 and (X.shape[1] > 4):
+        #             break
+        linalg = "solve"
+        metric = Metrics(varNum=X.shape[1], dataSet=X_Y, linalg=linalg)
+
+        # Metric.sort(key=lambda x: x.low_nmse)
+        # metric = Metric[0]
         temp_Y_pred = metric._calY(metric.f_low_taylor)
         print('NMSE of polynomial and lower order polynomial after sorting:', metric.nmse, metric.low_nmse)
         print("f_Taylor: ", metric.f_taylor)

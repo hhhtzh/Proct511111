@@ -4,10 +4,19 @@ import pandas as pd
 from keplar.Algorithm.TaylorGP_Algorithm import MTaylorGPAlg
 from keplar.data.data import Data
 from keplar.population.population import Population
-
+import sys
+import argparse
 # data = Data("txt", "datasets/pmlb/val/197_cpu_act.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13", "x14", "x15", "x16", "x17", "x18", "x19", "x20","y"])
 # data = Data("txt", "datasets/vla/two/1.txt", ["x0", "x1", "y"])
+<<<<<<< HEAD
 data = Data("txt_pmlb", "datasets/feynman/train/feynman-i.14.3.txt", ["x0", "x1", "y"])
+=======
+sys.setrecursionlimit(10000)
+argparser = argparse.ArgumentParser()
+argparser.add_argument("--dataset", type=str, default="datasets/feynman/train/feynman-i.12.1.txt")
+
+data = Data("txt_pmlb", "datasets/feynman/train/feynman-i.12.1.txt", ["x0", "x1", "y"])
+>>>>>>> 13cd439 (commit)
 # data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
 # data = Data("txt_pmlb", "datasets/pmlb/train/529_pollen.txt", ["x0", "x1", "x2", "x3", "y"])
 np.set_printoptions(suppress=True)
