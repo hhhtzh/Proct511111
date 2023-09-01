@@ -11,8 +11,7 @@ import argparse
 sys.setrecursionlimit(10000)
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--dataset", type=str, default="datasets/feynman/train/feynman-i.12.1.txt")
-
-data = Data("txt_pmlb", "datasets/feynman/train/feynman-i.12.1.txt", ["x0", "x1", "y"])
+data = Data("txt_pmlb", "datasets/feynman/train/feynman-i.14.3.txt", ["x0", "x1", "y"])
 # data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", "x4", 'y'])
 # data = Data("txt_pmlb", "datasets/pmlb/train/529_pollen.txt", ["x0", "x1", "x2", "x3", "y"])
 np.set_printoptions(suppress=True)

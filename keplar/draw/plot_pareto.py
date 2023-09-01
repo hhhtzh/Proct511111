@@ -95,7 +95,7 @@ rename_algos = {
     "dsr": "DSR",
     "udsr": "uDSR"
 }
-our_impl = ["DSR", "uDSR", "ddsr", "DDSR-NN(ours)", "EQL", "gplearn"]
+our_impl = ["DSR", "uDSR", "ddsr", "DDSR-NN(ours)", "EQL", "gplearn","mtaylor"]
 print(df_plot.keys())
 
 df_plot = df_plot.loc[df_plot["algorithm"] != "eql"].reset_index(drop=True)

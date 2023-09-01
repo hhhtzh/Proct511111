@@ -175,7 +175,7 @@ rename_algos = {
     "eql": "EQL"
 }
 our_impl = ["DSR", "uDSR", "ddsr", "DDSR-NN(ours)", "EQL", "gplearn"]
-df_sum = pd.read_feather("pmlb_results.feather")
+df_sum = pd.read_feather("feynman_results.feather")
 # remove
 df_sum = df_sum.loc[df_sum['algorithm'] != "DSR"]
 # rename
