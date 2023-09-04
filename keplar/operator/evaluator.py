@@ -15,7 +15,7 @@ from gplearn._program import _Program
 from gplearn.fitness import _root_mean_square_error
 from keplar.operator.operator import Operator
 import pyoperon as Operon
-
+import xgboost as xgb
 from keplar.population.individual import Individual
 from keplar.translator.translator import trans_op, to_bingo, trans_gp, bingo_to_gp, bgpostfix_to_gpprefix, equ_to_op, \
     bingo_infixstr_to_func, to_op
@@ -229,7 +229,19 @@ class OperonSingleEvaluator(Evaluator):
         evaluator = Operon.Evaluator(problem, interpreter, error_metric, self.if_linear_scaling)
         ind = Operon.Individual()
         equ = re.sub(r'x_', r'X_', self.op_equ)
-        func_list, const_array = bingo_infixstr_to_func(equ)
+        # 使用正则表达式查找科学计数法表示
+
+        # 输入字符串包含科学计数法表示
+        # 使用正则表达式查找科学计数法表示
+
+        # 输入字符串包含科学计数法表示
+        # 使用正则表达式查找科学计数法表示
+
+        # 输入字符串包含科学计数法表示
+        # 使用正则表达式查找科学计数法表示
+        formula = equ.replace("**", "^")
+
+        func_list, const_array = bingo_infixstr_to_func(formula)
         # print(func_list)
         ind1 = Individual(func=func_list, const_array=const_array)
         tree = to_op(ind1, self.np_x, self.np_y)
@@ -446,3 +458,113 @@ class SingleBingoEvaluator(Evaluator):
         bingo_ind = bingo_pop[0]
         bingo_ind._update()
         return bingo_ind.fitness
+
+
+class XgBoostEvaluator(Evaluator):
+    def __init__(self, eval_x, eval_y, to_type, feature_weight=None, metric="rmse"):
+        self.to_type = to_type
+        self.feature_weight = feature_weight
+        super().__init__()
+        self.eval_y = np.array(eval_y)
+        self.eval_x = np.array(eval_x)
+        self.metric = metric
+
+    def do(self, population):
+        if self.metric == "mse":
+            fct = _mean_square_error
+        elif self.metric == "rmse":
+            fct = _root_mean_square_error
+        elif self.metric == "log":
+            fct = _log_loss
+        elif self.metric == "mae":
+            fct = _mean_absolute_error
+        else:
+            raise ValueError("gplearn评估模块计算误差方法设置错误")
+
+        if population.pop_type == "gplearn":
+            fit_list = []
+            gp_fit = _Fitness(fct, False)
+            lie_num = self.eval_x.shape[0]
+            if self.feature_weight is None:
+                self.feature_weight = []
+                for i in range(lie_num):
+                    self.feature_weight.append(1)
+                self.feature_weight = np.array(self.feature_weight)
+            for program in population.target_pop_list:
+                pred_y = program.execute(self.eval_x).reshape(-1, 1)
+                eva_y = self.eval_y.reshape(-1, 1)
+                fw = self.feature_weight.reshape(-1, 1)
+                # print(np.shape(eva_y))
+                # print(np.shape(pred_y))
+                # print(np.shape(fw))
+
+                # 将数学表达式编译为可执行的Python函数
+                func = individual.compile()
+
+                # 计算表达式的预测值
+                y_pred = [func(*x) for x in X]
+
+                # 使用XGBoost模型评估性能
+                model = xgb.XGBRegressor()
+                model.fit(X_train, y_train)
+                y_pred_xgb = model.predict(X_test)
+                mse = mean_squared_error(y_test, y_pred_xgb)
+
+                fitness = gp_fit(eva_y, pred_y.reshape(-1, 1), fw)
+                fit_list.append(fitness)
+
+            population.target_fit_list = fit_list
+            if self.to_type != "gplearn":
+                # print("ooooooooooooooooo")
+                population.pop_type = "self"
+                # print(len(population.target_pop_list))
+                # print(len(population.target_fit_list))
+                for i in range(len(population.target_pop_list)):
+                    ind = trans_gp(population.target_pop_list[i])
+                    ind.fitness = population.target_fit_list[i]
+                    population.pop_list.append(ind)
+        elif population.pop_type == "Bingo":
+            # print("ooooooooooooooooooo")
+            fit_list = []
+            gp_fit = _Fitness(fct, False)
+            lie_num = self.eval_x.shape[0]
+            if self.feature_weight is None:
+                self.feature_weight = []
+                for i in range(lie_num):
+                    self.feature_weight.append(1)
+                self.feature_weight = np.array(self.feature_weight)
+            gp_programs = []
+            for program in population.target_pop_list:
+                tk = bingo_to_gp(str(program))
+                tk = eq_string_to_infix_tokens(str(tk))
+                # print(tk)
+                tk = infix_to_postfix(tk)
+                # print(tk)
+                tk = bgpostfix_to_gpprefix(tk)
+                # print(tk)
+                gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt", "neg", "power", "sin"],
+                                   arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1, "neg": 1,
+                                            "power": 2, "sin": 1},
+                                   init_depth=[3, 3], init_method="half and half", n_features=4, const_range=[0, 1],
+                                   metric="rmse",
+                                   p_point_replace=0.4, parsimony_coefficient=0.01, random_state=1, program=tk)
+                gp_programs.append(gp_prog)
+            for program in gp_programs:
+                eva_y = self.eval_y.reshape(-1, 1)
+                fw = self.feature_weight.reshape(-1, 1)
+                pred_y = program.execute(self.eval_x).reshape(-1, 1)
+                fitness = gp_fit(eva_y, pred_y, fw)
+                fit_list.append(fitness)
+            population.target_pop_list = gp_programs
+            population.target_fit_list = fit_list
+            if self.to_type != "gplearn":
+                # print("jjjjjjjjjjjjjjjjjjjjjjjj")
+                for i, gp_program in enumerate(population.target_pop_list):
+                    ind = trans_gp(gp_program)
+                    ind.fitness = population.target_fit_list[i]
+                    population.pop_list.append(ind)
+                    population.pop_type = "self"
+                    population.pop_size = len(population.pop_list)
+        else:
+            pass
+

@@ -182,7 +182,7 @@ def bingo_infixstr_to_func(equ):
     if op_al != "":
         list_infix.append(op_al)
     post_equ = infix_to_postfix(list_infix)
-    print(list_infix)
+    # print(list_infix)
     stack = []
     const_array = []
     for node in post_equ:

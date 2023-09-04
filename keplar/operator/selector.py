@@ -170,7 +170,7 @@ class TaylorGPSelector(Selector):
 
 
 class GpSelector(Selector):
-    def __init__(self, random_state, tournament_size, greater_is_better):
+    def __init__(self, random_state, tournament_size, greater_is_better=None):
         super().__init__()
         self.random_state = random_state
         self.tournament_size = tournament_size
@@ -181,10 +181,10 @@ class GpSelector(Selector):
         self.tournament_size = tournament_size
         # self.greater_is_better =greater_is_better
 
-    def do(self, population=None):
+    def do(self, population):
         # print("8888888")
         # print(population.pop_size)
-        contenders = self.random_state.randint(1, population.pop_size, self.tournament_size)
+        contenders = self.random_state.randint(0, population.pop_size, self.tournament_size)
         # print(contenders)
         # for p in contenders:
         #     print(p)
