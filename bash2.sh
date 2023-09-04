@@ -3,6 +3,6 @@ while IFS= read -r filename; do
     cmd1="python mtaylor_main.py --dataset datasets/feynman/train/$filename"
     $cmd1
     echo "执行文件: $filename"
-done < feynman_txt_p4.csv
+done < feynman_txt_p2.csv
 
 echo "所有文件执行完成"
