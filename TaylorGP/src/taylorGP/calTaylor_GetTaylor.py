@@ -59,7 +59,7 @@ class Point:
 class Metrics:
     name = 'Good calculator'
 
-    def __init__(self, fileName=0,dataSet =None, model=None, f=None, classNum=8, varNum=1,linalg= "solve"):
+    def __init__(self, fileName=0,dataSet =None, model=None, f=None, classNum=8, varNum=1,linalg= "solve",TaylorNum_flag = False,f_taylor_s = None,taylor_nmse_s = 0,k_s = 0):
         self.model = model
         self.f_taylor = 0
         self.f_low_taylor = 0
@@ -122,13 +122,33 @@ class Metrics:
         self._mid_left, self._mid_right = 0, 0
         self._x_left, self._x_right = 0, 0
 
-        self.f_taylor, self.k, self.nmse = self._getTaylorPolyBest(varNum=varNum)
+
+
+        # global TaylorNum_flag
+        # global TaylorNum_flag5
+        # print("TaylorNum_flag=", TaylorNum_flag5)
+
+        if TaylorNum_flag == False:
+            self.f_taylor, self.k, self.nmse = self._getTaylorPolyBest(varNum=varNum)   
+            # TaylorNum_flag = True
+
+            # f_taylor_s = self.f_taylor
+            # taylor_nmse_s = self.nmse
+            # k_s = self.k
+        else:
+            self.f_taylor = f_taylor_s
+            self.k = k_s
+            self.nmse = taylor_nmse_s
+
         self.low_nmse = self.nmse
         self.f_low_taylor = self.f_taylor
+
+    def getFlag(self):
+        return True,self.f_taylor,self.nmse,self.k
     
     def _getTaylorPolyBest(self, varNum):
         if varNum == 1 or varNum == 2:
-            f_taylor ,k ,nmse= self._CalTaylorNmse(varNum,10)
+            f_taylor ,k ,nmse= self._CalTaylorNmse(varNum,3)
         elif varNum == 3 or varNum == 4:
             f_taylor ,k ,nmse= self._CalTaylorNmse(varNum,8)
         elif varNum == 5 or varNum == 6:

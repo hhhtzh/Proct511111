@@ -191,7 +191,7 @@ class subRegionCalculator:
         print("Count of SubRegions: ", len(self.subRegions), "Avg Nmse:", "%.5g" % avgNmse)
         return avgNmse
 
-    def CalTops(self, repeatNum, Pop, SR_method="gplearn"):
+    def CalTops(self, repeatNum, Pop, SR_method="gplearn", TaylorNum_flag=False,f_taylor_s = None,taylor_nmse_s = 0,k_s = 0):
         """
         对选中的子区间分别执行OriginalTaylorGP
         Args:
@@ -201,6 +201,8 @@ class subRegionCalculator:
         """
         print(self.firstMabFlag)
         print(self.mabPolicy)
+        # global self.TAy
+        # print("TAy ",self.TAy)
         if self.firstMabFlag:
             self.abSelectedArm = [1] * self.mabArmCount
             self.firstMabFlag = False
@@ -236,9 +238,9 @@ class subRegionCalculator:
                 # [end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
             self.abRockNum[selectedRegionIndex] += Pop*self.originalTaylorGPGen
             self.abRockSum += Pop*self.originalTaylorGPGen
-            top1 = OriginalTaylorGP(self.subRegions[selectedRegionIndex], Y_pred, parents, repeatNum,
+            TaylorNum_flag,f_taylor_s,taylor_nmse_s,k_s,top1  = OriginalTaylorGP(self.subRegions[selectedRegionIndex], Y_pred, parents, repeatNum,
                                     self.originalTaylorGPGen, Pop, qualified_list=qualified_list,
-                                    SR_method=SR_method)  # top是list 0是适应度，1是公式 2是上轮最后一代种群
+                                    SR_method=SR_method,TaylorNum_flag=TaylorNum_flag,f_taylor_s=f_taylor_s,taylor_nmse_s=taylor_nmse_s,k_s=k_s)  # top是list 0是适应度，1是公式 2是上轮最后一代种群
             self.tops[selectedRegionIndex] = top1  # 由于MAB，所以选择性更新tops
             if not get_value('FIRST_EVOLUTION_FLAG'):  # 除去第一次，以后演化基于之前的父代，并且若不不存在父代说明是低阶多项式不用演化直接跳过，此处也不影响MAB
                 # print(self.tops)
@@ -266,7 +268,8 @@ class subRegionCalculator:
                     continue
 
         set_value('FIRST_EVOLUTION_FLAG', False)
-        return self.tops
+        # return self.tops,TaylorNum_flag,f_taylor_s,taylor_nmse_s,k_s
+        return TaylorNum_flag,f_taylor_s,taylor_nmse_s,k_s
 
     def SubRegionPruning(self):
         """

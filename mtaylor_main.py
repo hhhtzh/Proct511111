@@ -30,9 +30,14 @@ fit_list = []
 time_list = []
 equ_list = []
 mt = MTaylorGPAlg(1000, data, population=pop, NewSparseRegressionFlag=True)
-for i in range(10):
+
+TaylorNum_flag = False
+f_taylor_s = None
+taylor_nmse_s = 0
+k_s = 0
+for i in range(30):
     print("iii")
-    mt.run()
+    TaylorNum_flag,f_taylor_s,taylor_nmse_s,k_s=mt.run(TaylorNum_flag,f_taylor_s,taylor_nmse_s,k_s)
     # fit_list.append(mt.best_fit)
     time_list.append(mt.elapse_time)
     equ_list.append(mt.best_ind)
