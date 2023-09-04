@@ -2167,7 +2167,7 @@ class Metrics:
             self.low_nmse = low_nmse
             return self.f_taylor
         else:
-            count1 = 2
+            count1 = 2                                                                                                                                                                                                                                                                                                                                                                                                                                                  
             count2 = 3
             if self.varNum == 2:
                 count1 = 6
