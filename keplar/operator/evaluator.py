@@ -63,8 +63,57 @@ class BingoEvaluator(Evaluator):
             if self.to_type == "Bingo":
                 population.target_pop_list = bingo_pop
                 population.pop_type = "Bingo"
+                population.target_fit_list = []
+                # print("@@")
+                # print(len(bingo_pop))
                 for i in range(len(bingo_pop)):
                     population.target_fit_list.append(bingo_pop[i].fitness)
+
+        else:
+            bingo_pop = population.target_pop_list
+            population.set_pop_size(len(bingo_pop))
+            # for i in bingo_pop:
+            #     print(str(i))
+            evaluator(population=bingo_pop)
+            population.target_fit_list=[]
+            for i in range(len(bingo_pop)):
+                population.target_fit_list.append(bingo_pop[i].fitness)
+            if self.to_type != "Bingo":
+                for i in range(len(bingo_pop)):
+                    func, const_arr = bingo_infixstr_to_func(str(bingo_pop[i]))
+                    ind = Individual(func=func, const_array=const_arr)
+                    ind.set_fitness(bingo_pop[i].fitness)
+                    population.pop_list.append(ind)
+                population.pop_type = "self"
+
+    def part_do(self, population):
+        if self.fit == "exp":
+            training_data = ExplicitTrainingData(self.x, self.y)
+            fitness = ExplicitRegression(training_data=training_data, metric=self.metric)
+        elif self.fit == "imp":
+            training_data = ImplicitTrainingData(x=self.x, dx_dt=self.dx_dt)
+            fitness = ImplicitRegression(training_data=training_data)
+        else:
+            raise ValueError("evaluator方法类型未识别")
+        if self.optimizer_method not in ["lm", "TNC", "BFGS", "L-BFGS-B", "CG", "SLSQP"]:
+            raise ValueError("优化方法名称未识别")
+        optimizer = ScipyOptimizer(fitness, method=self.optimizer_method)
+        local_opt_fitness = LocalOptFitnessFunction(fitness, optimizer)
+        evaluator = Evaluation(local_opt_fitness)
+        bingo_pop = []
+        if population.pop_type != "Bingo":
+            for i in population.pop_list:
+                bingo_ind = to_bingo(i)
+                bingo_pop.append(bingo_ind)
+            evaluator(population=bingo_pop)
+            for i in range(len(bingo_pop)):
+                population.pop_list[i].fitness = bingo_pop[i].fitness
+                population.pop_list[i].evaluated = True
+            if self.to_type == "Bingo":
+                population.target_pop_list = bingo_pop
+                population.pop_type = "Bingo"
+                for i in range(len(bingo_pop)):
+                    population.target_fit_list[i] = bingo_pop[i].fitness
 
         else:
             bingo_pop = population.target_pop_list
@@ -76,8 +125,8 @@ class BingoEvaluator(Evaluator):
                 population.target_fit_list.append(bingo_pop[i].fitness)
             if self.to_type != "Bingo":
                 for i in range(len(bingo_pop)):
-                    func,const_arr=bingo_infixstr_to_func(str(bingo_pop[i]))
-                    ind=Individual(func=func,const_array=const_arr)
+                    func, const_arr = bingo_infixstr_to_func(str(bingo_pop[i]))
+                    ind = Individual(func=func, const_array=const_arr)
                     ind.set_fitness(bingo_pop[i].fitness)
                     population.pop_list.append(ind)
                 population.pop_type = "self"
@@ -567,4 +616,3 @@ class XgBoostEvaluator(Evaluator):
                     population.pop_size = len(population.pop_list)
         else:
             pass
-

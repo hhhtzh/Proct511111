@@ -14,12 +14,12 @@ from keplar.operator.selector import BingoSelector
 
 # data = Data("txt", "datasets/1.txt",["x","y"])
 # data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
-data = Data("txt", "datasets/vla/two/1.txt", ["x0", "x1", "y"])
+# data = Data("txt", "datasets/vla/two/1.txt", ["x0", "x1", "y"])
 data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 fit_list = []
 time_list = []
 data.read_file()
-data.set_xy("y")
+# data.set_xy("y")
 x = data.get_x()
 y = data.get_y()
 operators = ["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^']
@@ -31,14 +31,14 @@ selector = BingoSelector(0.5, "tournament", "Bingo")
 gen_up_oplist = CompositeOp([crossover, mutation])
 gen_down_oplist = CompositeOpReturn([selector])
 gen_eva_oplist = CompositeOp([evaluator])
-for i in range(10):
+for i in range(1):
     population = creator.do()
-    bgsr = KeplarBingoAlg(1000, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
+    bgsr = KeplarBingoAlg(10000, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
     bgsr.run()
     # 纯Bingo时可导入bingocpp包
     fit_list.append(bgsr.best_fit)
     time_list.append(bgsr.elapse_time)
-fit_pd = pd.DataFrame({'KeplarBingoCPP': fit_list})
-time_pd = pd.DataFrame({'KeplarBingoCPP': time_list})
-fit_pd.to_csv(r"result/vla_5.csv", sep=',', mode="a")
-time_pd.to_csv(r"result/vla_5_time.csv", sep=',', mode="a")
+# fit_pd = pd.DataFrame({'KeplarBingoCPP': fit_list})
+# time_pd = pd.DataFrame({'KeplarBingoCPP': time_list})
+# fit_pd.to_csv(r"result/vla_5.csv", sep=',', mode="a")
+# time_pd.to_csv(r"result/vla_5_time.csv", sep=',', mode="a")

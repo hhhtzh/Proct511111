@@ -69,28 +69,57 @@ class KeplarBingoAlg(Alg):
 
     def get_best_individual(self):
         if self.population != "self":
+            # print(len(self.population.target_pop_list))
+            # print(self.population.get_tar_best())
             return self.population.target_pop_list[self.population.get_tar_best()]
         else:
             return self.population.pop_list[self.population.get_best()]
 
     def run(self):
+        search_num = 0
+        check_step = 1000
         t = time.time()
         generation_pop_size = self.population.get_pop_size()
         self.eval_op_list.do(self.population)
         now_error = self.population.get_best_fitness()
         while self.age < self.max_generation and now_error >= self.error_tolerance or str(now_error) == "nan":
             self.population = self.down_op_list.do(self.population)
+            # print(len(self.population.target_pop_list))
+            former_pop = len(self.population.target_pop_list)
             while generation_pop_size > self.population.get_pop_size():
+                # print(len(self.population.target_pop_list))
                 self.up_op_list.do(self.population)
+                up_num = len(self.population.target_pop_list) - former_pop
+                search_num += up_num
+                # print(search_num)
+                if search_num >= check_step:
+                    self.eval_op_list.do(self.population)
+                    now_error = self.population.get_best_fitness()
+                    now_elapse = time.time() - t
+                    str1 = str(now_elapse) + " " + str(now_error) + "\n"
+                    file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplarbingo_searchfit.txt",
+                                "a+")
+                    file.write(str1)
+                    file.close()
+                    check_step += 1000
+
             self.eval_op_list.do(self.population)
             now_error = self.population.get_best_fitness()
-            # best_ind = str(self.get_best_individual())
+            best_ind = str(self.get_best_individual())
             self.age += 1
-            # print("第" + f"{self.age}代种群，" +
-            #       f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+            print("第" + f"{self.age}代种群，" +
+                  f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+            # str1 = "11 " + str(now_error) + "\n"
+            # file = open("/result/pmlb_1027_keplarbingo_genration.txt", "a")
+            # file.write(str1)
+            # file.close()
         best_ind = str(self.get_best_individual())
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+        str1 = "\n"
+        file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplarbingo_searchfit.txt", "a")
+        file.write(str1)
+        file.close()
         self.best_fit = now_error
         self.elapse_time = time.time() - t
 
@@ -102,6 +131,7 @@ class KeplarBingoAlg(Alg):
         self.population = self.down_op_list.do(self.population)
         while generation_pop_size > self.population.get_pop_size():
             self.up_op_list.do(self.population)
+
         self.eval_op_list.do(self.population)
         now_error = self.population.get_best_fitness()
         # best_ind = str(self.get_best_individual())
@@ -141,6 +171,7 @@ class TaylorBingoAlg(Alg):
             self.population = self.down_op_list.do(self.population)
             while generation_pop_size > self.population.get_pop_size():
                 self.up_op_list.do(self.population)
+
             self.eval_op_list.do(self.population)
             now_error = self.population.get_best_fitness()
             best_ind = str(self.get_best_individual())
@@ -178,36 +209,55 @@ class KeplarOperonAlg(Alg):
 
     def run(self):
         t = time.time()
+        search_num = 0
+        check_step = 1000
         for i in self.eval_op_list:
             i.do(self.population)
         now_error = self.population.get_best_fitness()
-        start_error = now_error
-        search_sum = 0
-        former_error = now_error
-        tansuo_cishu = 0
         while self.age < self.max_generation and now_error >= self.error_tolerance or str(now_error) == "nan":
             pool_list = self.selector.do(self.population)
-            tansuo_cishu += self.pool_size - len(pool_list.target_pop_list)
-            search_sum = tansuo_cishu
+            # print(search_sum)
+            former_pop = len(pool_list.pop_list)
             while len(pool_list.target_pop_list) < self.pool_size:
                 for i in self.up_op_list:
                     i.do(pool_list)
+                print(len(pool_list.target_pop_list))
+                up_num = len(pool_list.target_pop_list) - former_pop
+                search_num += up_num
+                # print(search_num)
+                if search_num >= check_step:
+                    for i in self.eval_op_list:
+                        i.do(pool_list)
+                    now_error = pool_list.get_best_fitness()
+                    now_elapse = time.time() - t
+                    str1 = str(now_elapse) + " " + str(now_error) + "\n"
+                    file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_searchfit.txt",
+                                "a+")
+                    file.write(str1)
+                    file.close()
+                    check_step += 1000
             for i in self.eval_op_list:
                 i.do(pool_list)
             reinserter = KeplarReinserter(pool_list, "self")
             reinserter.do(self.population)
             now_error = self.population.get_best_fitness()
-            chazhi = former_error - now_error
             former_error = now_error
             best_ind = str(self.get_best_individual())
             self.age += 1
-            bizhi = chazhi / tansuo_cishu
             print("第" + f"{self.age}代种群，" +
-                  f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}" + f"适应度下降与探索次数比值为{bizhi}")
+                  f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
+            str1 = "\n"
+            file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_searchfit.txt", "a")
+            file.write(str1)
+            file.close()
         best_ind = str(self.get_best_individual())
 
         print("迭代结束，共迭代" + f"{self.age}代" +
-              f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}"+ f"适应度下降与总共探索次数比值为{(start_error-now_error)/search_sum}")
+              f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}" )
+        str1 = "\n"
+        file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_generation.txt", "a")
+        file.write(str1)
+        file.close()
         self.best_fit = now_error
         self.elapse_time = time.time() - t
 

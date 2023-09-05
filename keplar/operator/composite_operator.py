@@ -30,6 +30,12 @@ class CompositeOp(Operator):
         for op in self.op_list:
             op.do(population)
 
+    def part_do(self,population):
+        for op in self.op_list:
+            op.part_do(population)
+
+
+
 
 class CompositeOpReturn(CompositeOp):
     def __init__(self, op_list):
