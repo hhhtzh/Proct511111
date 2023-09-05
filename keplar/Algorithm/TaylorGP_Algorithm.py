@@ -312,7 +312,7 @@ class MTaylorGPAlg(Alg):
                    x22, x23,
                    x24, x25, x26, x27, x28, x29])
 
-    def run(self,TaylorNum_flag,f_taylor_s,taylor_nmse_s,k_s):
+    def run(self):
         flag1 = False
         flag2 = False
 
@@ -351,7 +351,7 @@ class MTaylorGPAlg(Alg):
                 set_value('FIRST_EVOLUTION_FLAG', True)
                 # 进行每轮数据集演化前执行
                 for tryNum in range(mabLoopNum):
-                    TaylorNum_flag,f_taylor_s,taylor_nmse_s,k_s=SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method,TaylorNum_flag=TaylorNum_flag,f_taylor_s=f_taylor_s,taylor_nmse_s=taylor_nmse_s,k_s=k_s)
+                    SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method)
                     SRC.SubRegionPruning()
                     SRC.SparseRegression()
                     if SRC.bestLassoFitness < 1e-5:
@@ -385,10 +385,7 @@ class MTaylorGPAlg(Alg):
         str_eq = str(self.best_ind[1][0])
         str_eq = re.sub(r'x(\d{1})', r'x_\1', str_eq)
         self.best_ind = str_eq
-        # eval = SingleBingoEvaluator(data=self.ds, equation=str_eq)
-        # fit = eval.do()F
-        # self.best_fit = fit
-        return TaylorNum_flag,f_taylor_s,taylor_nmse_s,k_s
+
 
     """
         for fileNum in range(19,20):

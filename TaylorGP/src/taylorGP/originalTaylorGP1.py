@@ -169,7 +169,7 @@ def Taylor_Based_SR(_x, X, Y, qualified_list, eq_write, population, Gen, Pop, re
 
 
 def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFlag=False, qualified_list=None,
-                     SR_method="gplearn",TaylorNum_flag=False,f_taylor_s=None,taylor_nmse_s=0,k_s=0):
+                     SR_method="gplearn"):
     """
     原始版本的TaylorGP
     Args:
@@ -214,11 +214,10 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
         #         elif loopNum == 2 and (X.shape[1] > 4):
         #             break
         linalg = "solve"
-        # global TaylorNum_flag5
-        # print("TaylorNum_flag5 = ", TaylorNum_flag)
-        metric = Metrics(varNum=X.shape[1], dataSet=X_Y, linalg=linalg,TaylorNum_flag=TaylorNum_flag,f_taylor_s=f_taylor_s,taylor_nmse_s=taylor_nmse_s,k_s=k_s)
 
-        TaylorNum_flag,f_taylor_s,taylor_nmse_s,k_s = metric.getFlag()
+        metric = Metrics(varNum=X.shape[1], dataSet=X_Y, linalg=linalg)
+
+        metric.getFlag()
         # Metric.sort(key=lambda x: x.low_nmse)
         # metric = Metric[0]
         temp_Y_pred = metric._calY(metric.f_low_taylor)
@@ -294,7 +293,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
                 print(programs)
                 print('fitness_and_program', end_fitness[0], programs[0], sep='\n')
             if end_fitness[0] < 1e-5: findBestFlag = true
-            return TaylorNum_flag,f_taylor_s,taylor_nmse_s,k_s,[end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
+            return [end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
         
 
         
