@@ -214,8 +214,10 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
         #         elif loopNum == 2 and (X.shape[1] > 4):
         #             break
         linalg = "solve"
+
         metric = Metrics(varNum=X.shape[1], dataSet=X_Y, linalg=linalg)
 
+        metric.getFlag()
         # Metric.sort(key=lambda x: x.low_nmse)
         # metric = Metric[0]
         temp_Y_pred = metric._calY(metric.f_low_taylor)
@@ -243,53 +245,59 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
         fitness = mean_squared_error(lr_est.predict(test_X), test_y, squared=False)  # RMSE
         print('LR_predict_fitness: ', fitness)                
         '''
-        if lr_nmse < metric.nmse:
-            metric.nmse = lr_nmse
-            metric.f_taylor = sympify(f)
-            metric.bias = 0.
-        if metric.nmse < 0.01:
-            metric.nihe_flag = True  # 奇偶性判断前需要先拟合
-        if lr_nmse < metric.low_nmse:
-            metric.low_nmse = lr_nmse
-            metric.f_low_taylor = sympify(f)
-            temp_Y_pred = lr_Y_pred
-        if rmseFlag == True: return metric.nmse
-        # time_end2 = time()
-        # print('Pretreatment_time_cost', (time_end2 - time_start2) / 3600, 'hour')
-        # self.global_fitness, self.sympy_global_best = metric.low_nmse, metric.f_low_taylor
-        # if metric.nmse < 0.1:
-        #     metric.nihe_flag = True
-        # else:
-        #     metric.bias = 0.
-        #     print('Fitting failed')
-        if metric.low_nmse < 1e-5:
-            end_fitness, programs, Y_pred = [metric.low_nmse], [metric.f_low_taylor], Y
-        else:
-            qualified_list = []
-            qualified_list.extend(
-                [metric.judge_Bound(),
-                 metric.f_low_taylor,
-                 metric.low_nmse,
-                 metric.bias,
-                 metric.judge_parity(),
-                 metric.judge_monotonicity()])
-            print(qualified_list)
 
-    # elif metric.nihe_flag and (metric.judge_additi_separability() or metric.judge_multi_separability()):
-    #     end_fitness, programs,population = CalTaylorFeatures(metric.f_taylor, _x[:X.shape[1]], X, Y, population,Generation,Pop, repeatNum, eq_write)
-    if end_fitness is None:
+        for i in range(30):
+            if lr_nmse < metric.nmse:
+                metric.nmse = lr_nmse
+                metric.f_taylor = sympify(f)
+                metric.bias = 0.
+            if metric.nmse < 0.01:
+                metric.nihe_flag = True  # 奇偶性判断前需要先拟合
+            if lr_nmse < metric.low_nmse:
+                metric.low_nmse = lr_nmse
+                metric.f_low_taylor = sympify(f)
+                temp_Y_pred = lr_Y_pred
+            if rmseFlag == True: return metric.nmse
+            # time_end2 = time()
+            # print('Pretreatment_time_cost', (time_end2 - time_start2) / 3600, 'hour')
+            # self.global_fitness, self.sympy_global_best = metric.low_nmse, metric.f_low_taylor
+            # if metric.nmse < 0.1:
+            #     metric.nihe_flag = True
+            # else:
+            #     metric.bias = 0.
+            #     print('Fitting failed')
+            if metric.low_nmse < 1e-5:
+                end_fitness, programs, Y_pred = [metric.low_nmse], [metric.f_low_taylor], Y
+            else:
+                qualified_list = []
+                qualified_list.extend(
+                    [metric.judge_Bound(),
+                    metric.f_low_taylor,
+                    metric.low_nmse,
+                    metric.bias,
+                    metric.judge_parity(),
+                    metric.judge_monotonicity()])
+                print(qualified_list)
+
+            # elif metric.nihe_flag and (metric.judge_additi_separability() or metric.judge_multi_separability()):
+            #     end_fitness, programs,population = CalTaylorFeatures(metric.f_taylor, _x[:X.shape[1]], X, Y, population,Generation,Pop, repeatNum, eq_write)
+            if end_fitness is None:
+                
+                end_fitness, programs, population, Y_pred = Taylor_Based_SR(_x, X, change_Y(Y, qualified_list), qualified_list,
+                                                                            eq_write, population, Generation, Pop, repeatNum,
+                                                                            qualified_list[2] < 1e-5, SR_method=SR_method)
+                if isinstance(Y_pred,str):
+                    Y_pred = temp_Y_pred
+                # Y_pred = programs[0].predict(X)
+                print(end_fitness)
+                print(programs)
+                print('fitness_and_program', end_fitness[0], programs[0], sep='\n')
+            if end_fitness[0] < 1e-5: findBestFlag = true
+            return [end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
         
-        end_fitness, programs, population, Y_pred = Taylor_Based_SR(_x, X, change_Y(Y, qualified_list), qualified_list,
-                                                                    eq_write, population, Generation, Pop, repeatNum,
-                                                                    qualified_list[2] < 1e-5, SR_method=SR_method)
-        if isinstance(Y_pred,str):
-            Y_pred = temp_Y_pred
-        # Y_pred = programs[0].predict(X)
-        print(end_fitness)
-        print(programs)
-        print('fitness_and_program', end_fitness[0], programs[0], sep='\n')
-    if end_fitness[0] < 1e-5: findBestFlag = true
-    return [end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
+
+        
+    
 
 
 def change_Y(Y, qualified_list):

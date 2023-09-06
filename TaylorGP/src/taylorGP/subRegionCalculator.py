@@ -201,6 +201,8 @@ class subRegionCalculator:
         """
         print(self.firstMabFlag)
         print(self.mabPolicy)
+        # global self.TAy
+        # print("TAy ",self.TAy)
         if self.firstMabFlag:
             self.abSelectedArm = [1] * self.mabArmCount
             self.firstMabFlag = False
@@ -236,7 +238,7 @@ class subRegionCalculator:
                 # [end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
             self.abRockNum[selectedRegionIndex] += Pop*self.originalTaylorGPGen
             self.abRockSum += Pop*self.originalTaylorGPGen
-            top1 = OriginalTaylorGP(self.subRegions[selectedRegionIndex], Y_pred, parents, repeatNum,
+            top1  = OriginalTaylorGP(self.subRegions[selectedRegionIndex], Y_pred, parents, repeatNum,
                                     self.originalTaylorGPGen, Pop, qualified_list=qualified_list,
                                     SR_method=SR_method)  # top是list 0是适应度，1是公式 2是上轮最后一代种群
             self.tops[selectedRegionIndex] = top1  # 由于MAB，所以选择性更新tops
@@ -266,7 +268,6 @@ class subRegionCalculator:
                     continue
 
         set_value('FIRST_EVOLUTION_FLAG', False)
-        return self.tops
 
     def SubRegionPruning(self):
         """

@@ -15,7 +15,7 @@ from gplearn._program import _Program
 from gplearn.fitness import _root_mean_square_error
 from keplar.operator.operator import Operator
 import pyoperon as Operon
-import xgboost as xgb
+# import xgboost as xgb
 from keplar.population.individual import Individual
 from keplar.translator.translator import trans_op, to_bingo, trans_gp, bingo_to_gp, bgpostfix_to_gpprefix, equ_to_op, \
     bingo_infixstr_to_func, to_op

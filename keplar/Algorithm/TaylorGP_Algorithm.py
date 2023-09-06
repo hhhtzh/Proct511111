@@ -315,6 +315,8 @@ class MTaylorGPAlg(Alg):
     def run(self):
         flag1 = False
         flag2 = False
+
+
         np.set_printoptions(suppress=True)
         t = time.time()
         np_x = self.ds.get_np_x()
@@ -383,9 +385,7 @@ class MTaylorGPAlg(Alg):
         str_eq = str(self.best_ind[1][0])
         str_eq = re.sub(r'x(\d{1})', r'x_\1', str_eq)
         self.best_ind = str_eq
-        # eval = SingleBingoEvaluator(data=self.ds, equation=str_eq)
-        # fit = eval.do()F
-        # self.best_fit = fit
+
 
     """
         for fileNum in range(19,20):

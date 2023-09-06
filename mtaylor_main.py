@@ -30,6 +30,8 @@ fit_list = []
 time_list = []
 equ_list = []
 mt = MTaylorGPAlg(1000, data, population=pop, NewSparseRegressionFlag=True)
+
+
 for i in range(10):
     print("iii")
     mt.run()
