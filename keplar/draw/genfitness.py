@@ -39,8 +39,8 @@ def readfile(file):
 mat = readfile(open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_generation.txt"))
 mat = np.array(mat)
 meancol = mat.mean(axis=0)
-
-arr2 = readfile(open("/result/pmlb_1027_keplarbingo_genration.txt"))
+print(meancol)
+arr2 = readfile(open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplarbingo_generation.txt"))
 arr2 = np.array(arr2)
 meancol2 = arr2.mean(axis=0)
 

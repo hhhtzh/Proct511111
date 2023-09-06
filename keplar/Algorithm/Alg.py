@@ -116,10 +116,10 @@ class KeplarBingoAlg(Alg):
         best_ind = str(self.get_best_individual())
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
-        str1 = "\n"
-        file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplarbingo_searchfit.txt", "a")
-        file.write(str1)
-        file.close()
+        # str1 = "\n"
+        # file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplarbingo_searchfit.txt", "a")
+        # file.write(str1)
+        # file.close()
         self.best_fit = now_error
         self.elapse_time = time.time() - t
 
@@ -228,11 +228,14 @@ class KeplarOperonAlg(Alg):
                 if search_num >= check_step:
                     for i in self.eval_op_list:
                         i.do(pool_list)
-                    now_error = pool_list.get_best_fitness()
+                    now_error1 = pool_list.get_best_fitness()
+                    now_error2 = self.population.get_best_fitness()
+                    now_error = now_error1 if now_error1 <= now_error2 else now_error2
                     now_elapse = time.time() - t
                     str1 = str(now_elapse) + " " + str(now_error) + "\n"
-                    file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_searchfit.txt",
-                                "a+")
+                    file = open(
+                        "/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_searchfit.txt",
+                        "a+")
                     file.write(str1)
                     file.close()
                     check_step += 1000
@@ -247,15 +250,15 @@ class KeplarOperonAlg(Alg):
             print("第" + f"{self.age}代种群，" +
                   f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
             str1 = "\n"
-            file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_searchfit.txt", "a")
+            file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_searchfit.txt", "a+")
             file.write(str1)
             file.close()
         best_ind = str(self.get_best_individual())
 
         print("迭代结束，共迭代" + f"{self.age}代" +
-              f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}" )
+              f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
         str1 = "\n"
-        file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_generation.txt", "a")
+        file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_searchfit.txt", "a+")
         file.write(str1)
         file.close()
         self.best_fit = now_error
