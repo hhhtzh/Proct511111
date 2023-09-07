@@ -167,6 +167,48 @@ def assign_terms_to_equations(terms, subsets):
 
     return formula.strip()
 
+def CalTaylorFeatures(taylor_num,f_taylor, _x, X, Y, qualified_list, eq_write, population, Gen, Pop, repeatNum, low_polynomial,
+                        SR_method="gplearn"):
+    print('In CalTaylorFeatures')
+    G = nx.Graph()
+
+    metric = Metrics(f_taylor,_x,X,Y)
+    if metric.judge_Low_polynomial():
+        return [metric.low_nmse], [metric.f_low_taylor],None
+    
+    f_taylor = metric.f_taylor
+    f_taylor_num = metric.f_taylor_num
+    f_taylor_flag = metric.f_taylor_flag
+
+    for i,x in enumerate(x_var):
+        if x > varnum:
+            break
+        else
+            dd.append(x)
+    G.add_nodes_from(['x0', 'x1', 'x2'])
+
+    # 添加连接关系
+    for i,combnition in enumerate(combnitions):
+        sum = 0
+        for j in range(len(combnition)):
+            sum += combnition[j]
+        if sum == 2:
+            if all k in [0,1] for k in combnition:
+                for m,n in enumerate(combnition):
+                    if n == 1:
+                        # G.add_edge('x'+str(m), 'x'+str(m+1))
+                # G.add_edge('x0', 'x1')
+
+
+
+
+
+
+
+
+
+    
+
 def CalTaylorFeaturesGraph(taylor_num,f_taylor, _x, X, Y, qualified_list, eq_write, population, Gen, Pop, repeatNum, low_polynomial,
                     SR_method="gplearn"):
     print('In CalTaylorFeaturesGraph')
