@@ -13,8 +13,7 @@ sns.set(font_scale=1.25, style="whitegrid")
 
 sns.set_style("whitegrid")
 
-
-dataset = "pmlb"
+dataset = "feynman"
 feather = f"{dataset}_results.feather"
 
 show_algos = [
@@ -29,57 +28,58 @@ show_algos = [
     "ddsr"
 ]
 
-def save(name='tmp',h=None):
+
+def save(name='tmp', h=None):
     stype = "pdf"
-    name = name.strip().replace(' ','-').replace('%','pct')
+    name = name.strip().replace(' ', '-').replace('%', 'pct')
     if h == None:
         h = plt.gcf()
     h.tight_layout()
-    print('saving',name+f'.{stype}')
-    plt.savefig(name+f'.{stype}', bbox_inches='tight')
+    print('saving', name + f'.{stype}')
+    plt.savefig(name + f'.{stype}', bbox_inches='tight')
     # plt.savefig(name + '.png')
 
 
-def plot_comparison(df_compare, x='model_size',y='algorithm', row=None, col=None, scale=None, xlim=[],**kwargs):
+def plot_comparison(df_compare, x='model_size', y='algorithm', row=None, col=None, scale=None, xlim=[], **kwargs):
     # filter
     df_compare = df_compare.loc[df_compare["algorithm"] != "gplearn"]
-    
+
     plt.figure()
     order = df_compare.groupby(y)[x].median().sort_values(ascending=False if x == "r2_test" else True).index
-    if scale=='log' and len(xlim)>0 and xlim[0] == 0:
-        df_compare.loc[:,x] += 1
+    if scale == 'log' and len(xlim) > 0 and xlim[0] == 0:
+        df_compare.loc[:, x] += 1
         xlim[0] = 1
-        xnew = '1 + '+x
-        df_compare=df_compare.rename(columns={x:xnew})
+        xnew = '1 + ' + x
+        df_compare = df_compare.rename(columns={x: xnew})
         x = xnew
-    
-    sns.catplot(data=df_compare, 
+
+    sns.catplot(data=df_compare,
                 kind='box',
-#                 color='w',
+                #                 color='w',
                 orient="v",
                 y=x,
                 x=y,
                 order=order,
                 fliersize=0,
-#                 notch=True,
+                #                 notch=True,
                 #  height=6.5, 
                 #  aspect=0.6,
                 row=row,
                 col=col,
                 palette='flare_r',
                 **kwargs
-               )
+                )
     plt.ylabel('')
     plt.xlabel('')
-    if len(xlim)>0:
-        plt.xlim(xlim[0],xlim[1])
+    if len(xlim) > 0:
+        plt.xlim(xlim[0], xlim[1])
     plt.ylim(-1, 1)
     if scale:
         plt.gca().set_xscale(scale)
-    
-    save(name='_'.join(['boxplot',x + '-by-'+ y]) )
+
+    save(name='_'.join(['boxplot', x + '-by-' + y]))
     if col:
-        save(name='_'.join(['boxplot',x + '-by-'+ y] + [col]) )
+        save(name='_'.join(['boxplot', x + '-by-' + y] + [col]))
 
 
 def plot_dataset():
@@ -94,9 +94,9 @@ def plot_dataset():
         df = np.loadtxt(os.path.join(data_dir, "feynman/train", feynman + ".txt"))
         frames.append(dict(
             name=feynman,
-            nsamples = 10000,
-            nfeatures = df.shape[1] - 1,
-            npoints = 10000*(df.shape[1] - 1),
+            nsamples=10000,
+            nfeatures=df.shape[1] - 1,
+            npoints=10000 * (df.shape[1] - 1),
             Group="Physics"
         ))
 
@@ -104,12 +104,12 @@ def plot_dataset():
         df = np.loadtxt(os.path.join(data_dir, "origin-pmlb", pmlb + ".txt"))
         frames.append(dict(
             name=feynman,
-            nsamples = df.shape[0],
-            nfeatures = df.shape[1] - 1,
-            npoints = df.shape[0]*(df.shape[1] - 1),
+            nsamples=df.shape[0],
+            nfeatures=df.shape[1] - 1,
+            npoints=df.shape[0] * (df.shape[1] - 1),
             Group="Real"
         ))
-        
+
     df = pd.DataFrame.from_records(frames)
     sns.despine(left=True, bottom=True)
     ## PMLB dataset sizes
@@ -119,7 +119,7 @@ def plot_dataset():
         y='nsamples',
         hue='Group',
         alpha=0.7,
-        s=100, 
+        s=100,
     )
     ax = plt.gca()
     plt.legend(loc='upper right')
@@ -127,7 +127,8 @@ def plot_dataset():
     # ax.set_yscale('log')
     plt.xlabel('No. of Features')
     plt.ylabel('No. of Samples')
-    plt.savefig('benchmark.pdf',dpi=400, bbox_inches='tight')
+    plt.savefig('benchmark.pdf', dpi=400, bbox_inches='tight')
+
 
 # plot_dataset()
 # exit()
@@ -147,7 +148,7 @@ rename_algos = {
     "udsr": "uDSR",
     "eql": "EQL"
 }
-our_impl = ["DSR", "uDSR", "ddsr", "DDSR-NN(ours)", "EQL", "gplearn","mtaylor"]
+our_impl = ["DSR", "uDSR", "ddsr", "DDSR-NN(ours)", "EQL", "gplearn", "mtaylor"]
 print(df_plot.keys())
 # remove excluded
 df_plot = df_plot.loc[df_plot['algorithm'] != "DSR"]
@@ -156,15 +157,15 @@ df_plot['*algorithm*'] = df_plot['algorithm'].apply(lambda x: rename_algos[x] if
 # add implementation
 df_plot['*algorithm*'] = df_plot['*algorithm*'].apply(lambda x: x if x in our_impl else "*" + x)
 # different options
-x_vars=[
-#         'rmse_test',
-#         'log_mse_test',
-#         'r2_test_norm',
-        'r2_test',
-#         'r2_test_rank',
-        'model_size',
-#         'model_size_rank',
-        # 'training time (s)',
+x_vars = [
+    #         'rmse_test',
+    #         'log_mse_test',
+    #         'r2_test_norm',
+    'r2_test',
+    #         'r2_test_rank',
+    'model_size',
+    #         'model_size_rank',
+    # 'training time (s)',
 ]
 eql = df_plot.loc[df_plot["*algorithm*"] == "EQL"]
 print(eql.model_size.tolist())
@@ -179,12 +180,13 @@ df_plot["r2_test"] = df_plot["r2_test"].apply(lambda x: -1 if np.isnan(x) or np.
 df_plot["model_size"] = df_plot["model_size"].apply(lambda x: 100 if np.isnan(x) or np.isinf(x) else x)
 
 order = df_plot.groupby('*algorithm*')[x_vars[0]].mean().sort_values(
-                    ascending='r2' not in x_vars[0] or 'rank' in x_vars[0]).index
+    ascending='r2' not in x_vars[0] or 'rank' in x_vars[0]).index
 
 x_vars = ["model_size"]
 f, ax = plt.subplots(figsize=(7, 6))
 if "size" in x_vars[0]:
     ax.set_xscale("log")
+
 
 def box_plot():
     # eql feynman-1 seed=2 r2
@@ -193,11 +195,12 @@ def box_plot():
     # sns.boxplot(x="r2_test", y="*algorithm*", data=df_plot, order=order, width=0.8, palette="vlag")
     sns.boxplot(x=x_vars[0], y="*algorithm*", data=df_plot, order=order, width=.8, palette="vlag")
     sns.stripplot(x=x_vars[0], y="*algorithm*", data=df_plot, order=order,
-              size=3, color=".3", linewidth=0)
+                  size=3, color=".3", linewidth=0)
     if "r2_test" in x_vars[0]:
         ax.set_xlim([-.1, 1.02])
     if "size" in x_vars[0]:
         ax.set_xticks([1, 100, 1e4, 1e6], ["$10^1$", "$10^2$", "$10^3$", "$10^4$"])
+
 
 box_plot()
 ax.yaxis.grid(True)
@@ -254,10 +257,10 @@ plt.xlabel("")
 #     # Set a different title for each axes
 #     ax.set(title=title)
 #     ax.set_xlabel('')
-    
+
 #     if any([n in title.lower() for n in ['size','time']]):
 #         ax.set_xscale('log')
-    
+
 #     # if title == '$R^2$ Test':
 #     #     ax.set_xlim([.5,1])
 
@@ -266,9 +269,7 @@ plt.xlabel("")
 # g.axes.flat[1].set_xticks([1, 100, 10000], ["10", "100", "1000"])
 sns.despine(left=True, bottom=True)
 
-
-save(name='_'.join([f'{dataset}-pairgrid-pointplot']+x_vars))
-
+save(name='_'.join([f'{dataset}-pairgrid-pointplot'] + x_vars))
 
 # # show_df = []
 # # for algo in show_algos:

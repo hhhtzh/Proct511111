@@ -36,10 +36,10 @@ import pandas as pd
 from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens
 
 # 读取现有的 feather 文件
-ft = pd.read_feather("feynman_results.feather")
-time = pd.read_csv("/home/tzh/PycharmProjects/pythonProjectAR5/result/feynman-i.12.1_time.csv")
-equ = pd.read_csv("/home/tzh/PycharmProjects/pythonProjectAR5/result/feynman-i.12.1_equ.csv")
-fit = pd.read_csv("/home/tzh/PycharmProjects/pythonProjectAR5/result/feynman-i.12.1_fit.csv")
+ft = pd.read_feather("pmlb_results.feather")
+time = pd.read_csv("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_620_fri_c1_1000_25_time.csv")
+equ = pd.read_csv("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_620_fri_c1_1000_25_equ.csv")
+fit = pd.read_csv("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_620_fri_c1_1000_25_fit.csv")
 print(equ)
 time1 = time.iloc[:, -1]
 equ1 = equ.iloc[:, -1]
@@ -55,15 +55,15 @@ for i in range(len(time1)):
             ms += 1
     print(float(fit1[i]))
     new_row_data = {
-        "dataset": "feynman_I_12_1",
+        "dataset": "620_fri_c1_1000_25",
         "algorithm": "mtaylor",
         "model_size": ms,
         "training time (s)": float(time1[i]),
-        "mae_test": float(fit1[i]),
+        "r2_test": float(fit1[i]),
     }
     new_row = pd.DataFrame([new_row_data])
     ft = pd.concat([ft, new_row], ignore_index=True)
-    ft.to_feather("feynman_results.feather")
+    ft.to_feather("pmlb_results.feather")
 
 # ft1 = ft1.drop(ft1.index[-1])
 #
@@ -73,7 +73,7 @@ print(ft)
 print(ft.iloc[-1])
 # print(ft1.loc[ft1["dataset"] == "225_puma8NH"]["r2_zero_test"])
 # print(ft1.loc[ft1["dataset"] == "225_puma8NH"]["algorithm"])
-print(ft.loc[ft["dataset"] == "feynman_I_12_1"])
+# print(ft.loc[ft["dataset"] == "feynman_II_15_5"]["mtaylor"])
 # print(ft.loc[ft["dataset"] == "620_fri_c1_1000_25"])
 # # 创建要追加的新数据行
 
