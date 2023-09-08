@@ -53,9 +53,6 @@ class Data:
         for dt1 in self.pd_data.columns:
             self.ft_str.append(str(dt1))
 
-
-
-
     def get_col(self, str):
         return self.pd_data.loc[str]
 

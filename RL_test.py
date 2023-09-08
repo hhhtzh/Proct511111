@@ -37,7 +37,6 @@ def calculate_returns(rewards, gamma=0.99):
     return returns
 
 
-
 # 定义策略网络
 class PolicyNetwork(tf.keras.Model):
     def __init__(self, num_actions):
@@ -128,7 +127,7 @@ for episode in range(num_episodes):
             print("ko")
         else:
             raise ValueError("其他方法暂未实现")
-        print(population.pop_type)
+        # print(population.pop_type)
         print(len(population.pop_list))
         evaluator.do(population)
         list1 = ck.do(population)
