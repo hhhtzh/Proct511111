@@ -40,9 +40,9 @@ from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_t
 
 # 读取现有的 feather 文件
 ft = pd.read_feather("pmlb_results.feather")
-time = pd.read_csv("../../zjw_result/608_fri_c3_1000_10_time.csv")
-equ = pd.read_csv("../../zjw_result/608_fri_c3_1000_10_equ.csv")
-fit = pd.read_csv("../../zjw_result/608_fri_c3_1000_10_R2.csv")
+time = pd.read_csv("../../zjw_result/620_fri_c1_1000_25_time.csv")
+equ = pd.read_csv("../../zjw_result/620_fri_c1_1000_25_equ.csv")
+fit = pd.read_csv("../../zjw_result/620_fri_c1_1000_25_R2.csv")
 print(equ)
 time1 = time.iloc[:, -1]
 equ1 = equ.iloc[:, -1]
@@ -58,7 +58,7 @@ for i in range(len(time1)):
             ms += 1
     print(float(fit1[i]))
     new_row_data = {
-        "dataset": "612_fri_c1_1000_10",
+        "dataset": "620_fri_c1_1000_25",
         "algorithm": "mtaylor",
         "model_size": ms,
         "training time (s)": float(time1[i]),
