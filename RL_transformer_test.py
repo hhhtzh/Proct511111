@@ -12,7 +12,6 @@ from keplar.operator.evaluator import OperonEvaluator, BingoEvaluator, GpEvaluat
 from keplar.operator.mutation import BingoMutation, OperonMutation
 from keplar.operator.selector import BingoSelector
 
-
 import torch
 from transformers import AutoTokenizer, AutoModel
 
@@ -25,9 +24,6 @@ data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
 data.read_file()
 x = data.get_np_x()
 y = data.get_np_y()
-
-
-
 
 
 def expression_to_sentence_vector(expression):
@@ -43,7 +39,6 @@ def expression_to_sentence_vector(expression):
         sentence_vector = outputs.last_hidden_state.mean(dim=1).squeeze()
 
     return sentence_vector
-
 
 
 def calculate_reward(state, action, new_state):
@@ -110,7 +105,7 @@ select = BingoSelector(0.2, "tournament", "Operon")
 op_mutation = OperonMutation(0.6, 0.7, 0.8, 0.8, x, y, 10, 50, "balanced", "Operon")
 data = pd.read_csv("NAStraining_data/recursion_training2.csv")
 op_creator = OperonCreator("balanced", x, y, 128, "Operon")
-op_evaluator=OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
+op_evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
 evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "self")
 gp_evaluator = GpEvaluator(x, y, "self", metric="rmse")
 kb_gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
@@ -129,7 +124,7 @@ for episode in range(num_episodes):
     # 在每个episode开始时，初始化环境
     # list1 = ck.do(population)
     # print(list1)
-    expressions=[]
+    expressions = []
     for i in population.pop_list:
         str_equ = i.format()
         expressions.append(str_equ)
@@ -178,11 +173,11 @@ for episode in range(num_episodes):
         evaluator.do(population)
         # print(population.pop_type)
         # print(population.pop_list[0].fitness)
-        expressions=[]
+        expressions = []
         for i in population.pop_list:
-            str_equ=i.format()
+            str_equ = i.format()
             expressions.append(str_equ)
-        vector=[]
+        vector = []
         for expression in expressions:
             vector = expression_to_sentence_vector(expression)
             print(f"Expression: {expression}")
@@ -192,7 +187,7 @@ for episode in range(num_episodes):
         print(list1)
         new_state = np.array(list1)  # 假设新状态是一个一维向量，根据您的实际情况调整
         reward = calculate_reward(state, action, new_state)  # 根据游戏的奖励函数计算奖励
-        new_state=np.array(vector)
+        new_state = np.array(vector)
         episode_states.append(state)
         episode_actions.append(action)
         episode_rewards.append(reward)

@@ -165,6 +165,6 @@ for episode in range(num_episodes):
         # 计算回报并更新策略网络
     episode_returns = calculate_returns(episode_rewards)
     train_policy_network(policy_network, np.vstack(episode_states), np.array(episode_actions), episode_returns,
-                         optimizer)
+                     optimizer)
 
 # 最后，您可以使用训练好的策略网络来玩游戏。

@@ -36,6 +36,16 @@ class Actor(tf.keras.Model):
         return self.output_layer(x)
 
 
+def calculate_reward(state, action, new_state):
+    # 奖励函数
+    if new_state[0] < state[0]:  # 如果适应度下降
+        return 1.0
+    elif new_state[0] > state[0]:  # 如果适应度上升
+        return -2.0
+    else:
+        return 0.0  # 适应度上升返回零奖励
+
+
 class Critic(tf.keras.Model):
     def __init__(self):
         super(Critic, self).__init__()
@@ -120,23 +130,49 @@ num_episodes = 1000
 max_steps_per_episode = 100
 
 for episode in range(num_episodes):
-    state = env.reset()
+    list1 = ck.do(population)
+    print(list1)
+    state = np.array(list1)  # 状态
     episode_reward = 0
+    done=False
 
     for step in range(max_steps_per_episode):
         action = agent.select_action(np.array([state], dtype=np.float32))
-        next_state, reward, done, _ = env.step(action)
+        if action == 0:
+            print("bg")
+            bgsr = KeplarBingoAlg(1, kb_gen_up_oplist, kb_gen_down_oplist, kb_gen_eva_oplist, 0.001, population)
+            bgsr.one_gen_run()
+
+        elif action == 1:
+            print("gpbg2")
+            gpbg2 = GpBingo2Alg(1, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
+            gpbg2.one_gen_run()
+
+        elif action == 2:
+            print("ko")
+            opbg = KeplarOperonAlg(1, op_up_list, None, eval_op_list, -10, population, select, x, y, 128)
+            opbg.one_gen_run()
+
+        else:
+            raise ValueError("其他方法暂未实现")
+        # next_state, reward, done, _ = env.step(action)
+
+
+        list1 = ck.do(population)
+        new_state=np.array(list1)
+        print(list1)
+        reward = calculate_reward(state, action, new_state)  # 根据游戏的奖励函数计算奖励
 
         agent.train(
             np.array([state], dtype=np.float32),
             action,
             reward,
-            np.array([next_state], dtype=np.float32),
+            np.array([list1], dtype=np.float32),
             done
         )
 
         episode_reward += reward
-        state = next_state
+        state = new_state
 
         if done:
             break
