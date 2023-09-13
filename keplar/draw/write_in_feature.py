@@ -38,28 +38,42 @@ import argparse
 import os
 
 
-from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens
+# from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens
 
 
 sys.setrecursionlimit(10000)
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--dataset", type=str, default="../../zjw_result/620_fri_c1_1000_25_time.csv")
+argparser.add_argument("--dataset", type=str, default="620_fri_c1_1000_25")
 
 args = argparser.parse_args()
-fileName = os.path.basename(args.dataset)
-print("file path : ",args.dataset)
-print("file name : ",fileName)
+fileName_whitout_ext = args.dataset
+# fileName = os.path.basename(args.dataset)
+# string1 = os.path.splitext(fileName)[0]
+# # string = "620_fri_c1_1000_25_time"
+# fileName_whitout_ext = string1.replace("_time", "")
 
-fileName_whitout_ext = os.path.splitext(fileName)[0]
 
+# print("file path : ",args.dataset)
+# print("file name : ",fileName)
+# print("file name without ext : ",fileName_whitout_ext)
 
-
+file_type = "pmlb"
+if "feynman" in fileName_whitout_ext:
+    file_type = "feynman"
+else:
+    file_type = "pmlb"
 
 # 读取现有的 feather 文件
-ft = pd.read_feather("pmlb_results.feather")
-time = pd.read_csv("../../zjw_result/620_fri_c1_1000_25_time.csv")
-equ = pd.read_csv("../../zjw_result/620_fri_c1_1000_25_equ.csv")
-fit = pd.read_csv("../../zjw_result/620_fri_c1_1000_25_R2.csv")
+if file_type == "feynman":
+    ft = pd.read_feather("feynman_results.feather")
+else:
+    ft = pd.read_feather("pmlb_results.feather")
+
+    
+time = pd.read_csv("../../zjw_result/"+fileName_whitout_ext+"_time.csv")
+equ = pd.read_csv("../../zjw_result/"+fileName_whitout_ext+"_equ.csv")
+fit = pd.read_csv("../../zjw_result/"+fileName_whitout_ext+"_R2.csv")
+
 print(equ)
 time1 = time.iloc[:, -1]
 equ1 = equ.iloc[:, -1]
@@ -75,7 +89,7 @@ for i in range(len(time1)):
             ms += 1
     print(float(fit1[i]))
     new_row_data = {
-        "dataset": "620_fri_c1_1000_25",
+        "dataset": fileName_whitout_ext,
         "algorithm": "mtaylor",
         "model_size": ms,
         "training time (s)": float(time1[i]),
@@ -83,7 +97,10 @@ for i in range(len(time1)):
     }
     new_row = pd.DataFrame([new_row_data])
     ft = pd.concat([ft, new_row], ignore_index=True)
-    ft.to_feather("pmlb_results.feather")
+    if file_type == "feynman":
+        ft.to_feather("feynman_results.feather")
+    else:
+        ft.to_feather("pmlb_results.feather")
 
 # ft1 = ft1.drop(ft1.index[-1])
 #
