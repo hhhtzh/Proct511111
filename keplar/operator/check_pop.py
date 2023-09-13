@@ -14,6 +14,7 @@ class CheckPopulation(Operator):
         if population.pop_type != "self":
             raise ValueError("暂时不支持")
         else:
+            # print(len(population.pop_list))
             for ind in population.pop_list:
                 length_list.append(len(ind.func))
                 fit_list.append(ind.fitness)
@@ -21,7 +22,10 @@ class CheckPopulation(Operator):
                 # print(ind.fitness)
             # print(fit_list)
             np_length = np.array(length_list)
+
             np_fit = np.array(fit_list)
+            # print(np_length)
+            print(np_fit)
             max_length = np.max(np_length)
             min_length = np.min(np_length)
             mean_length = np.mean(np_length)

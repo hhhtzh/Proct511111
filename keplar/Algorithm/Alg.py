@@ -128,9 +128,10 @@ class KeplarBingoAlg(Alg):
         t = time.time()
         generation_pop_size = self.population.get_pop_size()
         self.eval_op_list.do(self.population)
-        now_error = self.population.get_best_fitness()
+        # now_error = self.population.get_best_fitness()
         self.population = self.down_op_list.do(self.population)
         while generation_pop_size > self.population.get_pop_size():
+            # print("ooooooooooo")
             self.up_op_list.do(self.population)
 
         self.eval_op_list.do(self.population)
@@ -222,24 +223,26 @@ class KeplarOperonAlg(Alg):
             while len(pool_list.target_pop_list) < self.pool_size:
                 for i in self.up_op_list:
                     i.do(pool_list)
-                print(len(pool_list.target_pop_list))
+                # print(len(pool_list.target_pop_list))
                 up_num = len(pool_list.target_pop_list) - former_pop
                 search_num += up_num
                 # print(search_num)
-                # if search_num >= check_step:
-                #     for i in self.eval_op_list:
-                #         i.do(pool_list)
-                #     now_error1 = pool_list.get_best_fitness()
-                #     now_error2 = self.population.get_best_fitness()
-                #     now_error = now_error1 if now_error1 <= now_error2 else now_error2
-                #     now_elapse = time.time() - t
-                    # str1 = str(now_elapse) + " " + str(search_num) + "\n"
-                    # file = open(
-                    #     "/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_generationsearch.txt",
-                    #     "a+")
-                    # file.write(str1)
-                    # file.close()
-                    # check_step += 1000
+                if search_num >= check_step:
+                    for i in self.eval_op_list:
+                        i.do(pool_list)
+                    now_error1 = pool_list.get_best_fitness()
+                    now_error2 = self.population.get_best_fitness()
+                    now_error = now_error1 if now_error1 <= now_error2 else now_error2
+                    if self.population.history_best_fit is None or self.population.history_best_fit>now_error:
+                        self.population.history_best_fit=now_error
+                    now_elapse = time.time() - t
+                    str1 = str(now_elapse) + " " + str(self.population.history_best_fit) + "\n"
+                    file = open(
+                        "/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_searchfit.txt",
+                        "a+")
+                    file.write(str1)
+                    file.close()
+                    check_step += 1000
             for i in self.eval_op_list:
                 i.do(pool_list)
             reinserter = KeplarReinserter(pool_list, "self")
@@ -251,10 +254,10 @@ class KeplarOperonAlg(Alg):
             print("第" + f"{self.age}代种群，" +
                   f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
             now_elapse=time.time()-t
-            str1 = str(now_elapse) + " " + str(search_num) + "\n"
-            file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_generationsearch.txt", "a+")
-            file.write(str1)
-            file.close()
+            # str1 = str(now_elapse) + " " + str(search_num) + "\n"
+            # file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplaroperon_generationsearch.txt", "a+")
+            # file.write(str1)
+            # file.close()
         best_ind = str(self.get_best_individual())
 
         print("迭代结束，共迭代" + f"{self.age}代" +
@@ -477,7 +480,9 @@ class GpBingo2Alg(Alg):
         now_error = self.population.get_best_fitness()
         self.population = self.down_op_list.do(self.population)
         while generation_pop_size > self.population.get_pop_size():
+            # print("kkkkkkkkkkk")
             self.up_op_list.do(self.population)
+        # print("llllllllllll")
         self.eval_op_list.do(self.population)
         now_error = self.population.get_best_fitness()
         # best_ind = str(self.get_best_individual())

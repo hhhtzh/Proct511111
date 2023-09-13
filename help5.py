@@ -21,8 +21,10 @@ data.read_file()
 # initialize a dataset from a numpy array
 ds = Operon.Dataset(D)
 variables = ds.Variables
-# for var in variables:
-#     print("=========="+str(var.Name))
+for var in variables:
+    print("=========="+str(var.Name))
+    print(str(var.Index))
+    print(str(var.Hash))
 # define the training and test ranges
 training_range = Operon.Range(0, ds.Rows // 2)
 test_range = Operon.Range(ds.Rows // 2, ds.Rows)

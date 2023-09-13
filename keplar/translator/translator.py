@@ -5,7 +5,8 @@ import pyoperon as Operon
 
 from TaylorGP.src.taylorGP._program import _Program
 from bingo.symbolic_regression import AGraph
-from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants
+from bingo.symbolic_regression.agraph.string_parsing import infix_to_postfix, postfix_to_command_array_and_constants, \
+    eq_string_to_infix_tokens
 from gplearn.functions import _Function, sqrt1, add2, mul2, div2, sub2, neg1, power2, exp1, sin1, cos1, log1
 from keplar.population.function import arity_map, operator_map3, _function_map, map_F1, Operator_map_S, \
     operator_map_dsr, operator_map_dsr2, Operator_map_S1
@@ -14,7 +15,7 @@ from keplar.population.individual import Individual
 from TaylorGP.src.taylorGP.functions import _function_map
 
 
-#Operon从X_1开始
+# Operon从X_1开始
 # 该函数是将种群中的一个个体转化成TaylorGP中的program格式
 def trans_taylor_program(ind):
     length = len(ind.func)
@@ -91,13 +92,15 @@ def is_float(num):
 
 def prefix_to_postfix(expression):
     stack = []
-    operators = set(['+', '-', '*', '/'])  # 可用的运算符
+    operators = {'add', 'sub', 'mul', 'div', 'sqrt', 'log', 'abs',
+                 'neg', 'inv', 'max', 'min', 'sin', 'cos', 'tan',
+                 'sig', 'aq', 'pow', 'exp', 'square'}  # 可用的运算符
 
     for token in reversed(expression):
         if token in operators:  # 操作符
             # 弹出栈顶运算符，直到遇到更低优先级的运算符或左括号
             while stack and stack[-1] in operators and operators[token] <= operators[stack[-1]]:
-                yield stack.pop()
+                temp = stack.pop()
             stack.append(token)
         elif token == ')':  # 右括号
             stack.append(token)
@@ -188,6 +191,8 @@ def bingo_infixstr_to_func(equ):
     for node in post_equ:
         if str(node) == "nan":
             node = "0"
+        if str(node) == "info":
+            node = "100000000000000000000000"
 
         if node in ["+", "-", "*", "/", "^"] or node.isalpha():
             # print(node)
@@ -749,39 +754,58 @@ def to_dsr(length, *T, **map):
 
 
 def to_op(ind, np_x, np_y):
+    # print("----------------")
+    str_equ = ind.format()
+    # print(ind.format())
+    str_equ = re.sub(r'x(\d{3})', r'X_\1', str_equ)
+    str_equ = re.sub(r'x(\d{2})', r'X_\1', str_equ)
+    str_equ = re.sub(r'x(\d{1})', r'X_\1', str_equ)
+    # print(ind.func)
+    list_equ = eq_string_to_infix_tokens(str_equ)
     ds = Operon.Dataset(np.hstack([np_x, np_y]))
-    func = ind.func
-    list_prefix = []
-    for i in func:
-        int_i = int(i)
-        if int_i < 3000:
-            str_op = map_F1[int_i]
-            list_prefix.append(str_op)
-        elif 3000 <= int_i < 5000:
-            str_x = "X_" + str(int_i - 2999)
-            list_prefix.append(str_x)
-        elif int_i >= 5000:
-            str_con = str(ind.const_array[int_i - 5000])
-            list_prefix.append(str_con)
-
-        else:
-            raise ValueError("留空")
-    list_postfix = prefix_to_postfix(list_prefix)
+    # func = ind.func
+    # list_prefix = []
+    # for i in func:
+    #     int_i = int(i)
+    #     if int_i < 3000:
+    #         str_op = map_F1[int_i]
+    #         list_prefix.append(str_op)
+    #     elif 3000 <= int_i < 5000:
+    #         str_x = "X_" + str(int_i - 2999)
+    #         list_prefix.append(str_x)
+    #     elif int_i >= 5000:
+    #         str_con = str(ind.const_array[int_i - 5000])
+    #         list_prefix.append(str_con)
+    #
+    #     else:
+    #         raise ValueError("留空")
+    # print(list_equ)
+    list_postfix = infix_to_postfix(list_equ)
+    # print(list_postfix)
     node_list = []
-    var_hash = []
+    var_hash_dict = {}
     variables = ds.Variables
     for var in variables:
+        # print(var.Index)
+        # print(var.Name)
+        # print(var.Hash)
         hash_ = var.Hash
-        var_hash.append(hash_)
+        var_hash_dict[var.Index] = var.Hash
+        # print(len(list_postfix))
     for token in list_postfix:
+        # print("*")
+        token = re.sub(r'x(\d{3})', r'X_\1', token)
+        token = re.sub(r'x(\d{2})', r'X_\1', token)
+        token = re.sub(r'x(\d{1})', r'X_\1', token)
+        # print(token)
         if is_float(token):
             node = Operon.Node.Constant(float(token))
             node_list.append(node)
-        elif token[0] == 'X' and token[1] == '_':
+        elif (token[0] == 'x' and token[1] == '_') or (token[0] == 'X' and token[1] == '_'):
             var_num_str = token[2:]
             var_num = int(var_num_str)
             node = Operon.Node.Variable(1)
-            node.HashValue = var_hash[var_num - 1]
+            node.HashValue = var_hash_dict[var_num]
             node_list.append(node)
         elif token == '+':
             node = Operon.Node.Add()
@@ -825,12 +849,17 @@ def to_op(ind, np_x, np_y):
         elif token == 'dyn':
             node = Operon.Node.Dyn()
             node_list.append(node)
+        elif token == 'power':
+            node = Operon.Node.Pow()
+            node_list.append(node)
         else:
             raise ValueError(f"通用个体转换为Operon个体时未识别,未识别字符为{token}")
-        op_tree = Operon.Tree(node_list)
-        op_tree.UpdateNodes()
-        # print(Operon.InfixFormatter.Format(op_tree, ds, 5))
-        return op_tree
+    # print(len(node_list))
+    op_tree = Operon.Tree(node_list)
+    # print(op_tree.Length)
+    op_tree.UpdateNodes()
+    # print(Operon.InfixFormatter.Format(op_tree, ds, 5))
+    return op_tree
 
 
 def equ_to_op(equ, ds):

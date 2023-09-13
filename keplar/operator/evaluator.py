@@ -186,6 +186,103 @@ class OperonEvaluator(Evaluator):
                 population.pop_type = "Operon"
                 population.self_pop_enable = False
             else:
+                # print("这块错了")
+                operon_ind_list = population.target_pop_list
+                var_list = self.ds.Variables
+                kep_pop_list = []
+                for i in range(len(operon_ind_list)):
+                    func, const_array = trans_op(tree_list[i], var_list)
+                    kep_ind = Individual(func)
+                    kep_ind.const_array = const_array
+                    # print(fit_list[i])
+                    kep_ind.set_fitness(fit_list[i])
+                    kep_pop_list.append(kep_ind)
+                population.pop_list = kep_pop_list
+                population.target_pop_list=[]
+                population.target_fit_list=[]
+                population.pop_type = "self"
+                # for i in population.pop_list:
+                #     print(i.format(),i.get_fitness())
+        else:
+            tree_list = []
+            ind_list = []
+            fit_list = []
+            for ind in population.pop_list:
+                # print(ind.format())
+                tree = to_op(ind, self.np_x, self.np_y)
+                # str1 = Operon.InfixFormatter.Format(tree, self.ds, 5)
+                tree_list.append(tree)
+            for i in tree_list:
+                ind = Operon.Individual()
+                ind.Genotype = i
+                ind_list.append(ind)
+            for i in ind_list:
+                ea = evaluator(rng, i)
+                # print(ea)
+                fit_list.append(ea[0])
+            # for i in range(len(fit_list)):
+            #     print(population.pop_list[i].format())
+            #     print(population.pop_list[i].func)
+            #     print(fit_list[i])
+            if self.to_type == "Operon":
+                population.target_fit_list = fit_list
+                population.pop_type = "Operon"
+                population.self_pop_enable = False
+            else:
+                operon_tree_list = tree_list
+                var_list = self.ds.Variables
+                kep_pop_list = []
+                for i in range(len(operon_tree_list)):
+
+                    # print(str1)
+                    func, const_array = trans_op(operon_tree_list[i], var_list)
+                    # print(func)
+                    kep_ind = Individual(func)
+                    kep_ind.const_array = const_array
+                    kep_ind.set_fitness(fit_list[i])
+                    kep_pop_list.append(kep_ind)
+                population.pop_list = kep_pop_list
+                population.pop_type = "self"
+
+
+class OperonDiversityEvaluator(Evaluator):
+    def __init__(self, np_x, np_y, training_p, if_linear_scaling, to_type):
+        super().__init__()
+        self.to_type = to_type
+        self.if_linear_scaling = if_linear_scaling
+        self.training_p = training_p
+        np_y = np_y.reshape([-1, 1])
+        self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
+        self.np_x = np_x
+        self.np_y = np_y
+
+    def do(self, population):
+        if not isinstance(self.if_linear_scaling, bool):
+            raise ValueError("if_linear_scaling必须为bool类型")
+        target = self.ds.Variables[-1]
+        inputs = Operon.VariableCollection(v for v in self.ds.Variables if v.Name != target.Name)
+        rng = Operon.RomuTrio(random.randint(1, 1000000))
+        training_range = Operon.Range(0, int(self.ds.Rows * self.training_p))
+        test_range = Operon.Range(int(self.ds.Rows * self.training_p), self.ds.Rows)
+        problem = Operon.Problem(self.ds, inputs, target.Name, training_range, test_range)
+        evaluator = Operon.DiversityEvaluator(problem)
+        if population.pop_type == "Operon":
+            tree_list = population.target_pop_list
+            ind_list = []
+            fit_list = []
+            for i in tree_list:
+                ind = Operon.Individual()
+                ind.Genotype = i
+                ind_list.append(ind)
+            for i in ind_list:
+                ea = evaluator(rng, i)
+                fit_list.append(ea[0])
+            # print(fit_list)
+            if self.to_type == "Operon":
+                population.target_fit_list = fit_list
+                population.pop_type = "Operon"
+                population.self_pop_enable = False
+            else:
                 operon_ind_list = population.target_pop_list
                 var_list = self.ds.Variables
                 kep_pop_list = []
@@ -547,20 +644,20 @@ class XgBoostEvaluator(Evaluator):
                 # print(np.shape(pred_y))
                 # print(np.shape(fw))
 
-                # 将数学表达式编译为可执行的Python函数
-                func = individual.compile()
-
-                # 计算表达式的预测值
-                y_pred = [func(*x) for x in X]
-
-                # 使用XGBoost模型评估性能
-                model = xgb.XGBRegressor()
-                model.fit(X_train, y_train)
-                y_pred_xgb = model.predict(X_test)
-                mse = mean_squared_error(y_test, y_pred_xgb)
-
-                fitness = gp_fit(eva_y, pred_y.reshape(-1, 1), fw)
-                fit_list.append(fitness)
+                # # 将数学表达式编译为可执行的Python函数
+                # func = individual.compile()
+                #
+                # # 计算表达式的预测值
+                # y_pred = [func(*x) for x in X]
+                #
+                # # 使用XGBoost模型评估性能
+                # model = xgb.XGBRegressor()
+                # model.fit(X_train, y_train)
+                # y_pred_xgb = model.predict(X_test)
+                # mse = mean_squared_error(y_test, y_pred_xgb)
+                #
+                # fitness = gp_fit(eva_y, pred_y.reshape(-1, 1), fw)
+                # fit_list.append(fitness)
 
             population.target_fit_list = fit_list
             if self.to_type != "gplearn":

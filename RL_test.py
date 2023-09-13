@@ -82,6 +82,7 @@ select = BingoSelector(0.2, "tournament", "Operon")
 op_mutation = OperonMutation(0.6, 0.7, 0.8, 0.8, x, y, 10, 50, "balanced", "Operon")
 data = pd.read_csv("NAStraining_data/recursion_training2.csv")
 op_creator = OperonCreator("balanced", x, y, 128, "Operon")
+op_evaluator=OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
 evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "self")
 gp_evaluator = GpEvaluator(x, y, "self", metric="rmse")
 kb_gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
@@ -106,7 +107,7 @@ for episode in range(num_episodes):
     generation_num = 0
     while True:
         # 选择动作
-        print(state)
+        # print(state)
         action_probabilities = policy_network(np.array([state], dtype=np.float32))
         print(action_probabilities)
         action = np.random.choice(num_actions, p=action_probabilities.numpy()[0])
@@ -114,22 +115,32 @@ for episode in range(num_episodes):
 
         # 执行动作并观察奖励和新状态
         if action == 0:
+            print("bg")
             bgsr = KeplarBingoAlg(1, kb_gen_up_oplist, kb_gen_down_oplist, kb_gen_eva_oplist, 0.001, population)
             bgsr.one_gen_run()
-            print("bg")
+
         elif action == 1:
+            print("gpbg2")
             gpbg2 = GpBingo2Alg(1, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
             gpbg2.one_gen_run()
-            print("gpbg2")
+
         elif action == 2:
+            print("ko")
             opbg = KeplarOperonAlg(1, op_up_list, None, eval_op_list, -10, population, select, x, y, 128)
             opbg.one_gen_run()
-            print("ko")
+
         else:
             raise ValueError("其他方法暂未实现")
         # print(population.pop_type)
-        print(len(population.pop_list))
+        # print(len(population.pop_list))
+        # print(population.pop_type)
+        # print(len(population.pop_list))
+        # for i in population.pop_list:
+        #     print(i.format())
         evaluator.do(population)
+        # print(population.pop_type)
+        # print(population.pop_list[0].fitness)
+
         list1 = ck.do(population)
         print(list1)
         new_state = np.array(list1)  # 假设新状态是一个一维向量，根据您的实际情况调整
@@ -143,13 +154,13 @@ for episode in range(num_episodes):
 
         # 检查是否结束
         generation_num += 1
-        print(generation_num)
+        # print(generation_num)
         if generation_num > 1000:
             break
 
-    # 计算回报并更新策略网络
-    episode_returns = calculate_returns(episode_rewards)
-    train_policy_network(policy_network, np.vstack(episode_states), np.array(episode_actions), episode_returns,
-                         optimizer)
+        # 计算回报并更新策略网络
+        episode_returns = calculate_returns(episode_rewards)
+        train_policy_network(policy_network, np.vstack(episode_states), np.array(episode_actions), episode_returns,
+                             optimizer)
 
 # 最后，您可以使用训练好的策略网络来玩游戏。

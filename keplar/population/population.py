@@ -6,7 +6,8 @@ class Population:
         self.self_pop_enable = None
         self.translate_flag = True
         self.target_pop_list = []
-
+        self.history_best_fit = None
+        self.history_best_ind = None
         self.target_fit_list = []
 
     def initial(self, pop_list):
@@ -38,7 +39,7 @@ class Population:
     def get_tar_best(self):
         best_fitness = self.target_fit_list[0]
         best_index = 0
-        print(len(self.target_fit_list))
+        # print(len(self.target_fit_list))
         for j in range(len(self.target_fit_list)):
             if str(best_fitness) == "nan" and str(self.target_fit_list[j]) != "nan":
                 best_fitness = self.target_fit_list[j]
