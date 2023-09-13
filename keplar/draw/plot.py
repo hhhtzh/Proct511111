@@ -13,7 +13,7 @@ sns.set(font_scale=1.25, style="whitegrid")
 
 sns.set_style("whitegrid")
 
-dataset = "feynman"
+dataset = "pmlb"
 feather = f"{dataset}_results.feather"
 
 show_algos = [

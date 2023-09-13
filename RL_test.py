@@ -159,7 +159,7 @@ for episode in range(num_episodes):
         # 检查是否结束
         generation_num += 1
         # print(generation_num)
-        if generation_num > 1000:
+        if generation_num > 100:
             break
 
         # 计算回报并更新策略网络

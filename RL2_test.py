@@ -1,7 +1,25 @@
 import numpy as np
 import tensorflow as tf
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+
+from keplar.Algorithm.Alg import KeplarBingoAlg, GpBingo2Alg, KeplarOperonAlg
+from keplar.data.data import Data
+from keplar.operator.check_pop import CheckPopulation
+from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
+from keplar.operator.creator import OperonCreator, BingoCreator
+from keplar.operator.crossover import BingoCrossover, OperonCrossover
+from keplar.operator.evaluator import OperonEvaluator, BingoEvaluator, GpEvaluator
+from keplar.operator.mutation import BingoMutation, OperonMutation
+from keplar.operator.selector import BingoSelector
 
 
+
+data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
+data.read_file()
+x = data.get_np_x()
+y = data.get_np_y()
 
 
 # 定义演员（Actor）和评论家（Critic）神经网络
@@ -29,6 +47,33 @@ class Critic(tf.keras.Model):
         x = self.dense1(state)
         x = self.dense2(x)
         return self.output_layer(x)
+
+
+operators = ["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^']
+bg_creator = BingoCreator(128, operators, x, 10, "Bingo")
+bg_evaluator = BingoEvaluator(x, "exp", "lm", "self", y)
+bg_crossover = BingoCrossover("Bingo")
+bg_mutation = BingoMutation(x, operators, "Bingo")
+bg_selector = BingoSelector(0.5, "tournament", "Bingo")
+op_crossover = OperonCrossover(x, y, "Operon")
+select = BingoSelector(0.2, "tournament", "Operon")
+op_mutation = OperonMutation(0.6, 0.7, 0.8, 0.8, x, y, 10, 50, "balanced", "Operon")
+data = pd.read_csv("NAStraining_data/recursion_training2.csv")
+op_creator = OperonCreator("balanced", x, y, 128, "Operon")
+op_evaluator=OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
+evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "self")
+gp_evaluator = GpEvaluator(x, y, "self", metric="rmse")
+kb_gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
+kb_gen_down_oplist = CompositeOpReturn([bg_selector])
+kb_gen_eva_oplist = CompositeOp([bg_evaluator])
+gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
+gen_down_oplist = CompositeOpReturn([bg_selector])
+gen_eva_oplist = CompositeOp([gp_evaluator])
+op_up_list = [op_mutation, op_crossover]
+eval_op_list = [evaluator]
+population = op_creator.do()
+evaluator.do(population)
+ck = CheckPopulation(data)
 
 
 # 定义Actor-Critic代理

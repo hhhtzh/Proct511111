@@ -8,7 +8,7 @@ import pdb
 matplotlib.rc('pdf', fonttype=42)
 sns.set(font_scale=1, style="whitegrid")
 
-dataset = "feynman"
+dataset = "pmlb"
 feather = f"{dataset}_results.feather"
 
 
