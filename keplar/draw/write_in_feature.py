@@ -33,10 +33,27 @@
 
 import pandas as pd
 
-# os.()
+import sys
+import argparse
+import os
 
 
 from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens
+
+
+sys.setrecursionlimit(10000)
+argparser = argparse.ArgumentParser()
+argparser.add_argument("--dataset", type=str, default="../../zjw_result/620_fri_c1_1000_25_time.csv")
+
+args = argparser.parse_args()
+fileName = os.path.basename(args.dataset)
+print("file path : ",args.dataset)
+print("file name : ",fileName)
+
+fileName_whitout_ext = os.path.splitext(fileName)[0]
+
+
+
 
 # 读取现有的 feather 文件
 ft = pd.read_feather("pmlb_results.feather")
