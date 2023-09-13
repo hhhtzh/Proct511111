@@ -43,7 +43,8 @@ class PolicyNetwork(tf.keras.Model):
         super(PolicyNetwork, self).__init__()
         self.dense1 = tf.keras.layers.Dense(64, activation='relu')
         self.dense2 = tf.keras.layers.Dense(32, activation='relu')
-        self.dense3 = tf.keras.layers.Dense(num_actions, activation='softmax')
+        self.dense3 = tf.keras.layers.Dense(num_actions, activation='softmax', kernel_initializer='glorot_uniform',
+                                            use_bias=True)
 
     def call(self, state):
         x = self.dense1(state)
@@ -55,6 +56,9 @@ class PolicyNetwork(tf.keras.Model):
 def train_policy_network(policy_network, states, actions, rewards, optimizer):
     with tf.GradientTape() as tape:
         action_probabilities = policy_network(states)
+        # # 在softmax输出上应用温度参数
+        # action_probabilities = tf.nn.softmax(action_probabilities / 0.3)
+
         actions_one_hot = tf.one_hot(actions, depth=3)
         selected_action_probabilities = tf.reduce_sum(action_probabilities * actions_one_hot, axis=1)
         loss = -tf.reduce_sum(tf.math.log(selected_action_probabilities) * rewards)
@@ -159,8 +163,8 @@ for episode in range(num_episodes):
             break
 
         # 计算回报并更新策略网络
-        episode_returns = calculate_returns(episode_rewards)
-        train_policy_network(policy_network, np.vstack(episode_states), np.array(episode_actions), episode_returns,
-                             optimizer)
+    episode_returns = calculate_returns(episode_rewards)
+    train_policy_network(policy_network, np.vstack(episode_states), np.array(episode_actions), episode_returns,
+                         optimizer)
 
 # 最后，您可以使用训练好的策略网络来玩游戏。
