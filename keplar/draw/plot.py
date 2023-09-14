@@ -13,7 +13,7 @@ sns.set(font_scale=1.25, style="whitegrid")
 
 sns.set_style("whitegrid")
 
-dataset = "feynman"
+dataset = "pmlb"
 feather = f"{dataset}_results.feather"
 
 show_algos = [
@@ -148,7 +148,7 @@ rename_algos = {
     "udsr": "uDSR",
     "eql": "EQL"
 }
-our_impl = ["DSR", "uDSR", "ddsr", "DDSR-NN(ours)", "EQL", "gplearn", "mtaylor"]
+our_impl = ["DSR", "uDSR", "ddsr", "DDSR-NN(ours)", "EQL", "gplearn", "mtaylor","taylor"]
 print(df_plot.keys())
 # remove excluded
 df_plot = df_plot.loc[df_plot['algorithm'] != "DSR"]

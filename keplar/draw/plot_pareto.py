@@ -8,7 +8,7 @@ import pdb
 matplotlib.rc('pdf', fonttype=42)
 sns.set(font_scale=1, style="whitegrid")
 
-dataset = "feynman"
+dataset = "pmlb"
 feather = f"{dataset}_results.feather"
 
 
@@ -95,7 +95,7 @@ rename_algos = {
     "dsr": "DSR",
     "udsr": "uDSR"
 }
-our_impl = ["DSR", "uDSR", "ddsr", "DDSR-NN(ours)", "EQL", "gplearn","mtaylor"]
+our_impl = ["DSR", "uDSR", "ddsr", "DDSR-NN(ours)", "EQL", "gplearn","mtaylor","taylor"]
 print(df_plot.keys())
 
 df_plot = df_plot.loc[df_plot["algorithm"] != "eql"].reset_index(drop=True)
