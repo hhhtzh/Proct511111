@@ -21,9 +21,9 @@ y = data.get_np_y()
 def calculate_reward(state, action, new_state):
     # 奖励函数
     if new_state[0] < state[0]:  # 如果适应度下降
-        return 1.0
+        return 10.0
     elif new_state[0] > state[0]:  # 如果适应度上升
-        return -2.0
+        return -20.0
     else:
         return 0.0  # 适应度上升返回零奖励
 
@@ -43,7 +43,8 @@ class PolicyNetwork(tf.keras.Model):
         super(PolicyNetwork, self).__init__()
         self.dense1 = tf.keras.layers.Dense(64, activation='relu')
         self.dense2 = tf.keras.layers.Dense(32, activation='relu')
-        self.dense3 = tf.keras.layers.Dense(num_actions, activation='softmax', kernel_initializer='glorot_uniform',
+        self.dense3 = tf.keras.layers.Dense(num_actions, activation='softmax',
+                                            kernel_initializer=tf.keras.initializers.Constant(value=1.0/num_actions),
                                             use_bias=True)
 
     def call(self, state):
@@ -112,9 +113,15 @@ for episode in range(num_episodes):
     while True:
         # 选择动作
         # print(state)
+        # action_probabilities = policy_network(np.array([state], dtype=np.float32))
+        # print(action_probabilities)
+        # action = np.random.choice(num_actions, p=action_probabilities.numpy()[0])
         action_probabilities = policy_network(np.array([state], dtype=np.float32))
+        action_probabilities = np.where(np.isnan(action_probabilities), 1e-6, action_probabilities)
+        action_probabilities /= np.sum(action_probabilities)
         print(action_probabilities)
-        action = np.random.choice(num_actions, p=action_probabilities.numpy()[0])
+        action = np.random.choice(num_actions, p=action_probabilities[0])
+
         # print(action)
 
         # 执行动作并观察奖励和新状态
@@ -159,7 +166,7 @@ for episode in range(num_episodes):
         # 检查是否结束
         generation_num += 1
         # print(generation_num)
-        if generation_num > 100:
+        if generation_num > 2:
             break
 
         # 计算回报并更新策略网络

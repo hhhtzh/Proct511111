@@ -96,6 +96,9 @@ class ActorCriticAgent:
 
     def select_action(self, state):
         action_probs = self.actor(state)
+        # 处理 NaN 值：将 NaN 替换为均等的概率分布
+        action_probs = tf.where(tf.math.is_nan(action_probs), tf.ones_like(action_probs) / num_actions, action_probs)
+        print(action_probs)
         action = np.random.choice(num_actions, p=action_probs.numpy()[0])
         return action
 
@@ -157,7 +160,7 @@ for episode in range(num_episodes):
             raise ValueError("其他方法暂未实现")
         # next_state, reward, done, _ = env.step(action)
 
-
+        evaluator.do(population)
         list1 = ck.do(population)
         new_state=np.array(list1)
         print(list1)
