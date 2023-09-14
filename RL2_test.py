@@ -57,7 +57,7 @@ class Critic(tf.keras.Model):
         x = self.dense1(state)
         x = self.dense2(x)
         return self.output_layer(x)
-
+lll
 
 operators = ["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^']
 bg_creator = BingoCreator(128, operators, x, 10, "Bingo")
