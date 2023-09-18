@@ -11,6 +11,17 @@ import csv
 from keplar.data.data import Data
 from keplar.operator.evaluator import OperonSingleEvaluator
 
+def calculate_rmse_cal(y_pred, y_true):
+    # 将 y_pred 和 y_true 转换为 numpy 数组
+    y_pred = np.array(y_pred)
+    y_true = np.array(y_true)
+
+    # 计算均方根误差
+    mse = np.mean((y_pred - y_true) ** 2)
+    rmse = np.sqrt(mse)
+
+    return rmse
+
 
 def calculate_rmse(formula, dataset):
     # 读取数据集
@@ -41,7 +52,10 @@ def calculate_rmse(formula, dataset):
 
     # 将矩阵对象转换为数组
     y_true = np.array(data[data.dtype.names[-1]])
-    eval = OperonSingleEvaluator("RMSE", X, y_true, 1, True, op_equ=formula)
-    fit = eval.do()
+
+    fit = calculate_rmse_cal(y_pred, y_true)
+
+    # eval = OperonSingleEvaluator("RMSE", X, y_true, 1, True, op_equ=formula)
+    # fit = eval.do()
     return fit
 
