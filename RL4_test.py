@@ -6,6 +6,7 @@ import tensorflow as tf
 from keras.layers import Dense
 from keras.optimizers import Adam
 
+from keplar.Algorithm.Alg import KeplarBingoAlg, KeplarOperonAlg, GpBingo2Alg
 from keplar.data.data import Data
 from keplar.operator.check_pop import CheckPopulation
 from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
@@ -26,6 +27,29 @@ data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
 data.read_file()
 x = data.get_np_x()
 y = data.get_np_y()
+
+def calculate_reward(list, action, new_list):
+    # 计算适应度变化
+    fitness_change = new_list[0] - list[0]
+    mean_fitness_change = new_list[2] - list[2]
+    reward = 0
+    # 根据适应度变化分配奖励
+    if fitness_change < 0:
+        reward += 10.0  # 适应度下降，奖励为正数
+    elif fitness_change < 0:
+        reward -= 20.0  # 适应度上升，奖励为负数
+    else:
+        reward += 0.0  # 适应度没有变化，奖励为零
+
+    if mean_fitness_change < 0:
+        reward += 1
+    elif mean_fitness_change > 0:
+        reward -= 2
+    else:
+        reward += 0
+
+    return reward
+
 
 # Actor网络
 def build_actor():
@@ -107,17 +131,52 @@ critic_update_interval = 1
 
 # 训练DDPG代理
 for episode in range(1000):
-    state = env.reset()
+    population = op_creator.do()
+    evaluator.do(population)
+    ck = CheckPopulation(data)
+    list1 = ck.do(population)
+    print(list1)
+    state = np.array(list1)  # 状态
     total_reward = 0
 
     while True:
+        done = False
         # 在环境中采取动作
         action = actor_network.predict(np.array([state]))[0]
         action += exploration_noise * np.random.randn(action_dim)
         action = np.clip(action, action_low, action_high)
+        print(action)
+        action_probabilities = action / np.sum(action)
+        # 采样一个动作
+        action = np.random.choice(len(action_probabilities), p=action_probabilities)
 
+        print("合为1的概率分布:", action_probabilities)
+        print("采样的动作:", action)
         # 执行动作并观察下一个状态和奖励
-        next_state, reward, done, _ = env.step(action)
+        if action == 0:
+            print("bg")
+            bgsr = KeplarBingoAlg(1, kb_gen_up_oplist, kb_gen_down_oplist, kb_gen_eva_oplist, 0.001, population)
+            bgsr.one_gen_run()
+
+        elif action == 1:
+            print("gpbg2")
+            gpbg2 = GpBingo2Alg(1, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
+            gpbg2.one_gen_run()
+
+        elif action == 2:
+            print("ko")
+            opbg = KeplarOperonAlg(1, op_up_list, None, eval_op_list, -10, population, select, x, y, 128)
+            opbg.one_gen_run()
+
+        else:
+            raise ValueError("其他方法暂未实现")
+
+        evaluator.do(population)
+        list1 = ck.do(population)
+        new_state = np.array(list1)
+        print(list1)
+        reward = calculate_reward(state, action, new_state)
+        next_state = new_state
 
         # 存储经验
         buffer.append((state, action, reward, next_state, done))
