@@ -315,7 +315,7 @@ class MTaylorGPAlg(Alg):
 
         data = np.loadtxt(self.ds)
 
-# 将最后一列作为np_y
+        # 将最后一列作为np_y
         np_y = data[:, -1]
 
         # 将前面的列作为np_x
