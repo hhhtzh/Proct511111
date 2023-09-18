@@ -151,7 +151,8 @@ class Metrics:
         elif varNum < 20:
             f_taylor ,k ,nmse= self._CalTaylorNmse(varNum,2)
         else:    
-            mytaylor_num , f ,k= self._getTDatas(varNum,1)
+            # mytaylor_num , f ,k= self._getTDatas(varNum,1)
+            f_taylor ,k ,nmse= self._CalTaylorNmse(varNum,1)
 
         return f_taylor ,k ,nmse
         

@@ -241,6 +241,7 @@ class subRegionCalculator:
             top1  = OriginalTaylorGP(self.subRegions[selectedRegionIndex], Y_pred, parents, repeatNum,
                                     self.originalTaylorGPGen, Pop, qualified_list=qualified_list,
                                     SR_method=SR_method)  # top是list 0是适应度，1是公式 2是上轮最后一代种群
+            
             self.tops[selectedRegionIndex] = top1  # 由于MAB，所以选择性更新tops
             if not get_value('FIRST_EVOLUTION_FLAG'):  # 除去第一次，以后演化基于之前的父代，并且若不不存在父代说明是低阶多项式不用演化直接跳过，此处也不影响MAB
                 # print(self.tops)
