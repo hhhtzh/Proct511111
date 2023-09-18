@@ -182,13 +182,16 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
     """
     # print('In OriginalTaylorGP')
     _init()
-    x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29 = symbols(
-        "x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,x28,x29 ")
+    # x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29 = symbols(
+    #     "x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,x28,x29 ")
 
-    set_value('_x',
-              [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22,
-               x23,
-               x24, x25, x26, x27, x28, x29])
+    # set_value('_x',
+    #           [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22,
+    #            x23,
+    #            x24, x25, x26, x27, x28, x29])
+    
+    _x = [symbols(f'x{i}') for i in range(500)]
+    set_value('_x', _x)
     _x = get_value('_x')
     eqName = 'SubTaylorGP.out'  # eqName = fileName[:-4]+'.out' 原先的打印都是针对整体的，所以此处应该都用不上了
     eq_write = open(eqName, "w+")

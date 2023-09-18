@@ -303,14 +303,7 @@ class MTaylorGPAlg(Alg):
         self.originalTaylorGPGeneration = originalTaylorGPGeneration
         self.repeat = repeat
         self.recursion_limit = recursion_limit
-        x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29 = symbols(
-            "x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,"
-            "x28,x29 ")
 
-        set_value('_x',
-                  [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21,
-                   x22, x23,
-                   x24, x25, x26, x27, x28, x29])
 
     def run(self):
         flag1 = False
@@ -319,11 +312,22 @@ class MTaylorGPAlg(Alg):
 
         np.set_printoptions(suppress=True)
         t = time.time()
-        np_x = self.ds.get_np_x()
-        np_y = self.ds.get_np_y()
-        np_y = np_y.reshape([-1, 1])
+
+        data = np.loadtxt(self.ds)
+
+# 将最后一列作为np_y
+        np_y = data[:, -1]
+
+        # 将前面的列作为np_x
+        np_x = data[:, :-1]
+
+        # np_x = self.ds.get_np_x()
+        # np_y = self.ds.get_np_y()
+        # np_y = np_y.reshape([-1, 1])
         sys.setrecursionlimit(self.recursion_limit)
-        dataSets = np.hstack([np_x, np_y])
+        # dataSets = np.hstack([np_x, np_y])
+        dataSets = np.column_stack((np_x, np_y))
+
         print("维度： ", dataSets.shape[1] - 1)
         repeat = self.repeat
         totalGeneration = self.max_generation
