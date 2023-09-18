@@ -26,6 +26,9 @@ class Data:
         elif self.type == "txt_pmlb":
             self.pd_data = pd.DataFrame(
                 pd.read_table(self.file_path, sep=' ', header=None, engine='python', names=self.names))
+
+            
+
         elif self.type == "pmlb":
             try:
                 self.pd_data = fetch_data(str(self.file_path), local_cache_dir='./datasets', return_X_y=False)

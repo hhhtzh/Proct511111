@@ -16,8 +16,8 @@ def Global():
 
 
 x, y, z, v, w, a, b, c, d = symbols("x,y,z,v,w,a,b,c,d")
-x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29,x30,x31,x32,x33,x34,x35,x36,x37,x38,x39,x40,x41,x42,x43,x44,x45,x46,x47,x48,x49 = symbols(
-    "x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,x28,x29,x30,x31,x32,x33,x34,x35 ,x36,x37,x38,x39,x40,x41,x42,x43,x44,x45,x46,x47,x48,x49")
+# x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22, x23, x24, x25, x26, x27, x28, x29,x30,x31,x32,x33,x34,x35,x36,x37,x38,x39,x40,x41,x42,x43,x44,x45,x46,x47,x48,x49 = symbols(
+#     "x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,x28,x29,x30,x31,x32,x33,x34,x35 ,x36,x37,x38,x39,x40,x41,x42,x43,x44,x45,x46,x47,x48,x49")
 
 
 class Point:
@@ -68,7 +68,8 @@ class Metrics:
         self.classNum = classNum
         self.x, self.y, self.z, self.v, self.w = symbols("x,y,z,v,w")
         self.x0, self.x1, self.x2, self.x3, self.x4 = symbols("x0,x1,x2,x3,x4")
-        _x = [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9]
+        # _x = [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9]
+        _x = [symbols(f'x{i}') for i in range(50)]
         self._x = _x[:varNum]
         self.count = 0
         self.mediumcount = 0
@@ -160,7 +161,7 @@ class Metrics:
     
     def _CalTaylorNmse(self, varNum ,k):
         
-        for i in range(1,k):
+        for i in range(1,k+1):
             mytaylor_num , f ,k= self._getTDatas(varNum,i)
             f_taylor = sympify(f)
             f_taylor = f_taylor.expand()
@@ -300,8 +301,9 @@ class Metrics:
         y_pred = []
         len1, len2 = 0, 0
         if _x is None:
-            _x = [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21,
-                  x22, x23, x24, x25, x26, x27, x28, x29,x30,x31,x32,x33,x34,x35,x36,x37,x38,x39,x40,x41,x42,x43,x44,x45,x46,x47,x48,x49]
+            # _x = [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21,
+            #       x22, x23, x24, x25, x26, x27, x28, x29,x30,x31,x32,x33,x34,x35,x36,x37,x38,x39,x40,x41,x42,x43,x44,x45,x46,x47,x48,x49]
+            _x = [symbols(f'x{i}') for i in range(500)]
         if X is None:
             X = self._X
             len2 = self.varNum
