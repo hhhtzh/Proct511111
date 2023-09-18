@@ -53,10 +53,10 @@ class BingoMutation(Mutation):
         mutation = AGraphMutation(component_generator, self.command_probability, self.node_probability,
                                   self.parameter_probability, self.prune_probability, self.fork_probability)
         if population.pop_type != "Bingo":
-            population.set_pop_size(len(population.target_pop_list))
             parent_num = np.random.randint(
                 low=0, high=population.get_pop_size() - 1)
-            bingo_parent = population.target_pop_list[parent_num]
+            bingo_parent = population.pop_list[parent_num]
+            bingo_parent = AGraph(equation=bingo_parent.format())
             bingo_parent._update()
             bingo_child = mutation(bingo_parent)
         else:

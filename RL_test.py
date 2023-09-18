@@ -133,9 +133,10 @@ for episode in range(num_episodes):
         # 选择动作
         # print(state)
         # action_probabilities = policy_network(np.array([state], dtype=np.float32))
-        # print(action_probabilities)
+
         # action = np.random.choice(num_actions, p=action_probabilities.numpy()[0])
         action_probabilities = policy_network(np.array([state], dtype=np.float32))
+        # print(action_probabilities)
         action_probabilities = np.where(np.isnan(action_probabilities), 1e-6, action_probabilities)
         action_probabilities /= np.sum(action_probabilities)
         print(action_probabilities)
@@ -172,10 +173,10 @@ for episode in range(num_episodes):
         # print(population.pop_type)
         # print(population.pop_list[0].fitness)
         list1 = ck.do(population)
-        print(list1)
+        # print(list1)
         new_state = np.array(list1)  # 假设新状态是一个一维向量，根据您的实际情况调整
         reward = calculate_reward(state, action, new_state)  # 根据游戏的奖励函数计算奖励
-        print(reward)
+        # print(reward)
 
         episode_states.append(state)
         episode_actions.append(action)
@@ -186,11 +187,13 @@ for episode in range(num_episodes):
         # 检查是否结束
         generation_num += 1
         # print(generation_num)
-        if generation_num > 2:
+        if generation_num > 1000:
             break
 
         # 计算回报并更新策略网络
+        print(episode_rewards)
         episode_returns = calculate_returns(episode_rewards)
+
         train_policy_network(policy_network, np.vstack(episode_states), np.array(episode_actions), episode_returns,
                              optimizer)
 
