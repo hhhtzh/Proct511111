@@ -1,0 +1,47 @@
+
+
+import os
+
+import numpy as np
+
+from sklearn.metrics import r2_score
+from sympy import symbols, lambdify
+import csv
+
+from keplar.data.data import Data
+from keplar.operator.evaluator import OperonSingleEvaluator
+
+
+def calculate_rmse(formula, dataset):
+    # 读取数据集
+    data = np.genfromtxt(dataset, delimiter=',', names=True)
+    # data = np.
+
+    # 定义变量
+    # variables = [f'x{i+1}' for i in range(len(data.dtype.names)-1)]
+    variables = [f'x_{i}' for i in range(len(data.dtype.names)-1)]
+    x = symbols(' '.join(variables))
+    print("x:", x)
+
+    # 将公式转换为可执行的函数
+    formula_func = lambdify(x, formula, dummify=False)
+    print("formula_func:", formula_func)
+    print("formula", formula)
+
+    # 计算预测值
+    X = np.column_stack([data[variable] for variable in data.dtype.names[:-1]])
+
+    # if formula == "0":
+    if formula == "0" or formula == "0.0" or formula == 0:
+
+        # 返回固定的零值
+        y_pred = np.zeros(len(X))
+    else:
+        y_pred = formula_func(*X.T)
+
+    # 将矩阵对象转换为数组
+    y_true = np.array(data[data.dtype.names[-1]])
+    eval = OperonSingleEvaluator("RMSE", X, y_true, 1, True, op_equ=formula)
+    fit = eval.do()
+    return fit
+
