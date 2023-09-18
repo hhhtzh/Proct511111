@@ -64,11 +64,9 @@ class PolicyNetwork(tf.keras.Model):
 
     def call(self, state):
         x = self.dense1(state)
-
         x = self.dense2(x)
-
         x = self.dense3(x)
-        print(x)
+        # print(x)
         return self.output_layer(x)
 
 
@@ -76,7 +74,7 @@ class PolicyNetwork(tf.keras.Model):
 def train_policy_network(policy_network, states, actions, rewards, optimizer):
     with tf.GradientTape() as tape:
         action_probabilities = policy_network(states)
-        print(action_probabilities)
+        # print(action_probabilities)
         actions_one_hot = tf.one_hot(actions, depth=3)
         selected_action_probabilities = tf.reduce_sum(action_probabilities * actions_one_hot, axis=1)
         loss = -tf.reduce_sum(tf.math.log(selected_action_probabilities) * rewards)
@@ -140,7 +138,7 @@ for episode in range(num_episodes):
         action_probabilities = policy_network(np.array([state], dtype=np.float32))
         action_probabilities = np.where(np.isnan(action_probabilities), 1e-6, action_probabilities)
         action_probabilities /= np.sum(action_probabilities)
-        # print(action_probabilities)
+        print(action_probabilities)
         action = np.random.choice(num_actions, p=action_probabilities[0])
 
         # print(action)
@@ -177,6 +175,7 @@ for episode in range(num_episodes):
         print(list1)
         new_state = np.array(list1)  # 假设新状态是一个一维向量，根据您的实际情况调整
         reward = calculate_reward(state, action, new_state)  # 根据游戏的奖励函数计算奖励
+        print(reward)
 
         episode_states.append(state)
         episode_actions.append(action)

@@ -24,13 +24,16 @@ y = data.get_np_y()
 class Actor(tf.keras.Model):
     def __init__(self, num_actions):
         super(Actor, self).__init__()
-        self.dense1 = tf.keras.layers.Dense(64, activation='relu')
-        self.dense2 = tf.keras.layers.Dense(32, activation='relu')
+        self.dense1 = tf.keras.layers.Dense(256, activation='relu')
+        self.dense2 = tf.keras.layers.Dense(128, activation='relu')
+        self.dense3 = tf.keras.layers.Dense(64, activation='relu')
         self.output_layer = tf.keras.layers.Dense(num_actions, activation='softmax')
 
     def call(self, state):
         x = self.dense1(state)
         x = self.dense2(x)
+        x = self.dense3(x)
+        print(x)
         return self.output_layer(x)
 
 
