@@ -33,7 +33,7 @@ t0 = time.time()
 
 
 class OperonAlg(Alg):
-    def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list, sel,
+    def __init__(self, max_generation, up_op_list, down_op_list, eval_op_list,
                  error_tolerance, population_size, threads_num, np_x, np_y, data, x_shape, minL=1, maxL=50, maxD=10,
                  decimalPrecision=5, population=None):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
@@ -45,7 +45,6 @@ class OperonAlg(Alg):
         self.model_string = None
         self.population_size = population_size
         self.threads_num = threads_num
-        self.sel = sel
         self.minL = minL
         self.maxL = maxL
         self.maxD = maxD
@@ -65,7 +64,8 @@ class OperonAlg(Alg):
 
     def run(self):
         t = time.time()
-        selector = self.sel.do()
+        # selector = self.sel.do(self.population)
+        selector = Operon.TournamentSelector(objective_index=0)
         for i in self.ds.Variables:
             if i.Index == self.x_shape:
                 target = i

@@ -170,8 +170,8 @@ class OperonEvaluator(Evaluator):
         problem = Operon.Problem(self.ds, inputs, target.Name, training_range, test_range)
         evaluator = Operon.Evaluator(problem, interpreter, error_metric, self.if_linear_scaling)
         if population.pop_type == "Operon":
-            print(len(population.target_pop_list))
-            print("***")
+            # print(len(population.target_pop_list))
+            # print("***")
             tree_list = population.target_pop_list
             ind_list = []
             fit_list = []
@@ -206,6 +206,7 @@ class OperonEvaluator(Evaluator):
                 # for i in population.pop_list:
                 #     print(i.format(),i.get_fitness())
         else:
+            # print("jjj")
             tree_list = []
             ind_list = []
             fit_list = []

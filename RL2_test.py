@@ -14,8 +14,6 @@ from keplar.operator.evaluator import OperonEvaluator, BingoEvaluator, GpEvaluat
 from keplar.operator.mutation import BingoMutation, OperonMutation
 from keplar.operator.selector import BingoSelector
 
-
-
 data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
 data.read_file()
 x = data.get_np_x()
@@ -36,14 +34,27 @@ class Actor(tf.keras.Model):
         return self.output_layer(x)
 
 
-def calculate_reward(state, action, new_state):
-    # 奖励函数
-    if new_state[0] < state[0]:  # 如果适应度下降
-        return 1.0
-    elif new_state[0] > state[0]:  # 如果适应度上升
-        return -2.0
+def calculate_reward(list, action, new_list):
+    # 计算适应度变化
+    fitness_change = new_list[0] - list[0]
+    mean_fitness_change = new_list[2] - list[2]
+    reward = 0
+    # 根据适应度变化分配奖励
+    if fitness_change < 0:
+        reward += 10.0  # 适应度下降，奖励为正数
+    elif fitness_change < 0:
+        reward -= 20.0  # 适应度上升，奖励为负数
     else:
-        return 0.0  # 适应度上升返回零奖励
+        reward += 0.0  # 适应度没有变化，奖励为零
+
+    if mean_fitness_change < 0:
+        reward += 1
+    elif mean_fitness_change > 0:
+        reward -= 2
+    else:
+        reward += 0
+
+    return reward
 
 
 class Critic(tf.keras.Model):
@@ -58,6 +69,7 @@ class Critic(tf.keras.Model):
         x = self.dense2(x)
         return self.output_layer(x)
 
+
 operators = ["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^']
 bg_creator = BingoCreator(128, operators, x, 10, "Bingo")
 bg_evaluator = BingoEvaluator(x, "exp", "lm", "self", y)
@@ -69,7 +81,7 @@ select = BingoSelector(0.2, "tournament", "Operon")
 op_mutation = OperonMutation(0.6, 0.7, 0.8, 0.8, x, y, 10, 50, "balanced", "Operon")
 data = pd.read_csv("NAStraining_data/recursion_training2.csv")
 op_creator = OperonCreator("balanced", x, y, 128, "Operon")
-op_evaluator=OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
+op_evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
 evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "self")
 gp_evaluator = GpEvaluator(x, y, "self", metric="rmse")
 kb_gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
@@ -96,7 +108,7 @@ class ActorCriticAgent:
     def select_action(self, state):
         action_probs = self.actor(state)
         # 处理 NaN 值：将 NaN 替换为均等的概率分布
-        action_probs = tf.where(tf.math.is_nan(action_probs), tf.ones_like(action_probs) / num_actions, action_probs)
+        # action_probs = tf.where(tf.math.is_nan(action_probs), tf.ones_like(action_probs) / num_actions, action_probs)
         print(action_probs)
         action = np.random.choice(num_actions, p=action_probs.numpy()[0])
         return action
@@ -136,7 +148,7 @@ for episode in range(num_episodes):
     print(list1)
     state = np.array(list1)  # 状态
     episode_reward = 0
-    done=False
+    done = False
 
     for step in range(max_steps_per_episode):
         action = agent.select_action(np.array([state], dtype=np.float32))
@@ -161,7 +173,7 @@ for episode in range(num_episodes):
 
         evaluator.do(population)
         list1 = ck.do(population)
-        new_state=np.array(list1)
+        new_state = np.array(list1)
         print(list1)
         reward = calculate_reward(state, action, new_state)  # 根据游戏的奖励函数计算奖励
 
@@ -180,5 +192,3 @@ for episode in range(num_episodes):
             break
 
     print(f"Episode {episode + 1}: Total Reward: {episode_reward}")
-
-

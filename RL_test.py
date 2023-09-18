@@ -18,14 +18,27 @@ x = data.get_np_x()
 y = data.get_np_y()
 
 
-def calculate_reward(state, action, new_state):
-    # 奖励函数
-    if new_state[0] < state[0]:  # 如果适应度下降
-        return 10.0
-    elif new_state[0] > state[0]:  # 如果适应度上升
-        return -20.0
+def calculate_reward(list, action, new_list):
+    # 计算适应度变化
+    fitness_change = new_list[0] - list[0]
+    mean_fitness_change = new_list[2] - list[2]
+    reward = 0
+    # 根据适应度变化分配奖励
+    if fitness_change < 0:
+        reward += 10.0  # 适应度下降，奖励为正数
+    elif fitness_change < 0:
+        reward -= 20.0  # 适应度上升，奖励为负数
     else:
-        return 0.0  # 适应度上升返回零奖励
+        reward += 0.0  # 适应度没有变化，奖励为零
+
+    if mean_fitness_change < 0:
+        reward += 1
+    elif mean_fitness_change > 0:
+        reward -= 2
+    else:
+        reward += 0
+
+    return reward
 
 
 def calculate_returns(rewards, gamma=0.99):
@@ -38,33 +51,41 @@ def calculate_returns(rewards, gamma=0.99):
 
 
 # 定义策略网络
+
+import tensorflow as tf
+
 class PolicyNetwork(tf.keras.Model):
     def __init__(self, num_actions):
         super(PolicyNetwork, self).__init__()
-        self.dense1 = tf.keras.layers.Dense(64, activation='relu')
-        self.dense2 = tf.keras.layers.Dense(32, activation='relu')
-        self.dense3 = tf.keras.layers.Dense(num_actions, activation='softmax',
-                                            kernel_initializer=tf.keras.initializers.Constant(value=1.0/num_actions),
-                                            use_bias=True)
+        self.dense1 = tf.keras.layers.Dense(256, activation='relu')
+        self.dense2 = tf.keras.layers.Dense(128, activation='relu')
+        self.dense3 = tf.keras.layers.Dense(64, activation='relu')
+        self.output_layer = tf.keras.layers.Dense(num_actions, activation='softmax')
 
     def call(self, state):
         x = self.dense1(state)
+
         x = self.dense2(x)
-        return self.dense3(x)
+
+        x = self.dense3(x)
+        print(x)
+        return self.output_layer(x)
 
 
 # 策略梯度训练函数
 def train_policy_network(policy_network, states, actions, rewards, optimizer):
     with tf.GradientTape() as tape:
         action_probabilities = policy_network(states)
-        # # 在softmax输出上应用温度参数
-        # action_probabilities = tf.nn.softmax(action_probabilities / 0.3)
-
+        print(action_probabilities)
         actions_one_hot = tf.one_hot(actions, depth=3)
         selected_action_probabilities = tf.reduce_sum(action_probabilities * actions_one_hot, axis=1)
         loss = -tf.reduce_sum(tf.math.log(selected_action_probabilities) * rewards)
 
     gradients = tape.gradient(loss, policy_network.trainable_variables)
+
+    # 添加梯度裁剪，防止梯度爆炸
+    gradients, _ = tf.clip_by_global_norm(gradients, 5)
+
     optimizer.apply_gradients(zip(gradients, policy_network.trainable_variables))
 
 
@@ -87,7 +108,7 @@ select = BingoSelector(0.2, "tournament", "Operon")
 op_mutation = OperonMutation(0.6, 0.7, 0.8, 0.8, x, y, 10, 50, "balanced", "Operon")
 data = pd.read_csv("NAStraining_data/recursion_training2.csv")
 op_creator = OperonCreator("balanced", x, y, 128, "Operon")
-op_evaluator=OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
+op_evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
 evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "self")
 gp_evaluator = GpEvaluator(x, y, "self", metric="rmse")
 kb_gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
@@ -105,7 +126,7 @@ ck = CheckPopulation(data)
 for episode in range(num_episodes):
     # 在每个episode开始时，初始化环境
     list1 = ck.do(population)
-    print(list1)
+    # print(list1)
     state = np.array(list1)  # 状态
     # print(state[0])
     episode_states, episode_actions, episode_rewards = [], [], []
@@ -119,7 +140,7 @@ for episode in range(num_episodes):
         action_probabilities = policy_network(np.array([state], dtype=np.float32))
         action_probabilities = np.where(np.isnan(action_probabilities), 1e-6, action_probabilities)
         action_probabilities /= np.sum(action_probabilities)
-        print(action_probabilities)
+        # print(action_probabilities)
         action = np.random.choice(num_actions, p=action_probabilities[0])
 
         # print(action)
@@ -148,10 +169,10 @@ for episode in range(num_episodes):
         # print(len(population.pop_list))
         # for i in population.pop_list:
         #     print(i.format())
+        # print(population.pop_type)
         evaluator.do(population)
         # print(population.pop_type)
         # print(population.pop_list[0].fitness)
-
         list1 = ck.do(population)
         print(list1)
         new_state = np.array(list1)  # 假设新状态是一个一维向量，根据您的实际情况调整
@@ -170,8 +191,8 @@ for episode in range(num_episodes):
             break
 
         # 计算回报并更新策略网络
-    episode_returns = calculate_returns(episode_rewards)
-    train_policy_network(policy_network, np.vstack(episode_states), np.array(episode_actions), episode_returns,
-                     optimizer)
+        episode_returns = calculate_returns(episode_rewards)
+        train_policy_network(policy_network, np.vstack(episode_states), np.array(episode_actions), episode_returns,
+                             optimizer)
 
 # 最后，您可以使用训练好的策略网络来玩游戏。

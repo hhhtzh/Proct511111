@@ -16,15 +16,12 @@ from keplar.operator.evaluator import OperonEvaluator, BingoEvaluator, GpEvaluat
 from keplar.operator.mutation import BingoMutation, OperonMutation
 from keplar.operator.selector import BingoSelector
 
-
-
-data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
+# data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
+data = Data("txt", "datasets/vla/two/1.txt", ["x0", "x1", "y"])
 data.read_file()
+data.set_xy("y")
 x = data.get_np_x()
 y = data.get_np_y()
-
-
-
 
 model_name = "bert-base-uncased"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -94,15 +91,24 @@ class Actor(tf.keras.Model):
 def calculate_reward(list, new_list):
     # 计算适应度变化
     fitness_change = new_list[0] - list[0]
-
+    mean_fitness_change = new_list[2] - list[2]
+    reward = 0
     # 根据适应度变化分配奖励
-    if fitness_change > 0:
-        return 1.0  # 适应度上升，奖励为正数
+    if fitness_change < 0:
+        reward += 1.0  # 适应度下降，奖励为正数
     elif fitness_change < 0:
-        return -2.0  # 适应度下降，奖励为负数
+        reward -= 2.0  # 适应度上升，奖励为负数
     else:
-        return 0.0  # 适应度没有变化，奖励为零
+        reward += 0.0  # 适应度没有变化，奖励为零
 
+    if mean_fitness_change < 0:
+        reward += 1
+    elif mean_fitness_change > 0:
+        reward -= 2
+    else:
+        reward += 0
+
+    return reward
 
 
 class Critic(tf.keras.Model):
@@ -117,6 +123,7 @@ class Critic(tf.keras.Model):
         x = self.dense2(x)
         return self.output_layer(x)
 
+
 operators = ["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^']
 bg_creator = BingoCreator(128, operators, x, 10, "Bingo")
 bg_evaluator = BingoEvaluator(x, "exp", "lm", "self", y)
@@ -128,7 +135,7 @@ select = BingoSelector(0.2, "tournament", "Operon")
 op_mutation = OperonMutation(0.6, 0.7, 0.8, 0.8, x, y, 10, 50, "balanced", "Operon")
 data = pd.read_csv("NAStraining_data/recursion_training2.csv")
 op_creator = OperonCreator("balanced", x, y, 128, "Operon")
-op_evaluator=OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
+op_evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
 evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "self")
 gp_evaluator = GpEvaluator(x, y, "self", metric="rmse")
 kb_gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
@@ -155,7 +162,7 @@ class ActorCriticAgent:
     def select_action(self, state):
         action_probs = self.actor(state)
         # 处理 NaN 值：将 NaN 替换为均等的概率分布
-        action_probs = tf.where(tf.math.is_nan(action_probs), tf.ones_like(action_probs) / num_actions, action_probs)
+        # action_probs = tf.where(tf.math.is_nan(action_probs), tf.ones_like(action_probs) / num_actions, action_probs)
         print(action_probs)
         action = np.random.choice(num_actions, p=action_probs.numpy()[0])
         return action
@@ -193,16 +200,22 @@ max_steps_per_episode = 100
 for episode in range(num_episodes):
     list1 = ck.do(population)
     print(list1)
-    state = np.array(list1)  # 状态
+    expressions = []
+    for i in population.pop_list:
+        str_equ = i.format()
+        expressions.append(str_equ)
+    vector = []
+    for expression in expressions:
+        vector = expression_to_sentence_vector(expression)
     episode_reward = 0
-    done=False
+    done = False
 
     for step in range(max_steps_per_episode):
         # 在调用 select_action 之前，将状态的形状调整为 (1, 768)
-        state = np.array(list1, dtype=np.float32)  # 假设 list1 是形状为 (768,) 的状态
+        state = np.array(vector, dtype=np.float32)  # 假设 list1 是形状为 (768,) 的状态
+        print(np.shape(state))
         state = np.expand_dims(state, axis=0)  # 添加一个维度，将形状调整为 (1, 768)
         action = agent.select_action(state)
-
         if action == 0:
             print("bg")
             bgsr = KeplarBingoAlg(1, kb_gen_up_oplist, kb_gen_down_oplist, kb_gen_eva_oplist, 0.001, population)
@@ -230,21 +243,21 @@ for episode in range(num_episodes):
         vector = []
         for expression in expressions:
             vector = expression_to_sentence_vector(expression)
-            print(f"Expression: {expression}")
-            print(f"Sentence Vector: {vector}")
-            print()
+            # print(f"Expression: {expression}")
+            # print(f"Sentence Vector: {vector}")
+            # print()
         new_list1 = ck.do(population)
         print(list1)
-        reward = calculate_reward(list1,new_list1)  # 根据游戏的奖励函数计算奖励
+        reward = calculate_reward(list1, new_list1)  # 根据游戏的奖励函数计算奖励
         new_state = np.array(vector)
-        new_list1=list1
+        new_list1 = list1
         print(list1)
 
         agent.train(
             np.array([state], dtype=np.float32),
             action,
             reward,
-            np.array([list1], dtype=np.float32),
+            np.array([new_state], dtype=np.float32),
             done
         )
 
@@ -255,5 +268,3 @@ for episode in range(num_episodes):
             break
 
     print(f"Episode {episode + 1}: Total Reward: {episode_reward}")
-
-

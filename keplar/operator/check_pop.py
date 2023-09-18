@@ -24,7 +24,7 @@ class CheckPopulation(Operator):
             np_length = np.array(length_list)
 
             np_fit = np.array(fit_list)
-            print(np_length)
+            # print(np_length)
             # print(np_fit)
             max_length = np.max(np_length)
             min_length = np.min(np_length)

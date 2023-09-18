@@ -236,9 +236,9 @@ class subRegionCalculator:
                       self.abSelectedArm, sep=" ")
                 Pop = max(Pop // self.abSelectedArm.count(1), 10)  # 种群大小至少为10
                 # [end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
-            self.abRockNum[selectedRegionIndex] += Pop*self.originalTaylorGPGen
-            self.abRockSum += Pop*self.originalTaylorGPGen
-            top1  = OriginalTaylorGP(self.subRegions[selectedRegionIndex], Y_pred, parents, repeatNum,
+            self.abRockNum[selectedRegionIndex] += Pop * self.originalTaylorGPGen
+            self.abRockSum += Pop * self.originalTaylorGPGen
+            top1 = OriginalTaylorGP(self.subRegions[selectedRegionIndex], Y_pred, parents, repeatNum,
                                     self.originalTaylorGPGen, Pop, qualified_list=qualified_list,
                                     SR_method=SR_method)  # top是list 0是适应度，1是公式 2是上轮最后一代种群
             self.tops[selectedRegionIndex] = top1  # 由于MAB，所以选择性更新tops
@@ -409,7 +409,7 @@ class subRegionCalculator:
                         lasso_ = Lasso(alpha=alpha).fit(X_train, self.Y)
                         Y_pred = lasso_.predict(X_train)
                         rmseFitness = mean_squared_error(Y_pred, self.Y)
-                        print("uuuuuu")
+                        # print("uuuuuu")
                         print(lasso_.coef_)
                         self.curLassoCoef = lasso_.coef_
                         worest_index = 0
@@ -453,7 +453,6 @@ class subRegionCalculator:
             except BaseException:
                 print("TypeError: can't convert complex to float")
                 self.curLassoCoef = [1] * len(self.subRegions)  # 保证下轮对所有子块都进行更新.
-
 
     def Cal_X_Y_pred(self):
         """

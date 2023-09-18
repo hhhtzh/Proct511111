@@ -22,7 +22,6 @@ time_list = []
 x = data.get_np_x()
 y = data.get_np_y()
 x_shape = np.shape(x[0])[0]
-selector = OperonSelector(5)
 evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
 crossover = OperonCrossover(x, y, "Operon")
 mutation = OperonMutation(1, 1, 1, 0.5, x, y, 10, 50, "balanced", "Operon")
@@ -30,8 +29,8 @@ reinsert = OperonReinserter(None, "ReplaceWorst", 10, "Operon", x, y)
 op_up_list = [mutation, crossover]
 op_down_list = [reinsert]
 eva_list = [evaluator]
-op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, selector, 1e-5, 128, 16, x, y, data, x_shape)
-for i in range(7):
+op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list,  1e-5, 128, 16, x, y, data, x_shape)
+for i in range(1):
     op_alg.run()
     # print(op_alg.model_string)
     # op_alg.get_n_top()
