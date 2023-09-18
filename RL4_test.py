@@ -1,15 +1,31 @@
+import random
+
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 from keras.layers import Dense
 from keras.optimizers import Adam
-import gym
+
+from keplar.data.data import Data
+from keplar.operator.check_pop import CheckPopulation
+from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
+from keplar.operator.creator import BingoCreator, OperonCreator
+from keplar.operator.crossover import BingoCrossover, OperonCrossover
+from keplar.operator.evaluator import BingoEvaluator, OperonEvaluator, GpEvaluator
+from keplar.operator.mutation import BingoMutation, OperonMutation
+from keplar.operator.selector import BingoSelector
 
 # 环境
-env = gym.make('Pendulum-v0')
-state_dim = env.observation_space.shape[0]
-action_dim = env.action_space.shape[0]
-action_high = env.action_space.high
-action_low = env.action_space.low
+state_dim = 6
+action_dim = 3
+action_high = 2
+action_low = 0
+
+
+data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
+data.read_file()
+x = data.get_np_x()
+y = data.get_np_y()
 
 # Actor网络
 def build_actor():
@@ -31,6 +47,35 @@ def build_critic():
     output_value = Dense(1)(x)
     model = tf.keras.models.Model(inputs=[input_state, input_action], outputs=output_value)
     return model
+
+
+
+operators = ["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^']
+bg_creator = BingoCreator(128, operators, x, 10, "Bingo")
+bg_evaluator = BingoEvaluator(x, "exp", "lm", "self", y)
+bg_crossover = BingoCrossover("Bingo")
+bg_mutation = BingoMutation(x, operators, "Bingo")
+bg_selector = BingoSelector(0.5, "tournament", "Bingo")
+op_crossover = OperonCrossover(x, y, "Operon")
+select = BingoSelector(0.2, "tournament", "Operon")
+op_mutation = OperonMutation(0.6, 0.7, 0.8, 0.8, x, y, 10, 50, "balanced", "Operon")
+data = pd.read_csv("NAStraining_data/recursion_training2.csv")
+op_creator = OperonCreator("balanced", x, y, 128, "Operon")
+op_evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
+evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "self")
+gp_evaluator = GpEvaluator(x, y, "self", metric="rmse")
+kb_gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
+kb_gen_down_oplist = CompositeOpReturn([bg_selector])
+kb_gen_eva_oplist = CompositeOp([bg_evaluator])
+gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
+gen_down_oplist = CompositeOpReturn([bg_selector])
+gen_eva_oplist = CompositeOp([gp_evaluator])
+op_up_list = [op_mutation, op_crossover]
+eval_op_list = [evaluator]
+population = op_creator.do()
+evaluator.do(population)
+ck = CheckPopulation(data)
+
 
 # 建立Actor和Critic网络
 actor_network = build_actor()
