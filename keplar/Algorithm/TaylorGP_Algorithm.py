@@ -291,7 +291,7 @@ class TayloGPAlg(Alg):
 class MTaylorGPAlg(Alg):
     def __init__(self, max_generation, ds, up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
                  population=None, NewSparseRegressionFlag=False,
-                 recursion_limit=300, repeat=1, originalTaylorGPGeneration=200, SR_method="gplearn", mabPolicy="Greedy"):
+                 recursion_limit=300, repeat=1, originalTaylorGPGeneration=100, SR_method="gplearn", mabPolicy="Greedy"):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
         self.NewSparseRegressionFlag = NewSparseRegressionFlag
         self.best_ind = None
@@ -315,7 +315,7 @@ class MTaylorGPAlg(Alg):
 
         data = np.loadtxt(self.ds)
 
-# 将最后一列作为np_y
+        # 将最后一列作为np_y
         np_y = data[:, -1]
 
         # 将前面的列作为np_x

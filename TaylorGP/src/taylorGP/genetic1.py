@@ -295,7 +295,7 @@ class BaseSymbolic(BaseEstimator, metaclass=ABCMeta):
         random_state = check_random_state(self.random_state)
 
         # Check arrays
-        if sample_weight is not None:
+        if sample_weight is not None:  
             sample_weight = check_array(sample_weight, ensure_2d=False)
 
         if isinstance(self, ClassifierMixin):
