@@ -23,7 +23,7 @@ def calculate_rmse_cal(y_pred, y_true):
     return rmse
 
 
-def calculate_rmse(formula, dataset):
+def calculate_rmse(formula,scaler_X,scaler_y, dataset):
     # 读取数据集
     data = np.genfromtxt(dataset, delimiter=',', names=True)
     # data = np.
@@ -41,6 +41,7 @@ def calculate_rmse(formula, dataset):
 
     # 计算预测值
     X = np.column_stack([data[variable] for variable in data.dtype.names[:-1]])
+    X = scaler_X.transform(X)
 
     # if formula == "0":
     if formula == "0" or formula == "0.0" or formula == 0:
@@ -52,6 +53,7 @@ def calculate_rmse(formula, dataset):
 
     # 将矩阵对象转换为数组
     y_true = np.array(data[data.dtype.names[-1]])
+    y_true = scaler_y.transform(y_true.reshape(-1, 1))
 
     fit = calculate_rmse_cal(y_pred, y_true)
 

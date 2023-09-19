@@ -289,7 +289,7 @@ class TayloGPAlg(Alg):
 
 
 class MTaylorGPAlg(Alg):
-    def __init__(self, max_generation, ds, up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
+    def __init__(self, max_generation, X_array,y_array, up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
                  population=None, NewSparseRegressionFlag=False,
                  recursion_limit=300, repeat=1, originalTaylorGPGeneration=100, SR_method="gplearn", mabPolicy="Greedy"):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
@@ -299,7 +299,8 @@ class MTaylorGPAlg(Alg):
         self.best_fit = None
         self.mabPolicy = mabPolicy
         self.SR_method = SR_method
-        self.ds = ds
+        self.X = X_array
+        self.y = y_array
         self.originalTaylorGPGeneration = originalTaylorGPGeneration
         self.repeat = repeat
         self.recursion_limit = recursion_limit
@@ -313,22 +314,26 @@ class MTaylorGPAlg(Alg):
         np.set_printoptions(suppress=True)
         t = time.time()
 
-        data = np.loadtxt(self.ds)
+        np_x = np.array(self.X)
+        np_y = np.array(self.y)
 
-        # 将最后一列作为np_y
-        np_y = data[:, -1]
+        dataSets = np.hstack([np_x, np_y])
 
-        # 将前面的列作为np_x
-        np_x = data[:, :-1]
+
+        # dataSets = self.ds
+
+
+
+
 
         # np_x = self.ds.get_np_x()
         # np_y = self.ds.get_np_y()
         # np_y = np_y.reshape([-1, 1])
         sys.setrecursionlimit(self.recursion_limit)
-        # dataSets = np.hstack([np_x, np_y])
-        dataSets = np.column_stack((np_x, np_y))
+    
+        # dataSets = np.column_stack(X_normalized, y_normalized)
 
-        print("维度： ", dataSets.shape[1] - 1)
+        # print("维度： ", dataSets.shape[1] - 1)
         repeat = self.repeat
         totalGeneration = self.max_generation
         originalTaylorGPGeneration = self.originalTaylorGPGeneration

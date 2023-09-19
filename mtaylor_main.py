@@ -9,13 +9,14 @@ import argparse
 import os
 from keplar.cal_res.cal_R2 import calculate_r2
 from keplar.cal_res.cal_RMSE import calculate_rmse
+from sklearn.preprocessing import MinMaxScaler
 
 # data = Data("txt", "trainsets/pmlb/val/197_cpu_act.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13", "x14", "x15", "x16", "x17", "x18", "x19", "x20","y"])
 # data = Data("txt", "trainsets/vla/two/1.txt", ["x0", "x1", "y"])
 sys.setrecursionlimit(10000)
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/207_autoPrice.txt")
-argparser.add_argument("--varset", type=str, default="datasets/pmlb/pmlb_csv/207_autoPrice.csv")
+argparser.add_argument("--trainset", type=str, default="datasets/pmlb/train/588_fri_c4_1000_100.txt")
+argparser.add_argument("--varset", type=str, default="datasets/pmlb/val/588_fri_c4_1000_100.csv")
 # argparser.add_argument("--trainset", type=str, default="datasets/feynman/train/feynman-i.12.5.txt")
 # argparser.add_argument("--varset", type=str, default="datasets/feynman/mydataver/feynman-i.12.5.csv")
 args = argparser.parse_args()
@@ -38,15 +39,43 @@ time_list = []
 equ_list = []
 R2_list = []
 rmse_list = []
-mt = MTaylorGPAlg(1000, args.trainset, population=pop, NewSparseRegressionFlag=True)
+
+
+data = np.loadtxt(args.trainset)
+# 将最后一列作为np_y
+np_y = data[:, -1]
+# 将前面的列作为np_x
+np_x = data[:, :-1]
+
+scaler_X = MinMaxScaler()
+scaler_X.fit(np_x)
+scaler_y = MinMaxScaler()
+scaler_y.fit(np_y.reshape(-1, 1))
+
+# 归一化特征
+X_normalized = scaler_X.transform(np_x)
+y_normalized = scaler_y.transform(np_y.reshape(-1, 1))
+
+# y_normalized =np_y.reshape(-1, 1)
+
+
+np_x = np.array(X_normalized)
+np_y = np.array(y_normalized)
+
+
+mt =  MTaylorGPAlg(1000, np_x,np_y, population=pop, NewSparseRegressionFlag=True)
+
+
+
+
 
 for i in range(1):
-    # print("iii")
+    print("iii")
     mt.run()
 
-    r2 = calculate_r2(mt.best_ind, args.varset)
-    print("r2:", r2)
-    rmse = calculate_rmse(mt.best_ind, args.varset)
+    r2=calculate_r2(mt.best_ind,scaler_X,scaler_y, args.varset)
+    print("r2:",r2)
+    rmse = calculate_rmse(mt.best_ind,scaler_X,scaler_y, args.varset)
     print("rmse:", rmse)
     rmse_list.append(rmse)
     R2_list.append(r2)

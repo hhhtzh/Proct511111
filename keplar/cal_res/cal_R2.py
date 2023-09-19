@@ -8,7 +8,7 @@ from sklearn.metrics import r2_score
 from sympy import symbols, lambdify
 import csv
 
-def calculate_r2(formula, dataset):
+def calculate_r2(formula,scaler_X,scaler_y, dataset):
     # 读取数据集
     data = np.genfromtxt(dataset, delimiter=',', names=True)
     # data = np.
@@ -27,6 +27,8 @@ def calculate_r2(formula, dataset):
     # 计算预测值
     X = np.column_stack([data[variable] for variable in data.dtype.names[:-1]])
 
+    X = scaler_X.transform(X)
+
     # if formula == "0":
     if formula == "0" or formula == "0.0" or formula == 0:
 
@@ -37,6 +39,7 @@ def calculate_r2(formula, dataset):
 
     # 将矩阵对象转换为数组
     y_true = np.array(data[data.dtype.names[-1]])
+    y_true = scaler_y.transform(y_true.reshape(-1, 1))
 
     # 计算R2值
     r2 = r2_score(y_true, y_pred)
@@ -55,6 +58,7 @@ def calculate_r2_des(formula, dataset):
 
     # 计算预测值
     X = np.column_stack([data[variable] for variable in data.dtype.names[:-1]])
+    # X= 
     y_pred = formula_func(*X.T)
 
     # 计算R2值
