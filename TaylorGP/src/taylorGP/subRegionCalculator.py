@@ -122,15 +122,16 @@ class subRegionCalculator:
                 elif n_clusters_ < 1:
                     return False
                 else:
+                    self.subRegions = []
                     for j in range(n_clusters_):
                         temp_db = []
                         for i in range(len(labels)):
                             if labels[i] == j:
                                 temp_db.append(self.dataSets[i])
                         temp_db = np.array(temp_db)
-                        print(j)
-                        print("--------")
-                        print(temp_db)
+                        # print(j)
+                        # print("--------")
+                        # print(temp_db)
                         self.subRegions.append(temp_db)
                     n_noise_ = list(labels).count(-1)
                     print(f"划分子块{n_clusters_}个")

@@ -15,8 +15,8 @@ from sklearn.preprocessing import MinMaxScaler
 # data = Data("txt", "trainsets/vla/two/1.txt", ["x0", "x1", "y"])
 sys.setrecursionlimit(10000)
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/207_autoPrice.txt")
-argparser.add_argument("--varset", type=str, default="datasets/pmlb/pmlb_csv/207_autoPrice.csv")
+argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/210_cloud.txt")
+argparser.add_argument("--varset", type=str, default="datasets/pmlb/pmlb_csv/210_cloud.csv")
 # argparser.add_argument("--trainset", type=str, default="datasets/feynman/train/feynman-i.12.5.txt")
 # argparser.add_argument("--varset", type=str, default="datasets/feynman/mydataver/feynman-i.12.5.csv")
 args = argparser.parse_args()
@@ -53,7 +53,7 @@ scaler_y = MinMaxScaler()
 scaler_y.fit(np_y.reshape(-1, 1))
 
 # 归一化特征
-X_normalized = scaler_X.transform(np_x)4 
+X_normalized = scaler_X.transform(np_x)
 y_normalized = scaler_y.transform(np_y.reshape(-1, 1))
 
 # y_normalized =np_y.reshape(-1, 1)
