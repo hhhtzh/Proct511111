@@ -142,13 +142,13 @@ class Metrics:
         if varNum == 1 or varNum == 2:
             f_taylor ,k ,nmse= self._CalTaylorNmse(varNum,10)
         elif varNum == 3 or varNum == 4:
-            f_taylor ,k ,nmse= self._CalTaylorNmse(varNum,8)
-        elif varNum == 5 or varNum == 6:
             f_taylor ,k ,nmse= self._CalTaylorNmse(varNum,6)
-        elif varNum == 7 or varNum == 8:
+        elif varNum == 5 or varNum == 6:
             f_taylor ,k ,nmse= self._CalTaylorNmse(varNum,4)
-        elif varNum < 12:
+        elif varNum == 7 or varNum == 8:
             f_taylor ,k ,nmse= self._CalTaylorNmse(varNum,3)
+        elif varNum < 12:
+            f_taylor ,k ,nmse= self._CalTaylorNmse(varNum,2)
         elif varNum < 20:
             f_taylor ,k ,nmse= self._CalTaylorNmse(varNum,2)
         else:    
