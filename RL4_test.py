@@ -104,6 +104,11 @@ ck = CheckPopulation(data)
 # 建立Actor和Critic网络
 actor_network = build_actor()
 critic_network = build_critic()
+learning_rate = 0.001
+
+actor_network.compile(optimizer=tf.keras.optimizers.Adam(learning_rate), loss='mean_squared_error')
+critic_network.compile(optimizer=tf.keras.optimizers.Adam(learning_rate), loss='mean_squared_error')
+
 
 # 建立目标Actor和目标Critic网络（用于延迟更新）
 target_actor_network = build_actor()
