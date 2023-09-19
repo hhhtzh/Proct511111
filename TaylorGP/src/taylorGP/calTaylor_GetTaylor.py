@@ -279,7 +279,7 @@ class Metrics:
             if product<=k:
                 # print("combination= ",combination,"i= ",i)
                 lenth =len(combination)
-                if(Taylor[u]>0):
+                if(Taylor[u]>=0):
                     f += '+'
                 else:
                     pass
