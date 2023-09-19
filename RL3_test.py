@@ -141,25 +141,21 @@ for episode in range(num_episodes):
         action_probabilities /= np.sum(action_probabilities)
         print(action_probabilities)
         action = np.random.choice(num_actions, p=action_probabilities[0])
+        pool_population=population
 
 
         # print(action)
 
         # 执行动作并观察奖励和新状态
         if action == 0:
-            print("bg")
-            bgsr = KeplarBingoAlg(1, kb_gen_up_oplist, kb_gen_down_oplist, kb_gen_eva_oplist, 0.001, population)
-            bgsr.one_gen_run()
 
         elif action == 1:
-            print("gpbg2")
-            gpbg2 = GpBingo2Alg(1, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
-            gpbg2.one_gen_run()
 
         elif action == 2:
-            print("ko")
-            opbg = KeplarOperonAlg(1, op_up_list, None, eval_op_list, -10, population, select, x, y, 128)
-            opbg.one_gen_run()
+
+        elif action == 3:
+
+
 
         else:
             raise ValueError("其他方法暂未实现")
