@@ -110,6 +110,8 @@ class subRegionCalculator:
                 # Number of clusters in labels, ignoring noise if present.
                 n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
                 print("原始数据聚类", n_clusters_, "块")
+                n_noise_ = list(labels).count(-1)
+
 
                 if n_clusters_ == 1:
                     if not self.oneSubRegionFlag:
@@ -119,7 +121,20 @@ class subRegionCalculator:
                         return False
                 elif n_clusters_ < 1:
                     return False
-                n_noise_ = list(labels).count(-1)
+                else:
+                    for j in range(n_clusters_):
+                        temp_db = []
+                        for i in range(len(labels)):
+                            if labels[i] == j:
+                                temp_db.append(self.dataSets[i])
+                        temp_db = np.array(temp_db)
+                        print(j)
+                        print("--------")
+                        print(temp_db)
+                        self.subRegions.append(temp_db)
+                    n_noise_ = list(labels).count(-1)
+                    print(f"划分子块{n_clusters_}个")
+                    print(f"统计噪声数据共{n_noise_}条")
 
                 if 1.0 * n_noise_ / self.dataSets.shape[0] > 0.5 and self.dataSets.shape[1] != 2 \
                         and self.subRegions is None:
