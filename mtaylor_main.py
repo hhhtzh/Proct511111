@@ -53,7 +53,7 @@ scaler_y = MinMaxScaler()
 scaler_y.fit(np_y.reshape(-1, 1))
 
 # 归一化特征
-X_normalized = scaler_X.transform(np_x)
+X_normalized = scaler_X.transform(np_x)4 
 y_normalized = scaler_y.transform(np_y.reshape(-1, 1))
 
 # y_normalized =np_y.reshape(-1, 1)
