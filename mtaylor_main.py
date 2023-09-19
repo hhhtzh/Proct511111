@@ -15,8 +15,8 @@ from sklearn.preprocessing import MinMaxScaler
 # data = Data("txt", "trainsets/vla/two/1.txt", ["x0", "x1", "y"])
 sys.setrecursionlimit(10000)
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--trainset", type=str, default="datasets/pmlb/train/588_fri_c4_1000_100.txt")
-argparser.add_argument("--varset", type=str, default="datasets/pmlb/val/588_fri_c4_1000_100.csv")
+argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/207_autoPrice.txt")
+argparser.add_argument("--varset", type=str, default="datasets/pmlb/pmlb_csv/207_autoPrice.csv")
 # argparser.add_argument("--trainset", type=str, default="datasets/feynman/train/feynman-i.12.5.txt")
 # argparser.add_argument("--varset", type=str, default="datasets/feynman/mydataver/feynman-i.12.5.csv")
 args = argparser.parse_args()
@@ -72,7 +72,6 @@ mt =  MTaylorGPAlg(1000, np_x,np_y, population=pop, NewSparseRegressionFlag=True
 for i in range(1):
     print("iii")
     mt.run()
-
     r2=calculate_r2(mt.best_ind,scaler_X,scaler_y, args.varset)
     print("r2:",r2)
     rmse = calculate_rmse(mt.best_ind,scaler_X,scaler_y, args.varset)
