@@ -264,8 +264,8 @@ class Metrics:
         length = Number
         print("length=",length)
         Taylor = 0
-        # Taylor = np.linalg.lstsq(A, b0, rcond=None)[0]
-        Taylor = np.linalg.solve(A, b0)
+        Taylor = np.linalg.lstsq(A, b0, rcond=None)[0]
+        # Taylor = np.linalg.solve(A, b0)
 
         Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
 
