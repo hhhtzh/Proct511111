@@ -115,6 +115,6 @@ for fileName in df1:
 
         plt.title("Estimated number of clusters: %d" % n_clusters_)
         figName = "cluster_stander_eps" + str(epsilon) + "_" + str(fileName) + ".jpg"
-        plt.savefig('/home/tzh/PycharmProjects/pythonProjectAR5/IMG_COLOR/LOG\\' + figName, dpi=1000,
+        plt.savefig('IMG_COLOR/LOG\\' + figName, dpi=1000,
                     bbox_inches='tight')
         plt.show()
