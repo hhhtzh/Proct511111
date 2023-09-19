@@ -29,7 +29,7 @@ X = StandardScaler().fit_transform(X)
 
 # %%
 # for fileNum in [72,73,74,75,76,77,78,79,80,81]:++
-df = pd.read_csv("/home/tzh/PycharmProjects/pythonProjectAR5/datasets/pmlb/name.csv")
+df = pd.read_csv("datasets/pmlb/name.csv")
 # print(df)
 df1 = df.iloc[:, -1]
 
@@ -37,7 +37,7 @@ for fileName in df1:
     # for fileNum in range(13,23):
     print("fileName = ", fileName)
     for epsilon in [0.2, 0.5, 0.8, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 100]:
-        X = np.loadtxt(r"/home/tzh/PycharmProjects/pythonProjectAR5/datasets/pmlb/pmlb_txt/" + str(fileName) + ".txt", dtype=np.float64, skiprows=1)
+        X = np.loadtxt(r"datasets/pmlb/pmlb_txt/" + str(fileName) + ".txt", dtype=np.float64, skiprows=1)
         # X, Y = np.split(X_Y, (-1,), axis=1)
         # X = StandardScaler().fit_transform(X) #标准化
         # Compute DBSCAN
