@@ -29,7 +29,7 @@ X = StandardScaler().fit_transform(X)
 
 # %%
 # for fileNum in [72,73,74,75,76,77,78,79,80,81]:++
-df = pd.read_csv("/home/hebaihe/tzh/All_Kepler/K1/Kepler/keplar/draw/name.csv")
+df = pd.read_csv("/home/hebaihe/tzh/All_Kepler/K1/Kepler/datasets/pmlb/name.csv")
 # print(df)
 df1 = df.iloc[:, -1]
 
