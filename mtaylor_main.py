@@ -63,7 +63,7 @@ np_x = np.array(X_normalized)
 np_y = np.array(y_normalized)
 
 
-mt =  MTaylorGPAlg(1000, np_x,np_y, population=pop, NewSparseRegressionFlag=True)
+mt =  MTaylorGPAlg(1000, np_x, np_y, population=pop, NewSparseRegressionFlag=True)
 
 
 
