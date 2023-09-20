@@ -289,9 +289,11 @@ class TayloGPAlg(Alg):
 
 
 class MTaylorGPAlg(Alg):
-    def __init__(self, max_generation, X_array,y_array, up_op_list=None, down_op_list=None, eval_op_list=None, error_tolerance=None,
+    def __init__(self, max_generation, X_array, y_array, up_op_list=None, down_op_list=None, eval_op_list=None,
+                 error_tolerance=None,
                  population=None, NewSparseRegressionFlag=False,
-                 recursion_limit=300, repeat=1, originalTaylorGPGeneration=100, SR_method="gplearn", mabPolicy="Greedy"):
+                 recursion_limit=300, repeat=1, originalTaylorGPGeneration=100, SR_method="gplearn",
+                 mabPolicy="Greedy"):
         super().__init__(max_generation, up_op_list, down_op_list, eval_op_list, error_tolerance, population)
         self.NewSparseRegressionFlag = NewSparseRegressionFlag
         self.best_ind = None
@@ -305,11 +307,9 @@ class MTaylorGPAlg(Alg):
         self.repeat = repeat
         self.recursion_limit = recursion_limit
 
-
     def run(self):
         flag1 = False
         flag2 = False
-
 
         np.set_printoptions(suppress=True)
         t = time.time()
@@ -319,18 +319,13 @@ class MTaylorGPAlg(Alg):
 
         dataSets = np.hstack([np_x, np_y])
 
-
         # dataSets = self.ds
-
-
-
-
 
         # np_x = self.ds.get_np_x()
         # np_y = self.ds.get_np_y()
         # np_y = np_y.reshape([-1, 1])
         sys.setrecursionlimit(self.recursion_limit)
-    
+
         # dataSets = np.column_stack(X_normalized, y_normalized)
 
         # print("维度： ", dataSets.shape[1] - 1)
@@ -338,7 +333,7 @@ class MTaylorGPAlg(Alg):
         totalGeneration = self.max_generation
         originalTaylorGPGeneration = self.originalTaylorGPGeneration
         Pop = self.population.pop_size  # 种群规模
-        epsilons = [1e-5, 0.2, 1, 4, 10, 100]
+        epsilons = [1e-5, 0.000001, 0.001, 0.01, 0.1, 0.2, 1, 2, 4, 10, 50, 100]
         # time_start1 = time.time()
         _init()
         for repeatNum in range(repeat):
@@ -348,9 +343,10 @@ class MTaylorGPAlg(Alg):
             countAvailableParameters = SRC.CalCountofAvailableParameters(epsilons=epsilons, np_x=np_x)
             mabLoopNum = max(totalGeneration // originalTaylorGPGeneration // countAvailableParameters, 1)
             for epsilon in epsilons:
+                print(epsilon)
                 if flag1:
                     break
-                if epsilon == 1e-5:
+                if epsilon <= 1e-5:
                     SRC.PreDbscan(epsilon, noClusterFlag=True, clusterMethod="NOCLUSTER",
                                   data_x=np_x)  # 执行 OriginalTaylorGP
                 elif not SRC.PreDbscan(epsilon, clusterMethod="DBSCAN", data_x=np_x):
@@ -360,6 +356,7 @@ class MTaylorGPAlg(Alg):
                 set_value('FIRST_EVOLUTION_FLAG', True)
                 # 进行每轮数据集演化前执行
                 for tryNum in range(mabLoopNum):
+                    print("子块个数:"+str(len(SRC.subRegions)))
                     SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method)
                     SRC.SubRegionPruning()
                     SRC.SparseRegression()
@@ -394,7 +391,6 @@ class MTaylorGPAlg(Alg):
         str_eq = str(self.best_ind[1][0])
         str_eq = re.sub(r'x(\d{1})', r'x_\1', str_eq)
         self.best_ind = str_eq
-
 
     """
         for fileNum in range(19,20):

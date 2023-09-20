@@ -97,6 +97,8 @@ class subRegionCalculator:
         # for epsilon in [0.2, 0.5, 0.8, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 100]:
         # epsilon = 4  # 先固定调通代码，后续再回复for循环
         # mul_subRegions = []
+        print(clusterMethod)
+        print(epsilon)
         if clusterMethod == "NOCLUSTER":  # 相当于不进行分块=TaylorGP1
             self.subRegions = [self.dataSets]
             print("原始数据聚类1块哦")

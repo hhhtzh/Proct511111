@@ -29,15 +29,15 @@ X = StandardScaler().fit_transform(X)
 
 # %%
 # for fileNum in [72,73,74,75,76,77,78,79,80,81]:++
-df = pd.read_csv("/home/hebaihe/tzh/All_Kepler/K1/Kepler/datasets/pmlb/name.csv")
-# print(df)
+df = pd.read_csv("/home/tzh/PycharmProjects/pythonProjectAR5/datasets/pmlb/name.csv")
+print(df)
 df1 = df.iloc[:, -1]
 
-for fileName in df1:
+for fileName in ["215_2dplanes"]:
     # for fileNum in range(13,23):
     print("fileName = ", fileName)
-    for epsilon in [0.2, 0.5, 0.8, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 100]:
-        X = np.loadtxt(r"/home/hebaihe/tzh/All_Kepler/K1/Kepler/datasets/pmlb/pmlb_txt/" + str(fileName) + ".txt", dtype=np.float64, skiprows=1)
+    for epsilon in [0.1,0.2, 0.5, 0.8, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 100]:
+        X = np.loadtxt(r"/home/tzh/PycharmProjects/pythonProjectAR5/datasets/pmlb/pmlb_txt/" + str(fileName) + ".txt", dtype=np.float64, skiprows=1)
         # X, Y = np.split(X_Y, (-1,), axis=1)
         # X = StandardScaler().fit_transform(X) #标准化
         # Compute DBSCAN
@@ -115,6 +115,6 @@ for fileName in df1:
 
         plt.title("Estimated number of clusters: %d" % n_clusters_)
         figName = "cluster_stander_eps" + str(epsilon) + "_" + str(fileName) + ".jpg"
-        plt.savefig('/home/hebaihe/tzh/All_Kepler/K1/Kepler/IMG_COLOR/LOG\\' + figName, dpi=1000,
+        plt.savefig('/home/tzh/PycharmProjects/pythonProjectAR5/IMG_COLOR/LOG/' + figName, dpi=1000,
                     bbox_inches='tight')
         plt.show()

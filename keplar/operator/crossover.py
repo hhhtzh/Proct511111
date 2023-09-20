@@ -29,7 +29,7 @@ class BingoCrossover(Crossover):
 
         [parent_1_num, parent_2_num] = np.random.randint(low=0, high=population.get_pop_size() - 1, size=2)
         if population.pop_type != "Bingo":
-            print(population.pop_type)
+            # print(population.pop_type)
             population.set_pop_size(len(population.pop_list))
             parent_1 = population.pop_list[parent_1_num]
             parent_2 = population.pop_list[parent_2_num]
@@ -38,8 +38,9 @@ class BingoCrossover(Crossover):
                 [parent_1_num, parent_2_num] = np.random.randint(low=0, high=population.get_pop_size() - 1, size=2)
                 parent_1 = population.pop_list[parent_1_num]
                 parent_2 = population.pop_list[parent_2_num]
-                self.bingo_parent_1 = AGraph(equation=str(parent_1.equation))
-                self.bingo_parent_2 = AGraph(equation=str(parent_2.equation))
+                # print(parent_1.format())
+                self.bingo_parent_1 = AGraph(equation=str(parent_1.format()))
+                self.bingo_parent_2 = AGraph(equation=str(parent_2.format()))
                 if self.bingo_parent_2.command_array.shape == self.bingo_parent_1.command_array.shape and \
                         self.bingo_parent_1.command_array.shape[0] > 2 and self.bingo_parent_2.command_array.shape[
                     0] > 2:
@@ -51,7 +52,7 @@ class BingoCrossover(Crossover):
             right = False
             num = 0
             while not right:
-                if num>20:
+                if num > 20:
                     return
                 [parent_1_num, parent_2_num] = np.random.randint(low=0, high=population.get_pop_size() - 1, size=2)
                 self.bingo_parent_1 = population.target_pop_list[parent_1_num]
@@ -70,8 +71,8 @@ class BingoCrossover(Crossover):
                     right = False
                     num += 1
         crossover = AGraphCrossover()
-        # self.bingo_parent_1._update()
-        # self.bingo_parent_2._update()
+        self.bingo_parent_1._update()
+        self.bingo_parent_2._update()
         bingo_child_1, bingo_child_2 = crossover(parent_1=self.bingo_parent_1, parent_2=self.bingo_parent_2)
         if self.to_type != "Bingo":
             child_1 = Individual(equation=str(bingo_child_1))
@@ -96,6 +97,10 @@ class OperonCrossover(Crossover):
         self.np_x = np_x
         self.np_y = np_y.reshape([-1, 1])
         super().__init__()
+        np_y = np_y.reshape([-1, 1])
+        self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
+        self.np_x = np_x
+        self.np_y = np_y
 
     def do(self, population):
         [parent_1_num, parent_2_num] = np.random.randint(low=0, high=population.get_pop_size() - 1, size=2)
@@ -111,6 +116,12 @@ class OperonCrossover(Crossover):
         crossover = Operon.SubtreeCrossover(self.internal_probability, self.depth_limit, self.length_limit)
         rng = Operon.RomuTrio(random.randint(1, 1000000))
         new_tree = crossover(rng, op_parent1, op_parent2)
+        self.old_inds = []
+        old_str1 = Operon.InfixFormatter.Format(op_parent1, self.ds, 5)
+        old_str2 = Operon.InfixFormatter.Format(op_parent2, self.ds, 5)
+        self.old_inds.append(old_str1)
+        self.old_inds.append(old_str2)
+        self.new_ind = Operon.InfixFormatter.Format(new_tree, self.ds, 5)
         if self.to_type != "Operon":
             population.self_pop_enable = True
             population.pop_type = "self"

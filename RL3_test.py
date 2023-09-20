@@ -8,8 +8,9 @@ from keplar.operator.check_pop import CheckPopulation
 from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
 from keplar.operator.creator import OperonCreator, BingoCreator
 from keplar.operator.crossover import BingoCrossover, OperonCrossover
-from keplar.operator.evaluator import OperonEvaluator, BingoEvaluator, GpEvaluator
+from keplar.operator.evaluator import OperonEvaluator, BingoEvaluator, GpEvaluator, OperonSingleEvaluator
 from keplar.operator.mutation import BingoMutation, OperonMutation
+from keplar.operator.reinserter import KeplarReinserter
 from keplar.operator.selector import BingoSelector
 
 data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
@@ -53,6 +54,7 @@ def calculate_returns(rewards, gamma=0.99):
 # 定义策略网络
 
 import tensorflow as tf
+
 
 class PolicyNetwork(tf.keras.Model):
     def __init__(self, num_actions):
@@ -133,7 +135,6 @@ for episode in range(num_episodes):
         # 选择动作
         # print(state)
         # action_probabilities = policy_network(np.array([state], dtype=np.float32))
-
         # action = np.random.choice(num_actions, p=action_probabilities.numpy()[0])
         action_probabilities = policy_network(np.array([state], dtype=np.float32))
         # print(action_probabilities)
@@ -141,22 +142,38 @@ for episode in range(num_episodes):
         action_probabilities /= np.sum(action_probabilities)
         print(action_probabilities)
         action = np.random.choice(num_actions, p=action_probabilities[0])
-        pool_population=population
-
-
+        pool_population = population
+        new_ind = None
         # print(action)
-
         # 执行动作并观察奖励和新状态
         if action == 0:
-
+            op_crossover.do(pool_population)
+            new_ind = op_crossover.new_ind
+            old_inds = op_crossover.old_inds
+            eval = OperonSingleEvaluator("RMSE", x, y, 0.9, True, new_ind)
+            new_fit = eval.do()
+            eval = OperonSingleEvaluator("RMSE", x, y, 0.9, True, old_inds[0])
+            old_fit1 = eval.do()
+            eval = OperonSingleEvaluator("RMSE", x, y, 0.9, True, old_inds[1])
+            old_fit2 = eval.do()
+            if old_fit1 > new_fit and old_fit2 > new_fit:
+                reward = 1
+            else:
+                reward = -1
         elif action == 1:
+            op_mutation.do(pool_population)
+            reward = 1
 
         elif action == 2:
-
+            bg_crossover.do(pool_population)
+            reward = 1
         elif action == 3:
-
-
-
+            bg_mutation.do(pool_population)
+            reward = 1
+        elif action == 4:
+            rein = KeplarReinserter(pool_population, "self")
+            rein.do(population)
+            reward = 0
         else:
             raise ValueError("其他方法暂未实现")
         # print(population.pop_type)
@@ -172,7 +189,7 @@ for episode in range(num_episodes):
         list1 = ck.do(population)
         # print(list1)
         new_state = np.array(list1)  # 假设新状态是一个一维向量，根据您的实际情况调整
-        reward = calculate_reward(state, action, new_state)  # 根据游戏的奖励函数计算奖励
+        # reward = calculate_reward(state, action, new_state)  # 根据游戏的奖励函数计算奖励
         # print(reward)
 
         episode_states.append(state)

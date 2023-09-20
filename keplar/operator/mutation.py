@@ -10,7 +10,8 @@ import pyoperon as Operon
 from keplar.translator.translator import to_op
 from keplar.operator.crossover import TaylorGPCrossover
 
-from keplar.translator.translator import to_op, trans_op, to_gp, trans_taylor_program, taylor_trans_population,taylor_trans_ind
+from keplar.translator.translator import to_op, trans_op, to_gp, trans_taylor_program, taylor_trans_population, \
+    taylor_trans_ind
 from copy import copy
 
 
@@ -134,7 +135,6 @@ class OperonMutation(Mutation):
             population.set_pop_size(len(new_tree_list))
             if self.to_type == "Operon":
                 population.self_pop_enable = False
-
             else:
                 pass
         else:
@@ -153,15 +153,15 @@ class OperonMutation(Mutation):
 
 
 class TaylorGPMutation(Mutation):
-    def __init__(self, option, random_state,pop_parent, pop_now_index):
+    def __init__(self, option, random_state, pop_parent, pop_now_index):
         super().__init__()
         self.option = option
         self.random_state = random_state
 
         # self.pop_parent = pop_parent
         self.pop_now_index = pop_now_index
-    
-    def get_value(self, option, random_state,  pop_parent, pop_now_index):
+
+    def get_value(self, option, random_state, pop_parent, pop_now_index):
         self.option = option
         self.random_state = random_state
 
@@ -176,7 +176,7 @@ class TaylorGPMutation(Mutation):
             # 我们需要一个_Program的一个对象来调用build_program随机生成一个新的program对象，
             # 因此我们传入一个_Program的对象来辅助我们生成新的program
             # parent = self.pop_parent
-            
+
             honor = self.pop_parent.build_program(self.random_state)
 
             # pop_honor = taylor_trans_ind(honor)
@@ -194,12 +194,12 @@ class TaylorGPMutation(Mutation):
             hoist = subtree[sub_start:sub_end]
             # Determine which nodes were removed for plotting
             removed = list(set(range(start, end)) -
-                        set(range(start + sub_start, start + sub_end)))
-            program= self.pop_parent.program[:start] + hoist + self.pop_parent.program[end:]
+                           set(range(start + sub_start, start + sub_end)))
+            program = self.pop_parent.program[:start] + hoist + self.pop_parent.program[end:]
 
             # population.target_pop_list[self.pop_now_index]=program
 
-            return program,removed
+            return program, removed
 
         # point mutation
         elif (self.option == 3):
@@ -213,6 +213,5 @@ class TaylorGPMutation(Mutation):
 
             return program
 
-    
-    def change(self,option):
-        self.option=option
+    def change(self, option):
+        self.option = option

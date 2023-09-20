@@ -15,8 +15,8 @@ from sklearn.preprocessing import MinMaxScaler
 # data = Data("txt", "trainsets/vla/two/1.txt", ["x0", "x1", "y"])
 sys.setrecursionlimit(10000)
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/210_cloud.txt")
-argparser.add_argument("--varset", type=str, default="datasets/pmlb/pmlb_csv/210_cloud.csv")
+argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/523_analcatdata_neavote.txt")
+argparser.add_argument("--varset", type=str, default="datasets/pmlb/pmlb_csv/523_analcatdata_neavote.csv")
 # argparser.add_argument("--trainset", type=str, default="datasets/feynman/train/feynman-i.12.5.txt")
 # argparser.add_argument("--varset", type=str, default="datasets/feynman/mydataver/feynman-i.12.5.csv")
 args = argparser.parse_args()
@@ -40,7 +40,6 @@ equ_list = []
 R2_list = []
 rmse_list = []
 
-
 data = np.loadtxt(args.trainset)
 # 将最后一列作为np_y
 np_y = data[:, -1]
@@ -62,19 +61,14 @@ y_normalized = scaler_y.transform(np_y.reshape(-1, 1))
 np_x = np.array(X_normalized)
 np_y = np.array(y_normalized)
 
-
-mt =  MTaylorGPAlg(1000, np_x, np_y, population=pop, NewSparseRegressionFlag=True)
-
-
-
-
+mt = MTaylorGPAlg(1000, np_x, np_y, population=pop, NewSparseRegressionFlag=True)
 
 for i in range(1):
-    print("iii")
+    # print("iii")
     mt.run()
-    r2=calculate_r2(mt.best_ind,scaler_X,scaler_y, args.varset)
-    print("r2:",r2)
-    rmse = calculate_rmse(mt.best_ind,scaler_X,scaler_y, args.varset)
+    r2 = calculate_r2(mt.best_ind, scaler_X, scaler_y, args.varset)
+    print("r2:", r2)
+    rmse = calculate_rmse(mt.best_ind, scaler_X, scaler_y, args.varset)
     print("rmse:", rmse)
     rmse_list.append(rmse)
     R2_list.append(r2)
