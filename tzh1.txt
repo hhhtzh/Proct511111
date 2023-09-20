@@ -53,12 +53,12 @@ Greedy
 len(self.subRegions):  1  selectedRegionIndex 0
 count= 1
 length= 1
-GET Taylor New  NMSE expanded to order k，k= 1 nmse= 0.150082014511702
+GET Taylor New  NMSE expanded to order k，k= 1 nmse= 0.0490225766715570
 count= 16
 length= 16
-GET Taylor New  NMSE expanded to order k，k= 2 nmse= 0.935841424932611
+GET Taylor New  NMSE expanded to order k，k= 2 nmse= 63.0134779975731
 count= 51
 length= 51
-GET Taylor New  NMSE expanded to order k，k= 3 nmse= 1.05306206808406
+GET Taylor New  NMSE expanded to order k，k= 3 nmse= 0.154803863719430
 count= 121
 length= 121
