@@ -98,7 +98,6 @@ class subRegionCalculator:
         # epsilon = 4  # 先固定调通代码，后续再回复for循环
         # mul_subRegions = []
         print(clusterMethod)
-        print(epsilon)
         if clusterMethod == "NOCLUSTER":  # 相当于不进行分块=TaylorGP1
             self.subRegions = [self.dataSets]
             print("原始数据聚类1块哦")
@@ -106,6 +105,7 @@ class subRegionCalculator:
 
             labels = None
             if clusterMethod == "DBSCAN":
+                print(epsilon)
                 db = DBSCAN(eps=epsilon, min_samples=2 * data_x.shape[1]).fit(data_x)
                 core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
                 core_samples_mask[db.core_sample_indices_] = True

@@ -52,14 +52,14 @@ scaler_y = MinMaxScaler()
 scaler_y.fit(np_y.reshape(-1, 1))
 
 # 归一化特征
-X_normalized = scaler_X.transform(np_x)
-y_normalized = scaler_y.transform(np_y.reshape(-1, 1))
-
-# y_normalized =np_y.reshape(-1, 1)
-
-
-np_x = np.array(X_normalized)
-np_y = np.array(y_normalized)
+# X_normalized = scaler_X.transform(np_x)
+# y_normalized = scaler_y.transform(np_y.reshape(-1, 1))
+#
+# # y_normalized =np_y.reshape(-1, 1)
+#
+#
+# np_x = np.array(X_normalized)
+# np_y = np.array(y_normalized)
 
 mt = MTaylorGPAlg(1000, np_x, np_y, population=pop, NewSparseRegressionFlag=True)
 

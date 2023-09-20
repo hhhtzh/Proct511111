@@ -14,19 +14,21 @@ data = Data("txt_pmlb", "datasets/feynman/train/feynman-i.14.4.txt", ["x0", "x1"
 np.set_printoptions(suppress=True)
 data.read_file()
 data.set_xy("y")
+x = data.get_np_x()
+y = data.get_np_y()
 pop = Population(128)
 fit_list = []
 time_list = []
-equ_list=[]
-mt = MTaylorGPAlg(1000, data, population=pop, NewSparseRegressionFlag=True)
+equ_list = []
+mt = MTaylorGPAlg(1000, x, y, data, population=pop, NewSparseRegressionFlag=True)
 for i in range(10):
     mt.run()
-# fit_list.append(mt.best_fit)
+    # fit_list.append(mt.best_fit)
     time_list.append(mt.elapse_time)
     equ_list.append(mt.best_ind)
 # print(mt.best_fit)# print(mt.elapse_time)
 # fit_pd = pd.DataFrame({'MTaylor(with new sparse)': fit_list})
-equ_pd=pd.DataFrame({'MTaylor(with new sparse)': equ_list})
+equ_pd = pd.DataFrame({'MTaylor(with new sparse)': equ_list})
 time_pd = pd.DataFrame({'MTaylor(with new sparse)': time_list})
 # fit_pd = pd.DataFrame({'MTaylor': fit_list})
 # time_pd = pd.DataFrame({'MTaylor': time_list})

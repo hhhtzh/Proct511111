@@ -316,7 +316,7 @@ class MTaylorGPAlg(Alg):
 
         np_x = np.array(self.X)
         np_y = np.array(self.y)
-
+        np_y = np_y.reshape([-1, 1])
         dataSets = np.hstack([np_x, np_y])
 
         # dataSets = self.ds
@@ -333,7 +333,7 @@ class MTaylorGPAlg(Alg):
         totalGeneration = self.max_generation
         originalTaylorGPGeneration = self.originalTaylorGPGeneration
         Pop = self.population.pop_size  # 种群规模
-        epsilons = [1e-5, 0.000001, 0.001, 0.01, 0.1, 0.2, 1, 2, 4, 10, 50, 100]
+        epsilons = [1e-50,1e-10,1e-8,1e-5, 0.000001, 0.001, 0.01, 0.1, 0.2, 1, 2, 4, 10, 50, 100]
         # time_start1 = time.time()
         _init()
         for repeatNum in range(repeat):
@@ -346,7 +346,7 @@ class MTaylorGPAlg(Alg):
                 print(epsilon)
                 if flag1:
                     break
-                if epsilon <= 1e-5:
+                if epsilon <= 1e-15:
                     SRC.PreDbscan(epsilon, noClusterFlag=True, clusterMethod="NOCLUSTER",
                                   data_x=np_x)  # 执行 OriginalTaylorGP
                 elif not SRC.PreDbscan(epsilon, clusterMethod="DBSCAN", data_x=np_x):
