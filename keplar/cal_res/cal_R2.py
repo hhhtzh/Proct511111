@@ -17,12 +17,11 @@ def calculate_r2(formula,scaler_X,scaler_y, dataset):
     # variables = [f'x{i+1}' for i in range(len(data.dtype.names)-1)]
     variables = [f'x_{i}' for i in range(len(data.dtype.names)-1)]
     x = symbols(' '.join(variables))
-    print("x:", x)
 
     # 将公式转换为可执行的函数
     formula_func = lambdify(x, formula, dummify=False)
-    print("formula_func:", formula_func)
-    print("formula", formula)
+    # print("formula_func:", formula_func)
+    # print("formula", formula)
 
     # 计算预测值
     X = np.column_stack([data[variable] for variable in data.dtype.names[:-1]])
@@ -36,6 +35,8 @@ def calculate_r2(formula,scaler_X,scaler_y, dataset):
         y_pred = np.zeros(len(X))
     else:
         y_pred = formula_func(*X.T)
+
+    y_pred= y_pred.reshape(-1, 1)
 
     # 将矩阵对象转换为数组
     y_true = np.array(data[data.dtype.names[-1]])

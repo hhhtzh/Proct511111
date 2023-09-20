@@ -127,8 +127,8 @@ class TaylorGP_Pre1(Operator):
             else:
                 print("call  Linear regression to change nmse and f_taylor")
                 lr_est = LinearRegression().fit(self.X, y)
-                print('coef: ', lr_est.coef_)
-                print('intercept: ', lr_est.intercept_)
+                # print('coef: ', lr_est.coef_)
+                # print('intercept: ', lr_est.intercept_)
                 lr_nmse = mean_squared_error(
                     lr_est.predict(self.X), y, squared=False)
                 if lr_nmse < metric.nmse:
@@ -140,7 +140,7 @@ class TaylorGP_Pre1(Operator):
                             f += '+' + str(lr_est.coef_[0][i]) + '*x' + str(i)
                         else:
                             f += str(lr_est.coef_[0][i]) + '*x' + str(i)
-                    print("f_lr and nmse_lr"+f + "  "+str(lr_nmse))
+                    # print("f_lr and nmse_lr"+f + "  "+str(lr_nmse))
                     '''
                     fitness = mean_squared_error(lr_est.predict(test_X), test_y, squared=False)  # RMSE
                     print('LR_predict_fitness: ', fitness)                

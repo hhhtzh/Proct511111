@@ -243,7 +243,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
                 f += '+' + str(lr_est.coef_[0][i]) + '*x' + str(i)
             else:
                 f += str(lr_est.coef_[0][i]) + '*x' + str(i)
-        print("f_lr and nmse_lr" + f + "  " + str(lr_nmse))
+        # print("f_lr and nmse_lr" + f + "  " + str(lr_nmse))
         '''
         fitness = mean_squared_error(lr_est.predict(test_X), test_y, squared=False)  # RMSE
         print('LR_predict_fitness: ', fitness)                

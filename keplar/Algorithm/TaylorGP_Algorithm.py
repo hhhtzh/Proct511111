@@ -374,7 +374,10 @@ class MTaylorGPAlg(Alg):
         self.best_ind = SRC.tops[SRC.globalBestLassoCoef[0] - 1]
         # else:
         #     self.best_ind = SRC.tops[SRC.globalBestLassoCoef]
-        print("best_ind" + str(self.best_ind[1][0]))
+        print("-" * 100)
+    
+        print("Best ind",str(self.best_ind[1][0]))
+        # print("best_ind" + )
         dict_arr = SRC.dict_arr
         final_dict = {}
         # print(dict_arr)
