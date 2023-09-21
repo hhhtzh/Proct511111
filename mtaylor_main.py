@@ -1,3 +1,5 @@
+
+
 import numpy as np
 import pandas as pd
 
@@ -12,13 +14,15 @@ from keplar.cal_res.cal_RMSE import calculate_rmse
 # from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 
+from keplar.utils.utils import Logger
 
+sys.stdout = Logger("mtaylor_log.txt")
 # data = Data("txt", "trainsets/pmlb/val/197_cpu_act.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13", "x14", "x15", "x16", "x17", "x18", "x19", "x20","y"])
 # data = Data("txt", "trainsets/vla/two/1.txt", ["x0", "x1", "y"])
 sys.setrecursionlimit(10000)
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/523_analcatdata_neavote.txt")
-argparser.add_argument("--varset", type=str, default="datasets/pmlb/pmlb_csv/523_analcatdata_neavote.csv")
+argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/1201_BNG_breastTumor.txt")
+argparser.add_argument("--varset", type=str, default="datasets/pmlb/pmlb_csv/1201_BNG_breastTumor.txt")
 # argparser.add_argument("--trainset", type=str, default="datasets/feynman/train/feynman-i.12.5.txt")
 # argparser.add_argument("--varset", type=str, default="datasets/feynman/mydataver/feynman-i.12.5.csv")
 args = argparser.parse_args()
@@ -68,8 +72,8 @@ y_normalized = sc_y.fit_transform(np_y.reshape(-1,1))
 # y_normalized =np_y.reshape(-1, 1)
 
 
-np_x = np.array(X_normalized)
-np_y = np.array(y_normalized)
+# np_x = np.array(X_normalized)
+# np_y = np.array(y_normalized)
 
 mt = MTaylorGPAlg(1000, np_x, np_y, population=pop, NewSparseRegressionFlag=True)
 

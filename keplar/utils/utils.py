@@ -1,4 +1,5 @@
 import heapq
+import sys
 
 
 # def operon_topk(inds, k):
@@ -108,3 +109,12 @@ def find_k_smallest_elements(ind_arr, k):
 # # # 排序后的数组: [5, 6, 7, 11, 12, 13]
 # for i in range(4, 0, -1):
 #     print(i)
+class Logger(object):
+    def __init__(self, file_name="Default.log", stream=sys.stdout):
+        self.terminal = stream
+        self.log = open(file_name, "a")
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+    def flush(self):
+        pass

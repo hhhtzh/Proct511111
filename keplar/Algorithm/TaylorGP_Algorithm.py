@@ -7,6 +7,7 @@ import copy
 
 import numpy as np
 from numpy import shape
+from sklearn.preprocessing import StandardScaler
 from sympy import symbols
 
 from TaylorGP.TaylorGP2_KMEANS import Cal_fitness_Coef
@@ -15,6 +16,7 @@ from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
 
 from keplar.Algorithm.Alg import Alg
 from TaylorGP.src.taylorGP.utils import check_random_state
+from keplar.draw.draw_scater import generate_combinations, plot_3d_scatter_and_fit_surface, plot_3d_scatter
 from keplar.operator.evaluator import SingleBingoEvaluator
 from keplar.translator.translator import trans_taylor_program, taylor_trans_population, trans_op1, trans_op2
 # from TaylorGP.src.taylorGP.genetic import BaseSymbolic
@@ -333,7 +335,7 @@ class MTaylorGPAlg(Alg):
         totalGeneration = self.max_generation
         originalTaylorGPGeneration = self.originalTaylorGPGeneration
         Pop = self.population.pop_size  # 种群规模
-        epsilons = [1e-50, 1e-10, 1e-8, 1e-5, 0.000001, 0.001, 0.01, 0.1, 0.2, 1, 2, 4, 10, 50, 100]
+        epsilons = [1e-50, 1e-10, 1e-8, 1e-5, 0.000001, 0.001, 0.01, 0.1, 0.2, 1, 2, 4, 5, 6, 8, 10, 50, 100]
         # time_start1 = time.time()
         _init()
         for repeatNum in range(repeat):
@@ -357,7 +359,35 @@ class MTaylorGPAlg(Alg):
                 # 进行每轮数据集演化前执行
                 for tryNum in range(mabLoopNum):
                     print("子块个数:" + str(len(SRC.subRegions)))
-                    for i in range(len(SRC.subRegions)):
+                    for j in range(len(SRC.subRegions)):
+                        print(SRC.subRegions[j][:, :-1])
+                        # 将最后一列作为np_y
+                        np_y = SRC.subRegions[j][:, -1]
+                        # 将前面的列作为np_x
+                        np_x = SRC.subRegions[j][:, :-1]
+                        sc_X = StandardScaler()
+                        X_normalized = sc_X.fit_transform(np_x)
+                        sc_y = StandardScaler()
+                        # y_normalized = sc_y.fit_transform(np_y.reshape(-1,1)).flatten()
+                        y_normalized = sc_y.fit_transform(np_y.reshape(-1, 1))
+                        np_x = np.array(X_normalized)
+                        np_y = np.array(y_normalized)
+                        np_y = np_y.reshape([-1, 1])
+                        ds = np.hstack([np_x, np_y])
+                        SRC.subRegions[j] = ds
+
+                        #
+                        # num_columns = SRC.subRegions[j][:, :-1].shape[1]
+                        # combinations = generate_combinations(num_columns)
+                        # for i, combination in enumerate(combinations):
+                        #     output_filename1 = f"eps_{epsilon}_num_{j}_cluster_fit_surface_{i}.pdf"
+                        #     output_filename2 = f"eps_{epsilon}_num_{j}_cluster_{i}.pdf"
+                        #     subset_data = SRC.subRegions[j][:, :-1]
+                        #     print("---------------------------------------")
+                        #     print(subset_data)
+                        #     subset_data = subset_data[:, combination]
+                        #     plot_3d_scatter(subset_data, output_filename2)
+                        #     plot_3d_scatter_and_fit_surface(subset_data, output_filename1)
 
                     SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method)
                     SRC.SubRegionPruning()

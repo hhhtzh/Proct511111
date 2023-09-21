@@ -13,9 +13,10 @@ def read_data(filename):
 
 
 # 定义要拟合的曲面函数，这里使用二次多项式
-def surface_func(coords, a, b, c):
+def surface_func(coords, a, b, c, d, e, f):
     x, y = coords
-    return a * x ** 2 + b * y ** 2 + c
+    print(f"{a} * x ** 2 + {b} * y ** 2 + {d} * x + {c} * y + {e} * x * y + {f}")
+    return a * x ** 2 + b * y ** 2 + d * x + c * y + e * x * y + f
 
 
 # 绘制三维散点图和拟合曲面
@@ -32,9 +33,9 @@ def plot_3d_scatter_and_fit_surface(data, output_filename):
 
     # 拟合曲面
     popt, _ = curve_fit(surface_func, (x, y), z)
-    a, b, c = popt
+    a, b, c, d, e, f = popt
     xi, yi = np.meshgrid(x, y)
-    zi = surface_func((xi, yi), a, b, c)
+    zi = surface_func((xi, yi), a, b, c, d, e, f)
 
     # 绘制拟合的曲面
     ax.plot_surface(xi, yi, zi, cmap='viridis')
@@ -42,8 +43,31 @@ def plot_3d_scatter_and_fit_surface(data, output_filename):
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
+    plt.title(str(output_filename))
+    plt.savefig("IMG_COLOR/LOG/" + output_filename, format='pdf')
+    plt.show()
 
-    plt.savefig(output_filename, format='pdf')
+
+def plot_3d_scatter(data, output_filename):
+    x = data[:, 0]
+    y = data[:, 1]
+    z = data[:, 2]
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # 绘制散点图
+    ax.scatter(x, y, z, c='r', marker='o')
+
+    # 拟合曲面
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+
+    plt.title(str(output_filename))
+    plt.savefig("IMG_COLOR/LOG/" + output_filename, format='pdf')
+
     plt.show()
 
 
