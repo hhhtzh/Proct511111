@@ -85,7 +85,7 @@ class subRegionCalculator:
         self.ucbVal = []
         self.rockBestFit = []
 
-    def PreDbscan(self, epsilon, data_x, n_clusters_=-1, noClusterFlag=False, clusterMethod="DBScan"):
+    def PreDbscan(self, epsilon, data_x, n_clusters_=-1, noClusterFlag=False, clusterMethod="DBSCAN"):
         """
         使用DBScan密度聚类做数据集分割
         Args:
@@ -143,7 +143,7 @@ class subRegionCalculator:
                         and self.subRegions is None:
                     return False
             elif clusterMethod == "KMEANS":
-                k_means = KMeans(n_clusters=n_clusters_, random_state=10).fit(self.dataSets)
+                k_means = KMeans(n_clusters=100, random_state=10).fit(self.dataSets)
                 labels = k_means.labels_
             for cluster in range(0, n_clusters_):
                 dataIndex = np.where(labels == cluster * 1.0)[0]  # 保留所有分类是第一类（第二类是1.0）的数据集序号

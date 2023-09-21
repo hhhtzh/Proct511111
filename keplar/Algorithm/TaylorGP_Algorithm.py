@@ -333,7 +333,7 @@ class MTaylorGPAlg(Alg):
         totalGeneration = self.max_generation
         originalTaylorGPGeneration = self.originalTaylorGPGeneration
         Pop = self.population.pop_size  # 种群规模
-        epsilons = [1e-50,1e-10,1e-8,1e-5, 0.000001, 0.001, 0.01, 0.1, 0.2, 1, 2, 4, 10, 50, 100]
+        epsilons = [1e-50, 1e-10, 1e-8, 1e-5, 0.000001, 0.001, 0.01, 0.1, 0.2, 1, 2, 4, 10, 50, 100]
         # time_start1 = time.time()
         _init()
         for repeatNum in range(repeat):
@@ -356,7 +356,7 @@ class MTaylorGPAlg(Alg):
                 set_value('FIRST_EVOLUTION_FLAG', True)
                 # 进行每轮数据集演化前执行
                 for tryNum in range(mabLoopNum):
-                    print("子块个数:"+str(len(SRC.subRegions)))
+                    print("子块个数:" + str(len(SRC.subRegions)))
                     SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method)
                     SRC.SubRegionPruning()
                     SRC.SparseRegression()
@@ -375,8 +375,8 @@ class MTaylorGPAlg(Alg):
         # else:
         #     self.best_ind = SRC.tops[SRC.globalBestLassoCoef]
         print("-" * 100)
-    
-        print("Best ind",str(self.best_ind[1][0]))
+
+        print("Best ind", str(self.best_ind[1][0]))
         # print("best_ind" + )
         dict_arr = SRC.dict_arr
         final_dict = {}

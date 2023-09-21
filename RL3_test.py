@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -12,6 +14,7 @@ from keplar.operator.evaluator import OperonEvaluator, BingoEvaluator, GpEvaluat
 from keplar.operator.mutation import BingoMutation, OperonMutation
 from keplar.operator.reinserter import KeplarReinserter
 from keplar.operator.selector import BingoSelector
+import pyoperon as Operon
 
 data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
 data.read_file()
@@ -90,7 +93,7 @@ def train_policy_network(policy_network, states, actions, rewards, optimizer):
 
 
 # 设置环境和参数
-num_actions = 3
+num_actions = 5
 num_episodes = 1000
 learning_rate = 0.01
 
@@ -162,7 +165,42 @@ for episode in range(num_episodes):
                 reward = -1
         elif action == 1:
             op_mutation.do(pool_population)
-            reward = 1
+            old_tree_list = op_mutation.old_tree_list
+            new_tree_list = op_mutation.new_tree_list
+            old_ind_list = []
+            new_ind_list = []
+            for i in old_tree_list:
+                ind = Operon.Individual()
+                ind.Genotype = i
+                old_ind_list.append(ind)
+            for i in new_tree_list:
+                ind = Operon.Individual()
+                ind.Genotype = i
+                new_ind_list.append(ind)
+            y = y.reshape([-1, 1])
+            ds = Operon.Dataset(np.hstack([x, y]))
+            target = ds.Variables[-1]
+            inputs = Operon.VariableCollection(v for v in ds.Variables if v.Name != target.Name)
+            rng = Operon.RomuTrio(random.randint(1, 1000000))
+            training_range = Operon.Range(0, int(ds.Rows))
+            test_range = Operon.Range(int(ds.Rows), ds.Rows)
+            problem = Operon.Problem(ds, inputs, target.Name, training_range, test_range)
+            interpreter = Operon.Interpreter()
+            evaluator = Operon.Evaluator(problem, interpreter, "RMSE", True)
+            old_fit_list = []
+            new_fit_list = []
+            for i in old_ind_list:
+                ea = evaluator(rng, i)
+                old_fit_list.append(ea[0])
+            for i in new_ind_list:
+                ea = evaluator(rng, i)
+                new_fit_list.append(ea[0])
+            old_fit_list = np.array(old_fit_list)
+            new_fit_list = np.array(new_fit_list)
+            mean_old = np.mean(old_fit_list)
+            mean_new = np.mean(new_fit_list)
+            reward = -(mean_new - mean_old)
+
 
         elif action == 2:
             bg_crossover.do(pool_population)

@@ -83,6 +83,8 @@ class BingoMutation(Mutation):
 class OperonMutation(Mutation):
     def __init__(self, onepoint_p, changevar_p, changefunc_p, replace_p, np_x, np_y, maxD, maxL, tree_type, to_type):
         super().__init__()
+        self.new_tree_list = None
+        self.old_tree_list = None
         self.to_type = to_type
         if tree_type == "balanced" or tree_type == "probabilistic":
             self.tree_type = tree_type
@@ -129,8 +131,10 @@ class OperonMutation(Mutation):
         rng = Operon.RomuTrio(random.randint(1, 1000000))
         if population.pop_type == "Operon":
             new_tree_list = []
+            self.old_tree_list = population.target_pop_list
             for i in population.target_pop_list:
                 new_tree_list.append(mutation(rng, i))
+            self.new_tree_list=new_tree_list
             population.target_pop_list = new_tree_list
             population.set_pop_size(len(new_tree_list))
             if self.to_type == "Operon":

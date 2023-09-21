@@ -377,7 +377,11 @@ class OperonSingleEvaluator(Evaluator):
         problem = Operon.Problem(self.ds, inputs, target.Name, training_range, test_range)
         evaluator = Operon.Evaluator(problem, interpreter, error_metric, self.if_linear_scaling)
         ind = Operon.Individual()
+        self.op_equ = re.sub(r'X(\d{3})', r'X_\1', self.op_equ)
+        self.op_equ_ = re.sub(r'X(\d{2})', r'X_\1', self.op_equ)
+        self.op_equ_ = re.sub(r'X(\d{1})', r'X_\1', self.op_equ)
         equ = re.sub(r'x_', r'X_', self.op_equ)
+
         # 使用正则表达式查找科学计数法表示
 
         # 输入字符串包含科学计数法表示

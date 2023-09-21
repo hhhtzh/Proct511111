@@ -218,6 +218,7 @@ def bingo_infixstr_to_func(equ):
             const_array.append(float(node))
             stack.append(const_code + 5000)
         else:
+            print(node)
             var_code = int(node[2:]) + 3000
             stack.append(var_code)
     new_func_list = []
