@@ -9,7 +9,9 @@ import argparse
 import os
 from keplar.cal_res.cal_R2 import calculate_r2
 from keplar.cal_res.cal_RMSE import calculate_rmse
-from sklearn.preprocessing import MinMaxScaler
+# from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
+
 
 # data = Data("txt", "trainsets/pmlb/val/197_cpu_act.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13", "x14", "x15", "x16", "x17", "x18", "x19", "x20","y"])
 # data = Data("txt", "trainsets/vla/two/1.txt", ["x0", "x1", "y"])
@@ -46,29 +48,37 @@ np_y = data[:, -1]
 # 将前面的列作为np_x
 np_x = data[:, :-1]
 
-scaler_X = MinMaxScaler()
-scaler_X.fit(np_x)
-scaler_y = MinMaxScaler()
-scaler_y.fit(np_y.reshape(-1, 1))
+# scaler_X = MinMaxScaler()
+# scaler_X.fit(np_x)
+# scaler_y = MinMaxScaler()
+# scaler_y.fit(np_y.reshape(-1, 1))
+sc_X = StandardScaler() 
+X_normalized = sc_X.fit_transform(np_x)
+# X_test_scaled = sc_X.transform(X_test)
+
+sc_y = StandardScaler()
+# y_normalized = sc_y.fit_transform(np_y.reshape(-1,1)).flatten()
+y_normalized = sc_y.fit_transform(np_y.reshape(-1,1))
+
 
 # 归一化特征
 # X_normalized = scaler_X.transform(np_x)
 # y_normalized = scaler_y.transform(np_y.reshape(-1, 1))
-#
-# # y_normalized =np_y.reshape(-1, 1)
-#
-#
-# np_x = np.array(X_normalized)
-# np_y = np.array(y_normalized)
+
+# y_normalized =np_y.reshape(-1, 1)
+
+
+np_x = np.array(X_normalized)
+np_y = np.array(y_normalized)
 
 mt = MTaylorGPAlg(1000, np_x, np_y, population=pop, NewSparseRegressionFlag=True)
 
 for i in range(1):
     # print("iii")
     mt.run()
-    r2 = calculate_r2(mt.best_ind, scaler_X, scaler_y, args.varset)
-    print("r2:", r2)
-    rmse = calculate_rmse(mt.best_ind, scaler_X, scaler_y, args.varset)
+    r2=calculate_r2(mt.best_ind,sc_X,sc_y, args.varset)
+    print("r2:",r2)
+    rmse = calculate_rmse(mt.best_ind,sc_X,sc_y, args.varset)
     print("rmse:", rmse)
     rmse_list.append(rmse)
     R2_list.append(r2)

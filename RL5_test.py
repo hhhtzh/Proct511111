@@ -166,7 +166,7 @@ for episode in range(1000):
         print(action)
         sequence = []
         for i in range(int(action[0][0])):
-            sequence.append()
+
         next_state = state + action
         reward = -np.square(next_state)  # 这里定义一个简单的奖励函数
         agent.buffer.add(state, action, reward, next_state, False)
