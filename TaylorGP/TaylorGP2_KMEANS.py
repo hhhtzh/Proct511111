@@ -80,8 +80,10 @@ def Cal_fitness_Coef(dataSets, originalTaylorGPGen, totalGeneration, clusters, r
         best_ind=SRC.tops[SRC.globalBestLassoCoef]
     else:
         raise ValueError("SRC.globalBestLassoCoef的类型有问题:"+f"{type(SRC.globalBestLassoCoef)}")
-    print(best_ind)
-    print("best_ind" + str(best_ind[1][0]))
+    print("-" * 100)
+    
+    print(" "*20+"Best ind:",best_ind)
+    # print("best_ind" + str(best_ind[1][0]))
 
     return SRC.bestLassoFitness, SRC.globalBestLassoCoef,str(best_ind[1][0])
 
