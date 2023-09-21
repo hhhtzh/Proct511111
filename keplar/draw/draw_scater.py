@@ -5,15 +5,18 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.optimize import curve_fit
 import itertools
 
+
 # 读取数据文件
 def read_data(filename):
     data = np.genfromtxt(filename)
     return data
 
+
 # 定义要拟合的曲面函数，这里使用二次多项式
 def surface_func(coords, a, b, c):
     x, y = coords
-    return a * x**2 + b * y**2 + c
+    return a * x ** 2 + b * y ** 2 + c
+
 
 # 绘制三维散点图和拟合曲面
 def plot_3d_scatter_and_fit_surface(data, output_filename):
@@ -43,16 +46,18 @@ def plot_3d_scatter_and_fit_surface(data, output_filename):
     plt.savefig(output_filename, format='pdf')
     plt.show()
 
+
 # 生成所有列的排列组合
 def generate_combinations(num_columns):
     return list(itertools.combinations(range(num_columns), 3))
+
 
 if __name__ == "__main__":
     df = pd.read_csv("/home/tzh/PycharmProjects/pythonProjectAR5/datasets/pmlb/name.csv")
     print(df)
     df1 = df.iloc[:, -1]
     for j in df1:
-        filename = "/home/tzh/PycharmProjects/pythonProjectAR5/datasets/pmlb/pmlb_txt/"+str(j)+".txt"  # 替换为你的数据文件名
+        filename = "/home/tzh/PycharmProjects/pythonProjectAR5/datasets/pmlb/pmlb_txt/" + str(j) + ".txt"  # 替换为你的数据文件名
         data = read_data(filename)
         num_columns = data.shape[1]
 
@@ -62,4 +67,3 @@ if __name__ == "__main__":
             output_filename = f"1_fit_surface_{i}.pdf"
             subset_data = data[:, combination]
             plot_3d_scatter_and_fit_surface(subset_data, output_filename)
-

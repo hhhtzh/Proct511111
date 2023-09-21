@@ -36,8 +36,9 @@ df1 = df.iloc[:, -1]
 for fileName in ["215_2dplanes"]:
     # for fileNum in range(13,23):
     print("fileName = ", fileName)
-    for epsilon in [0.1,0.2, 0.5, 0.8, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 100]:
-        X = np.loadtxt(r"/home/tzh/PycharmProjects/pythonProjectAR5/datasets/pmlb/pmlb_txt/" + str(fileName) + ".txt", dtype=np.float64, skiprows=1)
+    for epsilon in [0.1, 0.2, 0.5, 0.8, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 100]:
+        X = np.loadtxt(r"/home/tzh/PycharmProjects/pythonProjectAR5/datasets/pmlb/pmlb_txt/" + str(fileName) + ".txt",
+                       dtype=np.float64, skiprows=1)
         # X, Y = np.split(X_Y, (-1,), axis=1)
         # X = StandardScaler().fit_transform(X) #标准化
         # Compute DBSCAN

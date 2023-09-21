@@ -357,7 +357,8 @@ class MTaylorGPAlg(Alg):
                 # 进行每轮数据集演化前执行
                 for tryNum in range(mabLoopNum):
                     print("子块个数:" + str(len(SRC.subRegions)))
-                    print(SRC.subRegions)
+                    for i in range(len(SRC.subRegions)):
+
                     SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method)
                     SRC.SubRegionPruning()
                     SRC.SparseRegression()
