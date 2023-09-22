@@ -339,28 +339,38 @@ class MTaylorGPAlg(Alg):
         # time_start1 = time.time()
         _init()
         for repeatNum in range(repeat):
+            if flag1:
+                break
             # time_start2 = time.time()
             SRC = subRegionCalculator(dataSets, originalTaylorGPGeneration, mabPolicy=self.mabPolicy,
                                       NewSparseRegressionFlag=self.NewSparseRegressionFlag)
             countAvailableParameters = SRC.CalCountofAvailableParameters(epsilons=epsilons, np_x=np_x)
+            first_one_cluster_flag = False
             mabLoopNum = max(totalGeneration // originalTaylorGPGeneration // countAvailableParameters, 1)
             for epsilon in epsilons:
+
                 print(epsilon)
-                if flag1:
-                    break
+
                 if epsilon <= 1e-15:
                     SRC.PreDbscan(epsilon, noClusterFlag=True, clusterMethod="NOCLUSTER",
                                   data_x=np_x)  # 执行 OriginalTaylorGP
+                    clusterMetod = "NOCLUSTER"
                 elif not SRC.PreDbscan(epsilon, clusterMethod="DBSCAN", data_x=np_x):
+                    clusterMetod = "DBSCAN"
                     print("聚类有问题")
                     continue
                 SRC.firstMabFlag = True
                 set_value('FIRST_EVOLUTION_FLAG', True)
+                if clusterMetod == "DBSCAN" and SRC.subRegions == 1 and first_one_cluster_flag :
+                    break
+                if clusterMetod == "DBSCAN" and SRC.subRegions == 1:
+                    first_one_cluster_flag = True
+
                 # 进行每轮数据集演化前执行
                 for tryNum in range(mabLoopNum):
                     print("子块个数:" + str(len(SRC.subRegions)))
                     for j in range(len(SRC.subRegions)):
-                        print(SRC.subRegions[j][:, :-1])
+                        # print(SRC.subRegions[j][:, :-1])
                         # 将最后一列作为np_y
                         np_y = SRC.subRegions[j][:, -1]
                         # 将前面的列作为np_x
@@ -377,17 +387,17 @@ class MTaylorGPAlg(Alg):
                         SRC.subRegions[j] = ds
 
                         #
-                        # num_columns = SRC.subRegions[j][:, :-1].shape[1]
-                        # combinations = generate_combinations(num_columns)
-                        # for i, combination in enumerate(combinations):
-                        #     output_filename1 = f"eps_{epsilon}_num_{j}_cluster_fit_surface_{i}.pdf"
-                        #     output_filename2 = f"eps_{epsilon}_num_{j}_cluster_{i}.pdf"
-                        #     subset_data = SRC.subRegions[j][:, :-1]
-                        #     print("---------------------------------------")
-                        #     print(subset_data)
-                        #     subset_data = subset_data[:, combination]
-                        #     plot_3d_scatter(subset_data, output_filename2)
-                        #     plot_3d_scatter_and_fit_surface(subset_data, output_filename1)
+                        num_columns = SRC.subRegions[j][:, :-1].shape[1]
+                        combinations = generate_combinations(num_columns)
+                        for i, combination in enumerate(combinations):
+                            output_filename1 = f"eps_{epsilon}_num_{j}_cluster_fit_surface_{i}.pdf"
+                            output_filename2 = f"eps_{epsilon}_num_{j}_cluster_{i}.pdf"
+                            subset_data = SRC.subRegions[j][:, :-1]
+                            # print("---------------------------------------")
+                            # print(subset_data)
+                            subset_data = subset_data[:, combination]
+                            plot_3d_scatter(subset_data, output_filename2)
+                            plot_3d_scatter_and_fit_surface(subset_data, output_filename1)
 
                     SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method)
                     SRC.SubRegionPruning()

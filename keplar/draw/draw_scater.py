@@ -15,7 +15,7 @@ def read_data(filename):
 # 定义要拟合的曲面函数，这里使用二次多项式
 def surface_func(coords, a, b, c, d, e, f):
     x, y = coords
-    print(f"{a} * x ** 2 + {b} * y ** 2 + {d} * x + {c} * y + {e} * x * y + {f}")
+    # print(f"{a} * x ** 2 + {b} * y ** 2 + {d} * x + {c} * y + {e} * x * y + {f}")
     return a * x ** 2 + b * y ** 2 + d * x + c * y + e * x * y + f
 
 
