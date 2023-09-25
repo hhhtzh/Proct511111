@@ -118,16 +118,16 @@ class subRegionCalculator:
                     min_sample = 4
                 else:
                     min_sample = 6
-                # 初始化HDBSCAN模型
-                clusterer = hdbscan.HDBSCAN()
-
-                # 使用HDBSCAN进行聚类
-                cluster_labels = clusterer.fit_predict(data)
-                db = HDBSCAN(eps=epsilon, min_samples=min_sample).fit(data_x)
+                # # 初始化HDBSCAN模型
+                # clusterer = hdbscan.HDBSCAN()
+                #
+                # # 使用HDBSCAN进行聚类
+                # labels = clusterer.fit_predict(data_x)
+                db = DBSCAN(eps=epsilon, min_samples=min_sample).fit(data_x)
                 core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
                 core_samples_mask[db.core_sample_indices_] = True
                 labels = db.labels_  # 记录了每个数据点的分类结果，根据分类结果通过np.where就能直接取出对应类的所有数据索引了
-                tsne = TSNE(n_components=2, random_state=42, perplexity=data_x.shape[0] - 1)
+                tsne = TSNE(n_components=2, random_state=42, perplexity=data_x.shape[0] - 20)
                 # 使用t-SNE对数据进行降维
                 embedded_data = tsne.fit_transform(data_x)
                 unique_labels = np.unique(labels)
