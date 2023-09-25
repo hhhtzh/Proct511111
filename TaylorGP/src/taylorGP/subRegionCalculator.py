@@ -4,7 +4,10 @@ from _decimal import Decimal
 
 import numpy as np
 import random
+
+from matplotlib import pyplot as plt
 from sklearn.cluster import DBSCAN, KMeans
+from sklearn.manifold import TSNE
 from sklearn.metrics import mean_squared_error
 
 from keplar.operator.statistic import TaylorStatistic
@@ -52,6 +55,7 @@ class subRegionCalculator:
     name = 'Calculate Subregions things and MAB parameters'
 
     def __init__(self, dataSets, originalTaylorGPGeneration, mabPolicy="Greedy", lbd=1, NewSparseRegressionFlag=False):
+        self.labels = None
         self.isolate_symbol_list = None
         self.NewSparseRegressionFlag = NewSparseRegressionFlag
         self.final_dict = None
@@ -107,16 +111,32 @@ class subRegionCalculator:
             if clusterMethod == "DBSCAN":
                 print(epsilon)
                 if data_x.shape[0] < 100:
-                    min_sample = data_x.shape[1]+1
+                    min_sample = 2
                     print("min_sample:"+str(min_sample))
                 elif 100 < data_x.shape[0] < 10000:
-                    min_sample = data_x.shape[1]+3
+                    min_sample = 4
                 else:
-                    min_sample = data_x.shape[1]+5
+                    min_sample = 6
                 db = DBSCAN(eps=epsilon, min_samples=min_sample).fit(data_x)
                 core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
                 core_samples_mask[db.core_sample_indices_] = True
                 labels = db.labels_  # 记录了每个数据点的分类结果，根据分类结果通过np.where就能直接取出对应类的所有数据索引了
+                tsne = TSNE(n_components=2, random_state=42, perplexity=data_x.shape[0] - 1)
+                # 使用t-SNE对数据进行降维
+                embedded_data = tsne.fit_transform(data_x)
+                unique_labels = np.unique(labels)
+                colors = plt.cm.rainbow(np.linspace(0, 1, len(unique_labels)))
+
+                plt.figure(figsize=(10, 8))
+
+                for i, label in enumerate(unique_labels):
+                    mask = labels == label
+                    plt.scatter(embedded_data[mask, 0], embedded_data[mask, 1], c=colors[i],
+                                label=f'Cluster {label}')
+
+                plt.title('t-SNE Visualization of DBSCAN Clusters')
+                plt.legend()
+                plt.show()
                 # Number of clusters in labels, ignoring noise if present.
                 n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
                 print("原始数据聚类", n_clusters_, "块")

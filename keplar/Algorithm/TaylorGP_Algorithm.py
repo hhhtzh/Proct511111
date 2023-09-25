@@ -6,7 +6,9 @@ import argparse
 import copy
 
 import numpy as np
+from matplotlib import pyplot as plt
 from numpy import shape
+from sklearn.manifold import TSNE
 from sklearn.preprocessing import StandardScaler
 from sympy import symbols
 
@@ -335,7 +337,7 @@ class MTaylorGPAlg(Alg):
         totalGeneration = self.max_generation
         originalTaylorGPGeneration = self.originalTaylorGPGeneration
         Pop = self.population.pop_size  # 种群规模
-        epsilons = [1e-50, 1e-10, 1e-8, 1e-5, 0.000001, 0.001, 0.01, 0.1, 0.2, 1, 2, 4, 5, 6, 8, 10, 50, 100]
+        epsilons = [1e-15, 1e-10, 1e-8, 1e-5, 0.000001, 0.001, 0.01, 0.1, 0.2, 1, 2, 4, 5, 6, 8, 10]
         # time_start1 = time.time()
         _init()
         for repeatNum in range(repeat):
@@ -389,9 +391,10 @@ class MTaylorGPAlg(Alg):
                             print("---------------------------------------")
                             print(subset_data)
                             print(subset_data.shape[0])
-                            plot_3d_scatter(subset_data, output_filename2)
-                            if subset_data.shape[0] > 6:
-                                plot_3d_scatter_and_fit_surface(subset_data, output_filename1)
+
+                            # plot_3d_scatter(subset_data, output_filename2)
+                            # if subset_data.shape[0] > 6:
+                            #     plot_3d_scatter_and_fit_surface(subset_data, output_filename1)
 
                         # # print(SRC.subRegions[j][:, :-1])
                         # # 将最后一列作为np_y
