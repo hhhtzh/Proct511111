@@ -60,6 +60,8 @@ X_normalized = sc_X.fit_transform(np_x)
 # X_test_scaled = sc_X.transform(X_test)
 # X_normalized = np_x
 
+# sc_X.transform(np_x)
+
 sc_y = StandardScaler()
 # y_normalized = sc_y.fit_transform(np_y.reshape(-1,1)).flatten()
 y_normalized = sc_y.fit_transform(np_y.reshape(-1 ,1))
