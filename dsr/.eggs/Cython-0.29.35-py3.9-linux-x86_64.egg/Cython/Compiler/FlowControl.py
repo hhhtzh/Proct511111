@@ -34,7 +34,7 @@ fake_rhs_expr = TypedExprNode(unspecified_type)
 
 
 class ControlBlock(object):
-    """Control flow draw node. Sequence of assignments and name references.
+    """Control flow vis node. Sequence of assignments and name references.
 
        children  set of children nodes
        parents   set of parent nodes
@@ -101,9 +101,9 @@ class AssignmentList(object):
 
 
 class ControlFlow(object):
-    """Control-flow draw.
+    """Control-flow vis.
 
-       entry_point ControlBlock entry point for this draw
+       entry_point ControlBlock entry point for this vis
        exit_point  ControlBlock normal exit point
        block       ControlBlock current block
        blocks      set    children nodes
@@ -166,7 +166,7 @@ class ControlFlow(object):
         return False
 
     def mark_position(self, node):
-        """Mark position, will be used to draw draw nodes."""
+        """Mark position, will be used to vis vis nodes."""
         if self.block:
             self.block.positions.add(node.pos[:2])
 
@@ -461,7 +461,7 @@ class GVContext(object):
         return '\\n'.join([l.strip() for l in lines[start[1] - 1:stop[1]]])
 
     def render(self, fp, name, annotate_defs=False):
-        """Render graphviz dot draw"""
+        """Render graphviz dot vis"""
         fp.write('digraph %s {\n' % name)
         fp.write(' node [shape=box];\n')
         for child in self.children:
@@ -739,7 +739,7 @@ class ControlFlowAnalysis(CythonTransform):
         if self.flow.block:
             self.flow.block.add_child(self.flow.exit_point)
 
-        # Cleanup draw
+        # Cleanup vis
         self.flow.normalize()
         check_definitions(self.flow, self.current_directives)
         self.flow.blocks.add(self.flow.entry_point)

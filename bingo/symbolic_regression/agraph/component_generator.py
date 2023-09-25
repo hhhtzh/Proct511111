@@ -1,6 +1,6 @@
 """Component Generator for Agraph equations.
 
-This module covers the random generation of components of an Acyclic draw
+This module covers the random generation of components of an Acyclic vis
 command stack. It can generate full commands or sub-components such as
 operators, terminals, and their associated parameters.
 """

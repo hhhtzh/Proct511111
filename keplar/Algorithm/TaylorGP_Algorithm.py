@@ -16,7 +16,7 @@ from TaylorGP.src.taylorGP.subRegionCalculator import subRegionCalculator
 
 from keplar.Algorithm.Alg import Alg
 from TaylorGP.src.taylorGP.utils import check_random_state
-from keplar.draw.draw_scater import generate_combinations, plot_3d_scatter_and_fit_surface, plot_3d_scatter
+from keplar.vis.draw_scater import generate_combinations, plot_3d_scatter_and_fit_surface, plot_3d_scatter
 from keplar.operator.evaluator import SingleBingoEvaluator
 from keplar.translator.translator import trans_taylor_program, taylor_trans_population, trans_op1, trans_op2
 # from TaylorGP.src.taylorGP.genetic import BaseSymbolic
@@ -361,7 +361,7 @@ class MTaylorGPAlg(Alg):
                     continue
                 SRC.firstMabFlag = True
                 set_value('FIRST_EVOLUTION_FLAG', True)
-                if clusterMetod == "DBSCAN" and SRC.subRegions == 1 and first_one_cluster_flag :
+                if clusterMetod == "DBSCAN" and SRC.subRegions == 1 and first_one_cluster_flag:
                     break
                 if clusterMetod == "DBSCAN" and SRC.subRegions == 1:
                     first_one_cluster_flag = True
@@ -369,7 +369,30 @@ class MTaylorGPAlg(Alg):
                 # 进行每轮数据集演化前执行
                 for tryNum in range(mabLoopNum):
                     print("子块个数:" + str(len(SRC.subRegions)))
+                    # print(SRC.subRegions[0].shape[1])
                     for j in range(len(SRC.subRegions)):
+                        #
+                        num_columns = SRC.subRegions[j][:, :-1].shape[1]
+                        combinations = generate_combinations(num_columns)
+                        for i, combination in enumerate(combinations):
+                            output_filename1 = f"eps_{epsilon}_num_{j}_cluster_fit_surface_{i}.pdf"
+                            output_filename2 = f"eps_{epsilon}_num_{j}_cluster_{i}.pdf"
+                            subset_data = SRC.subRegions[j][:, :-1]
+                            subset_y = SRC.subRegions[j][:, -1]
+                            subset_y = subset_y.reshape([-1, 1])
+
+                            # print("---------------------------------------")
+                            # print(subset_data)
+                            subset_data = subset_data[:, combination]
+                            print(subset_y)
+                            subset_data = np.hstack([subset_data, subset_y])
+                            print("---------------------------------------")
+                            print(subset_data)
+                            print(subset_data.shape[0])
+                            plot_3d_scatter(subset_data, output_filename2)
+                            if subset_data.shape[0] > 6:
+                                plot_3d_scatter_and_fit_surface(subset_data, output_filename1)
+
                         # print(SRC.subRegions[j][:, :-1])
                         # 将最后一列作为np_y
                         np_y = SRC.subRegions[j][:, -1]
@@ -385,19 +408,6 @@ class MTaylorGPAlg(Alg):
                         np_y = np_y.reshape([-1, 1])
                         ds = np.hstack([np_x, np_y])
                         SRC.subRegions[j] = ds
-
-                        #
-                        num_columns = SRC.subRegions[j][:, :-1].shape[1]
-                        combinations = generate_combinations(num_columns)
-                        for i, combination in enumerate(combinations):
-                            output_filename1 = f"eps_{epsilon}_num_{j}_cluster_fit_surface_{i}.pdf"
-                            output_filename2 = f"eps_{epsilon}_num_{j}_cluster_{i}.pdf"
-                            subset_data = SRC.subRegions[j][:, :-1]
-                            # print("---------------------------------------")
-                            # print(subset_data)
-                            subset_data = subset_data[:, combination]
-                            plot_3d_scatter(subset_data, output_filename2)
-                            plot_3d_scatter_and_fit_surface(subset_data, output_filename1)
 
                     SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method)
                     SRC.SubRegionPruning()

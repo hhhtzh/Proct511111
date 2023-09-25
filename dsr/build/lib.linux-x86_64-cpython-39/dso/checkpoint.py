@@ -122,8 +122,8 @@ class Checkpoint():
             save_path += "_{}".format(len(paths))
         os.makedirs(save_path, exist_ok=False)
 
-        # Save the TensorFlow draw
-        # print("Saving TensorFlow draw...")
+        # Save the TensorFlow vis
+        # print("Saving TensorFlow vis...")
         tf_save_path = os.path.join(save_path, "tf")
         self.saver.save(self.model.sess, tf_save_path)
 
@@ -167,7 +167,7 @@ class Checkpoint():
             Checkpoint directory to load model state.
         """
 
-        # Load the TensorFlow draw
+        # Load the TensorFlow vis
         if self.model.sess is None:
             self.model.setup()
         tf_load_path = os.path.join(load_path, "tf")

@@ -106,7 +106,14 @@ class subRegionCalculator:
             labels = None
             if clusterMethod == "DBSCAN":
                 print(epsilon)
-                db = DBSCAN(eps=epsilon, min_samples=2 * data_x.shape[1]).fit(data_x)
+                if data_x.shape[0] < 100:
+                    min_sample = data_x.shape[1]+1
+                    print("min_sample:"+str(min_sample))
+                elif 100 < data_x.shape[0] < 10000:
+                    min_sample = data_x.shape[1]+3
+                else:
+                    min_sample = data_x.shape[1]+5
+                db = DBSCAN(eps=epsilon, min_samples=min_sample).fit(data_x)
                 core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
                 core_samples_mask[db.core_sample_indices_] = True
                 labels = db.labels_  # 记录了每个数据点的分类结果，根据分类结果通过np.where就能直接取出对应类的所有数据索引了

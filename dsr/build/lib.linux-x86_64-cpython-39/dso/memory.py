@@ -155,7 +155,7 @@ class Queue(object):
         """Uniform randomly select items from the queue.
 
         Args:
-            sample_size: Number of random samples to draw. The same item can be
+            sample_size: Number of random samples to vis. The same item can be
                     sampled multiple times.
 
         Returns:

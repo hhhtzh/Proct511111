@@ -1128,7 +1128,7 @@ class SymbolicRegressor(BaseSymbolic, RegressorMixin):
         For point mutation only, the probability that any given node will be
         mutated.
     max_samples : float, optional (default=1.0)
-        The fraction of samples to draw from X to evaluate each program on.
+        The fraction of samples to vis from X to evaluate each program on.
 
     feature_names : list, optional (default=None)
         Optional list of feature names, used purely for representations in
@@ -1429,7 +1429,7 @@ class SymbolicClassifier(BaseSymbolic, ClassifierMixin):
         mutated.
 
     max_samples : float, optional (default=1.0)
-        The fraction of samples to draw from X to evaluate each program on.
+        The fraction of samples to vis from X to evaluate each program on.
 
     class_weight : dict, 'balanced' or None, optional (default=None)
         Weights associated with classes in the form ``{class_label: weight}``.
@@ -1748,7 +1748,7 @@ class SymbolicTransformer(BaseSymbolic, TransformerMixin):
         mutated.
 
     max_samples : float, optional (default=1.0)
-        The fraction of samples to draw from X to evaluate each program on.
+        The fraction of samples to vis from X to evaluate each program on.
 
     feature_names : list, optional (default=None)
         Optional list of feature names, used purely for representations in

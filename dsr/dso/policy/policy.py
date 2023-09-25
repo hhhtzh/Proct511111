@@ -108,7 +108,7 @@ class Policy(ABC):
 
     @abstractmethod
     def _setup_tf_model(self, **kwargs) -> None:
-        """"Setup the TensorFlow draw(s).
+        """"Setup the TensorFlow vis(s).
 
         Returns
         -------

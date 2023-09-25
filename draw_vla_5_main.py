@@ -1,7 +1,7 @@
 import pandas as pd
 
 from keplar.utils.BoxImg import draw_box_diagram, addLog, draw_time_box_diagram
-from keplar.draw.BoxImg_vla_5 import draw_box_diagram_vla_5, draw_time_box_diagram_vla_5
+from keplar.vis.BoxImg_vla_5 import draw_box_diagram_vla_5, draw_time_box_diagram_vla_5
 
 Vladislavleva = pd.read_csv('result/vla_5.csv')
 # draw_box_diagram(addLog(Vladislavleva['GpBingo']), addLog(Vladislavleva['Bingo']), addLog(Vladislavleva['OperonBingo']),

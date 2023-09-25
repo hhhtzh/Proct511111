@@ -1,6 +1,6 @@
 import pandas as pd
 
-from keplar.draw.draw import BoxImgDraw
+from keplar.vis.draw import BoxImgDraw
 from keplar.utils.BoxImg import draw_box_diagram, addLog, draw_time_box_diagram
 
 Vladislavleva = pd.read_csv('result/pmlb_1027_result.csv')

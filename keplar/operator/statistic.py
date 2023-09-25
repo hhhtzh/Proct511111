@@ -28,21 +28,23 @@ class TaylorStatistic(Statistic):
         str1 = self.str_equ
         list_equ = eq_string_to_infix_tokens(str1)
         print(list_equ)
-        if is_float(list_equ[0]) and (list_equ[1] == '+' or list_equ[1] == '-'):
-            bug_num = list_equ[0]
-            list_equ = list_equ[1:]
-            list_equ.append('+')
-            list_equ.append(bug_num)
-            if list_equ[0] == '+':
+        if is_float(list_equ[0]) and len(list_equ)>1:
+            if list_equ[1] == '+' or list_equ[1] == '-':
+                bug_num = list_equ[0]
                 list_equ = list_equ[1:]
-            elif list_equ[0] == '-':
-                new_num = float(list_equ[1]) * (-1)
-                list_equ[1] = str(new_num)
-                list_equ = list_equ[1:]
+                list_equ.append('+')
+                list_equ.append(bug_num)
+                if list_equ[0] == '+':
+                    list_equ = list_equ[1:]
+                elif list_equ[0] == '-':
+                    new_num = float(list_equ[1]) * (-1)
+                    list_equ[1] = str(new_num)
+                    list_equ = list_equ[1:]
         for token in range(len(list_equ)):
             if is_float(list_equ[token]) and list_equ[token - 1] != "^" and token != len(list_equ) - 1:
                 print(float(list_equ[token]))
-                if list_equ[token + 3] != "*" and list_equ[token + 3] != "^":
+                if (token + 3 == len(list_equ) or list_equ[token + 3] != "*") and (
+                        token + 3 == len(list_equ) or list_equ[token + 3] != "^"):
                     print("**" + list_equ[token])
                     print(list_equ[token + 2])
                     str_temp = list_equ[token + 2]
@@ -309,8 +311,8 @@ class GpStatistic(Statistic):
             temp_.append(lable_list_to_gp_list(i))
         new_gpprog_list = []
         for i in temp_:
-            gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt","neg"],
-                               arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1,"neg":1},
+            gp_prog = _Program(function_set=["add", "sub", "mul", "div", "sqrt", "neg"],
+                               arities={"add": 2, "sub": 2, "mul": 2, "div": 2, "sqrt": 1, "neg": 1},
                                init_depth=[3, 3], init_method="half and half", n_features=4, const_range=[0, 1],
                                metric="rmse",
                                p_point_replace=0.4, parsimony_coefficient=0.01, random_state=1, program=i)

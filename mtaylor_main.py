@@ -1,5 +1,4 @@
 
-
 import numpy as np
 import pandas as pd
 
@@ -63,7 +62,7 @@ X_normalized = sc_X.fit_transform(np_x)
 
 sc_y = StandardScaler()
 # y_normalized = sc_y.fit_transform(np_y.reshape(-1,1)).flatten()
-y_normalized = sc_y.fit_transform(np_y.reshape(-1,1))
+y_normalized = sc_y.fit_transform(np_y.reshape(-1 ,1))
 # y_normalized = np_y.reshape(-1,1)
 
 
@@ -82,21 +81,21 @@ mt = MTaylorGPAlg(1000, np_x, np_y, population=pop, NewSparseRegressionFlag=True
 for i in range(1):
     # print("iii")
     mt.run()
-    r2=calculate_r2(mt.best_ind,sc_X,sc_y, args.varset)
-    rmse = calculate_rmse(mt.best_ind,sc_X,sc_y, args.varset)
+    r2 =calculate_r2(mt.best_ind ,sc_X ,sc_y, args.varset)
+    rmse = calculate_rmse(mt.best_ind ,sc_X ,sc_y, args.varset)
     print("-" * 100)
-    print(" "*20+"R2:",r2)
+    print("  " *20 +"R2:" ,r2)
     print("-" * 100)
-    print(" "*20+"RMSE:", rmse)
+    print("  " *20 +"RMSE:", rmse)
     print("-" * 100)
     rmse_list.append(rmse)
     R2_list.append(r2)
     # fit_list.append(mt.best_fit)
     time_list.append(mt.elapse_time)
     equ_list.append(mt.best_ind)
-    print(" "*20+"Best fitness:",mt.best_fit)
+    print("  " *20 +"Best fitness:" ,mt.best_fit)
     print("-" * 100)
-    print(" "*20+f"Elapse_time: {mt.elapse_time} Seconds")
+    print("  " *20 +f"Elapse_time: {mt.elapse_time} Seconds")
 # fit_pd = pd.DataFrame({'MTaylor(with new sparse)': fit_list})
 equ_pd = pd.DataFrame({'MTaylor(with new sparse)': equ_list})
 time_pd = pd.DataFrame({'MTaylor(with new sparse)': time_list})

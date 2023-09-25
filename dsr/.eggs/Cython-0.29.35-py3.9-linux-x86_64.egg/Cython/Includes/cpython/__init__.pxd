@@ -127,7 +127,7 @@
 # Do NOT cimport any names directly from the cpython package,
 # despite of the star-imports below.  They will be removed at
 # some point.
-# Instead, use the correct sub-module to draw your cimports from.
+# Instead, use the correct sub-module to vis your cimports from.
 #
 # A direct cimport from the package will make your code depend on
 # all of the existing declarations. This may have side-effects

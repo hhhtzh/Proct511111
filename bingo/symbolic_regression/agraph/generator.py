@@ -1,7 +1,7 @@
-"""Generator of acyclic draw individuals.
+"""Generator of acyclic vis individuals.
 
 This module contains the implementation of the generation of random acyclic
-draw individuals.
+vis individuals.
 """
 import numpy as np
 
@@ -18,7 +18,7 @@ from ...util.argument_validation import argument_validation
 
 
 class AGraphGenerator(Generator):
-    """Generates acyclic draw individuals
+    """Generates acyclic vis individuals
 
     Parameters
     ----------
@@ -49,7 +49,7 @@ class AGraphGenerator(Generator):
         Returns
         -------
         Agraph
-            new random acyclic draw individual
+            new random acyclic vis individual
         """
         individual = self._backend_generator_function()
         individual.command_array = self._create_command_array()

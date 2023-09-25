@@ -1,7 +1,7 @@
-"""Definition of crossover between two acyclic draw individuals
+"""Definition of crossover between two acyclic vis individuals
 
 This module contains the implementation of single point crossover between
-acyclic draw individuals.
+acyclic vis individuals.
 """
 import numpy as np
 
@@ -9,7 +9,7 @@ from ...chromosomes.crossover import Crossover
 
 
 class AGraphCrossover(Crossover):
-    """Crossover between acyclic draw individuals
+    """Crossover between acyclic vis individuals
     
     Attributes
     ----------
