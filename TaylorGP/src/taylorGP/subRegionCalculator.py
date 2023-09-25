@@ -112,12 +112,12 @@ class subRegionCalculator:
             if clusterMethod == "DBSCAN":
                 print(epsilon)
                 if data_x.shape[0] < 100:
-                    min_sample = data
+                    min_sample = data_x.shape[1]+1
                     print("min_sample:"+str(min_sample))
                 elif 100 < data_x.shape[0] < 10000:
-                    min_sample = 4
+                    min_sample = data_x.shape[1]+3
                 else:
-                    min_sample = 6
+                    min_sample = data_x.shape[1]+5
                 # # 初始化HDBSCAN模型
                 # clusterer = hdbscan.HDBSCAN()
                 #
@@ -127,7 +127,7 @@ class subRegionCalculator:
                 core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
                 core_samples_mask[db.core_sample_indices_] = True
                 labels = db.labels_  # 记录了每个数据点的分类结果，根据分类结果通过np.where就能直接取出对应类的所有数据索引了
-                tsne = TSNE(n_components=2, random_state=42, perplexity=data_x.shape[0] - 20)
+                tsne = TSNE(n_components=2, random_state=42, perplexity=data_x.shape[0] - 15)
                 # 使用t-SNE对数据进行降维
                 embedded_data = tsne.fit_transform(data_x)
                 unique_labels = np.unique(labels)
