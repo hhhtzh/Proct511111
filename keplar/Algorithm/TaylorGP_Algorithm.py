@@ -335,7 +335,8 @@ class MTaylorGPAlg(Alg):
         totalGeneration = self.max_generation
         originalTaylorGPGeneration = self.originalTaylorGPGeneration
         Pop = self.population.pop_size  # 种群规模
-        epsilons = [1e-50, 1e-10, 1e-8, 1e-5, 0.000001, 0.001, 0.01, 0.1, 0.2, 1, 2, 4, 5, 6, 8, 10, 50, 100]
+        # epsilons = [1e-50, 1e-10, 1e-8, 1e-5, 0.000001, 0.001, 0.01, 0.1, 0.2, 1, 2, 4, 5, 6, 8, 10, 50, 100]
+        epsilons = [1e-5,0.1]
         # time_start1 = time.time()
         _init()
         for repeatNum in range(repeat):
@@ -370,28 +371,29 @@ class MTaylorGPAlg(Alg):
                 for tryNum in range(mabLoopNum):
                     print("子块个数:" + str(len(SRC.subRegions)))
                     # print(SRC.subRegions[0].shape[1])
-                    for j in range(len(SRC.subRegions)):
-                        #
-                        num_columns = SRC.subRegions[j][:, :-1].shape[1]
-                        combinations = generate_combinations(num_columns)
-                        for i, combination in enumerate(combinations):
-                            output_filename1 = f"eps_{epsilon}_num_{j}_cluster_fit_surface_{i}.pdf"
-                            output_filename2 = f"eps_{epsilon}_num_{j}_cluster_{i}.pdf"
-                            subset_data = SRC.subRegions[j][:, :-1]
-                            subset_y = SRC.subRegions[j][:, -1]
-                            subset_y = subset_y.reshape([-1, 1])
 
-                            # print("---------------------------------------")
-                            # print(subset_data)
-                            subset_data = subset_data[:, combination]
-                            print(subset_y)
-                            subset_data = np.hstack([subset_data, subset_y])
-                            print("---------------------------------------")
-                            print(subset_data)
-                            print(subset_data.shape[0])
-                            plot_3d_scatter(subset_data, output_filename2)
-                            if subset_data.shape[0] > 6:
-                                plot_3d_scatter_and_fit_surface(subset_data, output_filename1)
+                    # for j in range(len(SRC.subRegions)):
+                    #     #
+                    #     num_columns = SRC.subRegions[j][:, :-1].shape[1]
+                    #     combinations = generate_combinations(num_columns)
+                    #     for i, combination in enumerate(combinations):
+                    #         output_filename1 = f"eps_{epsilon}_num_{j}_cluster_fit_surface_{i}.pdf"
+                    #         output_filename2 = f"eps_{epsilon}_num_{j}_cluster_{i}.pdf"
+                    #         subset_data = SRC.subRegions[j][:, :-1]
+                    #         subset_y = SRC.subRegions[j][:, -1]
+                    #         subset_y = subset_y.reshape([-1, 1])
+
+                    #         # print("---------------------------------------")
+                    #         # print(subset_data)
+                    #         subset_data = subset_data[:, combination]
+                    #         print(subset_y)
+                    #         subset_data = np.hstack([subset_data, subset_y])
+                    #         print("---------------------------------------")
+                    #         print(subset_data)
+                    #         print(subset_data.shape[0])
+                    #         plot_3d_scatter(subset_data, output_filename2)
+                    #         if subset_data.shape[0] > 6:
+                    #             plot_3d_scatter_and_fit_surface(subset_data, output_filename1)
 
                         # # print(SRC.subRegions[j][:, :-1])
                         # # 将最后一列作为np_y
@@ -420,12 +422,12 @@ class MTaylorGPAlg(Alg):
                 print("Temp Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
             print("Final Fitness", SRC.bestLassoFitness, " Selected SubRegon Index: ", SRC.globalBestLassoCoef)
             self.best_fit = SRC.bestLassoFitness
-        # if isinstance(SRC.globalBestLassoCoef, list):
-        #     print(SRC.globalBestLassoCoef)
-        #     print(SRC.tops)
-        self.best_ind = SRC.tops[SRC.globalBestLassoCoef[0] - 1]
-        # else:
-        #     self.best_ind = SRC.tops[SRC.globalBestLassoCoef]
+        if isinstance(SRC.globalBestLassoCoef, list):
+            print(SRC.globalBestLassoCoef)
+            print(SRC.tops)
+            self.best_ind = SRC.tops[SRC.globalBestLassoCoef[0] - 1]
+        else:
+            self.best_ind = SRC.tops[SRC.globalBestLassoCoef]
         print("-" * 100)
 
         print("Best ind", str(self.best_ind[1][0]))

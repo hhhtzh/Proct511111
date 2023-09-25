@@ -224,8 +224,8 @@ class subRegionCalculator:
             Pop: 进化量
             :param SR_method:
         """
-        print(self.firstMabFlag)
-        print(self.mabPolicy)
+        # print(self.firstMabFlag)
+        # print(self.mabPolicy)
         # global self.TAy
         # print("TAy ",self.TAy)
         if self.firstMabFlag:
