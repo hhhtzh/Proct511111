@@ -393,21 +393,21 @@ class MTaylorGPAlg(Alg):
                             if subset_data.shape[0] > 6:
                                 plot_3d_scatter_and_fit_surface(subset_data, output_filename1)
 
-                        # print(SRC.subRegions[j][:, :-1])
-                        # 将最后一列作为np_y
-                        np_y = SRC.subRegions[j][:, -1]
-                        # 将前面的列作为np_x
-                        np_x = SRC.subRegions[j][:, :-1]
-                        sc_X = StandardScaler()
-                        X_normalized = sc_X.fit_transform(np_x)
-                        sc_y = StandardScaler()
-                        # y_normalized = sc_y.fit_transform(np_y.reshape(-1,1)).flatten()
-                        y_normalized = sc_y.fit_transform(np_y.reshape(-1, 1))
-                        np_x = np.array(X_normalized)
-                        np_y = np.array(y_normalized)
-                        np_y = np_y.reshape([-1, 1])
-                        ds = np.hstack([np_x, np_y])
-                        SRC.subRegions[j] = ds
+                        # # print(SRC.subRegions[j][:, :-1])
+                        # # 将最后一列作为np_y
+                        # np_y = SRC.subRegions[j][:, -1]
+                        # # 将前面的列作为np_x
+                        # np_x = SRC.subRegions[j][:, :-1]
+                        # sc_X = StandardScaler()
+                        # X_normalized = sc_X.fit_transform(np_x)
+                        # sc_y = StandardScaler()
+                        # # y_normalized = sc_y.fit_transform(np_y.reshape(-1,1)).flatten()
+                        # y_normalized = sc_y.fit_transform(np_y.reshape(-1, 1))
+                        # np_x = np.array(X_normalized)
+                        # np_y = np.array(y_normalized)
+                        # np_y = np_y.reshape([-1, 1])
+                        # ds = np.hstack([np_x, np_y])
+                        # SRC.subRegions[j] = ds
 
                     SRC.CalTops(repeatNum, Pop, SR_method=self.SR_method)
                     SRC.SubRegionPruning()
