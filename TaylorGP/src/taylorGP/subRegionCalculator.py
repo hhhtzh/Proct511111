@@ -2,6 +2,7 @@ import math
 import re
 from _decimal import Decimal
 
+import hdbscan
 import numpy as np
 import random
 
@@ -117,7 +118,12 @@ class subRegionCalculator:
                     min_sample = 4
                 else:
                     min_sample = 6
-                db = DBSCAN(eps=epsilon, min_samples=min_sample).fit(data_x)
+                # 初始化HDBSCAN模型
+                clusterer = hdbscan.HDBSCAN()
+
+                # 使用HDBSCAN进行聚类
+                cluster_labels = clusterer.fit_predict(data)
+                db = HDBSCAN(eps=epsilon, min_samples=min_sample).fit(data_x)
                 core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
                 core_samples_mask[db.core_sample_indices_] = True
                 labels = db.labels_  # 记录了每个数据点的分类结果，根据分类结果通过np.where就能直接取出对应类的所有数据索引了
