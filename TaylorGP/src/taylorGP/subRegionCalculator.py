@@ -112,7 +112,7 @@ class subRegionCalculator:
             if clusterMethod == "DBSCAN":
                 print(epsilon)
                 if data_x.shape[0] < 100:
-                    min_sample = 2
+                    min_sample = data
                     print("min_sample:"+str(min_sample))
                 elif 100 < data_x.shape[0] < 10000:
                     min_sample = 4
