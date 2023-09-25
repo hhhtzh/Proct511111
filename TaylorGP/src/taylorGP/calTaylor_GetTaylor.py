@@ -7,6 +7,9 @@ import timeout_decorator
 import copy
 import itertools
 import math
+
+from sklearn.linear_model import Lasso
+
 # from itertools import product
 CountACC = 0.0
 
@@ -265,9 +268,25 @@ class Metrics:
         print("length=",length)
         Taylor = 0
         Taylor = np.linalg.lstsq(A, b0, rcond=None)[0]
+        print("A=",A)
+        print("b0=",b0)
         # Taylor = np.linalg.solve(A, b0)
+        print("Taylor系数:",Taylor)
 
-        Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
+        # 创建Lasso回归模型
+        lasso_model = Lasso(alpha=0.5)  # alpha是正则化强度，可以调整以控制稀疏性
+
+        # 训练模型
+        lasso_model.fit(A, b0)
+
+        # 获取稀疏系数
+        Taylor_sparse = lasso_model.coef_
+
+        # 打印稀疏系数
+        print("稀疏系数:", Taylor_sparse)
+
+        # Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
+        Taylor = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])
 
         # transform the Taylor to the string of sympy ,and return the string f
         f=str(Taylor[0]) 
@@ -288,7 +307,8 @@ class Metrics:
                     # print("j= ,num=",j,num)
                     f += '*' + '(x' + str(j) + '-' + str(self.expantionPoint[j]) + ')**' + str(num) 
 
-        return Taylor.tolist()[:length],f,k
+        # return Taylor.tolist()[:length],f,k
+        return Taylor_sparse.tolist()[:length],f,k
 
 
     def judge_Low_polynomial(self, lowLine=7, varNum=1):
