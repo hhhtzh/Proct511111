@@ -130,6 +130,7 @@ class OperonMutation(Mutation):
         mutation.Add(mut_replace, self.replace_p)
         rng = Operon.RomuTrio(random.randint(1, 1000000))
         if population.pop_type == "Operon":
+            print("llllllllllllllllllllll")
             new_tree_list = []
             self.old_tree_list = population.target_pop_list
             for i in population.target_pop_list:

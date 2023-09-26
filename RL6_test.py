@@ -1,50 +1,47 @@
 import numpy as np
-import pandas as pd
 import tensorflow as tf
+from keras.layers import Input, Dense, LSTM  # 使用LSTM作为RNN结构
+from keras.models import Model
+from keras.optimizers import Adam
+from keras.losses import SparseCategoricalCrossentropy
+from keras import backend as K
+from tensorflow_probability import distributions as tfd
 import tensorflow_probability as tfp
 
-from keplar.data.data import Data
-from keplar.operator.check_pop import CheckPopulation
-from keplar.operator.composite_operator import CompositeOp, CompositeOpReturn
-from keplar.operator.creator import BingoCreator, OperonCreator
-from keplar.operator.crossover import BingoCrossover, OperonCrossover
-from keplar.operator.evaluator import BingoEvaluator, OperonEvaluator, GpEvaluator
-from keplar.operator.mutation import BingoMutation, OperonMutation
-from keplar.operator.selector import BingoSelector
 
-data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
-data.read_file()
-x = data.get_np_x()
-y = data.get_np_y()
+# Actor网络，输出序列的概率分布
+def build_actor_network(seq_length, num_actions):
+    state_input = Input(shape=(6,))
+    x = Dense(64, activation='relu')(state_input)
 
-operators = ["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^']
-bg_creator = BingoCreator(128, operators, x, 10, "Bingo")
-bg_evaluator = BingoEvaluator(x, "exp", "lm", "self", y)
-bg_crossover = BingoCrossover("Bingo")
-bg_mutation = BingoMutation(x, operators, "Bingo")
-bg_selector = BingoSelector(0.5, "tournament", "Bingo")
-op_crossover = OperonCrossover(x, y, "Operon")
-select = BingoSelector(0.2, "tournament", "Operon")
-op_mutation = OperonMutation(0.6, 0.7, 0.8, 0.8, x, y, 10, 50, "balanced", "Operon")
-data = pd.read_csv("NAStraining_data/recursion_training2.csv")
-op_creator = OperonCreator("balanced", x, y, 128, "Operon")
-op_evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
-evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "self")
-gp_evaluator = GpEvaluator(x, y, "self", metric="rmse")
-kb_gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
-kb_gen_down_oplist = CompositeOpReturn([bg_selector])
-kb_gen_eva_oplist = CompositeOp([bg_evaluator])
-gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
-gen_down_oplist = CompositeOpReturn([bg_selector])
-gen_eva_oplist = CompositeOp([gp_evaluator])
-op_up_list = [op_mutation, op_crossover]
-eval_op_list = [evaluator]
-population = op_creator.do()
-evaluator.do(population)
-ck = CheckPopulation(data)
+    # 使用LSTM作为RNN结构，输出一个序列
+    rnn_layer = LSTM(64, return_sequences=True)(x)
+
+    # 输出序列的概率分布
+    logits = Dense(num_actions, activation='linear')(rnn_layer)
+    probabilities = tf.keras.layers.Softmax()(logits)
+
+    model = Model(inputs=state_input, outputs=probabilities)
+    return model
 
 
-# 创建Actor网络，用于生成动作
+# ...
+
+# 在每个时间步选择动作
+def choose_action(actor, state):
+    action_probs = actor.predict(state)
+    action = np.random.choice(len(action_probs[0]), p=action_probs[0])
+    return action
+
+
+# ...
+
+# 在每个时间步训练Agent
+def train(agent, states, actions, rewards, dones):
+    # 训练逻辑
+    pass
+
+
 class ActorNetwork(tf.keras.Model):
     def __init__(self, action_dim):
         super(ActorNetwork, self).__init__()
@@ -74,7 +71,7 @@ class CriticNetwork(tf.keras.Model):
         return value
 
 
-# PPO算法
+# ...
 class PPOAgent:
     def __init__(self, state_dim, action_dim, clip_epsilon=0.2, gamma=0.99):
         self.actor_network = ActorNetwork(action_dim)
@@ -123,24 +120,30 @@ class PPOAgent:
             self.critic_optimizer.apply_gradients(zip(critic_gradients, self.critic_network.trainable_variables))
 
 
-if __name__ == "__main__":
-    # 创建PPO代理
-    state_dim = 6
-    action_dim = 4  # 这里假设动作维度为1，你可以根据需要修改
-    agent = PPOAgent(state_dim, action_dim)  # 生成动作序列的示例
-    list1 = ck.do(population)
-    state = np.array(list1)  # 初始状态
-    max_steps = 100  # 控制序列的最大长度
-    actions = []
+# 训练PPO Agent
+seq_length = 10  # 序列的最大长度
+num_actions = 4  # 假设有4个离散的动作
+agent = PPOAgent(seq_length, num_actions)
 
-    for _ in range(max_steps):
-        action = agent.get_action(state)
-        actions.append(action[0])
-        next_state = np.random.randn(state_dim)  # 假设下一个状态是随机生成的
-        reward = np.random.randn()  # 假设奖励也是随机的
-        done = False  # 假设未结束
+# 定义环境和训练参数
+num_episodes = 1000
+state = np.random.rand(6)  # 初始状态
+
+for episode in range(num_episodes):
+    states, actions, rewards, dones = [], [], [], []
+    done = False
+    while not done:
+        action = choose_action(agent.actor, state)
+        next_state = np.random.rand(6)  # 模拟环境返回下一个状态
+        reward = np.random.rand()  # 模拟环境返回奖励
+        done = np.random.choice([True, False])  # 模拟环境返回done信号
+        states.append(state)
+        actions.append(action)
+        rewards.append(reward)
+        dones.append(done)
         state = next_state
-    print(len(actions))
-    print("Generated Action Sequence:", actions)
-    for i in actions:
-        print(i)
+
+        if len(states) >= seq_length or done:
+            # 当序列长度达到最大值或者环境返回done信号时，进行一次训练
+            train(agent, np.array(states), np.array(actions), np.array(rewards), np.array(dones))
+            states, actions, rewards, dones = [], [], [], []

@@ -80,7 +80,7 @@ def train_policy_network(policy_network, states, actions, rewards, optimizer):
     with tf.GradientTape() as tape:
         action_probabilities = policy_network(states)
         # print(action_probabilities)
-        actions_one_hot = tf.one_hot(actions, depth=3)
+        actions_one_hot = tf.one_hot(actions, depth=5)
         selected_action_probabilities = tf.reduce_sum(action_probabilities * actions_one_hot, axis=1)
         loss = -tf.reduce_sum(tf.math.log(selected_action_probabilities) * rewards)
 
@@ -169,6 +169,7 @@ for episode in range(num_episodes):
             new_tree_list = op_mutation.new_tree_list
             old_ind_list = []
             new_ind_list = []
+            print(old_ind_list)
             for i in old_tree_list:
                 ind = Operon.Individual()
                 ind.Genotype = i
@@ -224,6 +225,8 @@ for episode in range(num_episodes):
         evaluator.do(population)
         # print(population.pop_type)
         # print(population.pop_list[0].fitness)
+        for i in population.pop_list:
+            print(i.fitness)
         list1 = ck.do(population)
         # print(list1)
         new_state = np.array(list1)  # 假设新状态是一个一维向量，根据您的实际情况调整

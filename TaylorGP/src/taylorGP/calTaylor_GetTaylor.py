@@ -270,8 +270,8 @@ class Metrics:
         print("length=",length)
         Taylor = 0
         Taylor = np.linalg.lstsq(A, b0, rcond=None)[0]
-        print("A=",A)
-        print("b0=",b0)
+        # print("A=",A)
+        # print("b0=",b0)
         # Taylor = np.linalg.solve(A, b0)
         print("Taylor系数:",Taylor)
 

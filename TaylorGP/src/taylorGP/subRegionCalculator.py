@@ -140,7 +140,7 @@ class subRegionCalculator:
                     plt.scatter(embedded_data[mask, 0], embedded_data[mask, 1], c=colors[i],
                                 label=f'Cluster {label}')
 
-                plt.title('t-SNE Visualization of DBSCAN Clusters')
+                plt.title('eps:'+str(epsilon)+',t-SNE Visualization of DBSCAN Clusters')
                 plt.legend()
                 plt.show()
                 # Number of clusters in labels, ignoring noise if present.
