@@ -14,9 +14,6 @@ from sklearn.preprocessing import StandardScaler
 
 from keplar.utils.utils import Logger
 
-# sys.stdout = Logger("mtaylor_log.txt")
-# data = Data("txt", "trainsets/pmlb/val/197_cpu_act.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13", "x14", "x15", "x16", "x17", "x18", "x19", "x20","y"])
-# data = Data("txt", "trainsets/vla/two/1.txt", ["x0", "x1", "y"])
 sys.setrecursionlimit(10000)
 argparser = argparse.ArgumentParser()
 argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/628_fri_c3_1000_5.txt")
@@ -28,15 +25,8 @@ print("file path : ", args.trainset)
 fileName = os.path.basename(args.trainset)
 print("file name : ", fileName)
 fileName_whitout_ext = os.path.splitext(fileName)[0]
-
-# data = Data("txt_pmlb", args.trainset, ["x0", "x1","x2","x3","x4", "y"])
-# data=Data("numpy",args.trainset)
-
-# data2 = Data("txt_pmlb", args.varset, ["x0", "x1", "y"])
-
 np.set_printoptions(suppress=True)
-# data.read_file()
-# data.set_xy("y")
+
 pop = Population(128)
 fit_list = []
 time_list = []
@@ -50,28 +40,10 @@ np_y = data[:, -1]
 # 将前面的列作为np_x
 np_x = data[:, :-1]
 
-# scaler_X = MinMaxScaler()
-# scaler_X.fit(np_x)
-# scaler_y = MinMaxScaler()
-# scaler_y.fit(np_y.reshape(-1, 1))
 sc_X = StandardScaler()
 X_normalized = sc_X.fit_transform(np_x)
-# X_test_scaled = sc_X.transform(X_test)
-# X_normalized = np_x
-
-# sc_X.transform(np_x)
-
 sc_y = StandardScaler()
-# y_normalized = sc_y.fit_transform(np_y.reshape(-1,1)).flatten()
 y_normalized = sc_y.fit_transform(np_y.reshape(-1, 1))
-# y_normalized = np_y.reshape(-1,1)
-
-
-# 归一化特征
-# X_normalized = scaler_X.transform(np_x)
-# y_normalized = scaler_y.transform(np_y.reshape(-1, 1))
-
-# y_normalized =np_y.reshape(-1, 1)
 
 
 np_x = np.array(X_normalized)
