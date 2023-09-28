@@ -236,6 +236,7 @@ def bingo_to_taylor_str(equ):
     equ = re.sub(r'X_(\d{3})', r'x\1', equ)
     equ = re.sub(r'X_(\d{2})', r'x\1', equ)
     equ = re.sub(r'X_(\d{1})', r'x\1', equ)
+    hhh
 
 
 def to_gp(ind):
