@@ -18,73 +18,78 @@ import numpy as np
 from sklearn.metrics import mean_squared_error  # 均方误差
 from sklearn.linear_model import LinearRegression
 from sympy import *
+import sympy as sp
+import networkx as nx
+from itertools import product
+from keplar.translator.translator import trans_taylor_program, bingo_infixstr_to_func
+from keplar.population.individual import Individual
 
 
-def CalTaylorFeatures(f_taylor, _x, X, Y, population, Generation, Pop, repeatNum, eq_write):
-    print('In CalTaylorFeatures')
-    metric = Metrics2(f_taylor, _x, X, Y)
-    if metric.judge_Low_polynomial():
-        return [metric.low_nmse], [metric.f_low_taylor], None
-    if X.shape[1] > 1:
-        if metric.judge_additi_separability():
-            print('Separability of addition')
-            print('===========================start left recursion============================')
-            low_mse1, f_add1, population1 = CalTaylorFeatures(metric.f_left_taylor, metric._x_left, metric.X_left,
-                                                              metric.Y_left, population, Generation, Pop // 2,
-                                                              repeatNum, eq_write)
-            low_mse1 = low_mse1[0]
-            f_add1 = f_add1[0]
-            print('===========================start right recursion============================')
-            low_mse2, f_add2, population2 = CalTaylorFeatures(metric.f_right_taylor, metric._x_right, metric.X_right,
-                                                              metric.Y_right, population, Generation, Pop // 2,
-                                                              repeatNum, eq_write)
-            # if population2 != None:
-            low_mse2 = low_mse2[0]
-            f_add2 = f_add2[0]
-            # print("f_add1: ",f_add1," f_add2: ",f_add2)
-            f_add = sympify(str(f_add1) + '+' + str(f_add2))
-            try:
-                y_pred_add = metric._calY(f_add, _x, metric._X)
-                nmse = mean_squared_error(Y, y_pred_add)
-                if nmse < metric.low_nmse:
-                    return [nmse], [f_add], None
-                else:
-                    return [metric.low_nmse], [metric.f_low_taylor], None
-            except BaseException:
-                return [metric.low_nmse], [metric.f_low_taylor], None
-        elif metric.judge_multi_separability():
-            print('multiplicative separability')
-            print('===========================start left recursion============================')
-            low_mse1, f_multi1, population1 = CalTaylorFeatures(metric.f_left_taylor, metric._x_left, metric.X_left,
-                                                                metric.Y_left, population, Generation, population,
-                                                                Pop // 2, repeatNum, eq_write)
-            # if population1 != None:
-            low_mse1 = low_mse1[0]
-            f_multi1 = f_multi1[0]
-            print('===========================start right recursion============================')
-            low_mse2, f_multi2, population2 = CalTaylorFeatures(metric.f_right_taylor, metric._x_right, metric.X_right,
-                                                                metric.Y_right, population, Generation, Pop // 2,
-                                                                repeatNum, eq_write)
-            # if population2 != None:
-            low_mse2 = low_mse2[0]
-            f_multi2 = f_multi2[0]
-            f_multi = sympify('(' + str(f_multi1) + ')*(' + str(f_multi2) + ')')
-            try:
-                y_pred_multi = metric._calY(f_multi, _x, metric._X)
-                nmse = mean_squared_error(Y, y_pred_multi)
-                if nmse < metric.low_nmse:
-                    return [nmse], [f_multi], None
-                else:
-                    return [metric.low_nmse], [metric.f_low_taylor], None
-            except BaseException:
-                return [metric.low_nmse], [metric.f_low_taylor], None
+# def CalTaylorFeatures(f_taylor, _x, X, Y, population, Generation, Pop, repeatNum, eq_write):
+#     print('In CalTaylorFeatures')
+#     metric = Metrics2(f_taylor, _x, X, Y)
+#     if metric.judge_Low_polynomial():
+#         return [metric.low_nmse], [metric.f_low_taylor], None
+#     if X.shape[1] > 1:
+#         if metric.judge_additi_separability():
+#             print('Separability of addition')
+#             print('===========================start left recursion============================')
+#             low_mse1, f_add1, population1 = CalTaylorFeatures(metric.f_left_taylor, metric._x_left, metric.X_left,
+#                                                               metric.Y_left, population, Generation, Pop // 2,
+#                                                               repeatNum, eq_write)
+#             low_mse1 = low_mse1[0]
+#             f_add1 = f_add1[0]
+#             print('===========================start right recursion============================')
+#             low_mse2, f_add2, population2 = CalTaylorFeatures(metric.f_right_taylor, metric._x_right, metric.X_right,
+#                                                               metric.Y_right, population, Generation, Pop // 2,
+#                                                               repeatNum, eq_write)
+#             # if population2 != None:
+#             low_mse2 = low_mse2[0]
+#             f_add2 = f_add2[0]
+#             # print("f_add1: ",f_add1," f_add2: ",f_add2)
+#             f_add = sympify(str(f_add1) + '+' + str(f_add2))
+#             try:
+#                 y_pred_add = metric._calY(f_add, _x, metric._X)
+#                 nmse = mean_squared_error(Y, y_pred_add)
+#                 if nmse < metric.low_nmse:
+#                     return [nmse], [f_add], None
+#                 else:
+#                     return [metric.low_nmse], [metric.f_low_taylor], None
+#             except BaseException:
+#                 return [metric.low_nmse], [metric.f_low_taylor], None
+#         elif metric.judge_multi_separability():
+#             print('multiplicative separability')
+#             print('===========================start left recursion============================')
+#             low_mse1, f_multi1, population1 = CalTaylorFeatures(metric.f_left_taylor, metric._x_left, metric.X_left,
+#                                                                 metric.Y_left, population, Generation, population,
+#                                                                 Pop // 2, repeatNum, eq_write)
+#             # if population1 != None:
+#             low_mse1 = low_mse1[0]
+#             f_multi1 = f_multi1[0]
+#             print('===========================start right recursion============================')
+#             low_mse2, f_multi2, population2 = CalTaylorFeatures(metric.f_right_taylor, metric._x_right, metric.X_right,
+#                                                                 metric.Y_right, population, Generation, Pop // 2,
+#                                                                 repeatNum, eq_write)
+#             # if population2 != None:
+#             low_mse2 = low_mse2[0]
+#             f_multi2 = f_multi2[0]
+#             f_multi = sympify('(' + str(f_multi1) + ')*(' + str(f_multi2) + ')')
+#             try:
+#                 y_pred_multi = metric._calY(f_multi, _x, metric._X)
+#                 nmse = mean_squared_error(Y, y_pred_multi)
+#                 if nmse < metric.low_nmse:
+#                     return [nmse], [f_multi], None
+#                 else:
+#                     return [metric.low_nmse], [metric.f_low_taylor], None
+#             except BaseException:
+#                 return [metric.low_nmse], [metric.f_low_taylor], None
 
-    qualified_list = []
-    qualified_list.extend(
-        [metric.judge_Bound(), metric.f_low_taylor, metric.low_nmse, metric.bias, metric.judge_parity(),
-         metric.judge_monotonicity()])
-    return Taylor_Based_SR(_x, X, metric.change_Y(Y), qualified_list, eq_write, population, Generation, Pop, repeatNum,
-                           metric.judge_Low_polynomial())
+#     qualified_list = []
+#     qualified_list.extend(
+#         [metric.judge_Bound(), metric.f_low_taylor, metric.low_nmse, metric.bias, metric.judge_parity(),
+#          metric.judge_monotonicity()])
+#     return Taylor_Based_SR(_x, X, metric.change_Y(Y), qualified_list, eq_write, population, Generation, Pop, repeatNum,
+#                            metric.judge_Low_polynomial())
 
 
 def Taylor_Based_SR(_x, X, Y, qualified_list, eq_write, population, Gen, Pop, repeatNum, low_polynomial,
@@ -168,6 +173,188 @@ def Taylor_Based_SR(_x, X, Y, qualified_list, eq_write, population, Gen, Pop, re
         return [f_low_taylor_mse], [f_low_taylor], None, Y_pred
 
 
+def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
+    set_value('TUIHUA_FLAG', False)
+    Y_pred = None
+    # f_low_taylor, f_low_taylor_mse = qualified_list[-5], qualified_list[-4]
+    # if low_polynomial == False:
+    if SR_method == "gplearn":
+        function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'log', 'exp', 'sqrt']
+        est_gp = SymbolicRegressor(population_size=Pop, init_depth=(2, 5),
+                                    generations=Gen, stopping_criteria=1e-5, function_set=function_set,
+                                    p_crossover=0.7, p_subtree_mutation=0.,
+                                    p_hoist_mutation=0., p_point_mutation=0.2,
+                                    max_samples=1.0, verbose=1,
+                                    parsimony_coefficient=0.1,
+                                    n_jobs=1,  #
+                                    const_range=(-1, 1),
+                                    random_state=repeatNum, low_memory=True)
+        # print(qualified_list)
+        qualified_list = []
+        tops_fit, tops_str, population, Y_pred = est_gp.fit(X, Y, qualified_list,
+                                                            population_input=population)  # 种群演化返回的list of适应度 和公式
+        # if est_gp._program.raw_fitness_ > f_low_taylor_mse:
+        #     print(f_low_taylor, f_low_taylor_mse, sep='\n')
+        #     tops_fit.insert(0, f_low_taylor_mse)
+        #     tops_str.insert(0, f_low_taylor)
+        #     Y_pred = "f_low_taylor"
+        #     return tops_fit, tops_str, population, Y_pred
+        # else:
+        #     return [f_low_taylor_mse], [f_low_taylor], None, Y_pred
+    elif SR_method == "Bingo":
+        operators = ['+', '-', '*', '/', 'sin', 'cos', 'log', 'exp', 'sqrt']
+        x = X
+        y = Y
+        creator = BingoCreator(50, operators, x, 10, "Bingo")
+        evaluator = BingoEvaluator(x, "exp", "lm", "Bingo", y, metric="mse")
+        crossover = BingoCrossover("Bingo")
+        mutation = BingoMutation(x, operators, "Bingo")
+        selector = BingoSelector(0.5, "tournament", "Bingo")
+        gen_up_oplist = CompositeOp([crossover, mutation])
+        gen_down_oplist = CompositeOpReturn([selector])
+        gen_eva_oplist = CompositeOp([evaluator])
+        population = creator.do()
+        bgsr = KeplarBingoAlg(100, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
+        bgsr.run()
+        tops_fit = population.get_best_fitness()
+        print("tops_fit:",tops_fit)
+        tops_str = population.target_pop_list[population.get_tar_best()]
+        # func,const_arr = bingo_infixstr_to_func(str(tops_str))
+        # kep_ind=Individual(func,const_arr)
+        # print("kep_ind:",kep_ind)
+        # top = trans_taylor_program(kep_ind)
+        # print("top:",top)
+        # population = None
+        # if tops_fit > f_low_taylor_mse:
+        #     print(f_low_taylor, f_low_taylor_mse, sep='\n')
+        #     Y_pred = "f_low_taylor"
+        return [tops_fit], [top], population, Y_pred
+        # else:
+        #     return [tops_fit], [print_program(tops_str, qualified_list, X, _x)]
+    elif SR_method == "Operon":
+        x = X
+        y = Y
+        selector = OperonSelector(5)
+        evaluator = OperonEvaluator("MSE", x, y, 0.5, True, "Operon")
+        crossover = OperonCrossover(x, y, "Operon")
+        mutation = OperonMutation(1, 1, 1, 0.5, x, y, 10, 50, "balanced", "Operon")
+        reinsert = OperonReinserter(None, "ReplaceWorst", 10, "Operon", x, y)
+        op_up_list = [mutation, crossover]
+        op_down_list = [reinsert]
+        eva_list = [evaluator]
+        op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, selector, 1e-5, 1000, 16, x, y)
+        op_alg.run()
+        tops_fit = op_alg.model_fit
+        tops_str = str(op_alg.model_string)
+        population = None
+        # if tops_fit > f_low_taylor_mse:
+        #     print(f_low_taylor, f_low_taylor_mse, sep='\n')
+        #     Y_pred = "f_low_taylor"
+        return [tops_fit], [tops_str], population, Y_pred
+        # else:
+        #     pass
+            # return [tops_fit], [print_program(tops_str, qualified_list, X, _x)]
+
+    else:
+        raise ValueError("其他回归暂时未设置")
+
+
+
+
+def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatNum,SR_method="Operon"):
+    print('In CalTaylorFeaturesGraph')
+    taylor_num.append(0)
+    # taylor_num.append(0)
+    varNum = X.shape[1]
+    k = 2
+    G = nx.Graph()
+    nodes = [f'x{i}' for i in range(varNum)]
+    for i in range(varNum):
+        node_name = f'x{i}'
+        G.add_node(node_name)
+    node_combinations = list(product(nodes, repeat=2))
+    # print(node_combinations)
+
+    flag_array = [[z for z in range(2)] for _ in range(varNum)]
+    var_array = [[j for j in range(2)] for _ in range(varNum)]
+
+    combinations_flag = list(product(*flag_array))
+
+    Number_record = [combination for combination in combinations_flag if sum(combination) <= k]
+    # print(Number_record)
+  
+    
+
+    fl = [sum(combination) for combination in Number_record]
+    # print(fl)
+    # 添加连接关系
+    for i,combination in enumerate(Number_record):
+        if fl[i] == 2:
+            combin_flag = False
+            u = 0
+            for j,com_num in enumerate(combination):
+                if combin_flag == False:
+                    if com_num == 1:
+                        combin_flag = True
+                        u = j
+                    else:
+                        pass
+                else:
+                    if com_num == 1:
+                        # print("taylor:",i)
+                        if abs(taylor_num[i+1]) > 0.001:
+                            print("taylor:",taylor_num[i+1])
+                            G.add_edge('x'+str(u), 'x'+str(j))
+                            print('x'+str(u), 'x'+str(j))
+
+    print("图的节点集合:", G.nodes)
+
+    subgraphs = list(nx.connected_components(G))
+    num_subgraphs = len(subgraphs)
+
+    # print("f_taylor:",f_taylor)
+
+
+    expression = sp.expand(f_taylor)
+    float_values = [term for term in sp.Add.make_args(expression) if isinstance(term, sp.Float)]
+    print("float_value:",float_values)
+    expression_without_floats = expression - sp.Add(*float_values)
+    print("exppp term:",expression_without_floats)
+    expend_exp = sp.expand(expression_without_floats)
+
+    all_function = []
+    for subgraph in subgraphs:
+        variable_list = [sp.Symbol(var) for var in subgraph]
+        terms_with_subgraph = [term for term in sp.Add.make_args(expression_without_floats) if any(var in term.free_symbols for var in variable_list)]
+        combined_expression = sp.Add(*terms_with_subgraph)
+        print("子表达式含有 x：", combined_expression)
+        if len(subgraph) == 1 :
+            all_function.append(combined_expression)
+
+        else:
+            tops_fit,tops_str, population, Y_pred =TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Bingo")
+            # all_function.append(tops_str[0])
+            print("tops_str_f:",tops_str)
+            all_function.append(tops_str)
+    all_combined_expression = sp.Add(*all_function)
+    print("all_combined_expression:",all_combined_expression)
+
+    f_all = sympify(str(all_combined_expression))
+    try:
+        y_pred_all = Metrics2(f_all, _x, X, Y).calY()
+        nmse = mean_squared_error(Y, y_pred_all)
+        print("nmse:",nmse)
+
+    except BaseException:
+        print("BaseException:Cal Taylor Features Graph")
+
+
+    return nmse,all_combined_expression,population,y_pred_all
+    
+    
+
+    
+
 def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFlag=False, qualified_list=None,
                      SR_method="gplearn"):
     """
@@ -243,13 +430,13 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
                 f += '+' + str(lr_est.coef_[0][i]) + '*x' + str(i)
             else:
                 f += str(lr_est.coef_[0][i]) + '*x' + str(i)
-        # print("f_lr and nmse_lr" + f + "  " + str(lr_nmse))
+        print("f_lr and nmse_lr" + f + "  " + str(lr_nmse))
         '''
         fitness = mean_squared_error(lr_est.predict(test_X), test_y, squared=False)  # RMSE
         print('LR_predict_fitness: ', fitness)                
         '''
 
-        for i in range(30):
+        for i in range(1):
             if lr_nmse < metric.nmse:
                 metric.nmse = lr_nmse
                 metric.f_taylor = sympify(f)
@@ -280,22 +467,25 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
                     metric.bias,
                     metric.judge_parity(),
                     metric.judge_monotonicity()])
-                print(qualified_list)
+                # print(qualified_list)
 
             # elif metric.nihe_flag and (metric.judge_additi_separability() or metric.judge_multi_separability()):
             #     end_fitness, programs,population = CalTaylorFeatures(metric.f_taylor, _x[:X.shape[1]], X, Y, population,Generation,Pop, repeatNum, eq_write)
             if end_fitness is None:
                 
-                end_fitness, programs, population, Y_pred = Taylor_Based_SR(_x, X, change_Y(Y, qualified_list), qualified_list,
-                                                                            eq_write, population, Generation, Pop, repeatNum,
-                                                                            qualified_list[2] < 1e-5, SR_method=SR_method)
-                if isinstance(Y_pred,str):
-                    Y_pred = temp_Y_pred
-                # Y_pred = programs[0].predict(X)
-                print(end_fitness)
-                print(programs)
-                print('fitness_and_program', end_fitness[0], programs[0], sep='\n')
+                # end_fitness, programs, population, Y_pred = Taylor_Based_SR(_x, X, change_Y(Y, qualified_list), qualified_list,
+                #                                                             eq_write, population, Generation, Pop, repeatNum,
+                #                                                             qualified_list[2] < 1e-5, SR_method=SR_method)
+                # if isinstance(Y_pred,str):
+                #     Y_pred = temp_Y_pred
+                # # Y_pred = programs[0].predict(X)
+                # print(end_fitness)
+                # print(programs)
+                # print('fitness_and_program', end_fitness[0], programs[0], sep='\n')
+                end_fitness, programs, population, Y_pred = CalTaylorFeaturesGraph(metric.f_taylor_num,metric.f_taylor, _x[:X.shape[1]], X, Y, population,Generation,Pop, repeatNum, SR_method = "Operon")
+            
             if end_fitness[0] < 1e-5: findBestFlag = true
+
             return [end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
         
 
