@@ -20,4 +20,4 @@ def TsneDraw(data_x,labels,epsilon):
 
     plt.title('eps:' + str(epsilon) + ',t-SNE Visualization of DBSCAN Clusters')
     plt.legend()
-    plt.show()
+    # plt.show()

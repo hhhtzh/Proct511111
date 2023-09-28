@@ -232,6 +232,12 @@ def bingo_infixstr_to_func(equ):
     return new_func_list, const_array
 
 
+def bingo_to_taylor_str(equ):
+    equ = re.sub(r'X_(\d{3})', r'x\1', equ)
+    equ = re.sub(r'X_(\d{2})', r'x\1', equ)
+    equ = re.sub(r'X_(\d{1})', r'x\1', equ)
+
+
 def to_gp(ind):
     func = ind.func
     list_program = []

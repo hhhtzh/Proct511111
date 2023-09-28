@@ -46,8 +46,8 @@ class BingoCrossover(Crossover):
                 equ1 = re.sub(r" pow ", " ^ ", equ1)
                 equ2 = re.sub(r" pow ", " ^ ", equ2)
                 # print(parent_1.format())
-                print(equ1)
-                print(equ2)
+                # print(equ1)
+                # print(equ2)
                 self.bingo_parent_1 = AGraph(equation=equ1)
                 self.bingo_parent_2 = AGraph(equation=equ2)
                 if self.bingo_parent_2.command_array.shape == self.bingo_parent_1.command_array.shape and \

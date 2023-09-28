@@ -60,7 +60,7 @@ class BingoMutation(Mutation):
             bingo_parent = population.pop_list[parent_num]
             equ = bingo_parent.format()
             equ = re.sub(" power ", " ^ ", equ)
-            print(equ)
+            # print(equ)
             bingo_parent = AGraph(equation=equ)
             bingo_parent._update()
             bingo_child = mutation(bingo_parent)

@@ -245,11 +245,12 @@ for episode in range(num_episodes):
 
         print(episode_actions)
         # reward = np.random.rand()  # 模拟环境返回奖励，这里使用随机生成的示例奖励
-        evaluator.do(population)
-        pool_pop = bg_selector.do(population)
-        evaluator.do(pool_pop)
-        list2=ck.do(pool_pop)
-        print("筛选后最好适应度:" + str(list2[0]) + ",平均适应度:" + str(list2[2]))
+        # evaluator.do(population)
+        # pool_pop = bg_selector.do(population)
+        # evaluator.do(pool_pop)
+        # list2=ck.do(pool_pop)
+        # print("筛选后最好适应度:" + str(list2[0]) + ",平均适应度:" + str(list2[2]))
+        pool_pop=population
 
         # print(population.pop_type)
         for i in episode_actions:
@@ -286,6 +287,7 @@ for episode in range(num_episodes):
             # print()
         state = np.array(vector)
         episode_states.append(state)
+        evaluator.do(population)
         new_list1 = ck.do(population)
         print("最好适应度:"+str(new_list1[0])+",平均适应度:"+str(new_list1[2]))
         reward = calculate_reward(list1, new_list1)
