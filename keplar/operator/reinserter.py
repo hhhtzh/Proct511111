@@ -27,7 +27,8 @@ class KeplarReinserter(Reinserter):
                 new_ind = self.pool.pop_list.pop()
                 # print(new_ind.format(), new_ind.get_fitness())
                 for i in range(len(population.pop_list)):
-
+                    # print(new_ind)
+                    # print(population.pop_list[i])
                     if population.pop_list[i].get_fitness() > new_ind.get_fitness():
                         population.pop_list[i] = new_ind
                         break

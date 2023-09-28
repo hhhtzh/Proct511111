@@ -337,7 +337,7 @@ class MTaylorGPAlg(Alg):
         totalGeneration = self.max_generation
         originalTaylorGPGeneration = self.originalTaylorGPGeneration
         Pop = self.population.pop_size  # 种群规模
-        epsilons = [1e-15, 1e-5, 0.001, 0.01, 0.1, 0.2,0.5, 1, 1.5, 2, 4]
+        epsilons = [1e-15, 1e-5, 0.001, 0.01, 0.1, 0.2,0.5,0.6,0.8, 1, 1.5, 2, 4]
         # time_start1 = time.time()
         _init()
         for repeatNum in range(repeat):

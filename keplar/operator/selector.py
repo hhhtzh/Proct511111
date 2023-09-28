@@ -1,5 +1,6 @@
 import array
 import random
+import re
 from abc import abstractmethod
 
 from bingo.selection.age_fitness import AgeFitness
@@ -52,6 +53,7 @@ class BingoSelector(Operator):
             for i in population.pop_list:
                 equ_list = i.format()
                 # print(equ_list)
+                equ_list = re.sub(r"pow", r"^", equ_list)
                 bingo_ind = AGraph(equation=equ_list)
                 bingo_ind.fitness = i.get_fitness()
                 bingo_ind._update()
@@ -74,7 +76,6 @@ class BingoSelector(Operator):
             new_pop.pop_type = "self"
         else:
             new_pop.pop_type = "Bingo"
-
 
             new_pop.target_pop_list = new_bingo_pop
         return new_pop

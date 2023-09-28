@@ -1,4 +1,5 @@
 import random
+import re
 
 from bingo.symbolic_regression import ComponentGenerator, AGraph
 from bingo.symbolic_regression.agraph.mutation import AGraphMutation
@@ -7,7 +8,7 @@ from keplar.operator.operator import Operator
 import numpy as np
 import pyoperon as Operon
 
-from keplar.translator.translator import to_op
+from keplar.translator.translator import to_op, bingo_infixstr_to_func
 from keplar.operator.crossover import TaylorGPCrossover
 
 from keplar.translator.translator import to_op, trans_op, to_gp, trans_taylor_program, taylor_trans_population, \
@@ -57,9 +58,25 @@ class BingoMutation(Mutation):
             parent_num = np.random.randint(
                 low=0, high=population.get_pop_size() - 1)
             bingo_parent = population.pop_list[parent_num]
-            bingo_parent = AGraph(equation=bingo_parent.format())
+            equ = bingo_parent.format()
+            equ = re.sub(" power ", " ^ ", equ)
+            print(equ)
+            bingo_parent = AGraph(equation=equ)
             bingo_parent._update()
             bingo_child = mutation(bingo_parent)
+            if self.to_type != "Bingo":
+                equ = str(bingo_child)
+                func, const_arr = bingo_infixstr_to_func(equ)
+                child = Individual(func, const_arr)
+                population.append(child)
+                new_pop_size = population.get_pop_size() + 1
+                population.set_pop_size(new_pop_size)
+            else:
+                population.pop_type = "Bingo"
+                population.self_pop_enable = False
+                population.target_pop_list.append(bingo_child)
+                new_pop_size = population.get_pop_size() + 1
+                population.set_pop_size(new_pop_size)
         else:
             population.set_pop_size(len(population.target_pop_list))
             parent_num = np.random.randint(
@@ -67,17 +84,19 @@ class BingoMutation(Mutation):
             parent = population.target_pop_list[parent_num]
             # parent._update()
             bingo_child = mutation(parent)
-        if self.to_type != "Bingo":
-            child = Individual(str(bingo_child))
-            population.append(child)
-            new_pop_size = population.get_pop_size() + 1
-            population.set_pop_size(new_pop_size)
-        else:
-            population.pop_type = "Bingo"
-            population.self_pop_enable = False
-            population.target_pop_list.append(bingo_child)
-            new_pop_size = population.get_pop_size() + 1
-            population.set_pop_size(new_pop_size)
+            if self.to_type != "Bingo":
+                equ = str(bingo_child)
+                func, const_arr = bingo_infixstr_to_func(equ)
+                child = Individual(func, const_arr)
+                population.append(child)
+                new_pop_size = population.get_pop_size() + 1
+                population.set_pop_size(new_pop_size)
+            else:
+                population.pop_type = "Bingo"
+                population.self_pop_enable = False
+                population.target_pop_list.append(bingo_child)
+                new_pop_size = population.get_pop_size() + 1
+                population.set_pop_size(new_pop_size)
 
 
 class OperonMutation(Mutation):
@@ -130,12 +149,11 @@ class OperonMutation(Mutation):
         mutation.Add(mut_replace, self.replace_p)
         rng = Operon.RomuTrio(random.randint(1, 1000000))
         if population.pop_type == "Operon":
-            print("llllllllllllllllllllll")
             new_tree_list = []
             self.old_tree_list = population.target_pop_list
             for i in population.target_pop_list:
                 new_tree_list.append(mutation(rng, i))
-            self.new_tree_list=new_tree_list
+            self.new_tree_list = new_tree_list
             population.target_pop_list = new_tree_list
             population.set_pop_size(len(new_tree_list))
             if self.to_type == "Operon":
@@ -154,7 +172,15 @@ class OperonMutation(Mutation):
                     population.self_pop_enable = False
                     population.pop_type = "Operon"
                 else:
-                    pass
+                    population.pop_type = "self"
+                    kep_ind_list = []
+                    for op_tree in population.target_pop_list:
+                        var_s = self.ds.Variables
+                        func, const_arr = trans_op(op_tree, var_s)
+                        kep_ind = Individual(func, const_arr)
+                        kep_ind_list.append(kep_ind)
+                    population.pop_list = kep_ind_list
+                    population.pop_size = len(population.pop_list)
 
 
 class TaylorGPMutation(Mutation):

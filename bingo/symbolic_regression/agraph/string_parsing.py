@@ -4,18 +4,18 @@ import numpy as np
 
 from bingo.symbolic_regression.agraph.operator_definitions \
     import INTEGER, VARIABLE, CONSTANT, ADDITION, SUBTRACTION, MULTIPLICATION, \
-           DIVISION, SIN, COS, SINH, COSH, EXPONENTIAL, LOGARITHM, POWER, ABS, \
-           SQRT
+    DIVISION, SIN, COS, SINH, COSH, EXPONENTIAL, LOGARITHM, POWER, ABS, \
+    SQRT
 
 operators = {"+", "-", "*", "/", "^"}
-functions = {"sin", "cos", "sinh", "cosh", "exp", "log", "abs", "sqrt"}
+functions = {"sin", "cos", "sinh", "cosh", "exp", "log", "abs", "sqrt", "pow"}
 precedence = {"+": 0, "-": 0, "*": 1, "/": 1, "^": 2}
 operator_map = {"+": ADDITION, "-": SUBTRACTION, "*": MULTIPLICATION,
                 "/": DIVISION, "^": POWER, "X": VARIABLE, "x": VARIABLE,
                 "C": CONSTANT, "c": CONSTANT,
                 "sin": SIN, "cos": COS, "sinh": SINH, "cosh": COSH,
                 "exp": EXPONENTIAL, "log": LOGARITHM, "abs": ABS,
-                "sqrt": SQRT}
+                "sqrt": SQRT, "power": POWER, "pow": POWER}
 # matches X_### and C_### (case-insensitive)
 var_or_const_pattern = re.compile(r"([XC])_(\d+)", re.IGNORECASE)
 int_pattern = re.compile(r"\d+")  # matches ###
@@ -45,8 +45,8 @@ def infix_to_postfix(infix_tokens):
     for token in infix_tokens:
         if token in operators:
             while len(stack) > 0 and stack[-1] in operators and \
-                (precedence[stack[-1]] > precedence[token] or
-                 precedence[stack[-1]] == precedence[token] and token != "^"):
+                    (precedence[stack[-1]] > precedence[token] or
+                     precedence[stack[-1]] == precedence[token] and token != "^"):
                 output.append(stack.pop())
             stack.append(token)
         elif token == "(" or token in functions:
@@ -147,7 +147,7 @@ def eq_string_to_infix_tokens(eq_string):
         to the expression given by eq_string
     """
     if any(bad_token in eq_string for bad_token in ["zoo", "I", "oo",
-                                                       "nan"]):
+                                                    "nan"]):
         raise RuntimeError("Cannot parse inf/complex")
     eq_string = eq_string.replace(")(", ")*(").replace("**", "^")
 

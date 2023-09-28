@@ -1,4 +1,5 @@
 import random
+import re
 
 from bingo.symbolic_regression import AGraph
 from keplar.population.individual import Individual
@@ -38,9 +39,17 @@ class BingoCrossover(Crossover):
                 [parent_1_num, parent_2_num] = np.random.randint(low=0, high=population.get_pop_size() - 1, size=2)
                 parent_1 = population.pop_list[parent_1_num]
                 parent_2 = population.pop_list[parent_2_num]
+                equ1 = str(parent_1.format())
+                equ2 = str(parent_2.format())
+                equ1 = re.sub(r"power", "^", equ1)
+                equ2 = re.sub(r"power", "^", equ2)
+                equ1 = re.sub(r" pow ", " ^ ", equ1)
+                equ2 = re.sub(r" pow ", " ^ ", equ2)
                 # print(parent_1.format())
-                self.bingo_parent_1 = AGraph(equation=str(parent_1.format()))
-                self.bingo_parent_2 = AGraph(equation=str(parent_2.format()))
+                print(equ1)
+                print(equ2)
+                self.bingo_parent_1 = AGraph(equation=equ1)
+                self.bingo_parent_2 = AGraph(equation=equ2)
                 if self.bingo_parent_2.command_array.shape == self.bingo_parent_1.command_array.shape and \
                         self.bingo_parent_1.command_array.shape[0] > 2 and self.bingo_parent_2.command_array.shape[
                     0] > 2:
@@ -103,9 +112,9 @@ class OperonCrossover(Crossover):
         self.np_y = np_y
 
     def do(self, population):
+        # print(population.pop_type)
         [parent_1_num, parent_2_num] = np.random.randint(low=0, high=population.get_pop_size() - 1, size=2)
         if population.pop_type != "Operon":
-            pass
             parent_1 = population.pop_list[parent_1_num]
             parent_2 = population.pop_list[parent_2_num]
             op_parent1 = to_op(parent_1, np_x=self.np_x, np_y=self.np_y)
@@ -125,7 +134,9 @@ class OperonCrossover(Crossover):
         if self.to_type != "Operon":
             population.self_pop_enable = True
             population.pop_type = "self"
-            ind = trans_op(new_tree)
+            variables = self.ds.Variables
+            func, const_array = trans_op(new_tree, variables)
+            ind = Individual(func, const_array)
             population.pop_list.append(ind)
             new_pop_size = population.get_pop_size() + 1
             population.set_pop_size(new_pop_size)

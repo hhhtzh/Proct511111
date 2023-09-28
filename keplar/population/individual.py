@@ -26,6 +26,7 @@ class Individual:
     def format(self):
         stack = []
         stack_i = 0
+        # print(self.func)
         for i in reversed(self.func):
             tk = int(i)
             if tk < 3000:

@@ -1,117 +1,154 @@
 import numpy as np
+import pandas as pd
 import tensorflow as tf
-from keras.layers import Input, Dense, LSTM  # 使用LSTM作为RNN结构
+import torch
+from keras.layers import Input, Dense, LSTM
 from keras.models import Model
 from keras.optimizers import Adam
-from keras.losses import SparseCategoricalCrossentropy
-from keras import backend as K
-from tensorflow_probability import distributions as tfd
 import tensorflow_probability as tfp
+from transformers import AutoTokenizer, AutoModel
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+import torch
+from keplar.data.data import Data
+from keplar.operator.check_pop import CheckPopulation
+from keplar.operator.composite_operator import CompositeOpReturn, CompositeOp
+from keplar.operator.creator import BingoCreator, OperonCreator
+from keplar.operator.crossover import BingoCrossover, OperonCrossover
+from keplar.operator.evaluator import OperonEvaluator, GpEvaluator, BingoEvaluator
+from keplar.operator.mutation import OperonMutation, BingoMutation
+from keplar.operator.reinserter import KeplarReinserter
+from keplar.operator.selector import BingoSelector
+
+data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
+data.read_file()
+x = data.get_np_x()
+y = data.get_np_y()
+
+model_name = "bert-base-uncased"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModel.from_pretrained(model_name)
 
 
-# Actor网络，输出序列的概率分布
-def build_actor_network(seq_length, num_actions):
-    state_input = Input(shape=(6,))
-    x = Dense(64, activation='relu')(state_input)
+def calculate_reward(list, new_list):
+    # 计算适应度变化
+    fitness_change = new_list[0] - list[0]
+    mean_fitness_change = new_list[2] - list[2]
+    reward = 0
+    # 根据适应度变化分配奖励
+    if fitness_change < 0:
+        reward += 5.0  # 适应度下降，奖励为正数
+    elif fitness_change < 0:
+        reward -= 10.0  # 适应度上升，奖励为负数
+    else:
+        reward += 0.0  # 适应度没有变化，奖励为零
 
-    # 使用LSTM作为RNN结构，输出一个序列
-    rnn_layer = LSTM(64, return_sequences=True)(x)
+    if mean_fitness_change < 0:
+        reward += 1
+    elif mean_fitness_change > 0:
+        reward -= 2
+    else:
+        reward += 0
 
-    # 输出序列的概率分布
-    logits = Dense(num_actions, activation='linear')(rnn_layer)
-    probabilities = tf.keras.layers.Softmax()(logits)
-
-    model = Model(inputs=state_input, outputs=probabilities)
-    return model
-
-
-# ...
-
-# 在每个时间步选择动作
-def choose_action(actor, state):
-    action_probs = actor.predict(state)
-    action = np.random.choice(len(action_probs[0]), p=action_probs[0])
-    return action
+    return reward
 
 
-# ...
+def expression_to_sentence_vector(expression, max_seq_length=512):
+    # 检查表达式长度是否超过最大序列长度
+    if len(expression) > max_seq_length:
+        # 如果超过最大长度，则截断表达式
+        expression = expression[:max_seq_length]
 
-# 在每个时间步训练Agent
-def train(agent, states, actions, rewards, dones):
-    # 训练逻辑
-    pass
+    # 分词
+    tokens = tokenizer.encode(expression, add_special_tokens=True)
+
+    # 将分词转换为PyTorch张量
+    input_ids = torch.tensor(tokens).unsqueeze(0)
+
+    # 获取句向量
+    with torch.no_grad():
+        outputs = model(input_ids)
+        sentence_vector = outputs.last_hidden_state.mean(dim=1).squeeze()
+
+    return sentence_vector
 
 
+# 定义Actor网络
 class ActorNetwork(tf.keras.Model):
-    def __init__(self, action_dim):
+    def __init__(self, num_actions):
         super(ActorNetwork, self).__init__()
-        self.dense1 = tf.keras.layers.Dense(128, activation='relu')
-        self.dense2 = tf.keras.layers.Dense(64, activation='relu')
-        self.output_layer = tf.keras.layers.Dense(action_dim, activation='tanh')
+        self.num_actions = num_actions
+        self.dense1 = Dense(64, activation='relu')
+        self.dense2 = Dense(64, activation='relu')
+        self.dense3 = Dense(64, activation='relu')
+        self.output_layer = Dense(num_actions, activation='softmax')
 
     def call(self, state):
         x = self.dense1(state)
         x = self.dense2(x)
-        actions = self.output_layer(x)
-        return actions
+        x = self.dense3(x)
+        action_probabilities = self.output_layer(x)
+        return action_probabilities
 
 
-# 创建Critic网络，用于评估动作价值
+# 定义Critic网络
 class CriticNetwork(tf.keras.Model):
     def __init__(self):
         super(CriticNetwork, self).__init__()
-        self.dense1 = tf.keras.layers.Dense(128, activation='relu')
-        self.dense2 = tf.keras.layers.Dense(64, activation='relu')
-        self.output_layer = tf.keras.layers.Dense(1, activation=None)
+        self.dense1 = Dense(64, activation='relu')
+        self.dense2 = Dense(64, activation='relu')
+        self.dense3 = Dense(64, activation='relu')
+        self.output_layer = Dense(1, activation=None)
 
     def call(self, state):
         x = self.dense1(state)
         x = self.dense2(x)
+        x = self.dense3(x)
         value = self.output_layer(x)
         return value
 
 
-# ...
+# 定义PPOAgent
 class PPOAgent:
-    def __init__(self, state_dim, action_dim, clip_epsilon=0.2, gamma=0.99):
-        self.actor_network = ActorNetwork(action_dim)
+    def __init__(self, num_actions, clip_epsilon=0.2, gamma=0.99):
+        self.num_actions = num_actions
+        self.actor_network = ActorNetwork(num_actions)
         self.critic_network = CriticNetwork()
-        self.actor_optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
-        self.critic_optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+        self.actor_optimizer = Adam(learning_rate=0.001)
+        self.critic_optimizer = Adam(learning_rate=0.001)
         self.clip_epsilon = clip_epsilon
         self.gamma = gamma
 
     def get_action(self, state):
         state = tf.convert_to_tensor([state], dtype=tf.float32)
-        actions = self.actor_network(state)
-        return actions.numpy()
+        action_probabilities = self.actor_network(state).numpy()[0]
+        print(action_probabilities)
+        action = np.random.choice(self.num_actions, p=action_probabilities)
+        return action
 
-    def train(self, states, actions, rewards, next_states, dones, old_probs, epochs=5):
+    def train(self, states, actions, rewards, dones, old_probs, epochs=5):
         states = tf.convert_to_tensor(states, dtype=tf.float32)
-        actions = tf.convert_to_tensor(actions, dtype=tf.float32)
+        actions = tf.convert_to_tensor(actions, dtype=tf.int32)
         rewards = tf.convert_to_tensor(rewards, dtype=tf.float32)
-        next_states = tf.convert_to_tensor(next_states, dtype=tf.float32)
 
         for _ in range(epochs):
             with tf.GradientTape() as tape1, tf.GradientTape() as tape2:
-                # 计算动作的概率分布
-                probs = self.actor_network(states)
-                dist = tfp.distributions.Normal(probs, 1)
-                new_probs = dist.prob(actions)
-                old_probs = tf.convert_to_tensor(old_probs, dtype=tf.float32)
+                action_probabilities = self.actor_network(states)
+                action_masks = tf.one_hot(actions, self.num_actions)
+                selected_action_probabilities = tf.reduce_sum(action_probabilities * action_masks, axis=1)
+                old_action_masks = tf.one_hot(actions, self.num_actions)
+                old_action_probabilities = old_action_masks * action_probabilities
+                old_action_probabilities = tf.reduce_sum(old_action_probabilities, axis=1)
+                ratio = selected_action_probabilities / (old_action_probabilities + 1e-5)
 
-                # 计算策略比率
-                ratio = new_probs / (old_probs + 1e-5)
-                clipped_ratio = tf.clip_by_value(ratio, 1 - self.clip_epsilon, 1 + self.clip_epsilon)
-
-                # 计算PPO的损失函数
-                surrogate_obj = tf.minimum(ratio * rewards, clipped_ratio * rewards)
+                advantages = calculate_advantages(rewards, dones, self.critic_network(states))
+                surrogate_obj = tf.minimum(ratio * advantages, tf.clip_by_value(ratio, 1 - self.clip_epsilon,
+                                                                                1 + self.clip_epsilon) * advantages)
                 actor_loss = -tf.reduce_mean(surrogate_obj)
 
-                # 计算Critic的损失函数
                 values = self.critic_network(states)
-                td_errors = rewards + self.gamma * self.critic_network(next_states) * (1 - dones) - values
-                critic_loss = tf.reduce_mean(tf.square(td_errors))
+                critic_loss = tf.reduce_mean(tf.square(rewards - values))
 
             actor_gradients = tape1.gradient(actor_loss, self.actor_network.trainable_variables)
             critic_gradients = tape2.gradient(critic_loss, self.critic_network.trainable_variables)
@@ -120,30 +157,148 @@ class PPOAgent:
             self.critic_optimizer.apply_gradients(zip(critic_gradients, self.critic_network.trainable_variables))
 
 
-# 训练PPO Agent
-seq_length = 10  # 序列的最大长度
-num_actions = 4  # 假设有4个离散的动作
-agent = PPOAgent(seq_length, num_actions)
+# 计算优势函数
+def calculate_advantages(rewards, dones, values):
+    advantages = np.zeros_like(rewards, dtype=np.float32)
+    last_advantage = 0
+    last_value = 0
+    for t in reversed(range(len(rewards))):
+        mask = 1 - dones[t]
+        delta = rewards[t] + 0.99 * last_value * mask - values[t]
+        advantages[t] = delta + 0.99 * 0.95 * last_advantage * mask
+        last_advantage = advantages[t]
+        last_value = values[t]
+    return advantages
 
-# 定义环境和训练参数
+
+operators = ["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^']
+bg_creator = BingoCreator(128, operators, x, 10, "Bingo")
+bg_evaluator = BingoEvaluator(x, "exp", "lm", "self", y)
+bg_crossover = BingoCrossover("Bingo")
+bg_mutation = BingoMutation(x, operators, "self")
+bg_selector = BingoSelector(0.5, "tournament", "self")
+op_crossover = OperonCrossover(x, y, "self")
+select = BingoSelector(0.2, "tournament", "Operon")
+op_mutation = OperonMutation(0.6, 0.7, 0.8, 0.8, x, y, 10, 50, "balanced", "self")
+data = pd.read_csv("NAStraining_data/recursion_training2.csv")
+op_creator = OperonCreator("balanced", x, y, 128, "Operon")
+op_evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
+evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "self")
+gp_evaluator = GpEvaluator(x, y, "self", metric="rmse")
+kb_gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
+kb_gen_down_oplist = CompositeOpReturn([bg_selector])
+kb_gen_eva_oplist = CompositeOp([bg_evaluator])
+gen_up_oplist = CompositeOp([bg_crossover, bg_mutation])
+gen_down_oplist = CompositeOpReturn([bg_selector])
+gen_eva_oplist = CompositeOp([gp_evaluator])
+op_up_list = [op_mutation, op_crossover]
+eval_op_list = [evaluator]
+population = op_creator.do()
+evaluator.do(population)
+ck = CheckPopulation(data)
+
+# 创建PPOAgent
+num_actions = 5  # 五个离散
+agent = PPOAgent(num_actions)
+
+# 定义训练参数
 num_episodes = 1000
-state = np.random.rand(6)  # 初始状态
+generation_num = 1000
 
+# 在每个episode中生成动作序列并训练Agent
 for episode in range(num_episodes):
-    states, actions, rewards, dones = [], [], [], []
-    done = False
-    while not done:
-        action = choose_action(agent.actor, state)
-        next_state = np.random.rand(6)  # 模拟环境返回下一个状态
-        reward = np.random.rand()  # 模拟环境返回奖励
-        done = np.random.choice([True, False])  # 模拟环境返回done信号
-        states.append(state)
-        actions.append(action)
-        rewards.append(reward)
-        dones.append(done)
-        state = next_state
+    episode_states, episode_actions, episode_rewards, episode_length, episode_probs = [], [], [], [], []
+    for _ in range(generation_num):
+        done = False
+        # state = np.random.rand(6)  # 初始状态，这里使用随机生成的示例状态
+        # list1 = ck.do(population)
+        # print(list1)
+        # state = np.array(list1)  # 状态
+        expressions = []
+        for i in population.pop_list:
+            str_equ = i.format()
+            expressions.append(str_equ)
+        vector = []
+        for expression in expressions:
+            vector = expression_to_sentence_vector(expression)
+            # print(f"Expression: {expression}")
+            # print(f"Sentence Vector: {vector}")
+            # print()
+        list1 = ck.do(population)
+        print("初始最好适应度:"+str(list1[0])+",平均适应度:"+str(list1[2]))
+        state = np.array(vector)
+        # print(np.shape(state))
+        # min_val = np.min(state)
+        # max_val = np.max(state)
+        # state = (state - min_val) / (state - min_val)
+        # print(state)
+        done = False
+        while not done:
+            # print("不变的state:" + str(state))
+            action = agent.get_action(state)
+            # print(action)
+            # next_state = np.random.rand(6)  # 模拟环境返回下一个状态，这里使用随机生成的示例状态
+            if action == 4:
+                done = True
+            # done = np.random.choice([True, False])  # 模拟环境返回done信号，这里使用随机生成的示例done信号
+            episode_actions.append(action)
 
-        if len(states) >= seq_length or done:
-            # 当序列长度达到最大值或者环境返回done信号时，进行一次训练
-            train(agent, np.array(states), np.array(actions), np.array(rewards), np.array(dones))
-            states, actions, rewards, dones = [], [], [], []
+        print(episode_actions)
+        # reward = np.random.rand()  # 模拟环境返回奖励，这里使用随机生成的示例奖励
+        evaluator.do(population)
+        pool_pop = bg_selector.do(population)
+        evaluator.do(pool_pop)
+        list2=ck.do(pool_pop)
+        print("筛选后最好适应度:" + str(list2[0]) + ",平均适应度:" + str(list2[2]))
+
+        # print(population.pop_type)
+        for i in episode_actions:
+            # for ind in pool_pop.pop_list:
+            #     print(ind.func)
+            if i == 0:
+                print("0")
+                op_crossover.do(pool_pop)
+            elif i == 1:
+                print("1")
+                op_mutation.do(pool_pop)
+            elif i == 2:
+                print("2")
+                bg_crossover.do(pool_pop)
+                pass
+            elif i == 3:
+                print("3")
+                bg_mutation.do(pool_pop)
+                pass
+            elif i == 4:
+                print("4")
+                evaluator.do(pool_pop)
+                rein = KeplarReinserter(pool_pop, "self")
+                rein.do(population)
+        expressions = []
+        for i in population.pop_list:
+            str_equ = i.format()
+            expressions.append(str_equ)
+        vector = []
+        for expression in expressions:
+            vector = expression_to_sentence_vector(expression)
+            # print(f"Expression: {expression}")
+            # print(f"Sentence Vector: {vector}")
+            # print()
+        state = np.array(vector)
+        episode_states.append(state)
+        new_list1 = ck.do(population)
+        print("最好适应度:"+str(new_list1[0])+",平均适应度:"+str(new_list1[2]))
+        reward = calculate_reward(list1, new_list1)
+        list1 = new_list1
+        episode_rewards.append(reward)
+        episode_length.append(len(episode_actions))
+        episode_probs.append(agent.actor_network(np.array([state], dtype=np.float32))[0, action])
+
+        # state = next_state
+
+        # 计算优势函数并训练Agent
+        advantages = calculate_advantages(episode_rewards, episode_length,
+                                          agent.critic_network(np.array(episode_states, dtype=np.float32)))
+        agent.train(episode_states, episode_actions, episode_rewards, episode_length, episode_probs)
+
+# 最后，您可以使用训练好的Agent来生成动作序列。

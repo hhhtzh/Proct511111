@@ -191,7 +191,7 @@ def bingo_infixstr_to_func(equ):
     for node in post_equ:
         if str(node) == "nan":
             node = "0"
-        if str(node) == "info":
+        if str(node) == "inf":
             node = "100000000000000000000000"
 
         if node in ["+", "-", "*", "/", "^"] or node.isalpha():
@@ -218,7 +218,7 @@ def bingo_infixstr_to_func(equ):
             const_array.append(float(node))
             stack.append(const_code + 5000)
         else:
-            print(node)
+            # print(node)
             var_code = int(node[2:]) + 3000
             stack.append(var_code)
     new_func_list = []
@@ -557,6 +557,9 @@ def trans_op2(equ):
 
 
 def op_postfix_to_prefix(node_list):
+    # print("--------------------------")
+    # for node in node_list:
+    #     print(node.Name)
     stack = []
     for node in node_list:
         if not node.IsLeaf:
@@ -567,6 +570,7 @@ def op_postfix_to_prefix(node_list):
                 sub_stack.append(operand1)
                 stack.append(sub_stack)
             elif node.Arity == 2:
+
                 operand2 = stack.pop()
                 operand1 = stack.pop()
                 sub_stack = []
@@ -574,10 +578,13 @@ def op_postfix_to_prefix(node_list):
                 sub_stack.append(operand1)
                 sub_stack.append(operand2)
                 stack.append(sub_stack)
+
+
             else:
                 raise ValueError("Arity>=3")
         else:
             stack.append(node)
+
     new_node_list = []
     stack1 = [stack]
     while stack1:
@@ -757,12 +764,17 @@ def to_dsr(length, *T, **map):
 def to_op(ind, np_x, np_y):
     # print("----------------")
     str_equ = ind.format()
+    # print(str_equ)
     # print(ind.format())
     str_equ = re.sub(r'x(\d{3})', r'X_\1', str_equ)
     str_equ = re.sub(r'x(\d{2})', r'X_\1', str_equ)
     str_equ = re.sub(r'x(\d{1})', r'X_\1', str_equ)
     # print(ind.func)
+    str_equ = re.sub(r' pow ', r" ^ ", str_equ)
+    str_equ = re.sub(r' power ', r" ^ ", str_equ)
+    # print(str_equ)
     list_equ = eq_string_to_infix_tokens(str_equ)
+    # print(list_equ)
     ds = Operon.Dataset(np.hstack([np_x, np_y]))
     # func = ind.func
     # list_prefix = []
@@ -853,6 +865,9 @@ def to_op(ind, np_x, np_y):
         elif token == 'power':
             node = Operon.Node.Pow()
             node_list.append(node)
+        elif token == 'pow':
+            node = Operon.Node.Pow()
+            node_list.append(node)
         else:
             raise ValueError(f"通用个体转换为Operon个体时未识别,未识别字符为{token}")
     # print(len(node_list))
@@ -925,7 +940,7 @@ def equ_to_op(equ, ds):
     if op_al != "":
         list_infix.append(op_al)
     post_equ = infix_to_postfix(list_infix)
-    print(post_equ)
+    # print(post_equ)
     node_list = []
     var_hash = []
     variables = ds.Variables
@@ -988,5 +1003,5 @@ def equ_to_op(equ, ds):
             raise ValueError(f"通用个体转换为Operon个体时未识别,未识别字符为{token}")
     op_tree = Operon.Tree(node_list)
     op_tree.UpdateNodes()
-    print(Operon.InfixFormatter.Format(op_tree, ds, 5))
+    # print(Operon.InfixFormatter.Format(op_tree, ds, 5))
     return op_tree

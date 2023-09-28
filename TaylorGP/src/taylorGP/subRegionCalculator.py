@@ -13,6 +13,7 @@ from sklearn.metrics import mean_squared_error
 
 from keplar.operator.statistic import TaylorStatistic
 from keplar.translator.translator import is_float
+from keplar.vis.tsne_plot import TsneDraw
 from ._global import get_value, set_value
 from .originalTaylorGP1 import OriginalTaylorGP
 from sympy import sympify
@@ -127,22 +128,7 @@ class subRegionCalculator:
                 core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
                 core_samples_mask[db.core_sample_indices_] = True
                 labels = db.labels_  # 记录了每个数据点的分类结果，根据分类结果通过np.where就能直接取出对应类的所有数据索引了
-                tsne = TSNE(n_components=2, random_state=42, perplexity=data_x.shape[0] - 15)
-                # 使用t-SNE对数据进行降维
-                embedded_data = tsne.fit_transform(data_x)
-                unique_labels = np.unique(labels)
-                colors = plt.cm.rainbow(np.linspace(0, 1, len(unique_labels)))
-
-                plt.figure(figsize=(10, 8))
-
-                for i, label in enumerate(unique_labels):
-                    mask = labels == label
-                    plt.scatter(embedded_data[mask, 0], embedded_data[mask, 1], c=colors[i],
-                                label=f'Cluster {label}')
-
-                plt.title('eps:'+str(epsilon)+',t-SNE Visualization of DBSCAN Clusters')
-                plt.legend()
-                plt.show()
+                TsneDraw(data_x,labels,epsilon)
                 # Number of clusters in labels, ignoring noise if present.
                 n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
                 print("原始数据聚类", n_clusters_, "块")
