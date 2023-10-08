@@ -66,6 +66,7 @@ class KeplarBingoAlg(Alg):
                          eva_op_list, error_tolerance, population)
         self.elapse_time = None
         self.best_fit = None
+        self.best_indi = None
 
     def get_best_individual(self):
         if self.population != "self":
@@ -115,12 +116,14 @@ class KeplarBingoAlg(Alg):
             # file.write(str1)
             # file.close()
         best_ind = str(self.get_best_individual())
+        self.best_indi = best_ind
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
         # str1 = "\n"
         # file = open("/home/tzh/PycharmProjects/pythonProjectAR5/result/pmlb_1027_keplarbingo_searchfit.txt", "a")
         # file.write(str1)
         # file.close()
+
         self.best_fit = now_error
         self.elapse_time = time.time() - t
 
