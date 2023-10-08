@@ -12,6 +12,7 @@ from keplar.operator.generator import BingoGenerator
 from keplar.operator.mutation import BingoMutation
 from keplar.operator.selector import BingoSelector
 
+# json[operator][operator_list]=
 # data = Data("txt", "datasets/1.txt",["x","y"])
 # data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
 # data = Data("txt", "datasets/vla/two/1.txt", ["x0", "x1", "y"])

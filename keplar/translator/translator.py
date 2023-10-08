@@ -70,6 +70,42 @@ def taylor_trans_ind(program):
     ind = Individual(eq)
 
     return ind
+def format_taylor(mylist,const_array):
+    stack = []
+    stack_i = 0
+    # print(self.func)
+    for i in mylist:
+        tk = int(i)
+        if tk < 3000:
+            str_op = map_F1[tk]
+            arity = arity_map[tk]
+            if arity == 1:
+                if str_op == "square":
+                    op1 = stack[stack_i - 1]
+                    equ_str = "((" + op1 + ")" + "^2" + ")"
+                    stack[stack_i - 1] = equ_str
+                else:
+                    op1 = stack[stack_i - 1]
+                    equ_str = "(" + str_op + "(" + op1 + ")" + ")"
+                    stack[stack_i - 1] = equ_str
+            if arity == 2:
+                op1 = stack[stack_i - 1]
+                op2 = stack[stack_i - 2]
+                stack_i = stack_i - 1
+                equ_str = "(" + op1 + " " + str_op + " " + op2 + ")"
+                stack[stack_i - 1] = equ_str
+        elif tk >= 5000:
+            const = const_array[tk - 5000]
+            stack.append(str(const))
+            stack_i = stack_i + 1
+        elif 3000 <= tk < 5000:
+            x_num = tk - 3000
+            x_str = "x" + str(x_num)
+            stack.append(x_str)
+            stack_i = stack_i + 1
+        else:
+            raise ValueError(f"编码无意义{tk}")
+    return stack[0]
 
 
 # from keplar.population.function import operator_map, arity_map, operator_map3, _function_map
@@ -80,14 +116,6 @@ def get_priority(op):
         return 0
     else:
         return 1
-
-
-def bingo_to_taylor(bg_equ):
-    strx_ = re.sub(r'X_(\d{3})', r'x\1', bg_equ)
-    strx_ = re.sub(r'X_(\d{2})', r'x\1', strx_)
-    strx_ = re.sub(r'X_(\d{1})', r'x\1', strx_)
-    strx_ = re.sub(r' ', '', strx_)
-    return strx_
 
 
 def is_float(num):
@@ -238,6 +266,13 @@ def bingo_infixstr_to_func(equ):
         else:
             new_func_list.append(item)
     return new_func_list, const_array
+
+
+def bingo_to_taylor_str(equ):
+    equ = re.sub(r'X_(\d{3})', r'x\1', equ)
+    equ = re.sub(r'X_(\d{2})', r'x\1', equ)
+    equ = re.sub(r'X_(\d{1})', r'x\1', equ)
+
 
 
 def to_gp(ind):
