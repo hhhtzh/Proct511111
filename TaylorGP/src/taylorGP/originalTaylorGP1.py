@@ -9,7 +9,9 @@ from keplar.operator.evaluator import BingoEvaluator, OperonEvaluator
 from keplar.operator.mutation import BingoMutation, OperonMutation
 from keplar.operator.reinserter import OperonReinserter
 from keplar.operator.selector import BingoSelector, OperonSelector
-from .genetic1 import SymbolicRegressor
+# from .genetic1 import SymbolicRegressor
+from gplearn.genetic import SymbolicRegressor
+
 from .calTaylor_GetTaylor import Metrics2  # ,cal_Taylor_features
 from .calTaylor_GetTaylor import Metrics
 from ._program import print_program
@@ -21,7 +23,7 @@ from sympy import *
 import sympy as sp
 import networkx as nx
 from itertools import product
-from keplar.translator.translator import trans_taylor_program, bingo_infixstr_to_func,format_taylor
+from keplar.translator.translator import trans_taylor_program, bingo_infixstr_to_func,format_taylor,to_gp
 from keplar.population.individual import Individual
 
 
@@ -178,6 +180,35 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
     Y_pred = None
     # f_low_taylor, f_low_taylor_mse = qualified_list[-5], qualified_list[-4]
     # if low_polynomial == False:
+    if SR_method == "T_gplearn":
+            function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'log', 'exp', 'sqrt']
+            est_gp = SymbolicRegressor(population_size=Pop, init_depth=(2, 5),
+                                       generations=Gen, stopping_criteria=1e-5, function_set=function_set,
+                                       p_crossover=0.7, p_subtree_mutation=0.,
+                                       p_hoist_mutation=0., p_point_mutation=0.2,
+                                       max_samples=1.0, verbose=1,
+                                       parsimony_coefficient=0.1,
+                                       n_jobs=1,  #
+                                       const_range=(-1, 1),
+                                       random_state=repeatNum, low_memory=True)
+            tt = est_gp.fit(X, Y)
+            print("tt:",str(tt._best_programs))
+
+            print("done")
+
+            return tt,tt._best_programs
+            # print(qualified_list)
+            # qualified_list = None
+            # tops_fit, tops_str, population, Y_pred = est_gp.fit(X, Y, qualified_list,
+            #                                                     population_input=population)  # 种群演化返回的list of适应度 和公式
+            # if est_gp._program.raw_fitness_ > f_low_taylor_mse:
+            #     print(f_low_taylor, f_low_taylor_mse, sep='\n')
+            #     tops_fit.insert(0, f_low_taylor_mse)
+            #     tops_str.insert(0, f_low_taylor)
+            #     Y_pred = "f_low_taylor"
+            #     return tops_fit, tops_str, population, Y_pred
+            # else:
+            #     return [f_low_taylor_mse], [f_low_taylor], None, Y_pred
     if SR_method == "gplearn":
         function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'log', 'exp', 'sqrt']
         est_gp = SymbolicRegressor(population_size=Pop, init_depth=(2, 5),
@@ -193,6 +224,7 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
         qualified_list = []
         tops_fit, tops_str, population, Y_pred = est_gp.fit(X, Y, qualified_list,
                                                             population_input=population)  # 种群演化返回的list of适应度 和公式
+        
         # if est_gp._program.raw_fitness_ > f_low_taylor_mse:
         #     print(f_low_taylor, f_low_taylor_mse, sep='\n')
         #     tops_fit.insert(0, f_low_taylor_mse)
@@ -218,17 +250,61 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
         bgsr.run()
         tops_fit = population.get_best_fitness()
         print("tops_fit:",tops_fit)
-        tops_str = population.target_pop_list[population.get_tar_best()]
+        # tops_str = population.target_pop_list[population.get_tar_best()]
+        # print("tops_str:",str(tops_str))
+        # tops_str1 = population.pop_list[population.get_best()]
+        expression_str = bgsr.best_indi
+        print("tops_str1:",expression_str)
+        # variables_X = [symbols(f'X_{i}') for i in range(0, 100)]
 
+        # expression = sympify(expression_str)
+        # substitutions = {X[i]: _x[i] for i in range(len(_x))}
+        # top = expression.subs(substitutions)
+        # for i in range(len(_x)):
+        #     expression = expression.subs(sp.symbols(f'X_{i}'), _x[i])
+        # top = expression
+        # print("top:",str(top))
+        # expression_str = expression_str.replace('X_', 'x')
+        # symbols(_x)
+        # sympy_expression = sympify(expression_str)
+        # # sympy_expression = sp.parse_expr(expression_str)
+        # print("sympy_expression:",str(sympy_expression))
+        
+        # print("tops_str1:",str(tops_str1))
+        print("_x:",_x)
 
+        variables = [_x[i] for i in range(len(_x))]
+        # variables = [sp.symbols(_x[i]) for i in range(len(_x))]
+        print("variables:",variables)
 
-        func,const_arr = bingo_infixstr_to_func(str(tops_str))
-        kep_ind=Individual(func,const_arr)
-        # expression = sp.expand(kep_ind.format())
-        expression_str = kep_ind.format()
+        expression_str = expression_str.replace("X_", "x")
+
+        expression_str = expression_str.replace(")(", ")*(")
         print("expression_str:",expression_str)
-        expression = sympify(expression_str)
-        print("expression:",str(expression))
+        sympy_expression = sp.sympify(expression_str)
+        # print("sympy_expression:",str(sympy_expression))
+        return [sympy_expression]
+
+
+
+
+        # func,const_arr = bingo_infixstr_to_func(str(expression_str))
+        # kep_ind=Individual(func,const_arr)
+
+        # T_program = trans_taylor_program(kep_ind)
+        # print("T_program:",str(T_program))
+        # print("kep_ind list:",kep_ind.func)
+        # print("kep_ind:",kep_ind.const_array)
+        # print("kep_ind:",str(kep_ind.equation))
+        # print("kep_ind:",kep_ind.format())
+        # top = to_gp(kep_ind)
+        # print("tops:",str(top))
+
+        # expression = sp.expand(kep_ind.format())
+        # expression_str = kep_ind.format()
+        # print("expression_str:",expression_str)
+        # expression = sympify(expression_str)
+        # print("expression:",str(expression))
         # variables_X = [symbols(f'X_{i}') for i in range(0, 100)]
 
         # 创建一个示例表达式，例如 X_1 + X_2 + ... + X_100
@@ -241,9 +317,9 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
 
         # 使用 subs 方法将变量替换
         # top = expression.subs(substitutions)
-        for i in range(len(_x)):
-            expression = expression.subs(sp.symbols(f'X_{i}'), _x[i])
-        top = expression
+        # for i in range(len(_x)):
+        #     expression = expression.subs(sp.symbols(f'X_{i}'), _x[i])
+        # top = expression
         # new_expression = expression.subs(x_1, x1)
 
         # print("kepler:",kep_ind.format())
@@ -262,7 +338,7 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
         # if tops_fit > f_low_taylor_mse:
         #     print(f_low_taylor, f_low_taylor_mse, sep='\n')
         #     Y_pred = "f_low_taylor"
-        return [tops_fit], [top], population, Y_pred
+        # return [tops_fit], [top], population, Y_pred
         # else:
         #     return [tops_fit], [print_program(tops_str, qualified_list, X, _x)]
     elif SR_method == "Operon":
@@ -306,29 +382,62 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
         
         tops_fit = op_alg.best_fit
         tops_str = str(op_alg.model_string)
+        print("tops_str",tops_str)
 
-        expression_str = tops_str.replace('^2', '**2')
+        expression_str = tops_str.replace('^', '**')
         expression_str = tops_str.replace('X', 'x')
 
         print("expression_str:",expression_str) 
 
         # sympy_expression = sp.parse_expr(expression_str)
         # print("sympy_expression:",str(sympy_expression))
-        expression = sympify(expression_str)
-        tops_str = expression
+        # expression = sympify(expression_str)
+        tops_str = expression_str
 
 
         print("best_fit:",tops_fit)
-        print("tops_str:",tops_str)
+        print("tops_str:",expression_str)
+        variables = [_x[i] for i in range(len(_x))]
+        sympy_expression = sp.sympify(expression_str)
 
-        return [tops_fit], [tops_str]
+
+
+        return [sympy_expression]
 
 
     else:
         raise ValueError("其他回归暂时未设置")
 
+def _calY(f, _x=None, X=None, varNum=None):
+    y_pred = []
+    len1, len2 = 0, 0
+    if _x is None:
+        _x = [symbols(f'x{i}') for i in range(500)]
+    if X is None:
+        # X = _X
+        print("X is None")
+        len2 = varNum
+    else:
+        len2 = len(X)
+        
+    print("len2=",len2)
+    len1 = X[0].shape[0]
+    print("len1=",len1)
+    for i in range(len1):
+        _sub = {}
+        for j in range(len2):
+            _sub.update({_x[j]: X[j][i]})
+        y_pred.append(f.evalf(subs=_sub))
+    return y_pred
 
-
+def root_mean_squared_error(y_true, y_pred):
+    # 计算均方误差 (MSE)
+    mse = np.mean((y_true - y_pred)**2)
+    
+    # 计算 RMSE（均方根误差）
+    rmse = np.sqrt(mse)
+    
+    return rmse
 
 def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatNum,SR_method="Operon"):
     print('In CalTaylorFeaturesGraph')
@@ -403,7 +512,8 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
             all_function.append(combined_expression)
 
         else:
-            tops_fit,tops_str =TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Taylor_Operon")
+            tops_str =TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Bingo")
+            # tops_str =TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Taylor_Operon")
             # all_function.append(tops_str[0])
             print("tops_str_f:",tops_str)
             # if abs(formula.subs(x, 0)) < 1e-10:
@@ -423,10 +533,10 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
     nmse = 0
     y_pred_all = None
 
-    y_pred_all = Metrics2(f_all, _x, X, Y)._calY(f_all,_x,X)
-    print("y_pred_all:",y_pred_all)
-    nmse = mean_squared_error(Y, y_pred_all)
-    print("nmse:",nmse)
+    y_pred_all = _calY(f_all,_x,X.T,len(_x))
+    # print("y_pred_all:",y_pred_all)
+    rmse = mean_squared_error(Y, y_pred_all)
+    print("nmse:",rmse)
 
 
     # try:
@@ -438,7 +548,7 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
     #     print("BaseException:Cal Taylor Features Graph")
 
 
-    return nmse,all_combined_expression,population,y_pred_all
+    return [rmse],f_all,population,y_pred_all
     
     
 
@@ -571,7 +681,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
                 # print(end_fitness)
                 # print(programs)
                 # print('fitness_and_program', end_fitness[0], programs[0], sep='\n')
-                end_fitness, programs, population, Y_pred = CalTaylorFeaturesGraph(metric.f_taylor_num,metric.f_taylor, _x[:X.shape[1]], X, Y, population,Generation,Pop, repeatNum, SR_method = "Operon")
+                end_fitness, programs, population, Y_pred = CalTaylorFeaturesGraph(metric.f_taylor_num,metric.f_taylor, _x[:X.shape[1]], X, Y, population,Generation,Pop, repeatNum, SR_method = "Taylor_Operon")
             
             if end_fitness[0] < 1e-5: findBestFlag = true
 

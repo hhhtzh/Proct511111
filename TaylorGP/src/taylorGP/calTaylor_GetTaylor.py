@@ -344,7 +344,9 @@ class Metrics:
             len2 = self.varNum
         else:
             len2 = len(X)
+        print("len2=",len2)
         len1 = X[0].shape[0]
+        print("len1=",len1)
         for i in range(len1):
             _sub = {}
             for j in range(len2):
