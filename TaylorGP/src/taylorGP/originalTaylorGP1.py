@@ -10,7 +10,7 @@ from keplar.operator.mutation import BingoMutation, OperonMutation
 from keplar.operator.reinserter import OperonReinserter
 from keplar.operator.selector import BingoSelector, OperonSelector
 from .genetic1 import SymbolicRegressor
-from .calTaylor import Metrics2  # ,cal_Taylor_features
+from .calTaylor_GetTaylor import Metrics2  # ,cal_Taylor_features
 from .calTaylor_GetTaylor import Metrics
 from ._program import print_program
 from ._global import set_value, get_value, _init
@@ -21,7 +21,7 @@ from sympy import *
 import sympy as sp
 import networkx as nx
 from itertools import product
-from keplar.translator.translator import trans_taylor_program, bingo_infixstr_to_func
+from keplar.translator.translator import trans_taylor_program, bingo_infixstr_to_func,format_taylor
 from keplar.population.individual import Individual
 
 
@@ -214,15 +214,49 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
         gen_down_oplist = CompositeOpReturn([selector])
         gen_eva_oplist = CompositeOp([evaluator])
         population = creator.do()
-        bgsr = KeplarBingoAlg(100, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
+        bgsr = KeplarBingoAlg(300, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
         bgsr.run()
         tops_fit = population.get_best_fitness()
         print("tops_fit:",tops_fit)
         tops_str = population.target_pop_list[population.get_tar_best()]
-        # func,const_arr = bingo_infixstr_to_func(str(tops_str))
-        # kep_ind=Individual(func,const_arr)
+
+
+
+        func,const_arr = bingo_infixstr_to_func(str(tops_str))
+        kep_ind=Individual(func,const_arr)
+        # expression = sp.expand(kep_ind.format())
+        expression_str = kep_ind.format()
+        print("expression_str:",expression_str)
+        expression = sympify(expression_str)
+        print("expression:",str(expression))
+        # variables_X = [symbols(f'X_{i}') for i in range(0, 100)]
+
+        # 创建一个示例表达式，例如 X_1 + X_2 + ... + X_100
+        # expression = sum(variables_X)
+        # print("_x",_x)
+
+        # 创建替换映射字典
+        # substitutions = {X[i]: _x[i] for i in range(len(_x))}
+        # print("substitutions",substitutions)
+
+        # 使用 subs 方法将变量替换
+        # top = expression.subs(substitutions)
+        for i in range(len(_x)):
+            expression = expression.subs(sp.symbols(f'X_{i}'), _x[i])
+        top = expression
+        # new_expression = expression.subs(x_1, x1)
+
+        # print("kepler:",kep_ind.format())
         # print("kep_ind:",kep_ind)
-        # top = trans_taylor_program(kep_ind)
+        # str_gp = str(kep_ind.format())
+        # top = str_gp.replace('X_', 'x')
+
+        # top = simplify(top)
+        # top_taylor = trans_taylor_program(kep_ind)
+        # print("top:",top_taylor)
+
+        # top = format_taylor(top_taylor,kep_ind.const_array)
+        # print("top:",top)
         # print("top:",top)
         # population = None
         # if tops_fit > f_low_taylor_mse:
@@ -234,7 +268,7 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
     elif SR_method == "Operon":
         x = X
         y = Y
-        selector = OperonSelector(5)
+        # selector = OperonSelector(5)
         evaluator = OperonEvaluator("MSE", x, y, 0.5, True, "Operon")
         crossover = OperonCrossover(x, y, "Operon")
         mutation = OperonMutation(1, 1, 1, 0.5, x, y, 10, 50, "balanced", "Operon")
@@ -242,7 +276,7 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
         op_up_list = [mutation, crossover]
         op_down_list = [reinsert]
         eva_list = [evaluator]
-        op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, selector, 1e-5, 1000, 16, x, y)
+        op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list, 1e-5, 1000, 16, x, y)
         op_alg.run()
         tops_fit = op_alg.model_fit
         tops_str = str(op_alg.model_string)
@@ -254,6 +288,41 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
         # else:
         #     pass
             # return [tops_fit], [print_program(tops_str, qualified_list, X, _x)]
+    elif SR_method == "Taylor_Operon":
+        x = X
+        y = Y
+        data = None
+        x_shape = np.shape(x[0])[0]
+        evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
+        crossover = OperonCrossover(x, y, "Operon")
+        mutation = OperonMutation(1, 1, 1, 0.5, x, y, 10, 50, "balanced", "Operon")
+        reinsert = OperonReinserter(None, "ReplaceWorst", 10, "Operon", x, y)
+        op_up_list = [mutation, crossover]
+        op_down_list = [reinsert]
+        eva_list = [evaluator]
+        op_alg = OperonAlg(1000, op_up_list, op_down_list, eva_list,  1e-5, 128, 16, x, y, data, x_shape)
+        for i in range(1):
+            op_alg.run()
+        
+        tops_fit = op_alg.best_fit
+        tops_str = str(op_alg.model_string)
+
+        expression_str = tops_str.replace('^2', '**2')
+        expression_str = tops_str.replace('X', 'x')
+
+        print("expression_str:",expression_str) 
+
+        # sympy_expression = sp.parse_expr(expression_str)
+        # print("sympy_expression:",str(sympy_expression))
+        expression = sympify(expression_str)
+        tops_str = expression
+
+
+        print("best_fit:",tops_fit)
+        print("tops_str:",tops_str)
+
+        return [tops_fit], [tops_str]
+
 
     else:
         raise ValueError("其他回归暂时未设置")
@@ -323,6 +392,8 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
     expend_exp = sp.expand(expression_without_floats)
 
     all_function = []
+    if not all_function:
+        all_function.append(sp.Integer(0))
     for subgraph in subgraphs:
         variable_list = [sp.Symbol(var) for var in subgraph]
         terms_with_subgraph = [term for term in sp.Add.make_args(expression_without_floats) if any(var in term.free_symbols for var in variable_list)]
@@ -332,21 +403,39 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
             all_function.append(combined_expression)
 
         else:
-            tops_fit,tops_str, population, Y_pred =TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Bingo")
+            tops_fit,tops_str =TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Taylor_Operon")
             # all_function.append(tops_str[0])
             print("tops_str_f:",tops_str)
+            # if abs(formula.subs(x, 0)) < 1e-10:
+            #     formula = sp.Integer(0)  
             all_function.append(tops_str)
-    all_combined_expression = sp.Add(*all_function)
+    all_combined_expression = 0
+    for item in all_function:
+        if isinstance(item, (int, float)):
+            all_combined_expression += item
+        elif isinstance(item, list) and all(isinstance(expr, sp.Expr) for expr in item):
+            all_combined_expression += sum(item)
+    # print("all_function",str(all_function))
+    # all_combined_expression = sp.Add(*all_function)
     print("all_combined_expression:",all_combined_expression)
 
     f_all = sympify(str(all_combined_expression))
-    try:
-        y_pred_all = Metrics2(f_all, _x, X, Y).calY()
-        nmse = mean_squared_error(Y, y_pred_all)
-        print("nmse:",nmse)
+    nmse = 0
+    y_pred_all = None
 
-    except BaseException:
-        print("BaseException:Cal Taylor Features Graph")
+    y_pred_all = Metrics2(f_all, _x, X, Y)._calY(f_all,_x,X)
+    print("y_pred_all:",y_pred_all)
+    nmse = mean_squared_error(Y, y_pred_all)
+    print("nmse:",nmse)
+
+
+    # try:
+    #     y_pred_all = Metrics2(f_all, _x, X, Y).calY()
+    #     nmse = mean_squared_error(Y, y_pred_all)
+    #     print("nmse:",nmse)
+
+    # except BaseException:
+    #     print("BaseException:Cal Taylor Features Graph")
 
 
     return nmse,all_combined_expression,population,y_pred_all

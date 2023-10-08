@@ -111,9 +111,9 @@ class KeplarBingoAlg(Alg):
                   f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
             now_elapse=time.time()-t
             str1 = str(now_elapse)+" " + str(search_num) + "\n"
-            file = open("/result/pmlb_1027_keplarbingo_generationsearch.txt", "a")
-            file.write(str1)
-            file.close()
+            # file = open("/result/pmlb_1027_keplarbingo_generationsearch.txt", "a")
+            # file.write(str1)
+            # file.close()
         best_ind = str(self.get_best_individual())
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")

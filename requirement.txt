@@ -4,3 +4,11 @@ scipy
 scikit-learn
 sympy
 tensorflow
+dill
+matplotlib
+hdbscan
+pyoperon
+pmlb
+chardet
+timeout_decorator
+networkx
