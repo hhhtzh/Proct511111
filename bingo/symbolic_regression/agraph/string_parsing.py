@@ -127,7 +127,8 @@ def postfix_to_command_array_and_constants(postfix_tokens):
             i += 1
 
     if len(stack) > 1:
-        raise RuntimeError("Error evaluating postfix expression")
+        print(stack)
+        print("Error evaluating postfix expression")
 
     return np.array(command_array, dtype=int), constants
 
@@ -174,6 +175,8 @@ def eq_string_to_command_array_and_constants(eq_string):
         A command array and list of constants
         corresponding to the expression given by eq_string
     """
+    # print(eq_string)
+    re.sub("pow", "^", eq_string)
     infix_tokens = eq_string_to_infix_tokens(eq_string)
     # print(infix_tokens)
     postfix_tokens = infix_to_postfix(infix_tokens)

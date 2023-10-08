@@ -225,7 +225,7 @@ for episode in range(num_episodes):
             # print(f"Sentence Vector: {vector}")
             # print()
         list1 = ck.do(population)
-        print("初始最好适应度:"+str(list1[0])+",平均适应度:"+str(list1[2]))
+        print("初始最好适应度:" + str(list1[0]) + ",平均适应度:" + str(list1[2]))
         state = np.array(vector)
         # print(np.shape(state))
         # min_val = np.min(state)
@@ -250,7 +250,8 @@ for episode in range(num_episodes):
         # evaluator.do(pool_pop)
         # list2=ck.do(pool_pop)
         # print("筛选后最好适应度:" + str(list2[0]) + ",平均适应度:" + str(list2[2]))
-        pool_pop=population
+        pool_pop = population.copy()
+        pool_pop.pop_type="self"
 
         # print(population.pop_type)
         for i in episode_actions:
@@ -275,6 +276,7 @@ for episode in range(num_episodes):
                 evaluator.do(pool_pop)
                 rein = KeplarReinserter(pool_pop, "self")
                 rein.do(population)
+                break
         expressions = []
         for i in population.pop_list:
             str_equ = i.format()
@@ -287,9 +289,11 @@ for episode in range(num_episodes):
             # print()
         state = np.array(vector)
         episode_states.append(state)
+        print(population.pop_type)
+        print(population.pop_list)
         evaluator.do(population)
         new_list1 = ck.do(population)
-        print("最好适应度:"+str(new_list1[0])+",平均适应度:"+str(new_list1[2]))
+        print("最好适应度:" + str(new_list1[0]) + ",平均适应度:" + str(new_list1[2]))
         reward = calculate_reward(list1, new_list1)
         list1 = new_list1
         episode_rewards.append(reward)

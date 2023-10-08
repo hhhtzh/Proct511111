@@ -82,6 +82,14 @@ def get_priority(op):
         return 1
 
 
+def bingo_to_taylor(bg_equ):
+    strx_ = re.sub(r'X_(\d{3})', r'x\1', bg_equ)
+    strx_ = re.sub(r'X_(\d{2})', r'x\1', strx_)
+    strx_ = re.sub(r'X_(\d{1})', r'x\1', strx_)
+    strx_ = re.sub(r' ', '', strx_)
+    return strx_
+
+
 def is_float(num):
     try:
         float(num)
@@ -230,13 +238,6 @@ def bingo_infixstr_to_func(equ):
         else:
             new_func_list.append(item)
     return new_func_list, const_array
-
-
-def bingo_to_taylor_str(equ):
-    equ = re.sub(r'X_(\d{3})', r'x\1', equ)
-    equ = re.sub(r'X_(\d{2})', r'x\1', equ)
-    equ = re.sub(r'X_(\d{1})', r'x\1', equ)
-    hhh
 
 
 def to_gp(ind):

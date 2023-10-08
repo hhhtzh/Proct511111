@@ -21,7 +21,7 @@ from sympy import *
 import sympy as sp
 import networkx as nx
 from itertools import product
-from keplar.translator.translator import trans_taylor_program, bingo_infixstr_to_func
+from keplar.translator.translator import trans_taylor_program, bingo_infixstr_to_func, bingo_to_taylor
 from keplar.population.individual import Individual
 
 
@@ -121,7 +121,8 @@ def Taylor_Based_SR(_x, X, Y, qualified_list, eq_write, population, Gen, Pop, re
             else:
                 return [f_low_taylor_mse], [f_low_taylor], None, Y_pred
         elif SR_method == "Bingo":
-            operators = ['+', '-', '*', '/', 'sin', 'cos', 'log', 'exp', 'sqrt']
+            # operators = ['+', '-', '*', '/', 'sin', 'cos', 'log', 'exp', 'sqrt']
+            operators = ['+', '-', '*']
             x = X
             y = Y
             creator = BingoCreator(50, operators, x, 10, "Bingo")
@@ -173,7 +174,7 @@ def Taylor_Based_SR(_x, X, Y, qualified_list, eq_write, population, Gen, Pop, re
         return [f_low_taylor_mse], [f_low_taylor], None, Y_pred
 
 
-def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
+def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum, SR_method="Operon"):
     set_value('TUIHUA_FLAG', False)
     Y_pred = None
     # f_low_taylor, f_low_taylor_mse = qualified_list[-5], qualified_list[-4]
@@ -181,14 +182,14 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
     if SR_method == "gplearn":
         function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'log', 'exp', 'sqrt']
         est_gp = SymbolicRegressor(population_size=Pop, init_depth=(2, 5),
-                                    generations=Gen, stopping_criteria=1e-5, function_set=function_set,
-                                    p_crossover=0.7, p_subtree_mutation=0.,
-                                    p_hoist_mutation=0., p_point_mutation=0.2,
-                                    max_samples=1.0, verbose=1,
-                                    parsimony_coefficient=0.1,
-                                    n_jobs=1,  #
-                                    const_range=(-1, 1),
-                                    random_state=repeatNum, low_memory=True)
+                                   generations=Gen, stopping_criteria=1e-5, function_set=function_set,
+                                   p_crossover=0.7, p_subtree_mutation=0.,
+                                   p_hoist_mutation=0., p_point_mutation=0.2,
+                                   max_samples=1.0, verbose=1,
+                                   parsimony_coefficient=0.1,
+                                   n_jobs=1,  #
+                                   const_range=(-1, 1),
+                                   random_state=repeatNum, low_memory=True)
         # print(qualified_list)
         qualified_list = []
         tops_fit, tops_str, population, Y_pred = est_gp.fit(X, Y, qualified_list,
@@ -202,7 +203,8 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
         # else:
         #     return [f_low_taylor_mse], [f_low_taylor], None, Y_pred
     elif SR_method == "Bingo":
-        operators = ['+', '-', '*', '/', 'sin', 'cos', 'log', 'exp', 'sqrt']
+        # operators = ['+', '-', '*', '/', 'sin', 'cos', 'log', 'exp', 'sqrt']
+        operators = ['+', '-', '*']
         x = X
         y = Y
         creator = BingoCreator(50, operators, x, 10, "Bingo")
@@ -217,9 +219,11 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
         bgsr = KeplarBingoAlg(100, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
         bgsr.run()
         tops_fit = population.get_best_fitness()
-        print("tops_fit:",tops_fit)
-        tops_str = population.target_pop_list[population.get_tar_best()]
+        print("tops_fit:", tops_fit)
+        tops_bingo = population.target_pop_list[population.get_tar_best()]
         # func,const_arr = bingo_infixstr_to_func(str(tops_str))
+        top = bingo_to_taylor(tops_bingo.get_formatted_string("latex"))
+        print(top)
         # kep_ind=Individual(func,const_arr)
         # print("kep_ind:",kep_ind)
         # top = trans_taylor_program(kep_ind)
@@ -253,15 +257,13 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
         return [tops_fit], [tops_str], population, Y_pred
         # else:
         #     pass
-            # return [tops_fit], [print_program(tops_str, qualified_list, X, _x)]
+        # return [tops_fit], [print_program(tops_str, qualified_list, X, _x)]
 
     else:
         raise ValueError("其他回归暂时未设置")
 
 
-
-
-def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatNum,SR_method="Operon"):
+def CalTaylorFeaturesGraph(taylor_num, f_taylor, _x, X, Y, population, Gen, Pop, repeatNum, SR_method="Operon"):
     print('In CalTaylorFeaturesGraph')
     taylor_num.append(0)
     # taylor_num.append(0)
@@ -282,17 +284,15 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
 
     Number_record = [combination for combination in combinations_flag if sum(combination) <= k]
     # print(Number_record)
-  
-    
 
     fl = [sum(combination) for combination in Number_record]
     # print(fl)
     # 添加连接关系
-    for i,combination in enumerate(Number_record):
+    for i, combination in enumerate(Number_record):
         if fl[i] == 2:
             combin_flag = False
             u = 0
-            for j,com_num in enumerate(combination):
+            for j, com_num in enumerate(combination):
                 if combin_flag == False:
                     if com_num == 1:
                         combin_flag = True
@@ -302,10 +302,10 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
                 else:
                     if com_num == 1:
                         # print("taylor:",i)
-                        if abs(taylor_num[i+1]) > 0.001:
-                            print("taylor:",taylor_num[i+1])
-                            G.add_edge('x'+str(u), 'x'+str(j))
-                            print('x'+str(u), 'x'+str(j))
+                        if abs(taylor_num[i + 1]) > 0.001:
+                            print("taylor:", taylor_num[i + 1])
+                            G.add_edge('x' + str(u), 'x' + str(j))
+                            print('x' + str(u), 'x' + str(j))
 
     print("图的节点集合:", G.nodes)
 
@@ -314,46 +314,43 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
 
     # print("f_taylor:",f_taylor)
 
-
     expression = sp.expand(f_taylor)
     float_values = [term for term in sp.Add.make_args(expression) if isinstance(term, sp.Float)]
-    print("float_value:",float_values)
+    print("float_value:", float_values)
     expression_without_floats = expression - sp.Add(*float_values)
-    print("exppp term:",expression_without_floats)
+    print("exppp term:", expression_without_floats)
     expend_exp = sp.expand(expression_without_floats)
 
     all_function = []
     for subgraph in subgraphs:
         variable_list = [sp.Symbol(var) for var in subgraph]
-        terms_with_subgraph = [term for term in sp.Add.make_args(expression_without_floats) if any(var in term.free_symbols for var in variable_list)]
+        terms_with_subgraph = [term for term in sp.Add.make_args(expression_without_floats) if
+                               any(var in term.free_symbols for var in variable_list)]
         combined_expression = sp.Add(*terms_with_subgraph)
         print("子表达式含有 x：", combined_expression)
-        if len(subgraph) == 1 :
+        if len(subgraph) == 1:
             all_function.append(combined_expression)
 
         else:
-            tops_fit,tops_str, population, Y_pred =TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Bingo")
+            tops_fit, tops_str, population, Y_pred = TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,
+                                                               SR_method="Bingo")
             # all_function.append(tops_str[0])
-            print("tops_str_f:",tops_str)
+            print("tops_str_f:", tops_str)
             all_function.append(tops_str)
     all_combined_expression = sp.Add(*all_function)
-    print("all_combined_expression:",all_combined_expression)
+    print("all_combined_expression:", all_combined_expression)
 
     f_all = sympify(str(all_combined_expression))
     try:
         y_pred_all = Metrics2(f_all, _x, X, Y).calY()
         nmse = mean_squared_error(Y, y_pred_all)
-        print("nmse:",nmse)
+        print("nmse:", nmse)
 
     except BaseException:
         print("BaseException:Cal Taylor Features Graph")
 
+    return nmse, all_combined_expression, population, y_pred_all
 
-    return nmse,all_combined_expression,population,y_pred_all
-    
-    
-
-    
 
 def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFlag=False, qualified_list=None,
                      SR_method="gplearn"):
@@ -376,7 +373,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
     #           [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, x18, x19, x20, x21, x22,
     #            x23,
     #            x24, x25, x26, x27, x28, x29])
-    
+
     _x = [symbols(f'x{i}') for i in range(500)]
     set_value('_x', _x)
     _x = get_value('_x')
@@ -462,17 +459,16 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
                 qualified_list = []
                 qualified_list.extend(
                     [metric.judge_Bound(),
-                    metric.f_low_taylor,
-                    metric.low_nmse,
-                    metric.bias,
-                    metric.judge_parity(),
-                    metric.judge_monotonicity()])
+                     metric.f_low_taylor,
+                     metric.low_nmse,
+                     metric.bias,
+                     metric.judge_parity(),
+                     metric.judge_monotonicity()])
                 # print(qualified_list)
 
             # elif metric.nihe_flag and (metric.judge_additi_separability() or metric.judge_multi_separability()):
             #     end_fitness, programs,population = CalTaylorFeatures(metric.f_taylor, _x[:X.shape[1]], X, Y, population,Generation,Pop, repeatNum, eq_write)
             if end_fitness is None:
-                
                 # end_fitness, programs, population, Y_pred = Taylor_Based_SR(_x, X, change_Y(Y, qualified_list), qualified_list,
                 #                                                             eq_write, population, Generation, Pop, repeatNum,
                 #                                                             qualified_list[2] < 1e-5, SR_method=SR_method)
@@ -482,15 +478,14 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
                 # print(end_fitness)
                 # print(programs)
                 # print('fitness_and_program', end_fitness[0], programs[0], sep='\n')
-                end_fitness, programs, population, Y_pred = CalTaylorFeaturesGraph(metric.f_taylor_num,metric.f_taylor, _x[:X.shape[1]], X, Y, population,Generation,Pop, repeatNum, SR_method = "Operon")
-            
+                end_fitness, programs, population, Y_pred = CalTaylorFeaturesGraph(metric.f_taylor_num, metric.f_taylor,
+                                                                                   _x[:X.shape[1]], X, Y, population,
+                                                                                   Generation, Pop, repeatNum,
+                                                                                   SR_method="Operon")
+
             if end_fitness[0] < 1e-5: findBestFlag = true
 
             return [end_fitness, programs, population, findBestFlag, qualified_list, Y_pred]
-        
-
-        
-    
 
 
 def change_Y(Y, qualified_list):

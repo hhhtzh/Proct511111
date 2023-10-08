@@ -61,6 +61,19 @@ class Population:
                 best_index = j
         return best_index
 
+    def copy(self):
+        new_population = Population(self.pop_size)
+        new_population.pop_list = self.pop_list.copy()  # 创建pop_list的副本
+        new_population.pop_size = self.pop_size
+        new_population.pop_type = self.pop_type
+        new_population.self_pop_enable = self.self_pop_enable
+        new_population.translate_flag = self.translate_flag
+        new_population.target_pop_list = self.target_pop_list.copy()  # 创建target_pop_list的副本
+        new_population.history_best_fit = self.history_best_fit
+        new_population.history_best_ind = self.history_best_ind
+        new_population.target_fit_list = self.target_fit_list.copy()  # 创建target_fit_list的副本
+        return new_population
+
     def get_best_fitness(self):
         if self.pop_type != "self":
             best_num = self.get_tar_best()

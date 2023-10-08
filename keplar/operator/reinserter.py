@@ -23,16 +23,24 @@ class KeplarReinserter(Reinserter):
 
     def do(self, population):
         if population.pop_type == "self" and self.pool.pop_type == "self":
+            # print("正确的")
+            # print(population.pop_list)
             while len(self.pool.pop_list) != 0:
-                print(len(self.pool.pop_list))
+                # print(len(population.pop_list))
                 new_ind = self.pool.pop_list.pop()
+                # print(new_ind)
+                # print(new_ind.format())
+                population.pop_list.append(new_ind)
+                # print(len(population.pop_list))
                 # print(new_ind.format(), new_ind.get_fitness())
+                worest_index = 0
                 for i in range(len(population.pop_list)):
                     # print(new_ind)
                     # print(population.pop_list[i])
-                    if population.pop_list[i].get_fitness() > new_ind.get_fitness():
-                        population.pop_list[i] = new_ind
-                        break
+                    if population.pop_list[i].get_fitness() > population.pop_list[worest_index].get_fitness():
+                        worest_index = i
+                population.pop_list.pop(worest_index)
+            # print(population.pop_list)
             if self.to_type != "Operon":
                 population.pop_type = "self"
 
