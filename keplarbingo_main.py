@@ -11,6 +11,8 @@ from keplar.operator.evaluator import BingoEvaluator
 from keplar.operator.generator import BingoGenerator
 from keplar.operator.mutation import BingoMutation
 from keplar.operator.selector import BingoSelector
+from keplar.population.individual import Individual
+from keplar.translator.translator import bingo_infixstr_to_func
 
 # json[operator][operator_list]=
 # data = Data("txt", "datasets/1.txt",["x","y"])
@@ -40,7 +42,10 @@ for i in range(1):
     fit_list.append(bgsr.best_fit)
     time_list.append(bgsr.elapse_time)
 # fit_pd = pd.DataFrame({'KeplarBingoCPP': fit_list})
-print("best indid:",str(bgsr.best_indid))
+print("best indid:", str(bgsr.best_indi))
+kep_func, const_arr = bingo_infixstr_to_func(str(bgsr.best_indi))
+kep_ind = Individual(kep_func, const_arr)
+print("kep_indi:", str(kep_ind.format()))
 # time_pd = pd.DataFrame({'KeplarBingoCPP': time_list})
 # fit_pd.to_csv(r"result/vla_5.csv", sep=',', mode="a")
 # time_pd.to_csv(r"result/vla_5_time.csv", sep=',', mode="a")

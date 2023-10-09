@@ -220,8 +220,9 @@ def bingo_infixstr_to_func(equ):
         list_infix.append(x_al)
     if op_al != "":
         list_infix.append(op_al)
-    post_equ = infix_to_postfix(list_infix)
     # print(list_infix)
+    post_equ = infix_to_postfix(list_infix)
+    # print(post_equ)
     stack = []
     const_array = []
     for node in post_equ:
@@ -265,6 +266,7 @@ def bingo_infixstr_to_func(equ):
             stack1.extend(reversed(item))
         else:
             new_func_list.append(item)
+    # print(new_func_list)
     return new_func_list, const_array
 
 
