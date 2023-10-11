@@ -37,7 +37,11 @@ class KeplarReinserter(Reinserter):
                 for i in range(len(population.pop_list)):
                     # print(new_ind)
                     # print(population.pop_list[i])
-                    if population.pop_list[i].get_fitness() > population.pop_list[worest_index].get_fitness():
+                    print(population.pop_list[i].get_fitness())
+                    print(population.pop_list[worest_index].get_fitness())
+                    if (population.pop_list[i].get_fitness()) and (
+                            population.pop_list[worest_index].get_fitness()) and (
+                            population.pop_list[i].get_fitness() > population.pop_list[worest_index].get_fitness()):
                         worest_index = i
                 population.pop_list.pop(worest_index)
             # print(population.pop_list)

@@ -27,8 +27,11 @@ class Evaluator(Operator):
 
 
 class BingoEvaluator(Evaluator):
-    def __init__(self, x, fit, optimizer_method, to_type, y=None, dx_dt=None, metric="rmse"):
+    def __init__(self, x, fit, optimizer_method, to_type, y=None, dx_dt=None, metric="rmse", write_flag=False,
+                 write_name=None):
         super().__init__()
+        self.write_name = write_name
+        self.write_flag = write_flag
         self.metric = metric
         self.to_type = to_type
         self.x = x
@@ -75,7 +78,7 @@ class BingoEvaluator(Evaluator):
             # for i in bingo_pop:
             #     print(str(i))
             evaluator(population=bingo_pop)
-            population.target_fit_list=[]
+            population.target_fit_list = []
             for i in range(len(bingo_pop)):
                 population.target_fit_list.append(bingo_pop[i].fitness)
             if self.to_type != "Bingo":
@@ -133,8 +136,11 @@ class BingoEvaluator(Evaluator):
 
 
 class OperonEvaluator(Evaluator):
-    def __init__(self, error_metric, np_x, np_y, training_p, if_linear_scaling, to_type):
+    def __init__(self, error_metric, np_x, np_y, training_p, if_linear_scaling, to_type,write_flag=False,
+                 write_name=None):
         super().__init__()
+        self.write_name = write_name
+        self.write_flag = write_flag
         self.to_type = to_type
         self.if_linear_scaling = if_linear_scaling
         self.training_p = training_p
@@ -200,8 +206,8 @@ class OperonEvaluator(Evaluator):
                     kep_ind.set_fitness(fit_list[i])
                     kep_pop_list.append(kep_ind)
                 population.pop_list = kep_pop_list
-                population.target_pop_list=[]
-                population.target_fit_list=[]
+                population.target_pop_list = []
+                population.target_fit_list = []
                 population.pop_type = "self"
                 # for i in population.pop_list:
                 #     print(i.format(),i.get_fitness())
@@ -236,7 +242,6 @@ class OperonEvaluator(Evaluator):
                 var_list = self.ds.Variables
                 kep_pop_list = []
                 for i in range(len(operon_tree_list)):
-
                     # print(str1)
                     func, const_array = trans_op(operon_tree_list[i], var_list)
                     # print(func)
