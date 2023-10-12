@@ -41,11 +41,18 @@ for i in range(1):
     # 纯Bingo时可导入bingocpp包
     fit_list.append(bgsr.best_fit)
     time_list.append(bgsr.elapse_time)
+
+y_pred = bgsr.predict(x)
+print("y_pred:", y_pred)
 # fit_pd = pd.DataFrame({'KeplarBingoCPP': fit_list})
 print("best indid:", str(bgsr.best_indi))
 kep_func, const_arr = bingo_infixstr_to_func(str(bgsr.best_indi))
 kep_ind = Individual(kep_func, const_arr)
+print("ind_in", kep_ind)
 print("kep_indi:", str(kep_ind.format()))
+
+
 # time_pd = pd.DataFrame({'KeplarBingoCPP': time_list})
 # fit_pd.to_csv(r"result/vla_5.csv", sep=',', mode="a")
 # time_pd.to_csv(r"result/vla_5_time.csv", sep=',', mode="a")
+# [1001,1003,3002,5002]

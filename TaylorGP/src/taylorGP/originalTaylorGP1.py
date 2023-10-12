@@ -233,6 +233,9 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
         #     return tops_fit, tops_str, population, Y_pred
         # else:
         #     return [f_low_taylor_mse], [f_low_taylor], None, Y_pred
+    elif SR_method == "TBingo":
+        pass
+        
     elif SR_method == "Bingo":
         operators = ['+', '-', '*', '/', 'sin', 'cos', 'log', 'exp', 'sqrt']
         x = X
@@ -249,6 +252,9 @@ def TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Operon"):
         bgsr = KeplarBingoAlg(300, gen_up_oplist, gen_down_oplist, gen_eva_oplist, 0.001, population)
         bgsr.run()
         tops_fit = population.get_best_fitness()
+
+        y_pred = bgsr.predict(X)
+        print("y_pred:",y_pred)
         print("tops_fit:",tops_fit)
         # tops_str = population.target_pop_list[population.get_tar_best()]
         # print("tops_str:",str(tops_str))
