@@ -63,7 +63,7 @@ def GBasedSR(_x,X,Y,Gen,SR_method="gplearn"):
     #                        parsimony_coefficient=0.01, random_state=0)
 
     est_gp = SymbolicRegressor(population_size=100,
-                               generations=200, stopping_criteria=0.01,
+                               generations=20, stopping_criteria=0.01,
                                  p_crossover=0.7, p_subtree_mutation=0.1,
                                     p_hoist_mutation=0.05, p_point_mutation=0.1,
                                     max_samples=0.9, verbose=1,
@@ -82,6 +82,7 @@ def GBasedSR(_x,X,Y,Gen,SR_method="gplearn"):
     y_pred = est_gp.predict(X)
 
     print("y_pred shape:",y_pred.shape)
+
 
     expression = sp.expand(est_gp._program.get_expression())
 
@@ -163,6 +164,7 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
 
     all_function = []
     y_all = []
+    y_terms = []
     if not all_function:
         all_function.append(sp.Integer(0))
     for subgraph in subgraphs:
@@ -190,22 +192,31 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
             for term in terms:
                 print("term:",term)
                 y_pred = _calY(term,_x,X.T,len(_x))
+
+                print("y_pred:",len(y_pred))
                 # print("y_pred:",y_pred) 
                 y_all.append(y_pred)
+                y_terms.append(term)
 
 
 
 
             
             # y_pred=0 
-            y_all.append(y_pred)
-            # tops_str =GBasedSR(_x, X, Y, Gen, SR_method="gplearn")
-            # tops_str =TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Taylor_Operon")
-            # all_function.append(tops_str[0])
-            # print("tops_str_f:",tops_str)
-            # # if abs(formula.subs(x, 0)) < 1e-10:
-            # #     formula = sp.Integer(0)  
-            # all_function.append(tops_str)
+            # y_all.append(y_pred)
+
+        print("float:",float(float_values[0]))
+        y_terms.append(float(float_values[0]))
+        print("y_all",len(y_all))
+        print("X.shape[0]:",X.shape[0])
+        float_values_all = []
+        for i in range(X.shape[0]):
+            float_values_all.append(float(float_values[0]))
+
+        # float_values_all = float_values * X.shape[0]
+        y_all.append(float_values_all)
+        print("y_all",len(y_all))
+
 
     
         
@@ -213,8 +224,11 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
 
     # 训练模型
     y_all = np.array(y_all).T
-    print("y_all shape:",y_all.shape)
-    print("Y shape:",Y.shape)
+    # print("y_all shape:",y_all.shape)
+    # print("y_all shape 1:",y_all.shape[1])
+    # print("y_all shape 0:",y_all.shape[0])
+    # print("Y shape:",Y.shape)
+    y_all_length = y_all.shape[1]
     lasso_model.fit(y_all, Y)
 
     # 获取稀疏系数
@@ -237,7 +251,29 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
     print("nmse:",nmse)
     print("rmse:",rmse)
 
-    return None,None,None,Y_pred
+    new_formulas = []
+
+    for i in range(y_all_length):
+        # print("Taylor_sparse:",Taylor_sparse[i])
+        # print("y_terms:",y_terms[i])
+        new_formula = sp.Mul(Taylor_sparse[i], y_terms[i])
+        new_formulas.append(new_formula)
+
+
+    # equation = sp.expand(expression_without_floats)
+    # for i in range(len):
+    #     equation 
+
+    combined_formula = sp.Add(*new_formulas)
+    # print("combined_formula:",combined_formula)
+    print("combined_formula:",str(combined_formula))
+
+# 现在 new_formulas 是一个包含乘法后的公式的列表
+
+
+
+
+    return rmse,None,None,Y_pred
           
 
 

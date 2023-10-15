@@ -14,7 +14,7 @@ from copy import copy
 import numpy as np
 from sklearn.utils.random import sample_without_replacement
 
-from .functions import _Function
+from .functions import _Function, _sympol_map
 from .utils import check_random_state
 
 

@@ -204,18 +204,18 @@ class Metrics:
                 count += 1
         print("count=",count)
         print("mmm=",mmm)
-        while count > mmm:
-            k -= 1
-            combinations = itertools.product(range(k), repeat=varNum)
-            count=0
-            # 遍历每个组合
-            for combo in combinations:
-            # 计算组合中所有数字的总和
-                total = sum(combo)
-                # 如果总和小于等于 n，增加计数器
-                if total <= k:
-                    count += 1
-            print("count=",count)
+        # while count > mmm:
+            # k -= 1
+            # combinations = itertools.product(range(k), repeat=varNum)
+            # count=0
+            # # 遍历每个组合
+            # for combo in combinations:
+            # # 计算组合中所有数字的总和
+            #     total = sum(combo)
+            #     # 如果总和小于等于 n，增加计数器
+            #     if total <= k:
+            #         count += 1
+            # print("count=",count)
 
         count = mmm
 

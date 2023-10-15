@@ -139,7 +139,7 @@ class Metrics:
     
     def _getTaylorPolyBest(self, varNum):
         if varNum == 1 or varNum == 2:
-            f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,9)
+            f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,8)
         elif varNum == 3 or varNum == 4:
             f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,6)
         elif varNum == 5 or varNum == 6:
