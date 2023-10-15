@@ -182,3 +182,8 @@ _function_map = {'add': add2,
                  'tan': tan1,
                  'exp': exp1,
                  'power': power2}
+_sympol_map = {'add': '+',
+               'sub': '-',
+               'mul': '*',
+               'div': '/',
+               }

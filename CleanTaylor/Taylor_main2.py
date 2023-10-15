@@ -36,7 +36,6 @@ def _calY(f, _x=None, X=None, varNum=None):
             _sub.update({_x[j]: X[j][i]})
         y_pred.append(f.evalf(subs=_sub))
     return y_pred
-import numpy as np
 
 
 def calculate_nmse(observed, predicted):

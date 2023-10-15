@@ -131,7 +131,12 @@ class Metrics:
 
 
 
-        self.f_taylor,self.k, self.nmse,self.f_taylor_num =self._getTaylorPolyBest(varNum=varNum)   
+        self.f_taylor,self.k, self.nmse,self.f_taylor_num,self.f_taylor_2 =self._getTaylorPolyBest(varNum=varNum)   
+
+        # self.f_taylor_2,self.nmse_2,self.f_taylor_num_2=self._getTaylorPoly2(varNum=varNum)
+        # self.f_taylor_num_2 , N1 ,N2=self._getTDatas(varNum,2)
+        # self.f_taylor_2 = sympify(N1)
+
 
 
 
@@ -143,30 +148,34 @@ class Metrics:
     
     def _getTaylorPolyBest(self, varNum):
         if varNum == 1 or varNum == 2:
-            f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,10)
+            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,8)
         elif varNum == 3 or varNum == 4:
-            f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,6)
+            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,6)
         elif varNum == 5 or varNum == 6:
-            f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,4)
+            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,4)
         elif varNum == 7 or varNum == 8:
-            f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,4)
+            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,4)
         elif varNum < 12:
-            f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,4)
+            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,4)
         elif varNum < 20:
-            f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,3)
+            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,3)
         else:    
             # mytaylor_num , f ,k= self._getTDatas(varNum,1)
-            f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,2)
+            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,2)
 
-        return f_taylor ,k ,nmse,f_taylor_num
+        return f_taylor ,k ,nmse,f_taylor_num,f2
+    # def _getTaylorPoly2(self, varNum):
+    
         
 
     
     def _CalTaylorNmse(self, varNum ,k):
         f_taylor_num = None
         for i in range(1,k+1):
+            print("i=",i)
             if i==2:
                 f_taylor_num , f ,k= self._getTDatas(varNum,i)
+                f2=f
             else:
                 mytaylor_num , f ,k= self._getTDatas(varNum,i)
             f_taylor = sympify(f)
@@ -178,7 +187,7 @@ class Metrics:
                 f_taylor_all = f_taylor
                 k1 = k
             print('GET Taylor New  NMSE expanded to order k，k=', k1, 'nmse=', nmse)
-        return f_taylor_all ,k1 ,nmse,f_taylor_num
+        return f_taylor_all ,k1 ,nmse,f_taylor_num,f2
 
         
     def _getTDatas(self, varNum, k):
@@ -194,6 +203,7 @@ class Metrics:
             if total <= k:
                 count += 1
         print("count=",count)
+        print("mmm=",mmm)
         while count > mmm:
             k -= 1
             combinations = itertools.product(range(k), repeat=varNum)
@@ -207,7 +217,7 @@ class Metrics:
                     count += 1
             print("count=",count)
 
-        # count = mmm
+        count = mmm
 
         x_var=[]
         for i in range(varNum):

@@ -6,8 +6,9 @@ from CalTaylor import Metrics
 from _global import _init, set_value, get_value
 import networkx as nx
 from itertools import product
-from genetic2 import SymbolicRegressor
+# from genetic2 import SymbolicRegressor
 # from genetic import SymbolicRegressor
+from gplearn.genetic import SymbolicRegressor
 import sympy as sp
 from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error, r2_score
