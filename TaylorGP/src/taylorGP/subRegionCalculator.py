@@ -393,6 +393,9 @@ class subRegionCalculator:
             self.globalBest_X_Y_pred = [[X, self.tops[0][5]]]
             return
         X_trains = self.CalXOfLasso()  # 将各子块的top3个体按7:2:1的概率执行稀疏回归-->改为最优+随机 组合
+        # self.NewSparseRegressionFlag =False
+        # X_trains = self.NewCalXOfLasso()
+        # X_trains = self.NewCalLasso()
         if self.NewSparseRegressionFlag:
             final_dict = {}
             for i in self.dict_arr:
@@ -533,6 +536,7 @@ class subRegionCalculator:
         X_Trains = []
         num = 100000
         dict_arr = []
+        print("len of tops", len(self.tops))
         for num in range(numberOfCombinations):
             index = 0
             for i, top in enumerate(self.tops):  # self.tops = [[subtops]] top = [[fits],[eqs],[population]]
@@ -541,7 +545,7 @@ class subRegionCalculator:
                 strx_ = re.sub(r'x(\d{1})', r'x_\1', str_eq)
                 print(strx_)
                 sta = TaylorStatistic(strx_)
-                sta.pos_do()
+                # sta.pos_do()
                 dict1 = sta.final_statis
                 print(dict1)
                 dict_arr.append(dict1)
