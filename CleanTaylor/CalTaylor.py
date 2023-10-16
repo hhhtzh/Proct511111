@@ -139,7 +139,7 @@ class Metrics:
     
     def _getTaylorPolyBest(self, varNum):
         if varNum == 1 or varNum == 2:
-            f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,10)
+            f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,9)
         elif varNum == 3 or varNum == 4:
             f_taylor ,k ,nmse,f_taylor_num= self._CalTaylorNmse(varNum,6)
         elif varNum == 5 or varNum == 6:
@@ -176,151 +176,7 @@ class Metrics:
             print('GET Taylor New  NMSE expanded to order k，k=', k1, 'nmse=', nmse)
         return f_taylor_all ,k1 ,nmse,f_taylor_num
 
-        
-    def _getTDatas2(self, varNum, k):
-        # the datasets shape is mmm
-        mmm = self.X.shape[0] - 1  
-        combinations = itertools.product(range(k), repeat=varNum)
-        count=0
-        # 遍历每个组合
-        for combo in combinations:
-        # 计算组合中所有数字的总和
-            total = sum(combo)
-            # 如果总和小于等于 n，增加计数器
-            if total <= k:
-                count += 1
-        # print("count=",count)
-        while count > mmm:
-            k -= 1
-            combinations = itertools.product(range(k), repeat=varNum)
-            count=0
-            # 遍历每个组合
-            for combo in combinations:
-            # 计算组合中所有数字的总和
-                total = sum(combo)
-                # 如果总和小于等于 n，增加计数器
-                if total <= k:
-                    count += 1
-            # print("count=",count)
-
-        # count = mmm
-
-        x_var=[]
-        for i in range(varNum):
-            x = self._X[i][:-1] - self.expantionPoint[i]
-            x0 = np.resize(x, (count,)) 
-            # x0 =np.array(x)
-            # x0 = x.reshape((count,))
-            x_var.append(x0)
-        # self.b = self.b.reshape(count,1)
-        b0 = np.resize(self.b, (count,)) 
-        # b0 = np.array(self.b)
-        # Get the (x0-a0)^0 (x0-a0)^1 (x0-a0)^2 (x0-a0)^3 .... (x0-a0)^n , such like this
-        var_array =[]
-        for i in range(varNum):
-            sum_now=[]
-            for j in range(k):
-                sum_now.append(x_var[i]**j)
-            var_array.append(sum_now)
-        # Get the flag (or index) such like (0,0,0,0,0,0) (0,0,0,0,0,1) (0,0,0,0,0,2) (0,0,0,0,0,3) .... (0,0,0,0,0,n) 
-        flag_array=[]
-        for i in range(varNum):
-            sum_now=[]
-            z=-1
-            for j in range(k):
-                z+=1
-                sum_now.append(z)
-            flag_array.append(sum_now)
-        
-        # USE itertools to get the combinations and flag
-        combinations = list(itertools.product(*var_array))
-        combinations_flag = list(itertools.product(*flag_array))
-        # Get the combination such like num*(x0-a0)^0*(x1-a1)^0*(x2-a2)^0*(x3-a3)^0 .... *(xn-an)^0 
-        product_array = []
-        for combination in combinations:
-            product = 1
-            for num in combination:
-                product *= num
-            product_array.append(product)
-
-        fl = []
-        Number_record = []
-        #Get the combination's index sum 
-        for combination in combinations_flag:
-            product = 0
-            for num in combination:
-                product += num
-            # if the sum is less than k, we need to record the combination and the sum
-            if product <=k:
-                Number_record.append(combination)
-            fl.append(product)
-        
-        # print("fl=",fl)
-
-        # Get the A matrix
-        A = None
-        Number =0
-        for i in range(len(fl)):
-            if fl[i]<=k:
-                Number+=1
-                if A is None:
-                    # A = (product_array[i]).reshape(mmm, 1)
-                    A = (product_array[i]).reshape(count, 1)
-                else:
-                    # A = np.hstack((A, ((product_array[i]).reshape(mmm, 1))))
-                    A = np.hstack((A, ((product_array[i]).reshape(count, 1))))
-        
-        # print("mmm=",mmm)
-        # print("A.shape=",A.shape)
-
-        length = Number
-        # print("length=",length)
-        # print("count=",count)
-        Taylor = 0
-        # Taylor = np.linalg.lstsq(A, b0, rcond=None)[0]
-        # Taylor = np.linalg.solve(A, b0)
-
-
-                # 创建Lasso回归模型
-        lasso_model = Lasso(alpha=0.1)  # alpha是正则化强度，可以调整以控制稀疏性
-
-        # 训练模型
-        lasso_model.fit(A, b0)
-
-        # 获取稀疏系数
-        Taylor_sparse = lasso_model.coef_
-
-        # 打印稀疏系数
-        print("稀疏系数:", Taylor_sparse)
-
-        # Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
-        Taylor = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])
-
-        # Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
-
-        # transform the Taylor to the string of sympy ,and return the string f
-        f=str(Taylor[0]) 
-        for i,combination in enumerate(Number_record):
-            u = i+1
-            product =0
-            for z in combination: #z is each num in combination
-                product+=z
-            if product<=k:
-                # print("combination= ",combination,"i= ",i)
-                lenth =len(combination)
-                if(Taylor[u]>=0):
-                    f += '+'
-                else:
-                    pass
-                f += str(Taylor[u]) 
-                for j,num in enumerate(combination):
-                    # print("j= ,num=",j,num)
-                    f += '*' + '(x' + str(j) + '-' + str(self.expantionPoint[j]) + ')**' + str(num) 
-        if k == 2:
-            print("k=2,f=",f)
-
-        return Taylor.tolist()[:length],f,k
-
+       
      
     def _getTDatas(self, varNum, k):
         # the datasets shape is mmm
@@ -349,7 +205,8 @@ class Metrics:
                     count += 1
             # print("count=",count)
 
-        count = mmm
+        # count = mmm
+        # count = count+10
 
         x_var=[]
         for i in range(varNum):
@@ -424,24 +281,24 @@ class Metrics:
         # print("length=",length)
         # print("count=",count)
         Taylor = 0
-        # Taylor = np.linalg.lstsq(A, b0, rcond=None)[0]
+        Taylor = np.linalg.lstsq(A, b0, rcond=None)[0]
         # Taylor = np.linalg.solve(A, b0)
 
 
                 # 创建Lasso回归模型
-        lasso_model = Lasso(alpha=0.001)  # alpha是正则化强度，可以调整以控制稀疏性
+        # lasso_model = Lasso(alpha=0.01)  # alpha是正则化强度，可以调整以控制稀疏性
 
         # 训练模型
-        lasso_model.fit(A, b0)
+        # lasso_model.fit(A, b0)
 
         # 获取稀疏系数
-        Taylor_sparse = lasso_model.coef_
+        # Taylor_sparse = lasso_model.coef_
 
         # 打印稀疏系数
-        print("稀疏系数:", Taylor_sparse)
+        # print("稀疏系数:", Taylor_sparse)
 
-        # Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
-        Taylor = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])
+        Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
+        # Taylor = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])
 
         # Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
 

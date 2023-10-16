@@ -6,8 +6,8 @@ from CalTaylor import Metrics
 from _global import _init, set_value, get_value
 import networkx as nx
 from itertools import product
-from genetic2 import SymbolicRegressor
-# from genetic import SymbolicRegressor
+# from genetic2 import SymbolicRegressor
+from genetic import SymbolicRegressor
 import sympy as sp
 from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error, r2_score
@@ -45,32 +45,36 @@ def calculate_nmse(observed, predicted):
     variance = np.var(observed)
     nmse = mse / variance
     return nmse
+
 def calculate_rmse(observed, predicted):
     n = len(observed)
     mse = np.mean((observed - predicted) ** 2)
     rmse = math.sqrt(mse)
     return rmse
 
-def GBasedSR(_x,X,Y,Gen,SR_method="gplearn"):
-    est_gp = SymbolicRegressor(population_size=1,
-                           generations=200, stopping_criteria=0.01,
-                           p_crossover=0, p_subtree_mutation=0.2,
-                           p_hoist_mutation=0.3, p_point_mutation=0.5,
-                           max_samples=0.9, verbose=1,
-                           parsimony_coefficient=0.01, random_state=0)
 
-    # est_gp = SymbolicRegressor(population_size=100,
-    #                            generations=200, stopping_criteria=0.01,
-    #                              p_crossover=0.7, p_subtree_mutation=0.1,
-    #                                 p_hoist_mutation=0.05, p_point_mutation=0.1,
-    #                                 max_samples=0.9, verbose=1,
-    #                                 parsimony_coefficient=0.01, random_state=0)
+
+
+def GBasedSR(_x,X,Y,Gen,SR_method="gplearn"):
+    # est_gp = SymbolicRegressor(population_size=1,
+    #                        generations=100, stopping_criteria=0.01,
+    #                        p_crossover=0, p_subtree_mutation=0.2,
+    #                        p_hoist_mutation=0.3, p_point_mutation=0.5,
+    #                        max_samples=0.9, verbose=1,
+    #                        parsimony_coefficient=0.01, random_state=0)
+
+    est_gp = SymbolicRegressor(population_size=100,
+                               generations=200, stopping_criteria=0.01,
+                                 p_crossover=0.7, p_subtree_mutation=0.1,
+                                    p_hoist_mutation=0.05, p_point_mutation=0.1,
+                                    max_samples=0.9, verbose=1,
+                                    parsimony_coefficient=0.01, random_state=0)
                             
                                 
 
     est_gp.fit(X, Y)
 
-    best_fitness = est_gp._program.raw_fitness_
+    best_fitness = est_gp._program.fitness_
     print("best_fitness:",best_fitness)
 
     best_str = est_gp._program.__str__()
@@ -225,16 +229,14 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
 
     r2 = r2_score(Y, Y_pred)
 
-    # nmse = calculate_nmse(Y, Y_pred)
+    nmse = calculate_nmse(Y, Y_pred)
     # nmse = mse / np.var(Y)
     rmse = calculate_rmse(Y, Y_pred)
 
-
     print("mse:",mse)
     print("r2_score:",r2)
-    # print("nmse:",nmse)
+    print("nmse:",nmse)
     print("rmse:",rmse)
-
 
     return None,None,None,Y_pred
           
