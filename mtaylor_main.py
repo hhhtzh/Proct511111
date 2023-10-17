@@ -16,8 +16,8 @@ from keplar.utils.utils import Logger
 
 sys.setrecursionlimit(10000)
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/628_fri_c3_1000_5.txt")
-argparser.add_argument("--varset", type=str, default="datasets/pmlb/pmlb_csv/628_fri_c3_1000_5.csv")
+argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/523_analcatdata_neavote.txt")
+argparser.add_argument("--varset", type=str, default="datasets/pmlb/pmlb_csv/523_analcatdata_neavote.csv")
 # argparser.add_argument("--trainset", type=str, default="datasets/feynman/train/feynman-i.12.5.txt")
 # argparser.add_argument("--varset", type=str, default="datasets/feynman/mydataver/feynman-i.12.5.csv")
 args = argparser.parse_args()

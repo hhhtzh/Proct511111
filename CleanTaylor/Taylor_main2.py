@@ -169,8 +169,10 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
         all_function.append(sp.Integer(0))
     for subgraph in subgraphs:
         variable_list = [sp.Symbol(var) for var in subgraph]
-        terms_with_subgraph = [term for term in sp.Add.make_args(expression_without_floats) if any(var in term.free_symbols for var in variable_list)]
-        combined_expression = sp.Add(*terms_with_subgraph)
+        # terms_with_subgraph = [term for term in sp.Add.make_args(expression_without_floats) if any(var in term.free_symbols for var in variable_list)]
+        # combined_expression = sp.Add(*terms_with_subgraph)
+        combined_expression = sum(term for term in expression_without_floats.as_ordered_terms() if any(term.has(var) for var in variable_list))
+
         print("子表达式含有 x：", combined_expression)
         if len(subgraph) == -1 :
             all_function.append(combined_expression)

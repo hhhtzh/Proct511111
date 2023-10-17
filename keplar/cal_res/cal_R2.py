@@ -36,6 +36,7 @@ def calculate_r2(formula,scaler_X,scaler_y, dataset):
     else:
         y_pred = formula_func(*X.T)
 
+    y_pred = np.array(y_pred)
     y_pred= y_pred.reshape(-1, 1)
 
     # 将矩阵对象转换为数组

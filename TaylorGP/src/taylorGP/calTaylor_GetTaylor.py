@@ -291,24 +291,24 @@ class Metrics:
         print("length=",length)
         print("count=",count)
         Taylor = 0
-        # Taylor = np.linalg.lstsq(A, b0, rcond=None)[0]
+        Taylor = np.linalg.lstsq(A, b0, rcond=None)[0]
         # Taylor = np.linalg.solve(A, b0)
 
 
                 # 创建Lasso回归模型
-        lasso_model = Lasso(alpha=0.01)  # alpha是正则化强度，可以调整以控制稀疏性
+        # lasso_model = Lasso(alpha=0.01)  # alpha是正则化强度，可以调整以控制稀疏性
 
         # 训练模型
-        lasso_model.fit(A, b0)
+        # lasso_model.fit(A, b0)
 
         # 获取稀疏系数
-        Taylor_sparse = lasso_model.coef_
+        # Taylor_sparse = lasso_model.coef_
 
         # 打印稀疏系数
-        print("稀疏系数:", Taylor_sparse)
+        # print("稀疏系数:", Taylor_sparse)
 
-        # Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
-        Taylor = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])
+        Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
+        # Taylor = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])
 
         # Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
 
