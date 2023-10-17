@@ -221,7 +221,31 @@ class CheckPopulation(Operator):
         # 调用函数创建或更新 JSON 文件
         create_or_update_json(file_path, outer_key, data_to_write)
 
-
-    def write_log(self,set_level):
+    def write_log(self, set_level, output_path):
         logger = logging.getLogger('keplar_logger')
-
+        if set_level == "debug":
+            logger.setLevel(logging.DEBUG)
+        elif set_level == "info":
+            logger.setLevel(logging.INFO)
+        elif set_level == "warning":
+            logger.setLevel(logging.WARNING)
+        elif set_level =="error":
+            logger.setLevel(logging.ERROR)
+        elif set_level =="critic":
+            logger.setLevel(logging.CRITICAL)
+        else:
+            raise ValueError("log级别设置错误")
+        console_handler = logging.StreamHandler()
+        file_handler = logging.FileHandler(str(output_path))
+        console_handler.setLevel(logging.INFO)
+        file_handler.setLevel(logging.ERROR)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        console_handler.setFormatter(formatter)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+        logger.addHandler(file_handler)
+        logger.debug('这是一个DEBUG级别的日志消息')
+        logger.info('这是一个INFO级别的日志消息')
+        logger.warning('这是一个WARNING级别的日志消息')
+        logger.error('这是一个ERROR级别的日志消息')
+        logger.critical('这是一个CRITICAL级别的日志消息')
