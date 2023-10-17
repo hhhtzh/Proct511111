@@ -49,7 +49,7 @@ y_normalized = sc_y.fit_transform(np_y.reshape(-1, 1))
 np_x = np.array(X_normalized)
 np_y = np.array(y_normalized)
 
-mt = MTaylorGPAlg(1000, np_x, np_y, population=pop, NewSparseRegressionFlag=True)
+mt = MTaylorGPAlg(1000, np_x, np_y, population=pop, NewSparseRegressionFlag=False)
 
 for i in range(1):
     # print("iii")

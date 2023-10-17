@@ -75,6 +75,13 @@ class KeplarBingoAlg(Alg):
             return self.population.target_pop_list[self.population.get_tar_best()]
         else:
             return self.population.pop_list[self.population.get_best()]
+    
+    def predict(self, X):
+        best_ind = self.get_best_individual()
+        output = best_ind.evaluate_equation_at(X)
+
+        # convert nan to 0, inf to large number, and -inf to small number
+        return np.nan_to_num(output, posinf=1e100, neginf=-1e100)
 
     def run(self):
         search_num = 0
@@ -120,6 +127,7 @@ class KeplarBingoAlg(Alg):
             file.write(str1)
             file.close()
         best_ind = str(self.get_best_individual())
+        # self.best_indi = self.get_best_individual()
         self.best_indi = best_ind
         print("迭代结束，共迭代" + f"{self.age}代" +
               f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
