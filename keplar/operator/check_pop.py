@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 
 import numpy as np
@@ -219,3 +220,8 @@ class CheckPopulation(Operator):
 
         # 调用函数创建或更新 JSON 文件
         create_or_update_json(file_path, outer_key, data_to_write)
+
+
+    def write_log(self,set_level):
+        logger = logging.getLogger('keplar_logger')
+
