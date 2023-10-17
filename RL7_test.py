@@ -1,3 +1,4 @@
+#经验队列
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -17,16 +18,12 @@ from keplar.operator.composite_operator import CompositeOpReturn, CompositeOp
 from keplar.operator.creator import BingoCreator, OperonCreator
 from keplar.operator.crossover import BingoCrossover, OperonCrossover
 from keplar.operator.evaluator import OperonEvaluator, GpEvaluator, BingoEvaluator
-from keplar.operator.linear_regression import SklearnLinearRegression
 from keplar.operator.mutation import OperonMutation, BingoMutation
 from keplar.operator.reinserter import KeplarReinserter
 from keplar.operator.selector import BingoSelector
 
-# data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
-data = Data("txt_pmlb", "datasets/pmlb/val/503_wind.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13","y"])
-
+data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
 data.read_file()
-data.set_xy("y")
 x = data.get_np_x()
 y = data.get_np_y()
 
@@ -134,10 +131,6 @@ class PPOAgent:
         print("state:", state)
         action_probabilities = self.actor_network(state).numpy()[0]
         print(action_probabilities)
-        for i in action_probabilities:
-            if str(i)=="nan":
-                action = 4
-                return action
         action = np.random.choice(self.num_actions, p=action_probabilities)
         return action
 
@@ -208,6 +201,7 @@ bg_selector = BingoSelector(0.5, "tournament", "self")
 op_crossover = OperonCrossover(x, y, "self")
 select = BingoSelector(0.2, "tournament", "Operon")
 op_mutation = OperonMutation(0.6, 0.7, 0.8, 0.8, x, y, 10, 50, "balanced", "self")
+data = pd.read_csv("NAStraining_data/recursion_training2.csv")
 op_creator = OperonCreator("balanced", x, y, 128, "Operon")
 op_evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
 evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "self")
@@ -223,10 +217,9 @@ eval_op_list = [evaluator]
 population = op_creator.do()
 evaluator.do(population)
 ck = CheckPopulation(data)
-lr= SklearnLinearRegression(data)
 
 # 创建PPOAgent
-num_actions = 6  # 五个离散
+num_actions = 5  # 五个离散
 agent = PPOAgent(num_actions)
 
 # 定义训练参数
@@ -268,7 +261,7 @@ for episode in range(num_episodes):
             action = agent.get_action(state)
             # print(action)
             # next_state = np.random.rand(6)  # 模拟环境返回下一个状态，这里使用随机生成的示例状态
-            if action == 5:
+            if action == 4:
                 done = True
 
             # done = np.random.choice([True, False])  # 模拟环境返回done信号，这里使用随机生成的示例done信号
@@ -359,24 +352,6 @@ for episode in range(num_episodes):
             elif i == 4:
                 print("4")
                 print("state_shape:", np.shape(episode_states))
-                lr.do(pool_pop)
-                expressions = []
-                for i in population.pop_list:
-                    str_equ = i.format()
-                    expressions.append(str_equ)
-                vector = []
-                for expression in expressions:
-                    vector = expression_to_sentence_vector(expression)
-                    # print(f"Expression: {expression}")
-                    # print(f"Sentence Vector: {vector}")
-                    # print()
-                state = np.array(vector)
-                episode_states.append(state)
-
-
-            elif i == 5:
-                print("5")
-                print("state_shape:", np.shape(episode_states))
                 expressions = []
                 for i in population.pop_list:
                     str_equ = i.format()
@@ -399,7 +374,7 @@ for episode in range(num_episodes):
         print(population.pop_list)
         evaluator.do(population)
         new_list1 = ck.do(population)
-        ck.write_rl_json(population, episode_actions, "RL6_test10")
+        ck.write_rl_json(population, episode_actions, "RL6_test7")
         print("最好适应度:" + str(new_list1[0]) + ",平均适应度:" + str(new_list1[2]))
         reward = calculate_reward(list1, new_list1)
         list1 = new_list1

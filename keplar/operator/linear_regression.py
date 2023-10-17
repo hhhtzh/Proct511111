@@ -1,3 +1,5 @@
+import re
+
 from bingo.symbolic_regression import AGraph
 from keplar.operator.operator import Operator
 from sklearn.linear_model import LinearRegression as sklr
@@ -37,10 +39,15 @@ class SklearnLinearRegression(LinearRegression):
             expression += f"{coef} * x{i + 1} + "
         expression = expression[:-3]  # 去除末尾的 " + "
         print("模型表达式:", expression)
+        print(expression[4:])
+        new_expression=expression[4:]
+        new_expression = re.sub(r'x(\d{3})', r'X_\1', new_expression)
+        new_expression = re.sub(r'x(\d{2})', r'X_\1', new_expression)
+        new_expression = re.sub(r'x(\d{1})', r'X_\1', new_expression)
         if population.pop_type != 'self':
             raise ValueError("种群类型必须为Keplar")
         else:
-            bingo_ind = AGraph(equation=expression)
+            bingo_ind = AGraph(equation=new_expression)
             bingo_ind._update()
             kep_func, const_arr = bingo_infixstr_to_func(str(bingo_ind))
             kep_ind = Individual(kep_func, const_arr)
