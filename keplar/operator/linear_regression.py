@@ -94,11 +94,11 @@ class SklearnIndividualLinearRegression(LinearRegression):
         # 打印截距和系数
         print("截距 (b0):", intercept)
         print("系数 (b1, b2):", coefficients)
-
+        equ_list=[str(bingo_parent_1),str(bingo_parent_2)]
         # 将模型表示为表达式
         expression = f"y = {intercept} + "
         for i, coef in enumerate(coefficients):
-            expression += f"{coef} * x{i + 1} + "
+            expression += f"{coef} * ({equ_list[i-1]}) + "
         expression = expression[:-3]  # 去除末尾的 " + "
         print("模型表达式:", expression)
         print(expression[4:])
