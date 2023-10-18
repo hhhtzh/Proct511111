@@ -22,11 +22,11 @@ from keplar.operator.mutation import OperonMutation, BingoMutation
 from keplar.operator.reinserter import KeplarReinserter
 from keplar.operator.selector import BingoSelector
 
-# data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
-data = Data("txt_pmlb", "datasets/pmlb/val/503_wind.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13","y"])
+data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
+# data = Data("txt_pmlb", "datasets/pmlb/val/503_wind.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13","y"])
 
 data.read_file()
-data.set_xy("y")
+# data.set_xy("y")
 x = data.get_np_x()
 y = data.get_np_y()
 
@@ -399,7 +399,7 @@ for episode in range(num_episodes):
         print(population.pop_list)
         evaluator.do(population)
         new_list1 = ck.do(population)
-        ck.write_rl_json(population, episode_actions, "RL6_test11")
+        ck.write_rl_json(population, episode_actions, "RL6_test12")
         print("最好适应度:" + str(new_list1[0]) + ",平均适应度:" + str(new_list1[2]))
         reward = calculate_reward(list1, new_list1)
         list1 = new_list1
