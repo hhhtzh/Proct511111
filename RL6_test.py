@@ -17,7 +17,7 @@ from keplar.operator.composite_operator import CompositeOpReturn, CompositeOp
 from keplar.operator.creator import BingoCreator, OperonCreator
 from keplar.operator.crossover import BingoCrossover, OperonCrossover
 from keplar.operator.evaluator import OperonEvaluator, GpEvaluator, BingoEvaluator
-from keplar.operator.linear_regression import SklearnLinearRegression, SklearnIndividualLinearRegression
+from keplar.operator.linear_regression import SklearnTwoIndividualLinearRegression
 from keplar.operator.mutation import OperonMutation, BingoMutation
 from keplar.operator.reinserter import KeplarReinserter
 from keplar.operator.selector import BingoSelector
@@ -223,7 +223,7 @@ eval_op_list = [evaluator]
 population = op_creator.do()
 evaluator.do(population)
 ck = CheckPopulation(data)
-lr= SklearnIndividualLinearRegression(data)
+lr= SklearnTwoIndividualLinearRegression(data)
 
 # 创建PPOAgent
 num_actions = 6  # 五个离散
@@ -399,7 +399,7 @@ for episode in range(num_episodes):
         print(population.pop_list)
         evaluator.do(population)
         new_list1 = ck.do(population)
-        ck.write_rl_json(population, episode_actions, "RL6_test10")
+        ck.write_rl_json(population, episode_actions, "RL6_test11")
         print("最好适应度:" + str(new_list1[0]) + ",平均适应度:" + str(new_list1[2]))
         reward = calculate_reward(list1, new_list1)
         list1 = new_list1
