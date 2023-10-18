@@ -45,6 +45,11 @@ X_normalized = sc_X.fit_transform(np_x)
 sc_y = StandardScaler()
 y_normalized = sc_y.fit_transform(np_y.reshape(-1, 1))
 
+# logger = Logger()
+# logger.set_log_file("zjw_result/" + fileName_whitout_ext + ".json")
+# logger.set_log_level(2)
+
+
 
 np_x = np.array(X_normalized)
 np_y = np.array(y_normalized)
