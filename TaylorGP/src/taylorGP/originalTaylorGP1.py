@@ -821,7 +821,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
         for i in range(1):
             if lr_nmse < metric.nmse:
                 metric.nmse = lr_nmse
-                metric.f_taylor = sympify(f)
+                # metric.f_taylor = sympify(f)
                 metric.bias = 0.
             if metric.nmse < 0.01:
                 metric.nihe_flag = True  # 奇偶性判断前需要先拟合
