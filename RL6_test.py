@@ -17,7 +17,7 @@ from keplar.operator.composite_operator import CompositeOpReturn, CompositeOp
 from keplar.operator.creator import BingoCreator, OperonCreator
 from keplar.operator.crossover import BingoCrossover, OperonCrossover
 from keplar.operator.evaluator import OperonEvaluator, GpEvaluator, BingoEvaluator
-from keplar.operator.linear_regression import SklearnLinearRegression
+from keplar.operator.linear_regression import SklearnLinearRegression, SklearnIndividualLinearRegression
 from keplar.operator.mutation import OperonMutation, BingoMutation
 from keplar.operator.reinserter import KeplarReinserter
 from keplar.operator.selector import BingoSelector
@@ -223,7 +223,7 @@ eval_op_list = [evaluator]
 population = op_creator.do()
 evaluator.do(population)
 ck = CheckPopulation(data)
-lr= SklearnLinearRegression(data)
+lr= SklearnIndividualLinearRegression(data)
 
 # 创建PPOAgent
 num_actions = 6  # 五个离散
