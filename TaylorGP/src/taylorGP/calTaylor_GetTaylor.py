@@ -171,6 +171,7 @@ class Metrics:
     
     def _CalTaylorNmse(self, varNum ,k):
         f_taylor_num = None
+        nmse = float("inf")
         for i in range(1,k+1):
             print("i=",i)
             if i==2:
@@ -182,11 +183,11 @@ class Metrics:
             f_taylor = f_taylor.expand()
             test_y_pred = self._calY(f_taylor)
             test_nmse = mean_squared_error(self.Y, test_y_pred)
-            if test_nmse < self.nmse:
+            if test_nmse < nmse:
                 nmse = test_nmse
                 f_taylor_all = f_taylor
                 k1 = k
-            print('GET Taylor New  NMSE expanded to order k，k=', k1, 'nmse=', nmse)
+            print('GET Taylor New  NMSE expanded to order k，k=', k, 'nmse=', test_nmse)
         return f_taylor_all ,k1 ,nmse,f_taylor_num,f2
 
         

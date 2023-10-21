@@ -4,7 +4,7 @@ import os
 
 import numpy as np
 
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score,mean_squared_error
 from sympy import symbols, lambdify
 import csv
 
@@ -76,6 +76,44 @@ def calculate_rmse(formula,scaler_X,scaler_y, dataset):
     # eval = OperonSingleEvaluator("RMSE", X, y_true, 1, True, op_equ=formula)
     # fit = eval.do()
     return fit
+
+
+
+def cal_rmse(formula,scaler_X,scaler_y, X_test, y_test,sc_flag):
+    # 定义变量
+    variables = [f'x_{i}' for i in range(len(data.dtype.names)-1)]
+    x = symbols(' '.join(variables))
+
+    # 将公式转换为可执行的函数
+    formula_func = lambdify(x, formula, dummify=False)
+
+    if sc_flag:
+        X_test = scaler_X.transform(X_test)
+    else:
+        X_test = np.array(X_test)
+
+    if is_float(formula):
+        # 返回固定的常数值
+        print("len X:",len(X_test))
+        y_pred = np.full(len(X_test), float(formula))
+    else:
+        y_pred = formula_func(*X_test.T)
+    
+    y_pred = y_pred.reshape(-1, 1)
+
+    if sc_flag:
+        y_true = np.array(y_test)
+        y_test = scaler_y.transform(y_test.reshape(-1, 1))
+    else:
+        y_true = np.array(y_test)
+        y_true = y_true.reshape(-1, 1)
+
+    mse = mean_squared_error(y_true, y_pred)  # 计算均方误差
+    rmse = np.sqrt(mse) 
+
+    # fit = calculate_rmse_cal(y_pred, y_true)
+
+    return rmse
 
 
 if __name__ == '__main__':

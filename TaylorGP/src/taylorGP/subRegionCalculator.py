@@ -128,7 +128,7 @@ class subRegionCalculator:
                 core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
                 core_samples_mask[db.core_sample_indices_] = True
                 labels = db.labels_  # 记录了每个数据点的分类结果，根据分类结果通过np.where就能直接取出对应类的所有数据索引了
-                TsneDraw(data_x,labels,epsilon)
+                # TsneDraw(data_x,labels,epsilon)
                 # Number of clusters in labels, ignoring noise if present.
                 n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
                 print("原始数据聚类", n_clusters_, "块")
@@ -531,6 +531,7 @@ class subRegionCalculator:
         """
 
         global arr
+        # global arr=[]
         bestFlag = True
         numberOfCombinations = 5
         X_Trains = []
