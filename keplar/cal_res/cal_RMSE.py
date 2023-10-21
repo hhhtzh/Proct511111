@@ -10,7 +10,12 @@ import csv
 
 from keplar.data.data import Data
 from keplar.operator.evaluator import OperonSingleEvaluator
-
+def is_float(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
 def calculate_rmse_cal(y_pred, y_true):
     # 将 y_pred 和 y_true 转换为 numpy 数组
     y_pred = np.array(y_pred)
@@ -51,6 +56,10 @@ def calculate_rmse(formula,scaler_X,scaler_y, dataset):
 
         # 返回固定的零值
         y_pred = np.zeros(len(X))
+    elif is_float(formula):
+        # 返回固定的常数值
+        print("len X:",len(X))
+        y_pred = np.full(len(X), float(formula))
     else:
         y_pred = formula_func(*X.T)
     
@@ -68,3 +77,49 @@ def calculate_rmse(formula,scaler_X,scaler_y, dataset):
     # fit = eval.do()
     return fit
 
+
+if __name__ == '__main__':
+
+    # formula ='-0.00200000000000000'
+    # formula ="-0.00200000000000000"
+    formula =-0.00200000000000000
+    # formula = 0
+    # formula ="-0.002000"
+    print("formula:", formula)
+    # formula = "-0.002000+167x"
+    # formula = sympify(formula)
+    sys.setrecursionlimit(10000)
+    argparser = argparse.ArgumentParser()
+    # argparser.add_argument("--trainset", type=str, default="../../datasets/pmlb/pmlb_txt/523_analcatdata_neavote.txt")
+    # argparser.add_argument("--varset", type=str, default="../../datasets/pmlb/pmlb_csv/523_analcatdata_neavote.csv")
+    argparser.add_argument("--trainset", type=str, default="../../datasets/feynman/train/feynman-i.12.11.txt")
+    argparser.add_argument("--varset", type=str, default="../../datasets/feynman/mydataver/feynman-i.12.11.csv")
+    args = argparser.parse_args()
+    print("file path : ", args.trainset)
+    fileName = os.path.basename(args.trainset)
+    print("file name : ", fileName)
+    fileName_whitout_ext = os.path.splitext(fileName)[0]
+    # np.set_printoptions(suppress=True)
+
+    # pop = Population(128)
+    fit_list = []
+    time_list = []
+    equ_list = []
+    R2_list = []
+    rmse_list = []
+
+    data = np.loadtxt(args.trainset)
+    # 将最后一列作为np_y
+    np_y = data[:, -1]
+    # 将前面的列作为np_x
+    np_x = data[:, :-1]
+
+    sc_X = StandardScaler()
+    X_normalized = sc_X.fit_transform(np_x)
+    sc_y = StandardScaler()
+    y_normalized = sc_y.fit_transform(np_y.reshape(-1, 1))
+
+    # r2 = calculate_r2(formula, sc_X, sc_y, args.varset)
+    rmse = calculate_rmse(formula, sc_X, sc_y, args.varset)
+    # print("r2:", r2)
+    print("rmse:", rmse)

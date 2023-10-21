@@ -16,10 +16,10 @@ from keplar.utils.utils import Logger
 
 sys.setrecursionlimit(10000)
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/523_analcatdata_neavote.txt")
-argparser.add_argument("--varset", type=str, default="datasets/pmlb/pmlb_csv/523_analcatdata_neavote.csv")
-# argparser.add_argument("--trainset", type=str, default="datasets/feynman/train/feynman-i.12.5.txt")
-# argparser.add_argument("--varset", type=str, default="datasets/feynman/mydataver/feynman-i.12.5.csv")
+# argparser.add_argument("--trainset", type=str, default="datasets/pmlb/pmlb_txt/523_analcatdata_neavote.txt")
+# argparser.add_argument("--varset", type=str, default="datasets/pmlb/pmlb_csv/523_analcatdata_neavote.csv")
+argparser.add_argument("--trainset", type=str, default="datasets/feynman/train/feynman-i.12.11.txt")
+argparser.add_argument("--varset", type=str, default="datasets/feynman/mydataver/feynman-i.12.11.csv")
 args = argparser.parse_args()
 print("file path : ", args.trainset)
 fileName = os.path.basename(args.trainset)
@@ -59,6 +59,7 @@ mt = MTaylorGPAlg(1000, np_x, np_y, population=pop, NewSparseRegressionFlag=Fals
 for i in range(1):
     # print("iii")
     mt.run()
+    # formula = sympify(mt.best_ind)
     r2 = calculate_r2(mt.best_ind, sc_X, sc_y, args.varset)
     rmse = calculate_rmse(mt.best_ind, sc_X, sc_y, args.varset)
     print("-" * 100)

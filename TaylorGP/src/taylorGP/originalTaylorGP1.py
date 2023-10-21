@@ -794,7 +794,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
         # Metric.sort(key=lambda x: x.low_nmse)
         # metric = Metric[0]
         temp_Y_pred = metric._calY(metric.f_low_taylor)
-        print('NMSE of polynomial and lower order polynomial after sorting:', metric.nmse, metric.low_nmse)
+        print('MSE of polynomial and lower order polynomial after sorting:', metric.nmse, metric.low_nmse)
         print("f_Taylor: ", metric.f_taylor)
         eq_write.write(str(-1) + '|' + str(metric.f_low_taylor) + '|' + '10' + '|' + str(metric.low_nmse) + '|' + '\n')
         # if metric.nmse < 0.01:
@@ -806,6 +806,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
         print('intercept: ', lr_est.intercept_)
         lr_Y_pred = lr_est.predict(X)
         lr_nmse = mean_squared_error(lr_Y_pred, Y)
+        print('MSE of linear regression:', lr_nmse)
 
         f = str(lr_est.intercept_[0])
         for i in range(X.shape[1]):
@@ -823,13 +824,13 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
         for i in range(1):
             if lr_nmse < metric.nmse:
                 metric.nmse = lr_nmse
-                # metric.f_taylor = sympify(f)
+                metric.f_taylor = sympify(f)
                 metric.bias = 0.
             if metric.nmse < 0.01:
                 metric.nihe_flag = True  # 奇偶性判断前需要先拟合
             if lr_nmse < metric.low_nmse:
                 metric.low_nmse = lr_nmse
-                metric.f_low_taylor = sympify(f)
+                # metric.f_low_taylor = sympify(f)
                 temp_Y_pred = lr_Y_pred
             if rmseFlag == True: return metric.nmse
             # time_end2 = time()
