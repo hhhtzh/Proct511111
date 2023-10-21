@@ -47,7 +47,7 @@ def calculate_r2(formula,scaler_X,scaler_y, dataset):
     elif is_float(formula):
         # 返回固定的常数值
         print("len X:",len(X))
-        y_pred = np.full(len(X), formula)
+        y_pred = np.full(len(X), float(formula))
     else:
         y_pred = formula_func(*X.T)
 

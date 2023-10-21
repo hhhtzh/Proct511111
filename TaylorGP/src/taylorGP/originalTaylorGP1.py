@@ -534,6 +534,8 @@ def GBasedSR(_x,X,Y,Gen,SR_method="gplearn"):
 
     print("expression:",expression)
 
+    expression = sp.re(expression)
+
 
 
     return y_pred,expression
