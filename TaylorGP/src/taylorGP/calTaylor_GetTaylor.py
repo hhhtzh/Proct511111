@@ -305,7 +305,7 @@ class Metrics:
         Taylor_sparse = lasso_model.coef_
 
         # 打印稀疏系数
-        print("稀疏系数:", Taylor_sparse)
+        # print("稀疏系数:", Taylor_sparse)
 
         # Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
         Taylor = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])

@@ -534,6 +534,8 @@ def GBasedSR(_x,X,Y,Gen,SR_method="gplearn"):
 
     print("expression:",expression)
 
+    expression = sp.re(expression)
+
 
 
     return y_pred,expression
@@ -594,7 +596,7 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
     for subgraph in subgraphs:
         print("子图:",subgraph)
 
-    # print("f_taylor:",f_taylor)
+    print("Graph f_taylor:",f_taylor)
 
 
     expression = sp.expand(f_taylor)
@@ -609,119 +611,130 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
     y_terms = []
     if not all_function:
         all_function.append(sp.Integer(0))
-    for subgraph in subgraphs:
-        variable_list = [sp.Symbol(var) for var in subgraph]
-        terms_with_subgraph = [term for term in sp.Add.make_args(expression_without_floats) if any(var in term.free_symbols for var in variable_list)]
-        combined_expression = sp.Add(*terms_with_subgraph)
-        print("子表达式含有 x：", combined_expression)
-        if len(subgraph) == -1 :
-            all_function.append(combined_expression)
-            # print("123")
+    if len(subgraphs) == 1:
+        y_pred,expression =GBasedSR(_x, X, Y, Gen, SR_method="gplearn")
+        rmse = calculate_rmse(Y, y_pred)
+        return [rmse],[expression],None,y_pred
 
-        else:
-            # tops_str =TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Bingo")
-            # tops_str = "1"
-            y_pred,expression =GBasedSR(_x, X, Y, Gen, SR_method="gplearn")
+    else:
+        for subgraph in subgraphs:
+            variable_list = [sp.Symbol(var) for var in subgraph]
+            # terms_with_subgraph = [term for term in sp.Add.make_args(expression_without_floats) if any(var in term.free_symbols for var in variable_list)]
+            # combined_expression = sp.Add(*terms_with_subgraph)
+            combined_expression = sum(term for term in expression_without_floats.as_ordered_terms() if any(term.has(var) for var in variable_list))
+            print("子表达式含有 x：", combined_expression)
 
-            # terms = expression.args
-            # for term in terms:
-            #     print("term:",term)
+            expression_terms = sp.sympify(combined_expression)
+            y_pred_terms = _calY(expression_terms,_x,X.T,len(_x))
 
-            expression = sp.expand(expression)
+            if len(subgraph) == -1 :
+                all_function.append(combined_expression)
 
-            expr = sp.sympify(expression)
-            terms = sp.Add.make_args(expr)
-            for term in terms:
-                print("term:",term)
-                y_pred = _calY(term,_x,X.T,len(_x))
-                # print("y_pred:",y_pred) 
-                y_all.append(y_pred)
-                y_terms.append(term)
+            else:
+                # tops_str =TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Bingo")
+                # tops_str = "1"
+
+                y_pred,expression =GBasedSR(_x, X, y_pred_terms, Gen, SR_method="gplearn")
+
+                # terms = expression.args
+                # for term in terms:
+                #     print("term:",term)
+
+                expression = sp.expand(expression)
+
+                expr = sp.sympify(expression)
+                terms = sp.Add.make_args(expr)
+                for term in terms:
+                    print("term:",term)
+                    y_pred = _calY(term,_x,X.T,len(_x))
+                    # print("y_pred:",y_pred) 
+                    y_all.append(y_pred)
+                    y_terms.append(term)
 
 
 
 
 
-            
-            # y_pred=0 
-            # y_all.append(y_pred)
-            # tops_str =GBasedSR(_x, X, Y, Gen, SR_method="gplearn")
-            # tops_str =TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Taylor_Operon")
-            # all_function.append(tops_str[0])
-            # print("tops_str_f:",tops_str)
-            # # if abs(formula.subs(x, 0)) < 1e-10:
-            # #     formula = sp.Integer(0)  
-            # all_function.append(tops_str)
+                
+                # y_pred=0 
+                # y_all.append(y_pred)
+                # tops_str =GBasedSR(_x, X, Y, Gen, SR_method="gplearn")
+                # tops_str =TBased_SR(_x, X, Y, population, Gen, Pop, repeatNum,SR_method="Taylor_Operon")
+                # all_function.append(tops_str[0])
+                # print("tops_str_f:",tops_str)
+                # # if abs(formula.subs(x, 0)) < 1e-10:
+                # #     formula = sp.Integer(0)  
+                # all_function.append(tops_str)
 
-        print("float:",float(float_values[0]))
-        y_terms.append(float(float_values[0]))
-        print("y_all",len(y_all))
-        print("X.shape[0]:",X.shape[0])
-        float_values_all = []
-        for i in range(X.shape[0]):
-            float_values_all.append(float(float_values[0]))
+            print("float:",float(float_values[0]))
+            y_terms.append(float(float_values[0]))
+            print("y_all",len(y_all))
+            print("X.shape[0]:",X.shape[0])
+            float_values_all = []
+            for i in range(X.shape[0]):
+                float_values_all.append(float(float_values[0]))
 
-        # float_values_all = float_values * X.shape[0]
-        y_all.append(float_values_all)
-        print("y_all",len(y_all))
+            # float_values_all = float_values * X.shape[0]
+            y_all.append(float_values_all)
+            print("y_all",len(y_all))
 
-    
         
-    lasso_model = Lasso(alpha=0.01)  # alpha是正则化强度，可以调整以控制稀疏性
+            
+        lasso_model = Lasso(alpha=0.01)  # alpha是正则化强度，可以调整以控制稀疏性
 
-    # 训练模型
-    y_all = np.array(y_all).T
-    # print("y_all shape:",y_all.shape)
+        # 训练模型
+        y_all = np.array(y_all).T
+        # print("y_all shape:",y_all.shape)
 
-    # print("Y shape:",Y.shape)
-    y_all_length = y_all.shape[1]
+        # print("Y shape:",Y.shape)
+        y_all_length = y_all.shape[1]
 
-    lasso_model.fit(y_all, Y)
+        lasso_model.fit(y_all, Y)
 
-    # 获取稀疏系数
-    Taylor_sparse = lasso_model.coef_
-
-
-    Y_pred = lasso_model.predict(y_all)
-
-    mse = mean_squared_error(Y, Y_pred)
-    # r2 = 0.0
-
-    r2 = r2_score(Y, Y_pred)
-
-    # nmse = calculate_nmse(Y, Y_pred)
-    # nmse = mse / np.var(Y)
-    rmse = calculate_rmse(Y, Y_pred)
+        # 获取稀疏系数
+        Taylor_sparse = lasso_model.coef_
 
 
-    print("mse:",mse)
-    print("r2_score:",r2)
-    # print("nmse:",nmse)
-    print("rmse:",rmse)
+        Y_pred = lasso_model.predict(y_all)
 
-    new_formulas = []
+        mse = mean_squared_error(Y, Y_pred)
+        # r2 = 0.0
 
-    for i in range(y_all_length):
-        # print("Taylor_sparse:",Taylor_sparse[i])
-        # print("y_terms:",y_terms[i])
-        new_formula = sp.Mul(Taylor_sparse[i], y_terms[i])
-        new_formulas.append(new_formula)
+        r2 = r2_score(Y, Y_pred)
+
+        # nmse = calculate_nmse(Y, Y_pred)
+        # nmse = mse / np.var(Y)
+        rmse = calculate_rmse(Y, Y_pred)
 
 
-    # equation = sp.expand(expression_without_floats)
-    # for i in range(len):
-    #     equation 
+        print("mse:",mse)
+        print("r2_score:",r2)
+        # print("nmse:",nmse)
+        print("rmse:",rmse)
 
-    combined_formula = sp.Add(*new_formulas)
-    # print("combined_formula:",combined_formula)
-    print("combined_formula:",str(combined_formula))
+        new_formulas = []
 
-    str_combined_formula = str(combined_formula)
+        for i in range(y_all_length):
+            # print("Taylor_sparse:",Taylor_sparse[i])
+            # print("y_terms:",y_terms[i])
+            new_formula = sp.Mul(Taylor_sparse[i], y_terms[i])
+            new_formulas.append(new_formula)
 
-    # equ = 
+
+        # equation = sp.expand(expression_without_floats)
+        # for i in range(len):
+        #     equation 
+
+        combined_formula = sp.Add(*new_formulas)
+        # print("combined_formula:",combined_formula)
+        print("combined_formula:",str(combined_formula))
+
+        str_combined_formula = str(combined_formula)
+
+        # equ = 
 
 
-    return [rmse],[str_combined_formula],None,Y_pred
+        return [rmse],[str_combined_formula],None,Y_pred
           
 
 
@@ -781,7 +794,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
         # Metric.sort(key=lambda x: x.low_nmse)
         # metric = Metric[0]
         temp_Y_pred = metric._calY(metric.f_low_taylor)
-        print('NMSE of polynomial and lower order polynomial after sorting:', metric.nmse, metric.low_nmse)
+        print('MSE of polynomial and lower order polynomial after sorting:', metric.nmse, metric.low_nmse)
         print("f_Taylor: ", metric.f_taylor)
         eq_write.write(str(-1) + '|' + str(metric.f_low_taylor) + '|' + '10' + '|' + str(metric.low_nmse) + '|' + '\n')
         # if metric.nmse < 0.01:
@@ -793,6 +806,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
         print('intercept: ', lr_est.intercept_)
         lr_Y_pred = lr_est.predict(X)
         lr_nmse = mean_squared_error(lr_Y_pred, Y)
+        print('MSE of linear regression:', lr_nmse)
 
         f = str(lr_est.intercept_[0])
         for i in range(X.shape[1]):
@@ -805,6 +819,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
         fitness = mean_squared_error(lr_est.predict(test_X), test_y, squared=False)  # RMSE
         print('LR_predict_fitness: ', fitness)                
         '''
+        print("f_tailor L:",metric.f_taylor)
 
         for i in range(1):
             if lr_nmse < metric.nmse:
@@ -815,7 +830,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
                 metric.nihe_flag = True  # 奇偶性判断前需要先拟合
             if lr_nmse < metric.low_nmse:
                 metric.low_nmse = lr_nmse
-                metric.f_low_taylor = sympify(f)
+                # metric.f_low_taylor = sympify(f)
                 temp_Y_pred = lr_Y_pred
             if rmseFlag == True: return metric.nmse
             # time_end2 = time()
@@ -852,6 +867,7 @@ def OriginalTaylorGP(X_Y, Y_pred, population, repeatNum, Generation, Pop, rmseFl
                 # print(end_fitness)
                 # print(programs)
                 # print('fitness_and_program', end_fitness[0], programs[0], sep='\n')
+                print("f_tailor G:",metric.f_taylor)
                 end_fitness, programs, population, Y_pred = CalTaylorFeaturesGraph(metric.f_taylor_num,metric.f_taylor, _x[:X.shape[1]], X, Y, population,Generation,Pop, repeatNum, SR_method = "Taylor_Operon")
             
             if end_fitness[0] < 1e-5: findBestFlag = true
