@@ -1,0 +1,16 @@
+{
+    "data_gen1": {
+        "generation": 1,
+        "best_fit": 0.6484553813934326,
+        "worest_fit": 3.4028234663852886e+38,
+        "mean_fit": 1.7279962915237794e+38,
+        "best_ind": "((X_1 - X_3) - ((sin(1.299755573272705)) + (exp(1.2676825523376465))))",
+        "history_best_fit": 0.6484553813934326,
+        "history_best_ind": "((X_1 - X_3) - ((sin(1.299755573272705)) + (exp(1.2676825523376465))))",
+        "action_length": 5,
+        "actions": "[1, 0, 0, 1, 5]",
+        "max_length": 53,
+        "min_length": 1,
+        "mean_length": 21.9453125
+    }
+}

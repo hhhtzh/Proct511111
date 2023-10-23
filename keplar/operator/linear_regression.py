@@ -90,7 +90,10 @@ class SklearnTwoIndividualLinearRegression(LinearRegression):
         x = np.array(temp_x).reshape(-1, 2)
         print(x)
         print(y)
-        model.fit(x, y)
+        non_nan_indices = ~np.isnan(x).any(axis=1)
+        x_cleaned = x[non_nan_indices]
+        y_cleaned = y[non_nan_indices]
+        model.fit(x_cleaned, y_cleaned)
         # 获取截距和系数
         intercept = model.intercept_
         coefficients = model.coef_
@@ -129,13 +132,11 @@ class SklearnOneIndividualLinearRegression(LinearRegression):
         model = sklr()
         old_x = self.data.get_np_x()
         y = self.data.get_np_y()
-        parent_num=population.get_best()
+        [parent_num]=np.random.randint(low=0, high=population.get_pop_size() - 1, size=1)
         parent_= population.pop_list[parent_num]
         equ1 = str(parent_.format())
         equ1 = re.sub(r"power", "^", equ1)
-        equ2 = re.sub(r"power", "^", equ2)
         equ1 = re.sub(r" pow ", " ^ ", equ1)
-        equ2 = re.sub(r" pow ", " ^ ", equ2)
         bingo_parent_1 = AGraph(equation=equ1)
         bingo_parent_1._update()
         y1 = bingo_parent_1.evaluate_equation_at(old_x)
@@ -143,7 +144,13 @@ class SklearnOneIndividualLinearRegression(LinearRegression):
         x=y1
         print(x)
         print(y)
-        model.fit(x, y)
+        non_nan_indices = ~np.isnan(x).any(axis=1)
+        x_cleaned = x[non_nan_indices]
+        y_cleaned = y[non_nan_indices]
+        non_inf_indices = ~np.isinf(x_cleaned).any(axis=1)
+        x_cleaned = x_cleaned[non_inf_indices]
+        y_cleaned = y_cleaned[non_inf_indices]
+        model.fit(x_cleaned, y_cleaned)
         # 获取截距和系数
         intercept = model.intercept_
         coefficients = model.coef_
@@ -154,8 +161,8 @@ class SklearnOneIndividualLinearRegression(LinearRegression):
         # 将模型表示为表达式
         expression = f"y = {intercept} + "
         for i, coef in enumerate(coefficients):
-            expression += f"{coef} * ({equ_list[i - 1]}) + "
-        expression = expression[:-3]  # 去除末尾的 " + "
+            expression += f"{coef} * ({equ_list[i - 1]})"
+
         print("模型表达式:", expression)
         print(expression[4:])
         new_expression = expression[4:]

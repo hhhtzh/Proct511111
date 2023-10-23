@@ -17,7 +17,8 @@ from keplar.operator.composite_operator import CompositeOpReturn, CompositeOp
 from keplar.operator.creator import BingoCreator, OperonCreator
 from keplar.operator.crossover import BingoCrossover, OperonCrossover
 from keplar.operator.evaluator import OperonEvaluator, GpEvaluator, BingoEvaluator
-from keplar.operator.linear_regression import SklearnTwoIndividualLinearRegression
+from keplar.operator.linear_regression import SklearnTwoIndividualLinearRegression, \
+    SklearnOneIndividualLinearRegression, SklearnLinearRegression
 from keplar.operator.mutation import OperonMutation, BingoMutation
 from keplar.operator.reinserter import KeplarReinserter
 from keplar.operator.selector import BingoSelector
@@ -131,9 +132,9 @@ class PPOAgent:
 
     def get_action(self, state):
         state = tf.convert_to_tensor([state], dtype=tf.float32)
-        print("state:", state)
+        # print("state:", state)
         action_probabilities = self.actor_network(state).numpy()[0]
-        print(action_probabilities)
+        # print(action_probabilities)
         for i in action_probabilities:
             if str(i)=="nan":
                 action = 4
@@ -154,9 +155,11 @@ class PPOAgent:
                 print("action_mask:",action_masks)
                 selected_action_probabilities = tf.reduce_sum(action_probabilities * action_masks, axis=1)
                 old_action_masks = tf.one_hot(actions, self.num_actions)
-                print("old_action_masks:",old_action_masks)
+                # print("old_action_masks:",old_action_masks)
                 old_action_probabilities = old_action_masks * action_probabilities
                 old_action_probabilities = tf.reduce_sum(old_action_probabilities, axis=1)
+                print("selected_action_probabilities",selected_action_probabilities)
+                print("old_action_probabilities",old_action_probabilities)
                 ratio = selected_action_probabilities / (old_action_probabilities + 1e-5)
                 # 将inf替换为999
                 ratio = tf.where(tf.math.is_inf(ratio), 999.0, ratio)
@@ -174,6 +177,7 @@ class PPOAgent:
                 surrogate_obj = tf.minimum(ratio * advantages, tf.clip_by_value(ratio, 1 - self.clip_epsilon,
                                                                                 1 + self.clip_epsilon) * advantages)
                 actor_loss = -tf.reduce_mean(surrogate_obj)
+                print("actor_loss",actor_loss)
 
                 values = self.critic_network(states)
                 critic_loss = tf.reduce_mean(tf.square(rewards - values))
@@ -223,10 +227,11 @@ eval_op_list = [evaluator]
 population = op_creator.do()
 evaluator.do(population)
 ck = CheckPopulation(data)
-lr= SklearnTwoIndividualLinearRegression(data)
+lr= SklearnOneIndividualLinearRegression(data)
+lr1=SklearnLinearRegression(data)
 
 # 创建PPOAgent
-num_actions = 6  # 五个离散
+num_actions = 7  # 五个离散
 agent = PPOAgent(num_actions)
 
 # 定义训练参数
@@ -268,7 +273,7 @@ for episode in range(num_episodes):
             action = agent.get_action(state)
             # print(action)
             # next_state = np.random.rand(6)  # 模拟环境返回下一个状态，这里使用随机生成的示例状态
-            if action == 5:
+            if action == 6:
                 done = True
 
             # done = np.random.choice([True, False])  # 模拟环境返回done信号，这里使用随机生成的示例done信号
@@ -372,9 +377,25 @@ for episode in range(num_episodes):
                     # print()
                 state = np.array(vector)
                 episode_states.append(state)
+            elif i ==5:
+                print("5")
+                print("state_shape:", np.shape(episode_states))
+                lr1.do(pool_pop)
+                expressions = []
+                for i in population.pop_list:
+                    str_equ = i.format()
+                    expressions.append(str_equ)
+                vector = []
+                for expression in expressions:
+                    vector = expression_to_sentence_vector(expression)
+                    # print(f"Expression: {expression}")
+                    # print(f"Sentence Vector: {vector}")
+                    # print()
+                state = np.array(vector)
+                episode_states.append(state)
 
 
-            elif i == 5:
+            elif i == 6:
                 print("5")
                 print("state_shape:", np.shape(episode_states))
                 expressions = []
@@ -399,7 +420,7 @@ for episode in range(num_episodes):
         print(population.pop_list)
         evaluator.do(population)
         new_list1 = ck.do(population)
-        ck.write_rl_json(population, episode_actions, "RL6_test12")
+        ck.write_rl_json(population, episode_actions, "RL6_test16")
         print("最好适应度:" + str(new_list1[0]) + ",平均适应度:" + str(new_list1[2]))
         reward = calculate_reward(list1, new_list1)
         list1 = new_list1
