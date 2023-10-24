@@ -194,6 +194,8 @@ def calculate_advantages(rewards, dones, values):
     advantages = np.zeros_like(rewards, dtype=np.float32)
     last_advantage = 0
     last_value = 0
+    print("奖励序列:",rewards)
+    print("价值序列:",values)
     for t in reversed(range(len(rewards))):
         mask = 1 - dones[t]
         delta = rewards[t] + 0.99 * last_value * mask - values[t]
@@ -296,8 +298,7 @@ for episode in range(num_episodes):
             #     print(ind.func)
             if i == 0:
                 print("0")
-                print("state_shape:", np.shape(episode_states))
-                op_crossover.do(pool_pop)
+                # print("state_shape:", np.shape(episode_states))
                 expressions = []
                 for i in population.pop_list:
                     str_equ = i.format()
@@ -310,11 +311,12 @@ for episode in range(num_episodes):
                     # print()
                 state = np.array(vector)
                 episode_states.append(state)
+                op_crossover.do(pool_pop)
 
             elif i == 1:
                 print("1")
-                print("state_shape:", np.shape(episode_states))
-                op_mutation.do(pool_pop)
+                # print("state_shape:", np.shape(episode_states))
+
                 expressions = []
                 for i in population.pop_list:
                     str_equ = i.format()
@@ -327,10 +329,10 @@ for episode in range(num_episodes):
                     # print()
                 state = np.array(vector)
                 episode_states.append(state)
+                op_mutation.do(pool_pop)
             elif i == 2:
                 print("2")
-                print("state_shape:", np.shape(episode_states))
-                bg_crossover.do(pool_pop)
+                # print("state_shape:", np.shape(episode_states))
                 expressions = []
                 for i in population.pop_list:
                     str_equ = i.format()
@@ -343,11 +345,10 @@ for episode in range(num_episodes):
                     # print()
                 state = np.array(vector)
                 episode_states.append(state)
-                pass
+                bg_crossover.do(pool_pop)
             elif i == 3:
                 print("3")
-                print("state_shape:", np.shape(episode_states))
-                bg_mutation.do(pool_pop)
+                # print("state_shape:", np.shape(episode_states))
                 expressions = []
                 for i in population.pop_list:
                     str_equ = i.format()
@@ -360,11 +361,12 @@ for episode in range(num_episodes):
                     # print()
                 state = np.array(vector)
                 episode_states.append(state)
-                pass
+                bg_mutation.do(pool_pop)
+
             elif i == 4:
                 print("4")
-                print("state_shape:", np.shape(episode_states))
-                lr.do(pool_pop)
+                # print("state_shape:", np.shape(episode_states))
+
                 expressions = []
                 for i in population.pop_list:
                     str_equ = i.format()
@@ -377,10 +379,10 @@ for episode in range(num_episodes):
                     # print()
                 state = np.array(vector)
                 episode_states.append(state)
+                lr.do(pool_pop)
             elif i ==5:
                 print("5")
-                print("state_shape:", np.shape(episode_states))
-                lr1.do(pool_pop)
+                # print("state_shape:", np.shape(episode_states))
                 expressions = []
                 for i in population.pop_list:
                     str_equ = i.format()
@@ -393,11 +395,13 @@ for episode in range(num_episodes):
                     # print()
                 state = np.array(vector)
                 episode_states.append(state)
+                lr1.do(pool_pop)
+
 
 
             elif i == 6:
-                print("5")
-                print("state_shape:", np.shape(episode_states))
+                print("6")
+                # print("state_shape:", np.shape(episode_states))
                 expressions = []
                 for i in population.pop_list:
                     str_equ = i.format()
@@ -412,7 +416,6 @@ for episode in range(num_episodes):
                 episode_states.append(state)
                 rein = KeplarReinserter(pool_pop, "self")
                 rein.do(population)
-                break
             else:
                 raise ValueError("出错了")
 
@@ -420,7 +423,7 @@ for episode in range(num_episodes):
         print(population.pop_list)
         evaluator.do(population)
         new_list1 = ck.do(population)
-        ck.write_rl_json(population, episode_actions, "RL6_test16")
+        ck.write_rl_json(population, episode_actions, "RL6_test17")
         print("最好适应度:" + str(new_list1[0]) + ",平均适应度:" + str(new_list1[2]))
         reward = calculate_reward(list1, new_list1)
         list1 = new_list1
@@ -428,7 +431,7 @@ for episode in range(num_episodes):
         for _ in range(len(episode_actions)):
             episode_rewards.append(reward)
         for _ in range(len(episode_actions)):
-            episode_length.append(len(episode_actions))
+            episode_length.append(0)
         episode_probs.append(agent.actor_network(np.array([state], dtype=np.float32))[0, action])
 
         # state = next_state

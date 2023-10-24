@@ -183,6 +183,72 @@ class OperonMutation(Mutation):
                     population.pop_size = len(population.pop_list)
 
 
+class OperonGraphMutation(OperonMutation):
+    def __init__(self, onepoint_p, changevar_p, changefunc_p, replace_p, np_x, np_y, maxD, maxL, tree_type, to_type):
+        super().__init__(onepoint_p, changevar_p, changefunc_p, replace_p, np_x, np_y, maxD, maxL, tree_type, to_type)
+    def do(self, population):
+        target = self.ds.Variables[-1]
+        inputs = Operon.VariableCollection(
+            v for v in self.ds.Variables if v.Name != target.Name)
+        pset = Operon.PrimitiveSet()
+        pset.SetConfig(
+            Operon.PrimitiveSet.TypeCoherent)
+        if self.tree_type == "balanced":
+            tree_creator = Operon.BalancedTreeCreator(pset, inputs, bias=0.0)
+        elif self.tree_type == "probabilistic":
+            tree_creator = Operon.ProbabilisticTreeCreator(
+                pset, inputs, bias=0.0)
+        else:
+            raise ValueError("Operon创建树的类型名称错误")
+
+        coeff_initializer = Operon.NormalCoefficientInitializer()
+        coeff_initializer.ParameterizeDistribution(0, 1)
+        mut_onepoint = Operon.NormalOnePointMutation()
+        mut_changeVar = Operon.ChangeVariableMutation(inputs)
+        mut_changeFunc = Operon.ChangeFunctionMutation(pset)
+        mut_replace = Operon.ReplaceSubtreeMutation(
+            tree_creator, coeff_initializer, self.maxD, self.maxL)
+        mutation = Operon.MultiMutation()
+        mutation.Add(mut_onepoint, self.onepoint_p)
+        mutation.Add(mut_changeVar, self.changevar_p)
+        mutation.Add(mut_changeFunc, self.changefunc_p)
+        mutation.Add(mut_replace, self.replace_p)
+        rng = Operon.RomuTrio(random.randint(1, 1000000))
+        if population.pop_type == "Operon":
+            new_tree_list = []
+            self.old_tree_list = population.target_pop_list
+            for i in population.target_pop_list:
+                new_tree_list.append(mutation(rng, i))
+            self.new_tree_list = new_tree_list
+            population.target_pop_list = new_tree_list
+            population.set_pop_size(len(new_tree_list))
+            if self.to_type == "Operon":
+                population.self_pop_enable = False
+            else:
+                pass
+        else:
+            new_tree_list = []
+            for i in population.pop_list:
+                op_tree = \
+                    to_op(i, self.np_x, self.np_y)
+                new_tree_list.append(mutation(rng, op_tree))
+                population.target_pop_list = new_tree_list
+                population.set_pop_size(len(new_tree_list))
+                if self.to_type == "Operon":
+                    population.self_pop_enable = False
+                    population.pop_type = "Operon"
+                else:
+                    population.pop_type = "self"
+                    kep_ind_list = []
+                    for op_tree in population.target_pop_list:
+                        var_s = self.ds.Variables
+                        func, const_arr = trans_op(op_tree, var_s)
+                        kep_ind = Individual(func, const_arr)
+                        kep_ind_list.append(kep_ind)
+                    population.pop_list = kep_ind_list
+                    population.pop_size = len(population.pop_list)
+
+
 class TaylorGPMutation(Mutation):
     def __init__(self, option, random_state, pop_parent, pop_now_index):
         super().__init__()

@@ -113,12 +113,12 @@ class subRegionCalculator:
             if clusterMethod == "DBSCAN":
                 print(epsilon)
                 if data_x.shape[0] < 100:
-                    min_sample = data_x.shape[1]+1
-                    print("min_sample:"+str(min_sample))
+                    min_sample = data_x.shape[1] + 1
+                    print("min_sample:" + str(min_sample))
                 elif 100 < data_x.shape[0] < 10000:
-                    min_sample = data_x.shape[1]+3
+                    min_sample = data_x.shape[1] + 3
                 else:
-                    min_sample = data_x.shape[1]+5
+                    min_sample = data_x.shape[1] + 5
                 # # 初始化HDBSCAN模型
                 # clusterer = hdbscan.HDBSCAN()
                 #
@@ -128,7 +128,7 @@ class subRegionCalculator:
                 core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
                 core_samples_mask[db.core_sample_indices_] = True
                 labels = db.labels_  # 记录了每个数据点的分类结果，根据分类结果通过np.where就能直接取出对应类的所有数据索引了
-                TsneDraw(data_x,labels,epsilon)
+                TsneDraw(data_x, labels, epsilon)
                 # Number of clusters in labels, ignoring noise if present.
                 n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
                 print("原始数据聚类", n_clusters_, "块")
@@ -141,6 +141,8 @@ class subRegionCalculator:
                     else:
                         return False
                 elif n_clusters_ < 1:
+                    return False
+                elif n_clusters_ > 10:
                     return False
                 else:
                     self.subRegions = []
@@ -545,7 +547,7 @@ class subRegionCalculator:
                 strx_ = re.sub(r'x(\d{1})', r'x_\1', str_eq)
                 print(strx_)
                 sta = TaylorStatistic(strx_)
-                # sta.pos_do()
+                sta.pos_do()
                 dict1 = sta.final_statis
                 print(dict1)
                 dict_arr.append(dict1)
