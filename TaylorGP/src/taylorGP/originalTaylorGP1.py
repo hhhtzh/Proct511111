@@ -534,7 +534,7 @@ def GBasedSR(_x,X,Y,Gen,SR_method="gplearn"):
 
     print("expression:",expression)
 
-    expression = sp.re(expression)
+    # expression = sp.re(expression)
 
 
 
@@ -583,7 +583,7 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
                 else:
                     if com_num == 1:
                         # print("taylor:",i)
-                        if abs(taylor_num[i+1]) > 0.001:
+                        if abs(taylor_num[i+1]) > 0.0001:
                             print("taylor:",taylor_num[i+1])
                             G.add_edge('x'+str(u), 'x'+str(j))
                             print('x'+str(u), 'x'+str(j))

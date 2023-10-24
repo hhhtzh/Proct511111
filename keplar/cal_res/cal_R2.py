@@ -62,6 +62,50 @@ def calculate_r2(formula,scaler_X,scaler_y, dataset):
     r2 = r2_score(y_true, y_pred)
     return r2
 
+
+def cal_r2(formula,scaler_X,scaler_y, X_test, y_test,sc_flag ):
+  
+    # 定义变量
+    variables = [f'x_{i}' for i in range(len(data.dtype.names)-1)]
+    x = symbols(' '.join(variables))
+
+    # 将公式转换为可执行的函数
+    formula_func = lambdify(x, formula, dummify=False)
+
+
+    # 计算预测值
+    # X = np.column_stack([data[variable] for variable in data.dtype.names[:-1]])
+    
+    if sc_flag:
+        X_test = scaler_X.transform(X_test)
+    else:
+        X_test = np.array(X_test)
+
+    if is_float(formula):
+        # 返回固定的常数值
+        print("len X_test:",len(X_test))
+        y_pred = np.full(len(X_test), float(formula))
+    else:
+        y_pred = formula_func(*X_test.T)
+
+    y_pred = np.array(y_pred)
+    y_pred= y_pred.reshape(-1, 1)
+
+    # 将矩阵对象转换为数组
+    if sc_flag:
+        y_true = np.array(data[data.dtype.names[-1]])
+        y_true = scaler_y.transform(y_true.reshape(-1, 1))
+    else:
+        y_true = np.array(y_test)
+    # y_true = np.array(data[data.dtype.names[-1]])
+    # y_true = scaler_y.transform(y_true.reshape(-1, 1))
+
+    # 计算R2值
+    r2 = r2_score(y_true, y_pred)
+    return r2
+
+
+
 def calculate_r2_des(formula, dataset):
     # 读取数据集
     data = np.genfromtxt(dataset, delimiter=',', names=True)
