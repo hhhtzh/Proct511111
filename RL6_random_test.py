@@ -1,33 +1,26 @@
+from keras.layers import Dense
 import numpy as np
-import pandas as pd
 import tensorflow as tf
 import torch
-from keras.layers import Input, Dense, LSTM
-from keras.models import Model
+from keras.layers import Dense
 from keras.optimizers import Adam
-import tensorflow_probability as tfp
-from transformers import AutoTokenizer, AutoModel
-import numpy as np
-import pandas as pd
-import tensorflow as tf
-import torch
+
 from keplar.data.data import Data
 from keplar.operator.check_pop import CheckPopulation
 from keplar.operator.composite_operator import CompositeOpReturn, CompositeOp
 from keplar.operator.creator import BingoCreator, OperonCreator
 from keplar.operator.crossover import BingoCrossover, OperonCrossover
 from keplar.operator.evaluator import OperonEvaluator, GpEvaluator, BingoEvaluator
-from keplar.operator.linear_regression import SklearnTwoIndividualLinearRegression, \
-    SklearnOneIndividualLinearRegression, SklearnLinearRegression
+from keplar.operator.linear_regression import SklearnOneIndividualLinearRegression, SklearnLinearRegression
 from keplar.operator.mutation import OperonMutation, BingoMutation
 from keplar.operator.reinserter import KeplarReinserter
 from keplar.operator.selector import BingoSelector
 
-# data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
-data = Data("txt_pmlb", "datasets/pmlb/val/503_wind.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13","y"])
+data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
+# data = Data("txt_pmlb", "datasets/pmlb/val/503_wind.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13","y"])
 
 data.read_file()
-data.set_xy("y")
+# data.set_xy("y")
 x = data.get_np_x()
 y = data.get_np_y()
 
@@ -136,7 +129,7 @@ class PPOAgent:
         action_probabilities = self.actor_network(state).numpy()[0]
         # print(action_probabilities)
         for i in action_probabilities:
-            if str(i) == "nan":
+            if str(i)=="nan":
                 action = 4
                 return action
         action = np.random.choice(self.num_actions, p=action_probabilities)
@@ -152,14 +145,14 @@ class PPOAgent:
                 action_probabilities = self.actor_network(states)
                 action_masks = tf.one_hot(actions, self.num_actions)
                 # print(action_probabilities)
-                print("action_mask:", action_masks)
+                print("action_mask:",action_masks)
                 selected_action_probabilities = tf.reduce_sum(action_probabilities * action_masks, axis=1)
                 old_action_masks = tf.one_hot(actions, self.num_actions)
                 # print("old_action_masks:",old_action_masks)
                 old_action_probabilities = old_action_masks * action_probabilities
                 old_action_probabilities = tf.reduce_sum(old_action_probabilities, axis=1)
-                print("selected_action_probabilities", selected_action_probabilities)
-                print("old_action_probabilities", old_action_probabilities)
+                print("selected_action_probabilities",selected_action_probabilities)
+                print("old_action_probabilities",old_action_probabilities)
                 ratio = selected_action_probabilities / (old_action_probabilities + 1e-5)
                 # 将inf替换为999
                 ratio = tf.where(tf.math.is_inf(ratio), 999.0, ratio)
@@ -167,7 +160,6 @@ class PPOAgent:
                 # 将nan替换为0
                 ratio = tf.where(tf.math.is_nan(ratio), 0.0, ratio)
                 print("reward:", rewards)
-                print("states", states)
                 advantages = calculate_advantages(rewards, dones, self.critic_network(states))
                 advantages = tf.where(tf.math.is_inf(advantages), 999.0, advantages)
 
@@ -178,7 +170,7 @@ class PPOAgent:
                 surrogate_obj = tf.minimum(ratio * advantages, tf.clip_by_value(ratio, 1 - self.clip_epsilon,
                                                                                 1 + self.clip_epsilon) * advantages)
                 actor_loss = -tf.reduce_mean(surrogate_obj)
-                print("actor_loss", actor_loss)
+                print("actor_loss",actor_loss)
 
                 values = self.critic_network(states)
                 critic_loss = tf.reduce_mean(tf.square(rewards - values))
@@ -188,7 +180,6 @@ class PPOAgent:
 
             self.actor_optimizer.apply_gradients(zip(actor_gradients, self.actor_network.trainable_variables))
             self.critic_optimizer.apply_gradients(zip(critic_gradients, self.critic_network.trainable_variables))
-            return values
 
 
 # 计算优势函数
@@ -196,8 +187,8 @@ def calculate_advantages(rewards, dones, values):
     advantages = np.zeros_like(rewards, dtype=np.float32)
     last_advantage = 0
     last_value = 0
-    print("奖励序列:", rewards)
-    print("价值序列:", values)
+    print("奖励序列:",rewards)
+    print("价值序列:",values)
     for t in reversed(range(len(rewards))):
         mask = 1 - dones[t]
         delta = rewards[t] + 0.99 * last_value * mask - values[t]
@@ -231,8 +222,8 @@ eval_op_list = [evaluator]
 population = op_creator.do()
 evaluator.do(population)
 ck = CheckPopulation(data)
-lr = SklearnOneIndividualLinearRegression(data)
-lr1 = SklearnLinearRegression(data)
+lr= SklearnOneIndividualLinearRegression(data)
+lr1=SklearnLinearRegression(data)
 for _ in range(5):
     lr1.do(population)
 
@@ -276,8 +267,8 @@ for episode in range(num_episodes):
         episode_actions = []
         while not done:
             # print("不变的state:" + str(state))
-            action = agent.get_action(state)
-            # print(action)
+            [action] = np.random.randint(low=0, high=6, size=1)
+            print(action)
             # next_state = np.random.rand(6)  # 模拟环境返回下一个状态，这里使用随机生成的示例状态
             if action == 5:
                 done = True
@@ -303,102 +294,103 @@ for episode in range(num_episodes):
             if i == 0:
                 print("0")
                 # print("state_shape:", np.shape(episode_states))
-                # expressions = []
-                # for i in pool_pop.pop_list:
-                #     str_equ = i.format()
-                #     expressions.append(str_equ)
-                # vector = []
-                # for expression in expressions:
-                #     vector = expression_to_sentence_vector(expression)
-                #     # print(f"Expression: {expression}")
-                #     # print(f"Sentence Vector: {vector}")
-                #     # print()
-                # state = np.array(vector)
-                # episode_states.append(state)
+                expressions = []
+                for i in population.pop_list:
+                    str_equ = i.format()
+                    expressions.append(str_equ)
+                vector = []
+                for expression in expressions:
+                    vector = expression_to_sentence_vector(expression)
+                    # print(f"Expression: {expression}")
+                    # print(f"Sentence Vector: {vector}")
+                    # print()
+                state = np.array(vector)
+                episode_states.append(state)
                 op_crossover.do(pool_pop)
 
             elif i == 1:
                 print("1")
                 # print("state_shape:", np.shape(episode_states))
 
-                # expressions = []
-                # for i in pool_pop.pop_list:
-                #     str_equ = i.format()
-                #     expressions.append(str_equ)
-                # vector = []
-                # for expression in expressions:
-                #     vector = expression_to_sentence_vector(expression)
-                #     # print(f"Expression: {expression}")
-                #     # print(f"Sentence Vector: {vector}")
-                #     # print()
-                # state = np.array(vector)
-                # episode_states.append(state)
+                expressions = []
+                for i in population.pop_list:
+                    str_equ = i.format()
+                    expressions.append(str_equ)
+                vector = []
+                for expression in expressions:
+                    vector = expression_to_sentence_vector(expression)
+                    # print(f"Expression: {expression}")
+                    # print(f"Sentence Vector: {vector}")
+                    # print()
+                state = np.array(vector)
+                episode_states.append(state)
                 op_mutation.do(pool_pop)
             elif i == 2:
                 print("2")
                 # print("state_shape:", np.shape(episode_states))
-                # expressions = []
-                # for i in pool_pop.pop_list:
-                #     str_equ = i.format()
-                #     expressions.append(str_equ)
-                # vector = []
-                # for expression in expressions:
-                #     vector = expression_to_sentence_vector(expression)
-                #     # print(f"Expression: {expression}")
-                #     # print(f"Sentence Vector: {vector}")
-                #     # print()
-                # state = np.array(vector)
-                # episode_states.append(state)
+                expressions = []
+                for i in population.pop_list:
+                    str_equ = i.format()
+                    expressions.append(str_equ)
+                vector = []
+                for expression in expressions:
+                    vector = expression_to_sentence_vector(expression)
+                    # print(f"Expression: {expression}")
+                    # print(f"Sentence Vector: {vector}")
+                    # print()
+                state = np.array(vector)
+                episode_states.append(state)
                 bg_crossover.do(pool_pop)
             elif i == 3:
                 print("3")
                 # print("state_shape:", np.shape(episode_states))
-                # expressions = []
-                # for i in pool_pop.pop_list:
-                #     str_equ = i.format()
-                #     expressions.append(str_equ)
-                # vector = []
-                # for expression in expressions:
-                #     vector = expression_to_sentence_vector(expression)
-                #     # print(f"Expression: {expression}")
-                #     # print(f"Sentence Vector: {vector}")
-                #     # print()
-                # state = np.array(vector)
-                # episode_states.append(state)
+                expressions = []
+                for i in population.pop_list:
+                    str_equ = i.format()
+                    expressions.append(str_equ)
+                vector = []
+                for expression in expressions:
+                    vector = expression_to_sentence_vector(expression)
+                    # print(f"Expression: {expression}")
+                    # print(f"Sentence Vector: {vector}")
+                    # print()
+                state = np.array(vector)
+                episode_states.append(state)
                 bg_mutation.do(pool_pop)
 
             elif i == 4:
                 print("4")
                 # print("state_shape:", np.shape(episode_states))
 
-                # expressions = []
-                # for i in pool_pop.pop_list:
-                #     str_equ = i.format()
-                #     expressions.append(str_equ)
-                # vector = []
-                # for expression in expressions:
-                #     vector = expression_to_sentence_vector(expression)
-                #     # print(f"Expression: {expression}")
-                #     # print(f"Sentence Vector: {vector}")
-                #     # print()
-                # state = np.array(vector)
-                # episode_states.append(state)
+                expressions = []
+                for i in population.pop_list:
+                    str_equ = i.format()
+                    expressions.append(str_equ)
+                vector = []
+                for expression in expressions:
+                    vector = expression_to_sentence_vector(expression)
+                    # print(f"Expression: {expression}")
+                    # print(f"Sentence Vector: {vector}")
+                    # print()
+                state = np.array(vector)
+                episode_states.append(state)
                 lr.do(pool_pop)
+
             elif i == 5:
                 print("5")
                 # print("state_shape:", np.shape(episode_states))
-                # expressions = []
-                # for i in pool_pop.pop_list:
-                #     str_equ = i.format()
-                #     expressions.append(str_equ)
-                # vector = []
-                # for expression in expressions:
-                #     vector = expression_to_sentence_vector(expression)
-                #     # print(f"Expression: {expression}")
-                #     # print(f"Sentence Vector: {vector}")
-                #     # print()
-                # state = np.array(vector)
-                # episode_states.append(state)
+                expressions = []
+                for i in population.pop_list:
+                    str_equ = i.format()
+                    expressions.append(str_equ)
+                vector = []
+                for expression in expressions:
+                    vector = expression_to_sentence_vector(expression)
+                    # print(f"Expression: {expression}")
+                    # print(f"Sentence Vector: {vector}")
+                    # print()
+                state = np.array(vector)
+                episode_states.append(state)
                 rein = KeplarReinserter(pool_pop, "self")
                 rein.do(population)
             else:
@@ -408,8 +400,7 @@ for episode in range(num_episodes):
         print(population.pop_list)
         evaluator.do(population)
         new_list1 = ck.do(population)
-        vl = None
-        ck.write_rl_json(population, episode_actions, vl, "RL6_test20")
+        ck.write_rl_json(population, episode_actions, "RL6_random_test1")
         print("最好适应度:" + str(new_list1[0]) + ",平均适应度:" + str(new_list1[2]))
         reward = calculate_reward(list1, new_list1)
         list1 = new_list1
@@ -418,9 +409,6 @@ for episode in range(num_episodes):
             episode_rewards.append(reward)
         for _ in range(len(episode_actions)):
             episode_length.append(0)
-        episode_states = []
-        for _ in range(len(episode_actions)):
-            episode_states.append(state)
         episode_probs.append(agent.actor_network(np.array([state], dtype=np.float32))[0, action])
 
         # state = next_state
@@ -432,6 +420,6 @@ for episode in range(num_episodes):
         #                                   agent.critic_network(np.array(episode_states, dtype=np.float32)))
         print("epsode_actions:", episode_actions)
         print("state_shape:", np.shape(episode_states))
-        vl = agent.train(episode_states, episode_actions, episode_rewards, episode_length, episode_probs)
+        agent.train(episode_states, episode_actions, episode_rewards, episode_length, episode_probs)
 
 # 最后，您可以使用训练好的Agent来生成动作序列。

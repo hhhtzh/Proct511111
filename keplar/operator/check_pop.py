@@ -41,7 +41,7 @@ class CheckPopulation(Operator):
             mean_fit = np.mean(np_fit)
             return [best_fit, worest_fit, mean_fit, max_length, min_length, mean_length]
 
-    def write_rl_json(self, population, action_seq, file_name):
+    def write_rl_json(self, population, action_seq, value_seq,file_name):
         length_list = []
         fit_list = []
         if population.pop_type != "self":
@@ -87,6 +87,7 @@ class CheckPopulation(Operator):
             "history_best_ind": self.history_best_ind,
             "action_length": int(actions_length),
             "actions": str(action_seq),
+            "value_seq": str(value_seq),
             "max_length": int(state_list[3]),
             "min_length": int(state_list[4]),
             "mean_length": state_list[5],
