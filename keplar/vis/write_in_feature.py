@@ -70,9 +70,9 @@ else:
     ft = pd.read_feather("pmlb_results.feather")
 #
 #
-time = pd.read_csv("../../zjw_result/"+fileName_whitout_ext+"_time.csv")
-equ = pd.read_csv("../../zjw_result/"+fileName_whitout_ext+"_equ.csv")
-fit = pd.read_csv("../../zjw_result/"+fileName_whitout_ext+"_R2.csv")
+time = pd.read_csv("../../res/"+fileName_whitout_ext+"_time.csv")
+equ = pd.read_csv("../../res/"+fileName_whitout_ext+"_equ.csv")
+fit = pd.read_csv("../../res/"+fileName_whitout_ext+"_R2.csv")
 
 print(equ)
 time1 = time.iloc[:, -1]
