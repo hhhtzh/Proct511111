@@ -2,7 +2,7 @@ import time
 
 from sympy import *
 import numpy as np
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error,r2_score
 import timeout_decorator
 import copy
 import itertools
@@ -95,7 +95,7 @@ class Metrics:
         self.X_left, self.X_right = None, None
         X_Y = dataSet
         self.expantionPoint = copy.deepcopy(X_Y[0])
-        self.mmm = X_Y.shape[0] - 1
+        self.mmm = X_Y.shape[0] 
         print("mmm self:",self.mmm)
         np.random.shuffle(X_Y)
         change = True
@@ -162,21 +162,442 @@ class Metrics:
         f_taylor_num = None
         for i in range(1,k+1):
             if i==2:
-                f_taylor_num , f ,k= self._getTDatas(varNum,i)
+                f_taylor_num , f ,k= self._getTDatas1(varNum,i)
             else:
-                mytaylor_num , f ,k= self._getTDatas(varNum,i)
+                mytaylor_num , f ,k= self._getTDatas1(varNum,i)
             f_taylor = sympify(f)
             f_taylor = f_taylor.expand()
             test_y_pred = self._calY(f_taylor)
             test_nmse = mean_squared_error(self.Y, test_y_pred)
+            r2 = r2_score(self.Y, test_y_pred)
+            print("r2=",r2)
             if test_nmse < self.nmse:
                 nmse = test_nmse
                 f_taylor_all = f_taylor
                 k1 = k
             print('GET Taylor New  NMSE expanded to order k，k=', k1, 'nmse=', nmse)
-        return f_taylor_all ,k1 ,nmse,f_taylor_num
 
-       
+        return f_taylor_all ,k1 ,nmse,f_taylor_num
+    
+    def _getTDatas2(self, varNum, k):
+        mmm = self.X.shape[0]
+        print("mmm:", mmm)
+        combinations = itertools.product(range(k), repeat=varNum)
+        count = 0
+        # 遍历每个组合
+        for combo in combinations:
+            # 计算组合中所有数字的总和
+            total = sum(combo)
+            # 如果总和小于等于 n，增加计数器
+            if total <= k:
+                count += 1
+        # print("count=",count)
+        while count > mmm:
+            k -= 1
+            combinations = itertools.product(range(k), repeat=varNum)
+            count = 0
+            # 遍历每个组合
+            for combo in combinations:
+                # 计算组合中所有数字的总和
+                total = sum(combo)
+                # 如果总和小于等于 n，增加计数器
+                if total <= k:
+                    count += 1
+            # print("count=",count)
+
+        # count = min(count, mmm)  # 使用 count 和 mmm 中较小的值
+        # count += 1
+        # count = mmm
+        print("count=", count)
+
+        x_var = []
+        for i in range(varNum):
+            x = self._X[i][:-1] - self.expantionPoint[i]
+            x0 = np.resize(x, (mmm,1))
+            x_var.append(x0)
+
+        b0 = np.resize(self.b, (mmm,1))
+        print("b shape:", b0.shape[0])
+
+        var_array = []
+        for i in range(varNum):
+            sum_now = []
+            for j in range(k):
+                sum_now.append(x_var[i]**j)
+            var_array.append(sum_now)
+
+        flag_array = []
+        for i in range(varNum):
+            sum_now = []
+            z = -1
+            for j in range(k):
+                z += 1
+                sum_now.append(z)
+            flag_array.append(sum_now)
+
+        combinations = list(itertools.product(*var_array))
+        combinations_flag = list(itertools.product(*flag_array))
+
+        product_array = []
+        for combination in combinations:
+            product = 1
+            for num in combination:
+                product *= num
+            product_array.append(product)
+
+        fl = []
+        Number_record = []
+        for combination in combinations_flag:
+            product = 0
+            for num in combination:
+                product += num
+            if product <= k:
+                Number_record.append(combination)
+            fl.append(product)
+
+        A = None
+        Number = 0
+        for i in range(len(fl)):
+            if fl[i] <= k:
+                Number += 1
+                if A is None:
+                    A = (product_array[i]).reshape(mmm, 1)
+                else:
+                    A = np.hstack((A, ((product_array[i]).reshape(mmm, 1))))
+        print("A shape:", A.shape[0])
+
+        length = Number
+
+        avg_Taylor = np.zeros(length + 1)
+        avg_intercept = 0
+        segment_length = count + 1
+        _n = int(mmm/segment_length)-1  # 每段的长度
+        print("_n :",_n)
+
+        for i in range(_n):  # 进行三次系数的求解
+            start = i * segment_length
+            end = (i + 1) * segment_length
+            # lasso_model = Lasso(alpha=0.01)
+            # lasso_model.fit(A[start:end], b0[start:end])
+            # Taylor_sparse = lasso_model.coef_
+            # intercept = lasso_model.intercept_
+            Taylor = np.linalg.lstsq(A[start:end], b0[start:end], rcond=None)[0]
+
+            
+            
+            Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])
+            # Taylor = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])
+            avg_Taylor += Taylor.tolist()[:length+1]
+            # avg_intercept += intercept
+
+        avg_Taylor /= _n  # 计算系数的平均值
+        avg_intercept /= _n
+        print("avg_Taylor:", avg_Taylor)
+        print("avg_intercept:", avg_intercept)
+
+
+        # f = str(float(avg_intercept))+'+'+str(avg_Taylor[0])
+        f = str(avg_Taylor[0])
+        for i, combination in enumerate(Number_record):
+            u = i + 1
+            product = 0
+            for z in combination:
+                product += z
+            if product <= k:
+                lenth = len(combination)
+                if avg_Taylor[u] >= 0:
+                    f += '+'
+                else:
+                    pass
+                f += str(avg_Taylor[u])
+                for j, num in enumerate(combination):
+                    f += '*' + '(x' + str(j) + '-' + str(self.expantionPoint[j]) + ')**' + str(num)
+
+        if k == 2:
+            print("k=2, f=", f)
+
+        return avg_Taylor, f, k
+
+    def _getTDatas3(self, varNum, k):
+        mmm = self.X.shape[0]
+        print("mmm:", mmm)
+        combinations = itertools.product(range(k), repeat=varNum)
+        count = 0
+        # 遍历每个组合
+        for combo in combinations:
+            # 计算组合中所有数字的总和
+            total = sum(combo)
+            # 如果总和小于等于 n，增加计数器
+            if total <= k:
+                count += 1
+        # print("count=",count)
+        while count > mmm:
+            k -= 1
+            combinations = itertools.product(range(k), repeat=varNum)
+            count = 0
+            # 遍历每个组合
+            for combo in combinations:
+                # 计算组合中所有数字的总和
+                total = sum(combo)
+                # 如果总和小于等于 n，增加计数器
+                if total <= k:
+                    count += 1
+            # print("count=",count)
+
+        # count = min(count, mmm)  # 使用 count 和 mmm 中较小的值
+        # count += 1
+        # count = mmm
+        print("count=", count)
+
+        x_var = []
+        for i in range(varNum):
+            x = self._X[i][:-1] - self.expantionPoint[i]
+            x0 = np.resize(x, (mmm,1))
+            x_var.append(x0)
+
+        b0 = np.resize(self.b, (mmm,1))
+        print("b shape:", b0.shape[0])
+
+        var_array = []
+        for i in range(varNum):
+            sum_now = []
+            for j in range(k):
+                sum_now.append(x_var[i]**j)
+            var_array.append(sum_now)
+
+        flag_array = []
+        for i in range(varNum):
+            sum_now = []
+            z = -1
+            for j in range(k):
+                z += 1
+                sum_now.append(z)
+            flag_array.append(sum_now)
+
+        combinations = list(itertools.product(*var_array))
+        combinations_flag = list(itertools.product(*flag_array))
+
+        product_array = []
+        for combination in combinations:
+            product = 1
+            for num in combination:
+                product *= num
+            product_array.append(product)
+
+        fl = []
+        Number_record = []
+        for combination in combinations_flag:
+            product = 0
+            for num in combination:
+                product += num
+            if product <= k:
+                Number_record.append(combination)
+            fl.append(product)
+
+        A = None
+        Number = 0
+        for i in range(len(fl)):
+            if fl[i] <= k:
+                Number += 1
+                if A is None:
+                    A = (product_array[i]).reshape(mmm, 1)
+                else:
+                    A = np.hstack((A, ((product_array[i]).reshape(mmm, 1))))
+        print("A shape:", A.shape[0])
+
+        length = Number
+
+        avg_Taylor = np.zeros(length + 1)
+        avg_intercept = 0
+        segment_length = count +1
+        _n = int(mmm/segment_length)-1  # 每段的长度
+        print("_n :",_n)
+
+        for i in range(_n):  # 进行三次系数的求解
+            start = i * segment_length
+            end = (i + 1) * segment_length
+            # lasso_model = Lasso(alpha=0.01)
+            # lasso_model.fit(A[start:end], b0[start:end])
+            # Taylor_sparse = lasso_model.coef_
+            # intercept = lasso_model.intercept_
+            Taylor = np.linalg.lstsq(A[start:end], b0[start:end], rcond=None)[0]
+
+            
+            
+            Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])
+            # Taylor = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])
+            avg_Taylor += Taylor.tolist()[:length+1]
+            # avg_intercept += intercept
+
+        avg_Taylor /= _n  # 计算系数的平均值
+        avg_intercept /= _n
+        print("avg_Taylor:", avg_Taylor)
+        print("avg_intercept:", avg_intercept)
+
+
+        # f = str(float(avg_intercept))+'+'+str(avg_Taylor[0])
+        f = str(avg_Taylor[0])
+        for i, combination in enumerate(Number_record):
+            u = i + 1
+            product = 0
+            for z in combination:
+                product += z
+            if product <= k:
+                lenth = len(combination)
+                if avg_Taylor[u] >= 0:
+                    f += '+'
+                else:
+                    pass
+                f += str(avg_Taylor[u])
+                for j, num in enumerate(combination):
+                    f += '*' + '(x' + str(j) + '-' + str(self.expantionPoint[j]) + ')**' + str(num)
+
+        if k == 2:
+            print("k=2, f=", f)
+
+        return avg_Taylor, f, k
+
+    def _getTDatas1(self, varNum, k):
+        mmm = self.X.shape[0]
+        print("mmm:", mmm)
+        combinations = itertools.product(range(k), repeat=varNum)
+        count = 0
+        # 遍历每个组合
+        for combo in combinations:
+            # 计算组合中所有数字的总和
+            total = sum(combo)
+            # 如果总和小于等于 n，增加计数器
+            if total <= k:
+                count += 1
+        # print("count=",count)
+        while count > mmm:
+            k -= 1
+            combinations = itertools.product(range(k), repeat=varNum)
+            count = 0
+            # 遍历每个组合
+            for combo in combinations:
+                # 计算组合中所有数字的总和
+                total = sum(combo)
+                # 如果总和小于等于 n，增加计数器
+                if total <= k:
+                    count += 1
+            # print("count=",count)
+
+        # count = min(count, mmm)  # 使用 count 和 mmm 中较小的值
+        # count += 1
+        # count = mmm
+        print("count=", count)
+
+        x_var = []
+        for i in range(varNum):
+            x = self._X[i][:-1] - self.expantionPoint[i]
+            x0 = np.resize(x, (mmm,1))
+            x_var.append(x0)
+
+        b0 = np.resize(self.b, (mmm,1))
+        print("b shape:", b0.shape[0])
+
+        var_array = []
+        for i in range(varNum):
+            sum_now = []
+            for j in range(k):
+                sum_now.append(x_var[i]**j)
+            var_array.append(sum_now)
+
+        flag_array = []
+        for i in range(varNum):
+            sum_now = []
+            z = -1
+            for j in range(k):
+                z += 1
+                sum_now.append(z)
+            flag_array.append(sum_now)
+
+        combinations = list(itertools.product(*var_array))
+        combinations_flag = list(itertools.product(*flag_array))
+
+        product_array = []
+        for combination in combinations:
+            product = 1
+            for num in combination:
+                product *= num
+            product_array.append(product)
+
+        fl = []
+        Number_record = []
+        for combination in combinations_flag:
+            product = 0
+            for num in combination:
+                product += num
+            if product <= k:
+                Number_record.append(combination)
+            fl.append(product)
+
+        A = None
+        Number = 0
+        for i in range(len(fl)):
+            if fl[i] <= k:
+                Number += 1
+                if A is None:
+                    A = (product_array[i]).reshape(mmm, 1)
+                else:
+                    A = np.hstack((A, ((product_array[i]).reshape(mmm, 1))))
+        print("A shape:", A.shape[0])
+
+        length = Number
+
+        avg_Taylor = np.zeros(length + 1)
+        # Taylor_sparse = np.zeros(length + 1)
+        avg_intercept = 0
+        segment_length = count + 1
+        _n = int(mmm/segment_length)-1  # 每段的长度
+        print("_n :",_n)
+
+        for i in range(_n):  # 进行三次系数的求解
+            start = i * segment_length
+            end = (i + 1) * segment_length
+            lasso_model = Lasso(alpha=0.01)
+            lasso_model.fit(A[start:end], b0[start:end])
+            Taylor_sparse = lasso_model.coef_
+            intercept = lasso_model.intercept_
+            # Taylor = np.linalg.lstsq(A[start:end], b0[start:end], rcond=None)[0]
+
+            
+            
+            # Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])
+            Taylor_sparse = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])
+            avg_Taylor += Taylor_sparse.tolist()[:length+1]
+            avg_intercept += intercept
+
+        avg_Taylor /= _n  # 计算系数的平均值
+        avg_intercept /= _n
+        print("avg_Taylor:", avg_Taylor)
+        print("avg_intercept:", avg_intercept)
+
+
+        f = str(float(avg_intercept))+'+'+str(avg_Taylor[0])
+        # f = str(avg_Taylor[0])
+        for i, combination in enumerate(Number_record):
+            u = i + 1
+            product = 0
+            for z in combination:
+                product += z
+            if product <= k:
+                lenth = len(combination)
+                if avg_Taylor[u] >= 0:
+                    f += '+'
+                else:
+                    pass
+                f += str(avg_Taylor[u])
+                for j, num in enumerate(combination):
+                    f += '*' + '(x' + str(j) + '-' + str(self.expantionPoint[j]) + ')**' + str(num)
+
+        if k == 2:
+            print("k=2, f=", f)
+
+        return avg_Taylor, f, k
+
+    
      
     def _getTDatas(self, varNum, k):
         # the datasets shape is mmm
@@ -205,8 +626,9 @@ class Metrics:
                     count += 1
             # print("count=",count)
 
-        # count = mmm
-        # count = count+10
+        count = mmm
+        # count = count+1
+        print("count=",count)
 
         x_var=[]
         for i in range(varNum):
@@ -278,6 +700,7 @@ class Metrics:
         # print("A.shape=",A.shape)
 
         length = Number
+        print("length=",length)
         # print("length=",length)
         # print("count=",count)
         Taylor = 0
@@ -285,17 +708,19 @@ class Metrics:
         # Taylor = np.linalg.solve(A, b0)
 
 
-                # 创建Lasso回归模型
+        #         # 创建Lasso回归模型
         # lasso_model = Lasso(alpha=0.01)  # alpha是正则化强度，可以调整以控制稀疏性
 
-        # 训练模型
+        # # # 训练模型
         # lasso_model.fit(A, b0)
 
-        # 获取稀疏系数
+        # # # 获取稀疏系数
         # Taylor_sparse = lasso_model.coef_
+        # intercept = lasso_model.intercept_
 
-        # 打印稀疏系数
+        # # 打印稀疏系数
         # print("稀疏系数:", Taylor_sparse)
+        # print("截距:", intercept)
 
         Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
         # Taylor = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])
@@ -303,7 +728,8 @@ class Metrics:
         # Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
 
         # transform the Taylor to the string of sympy ,and return the string f
-        f=str(Taylor[0]) 
+        f=str(Taylor[0])
+        # f=str(intercept)+'+'+str(Taylor[0])
         for i,combination in enumerate(Number_record):
             u = i+1
             product =0

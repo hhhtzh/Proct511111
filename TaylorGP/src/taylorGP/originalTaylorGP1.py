@@ -613,7 +613,16 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
         all_function.append(sp.Integer(0))
     if len(subgraphs) == 1:
         y_pred,expression =GBasedSR(_x, X, Y, Gen, SR_method="gplearn")
-        rmse = calculate_rmse(Y, y_pred)
+        # rmse = calculate_rmse(Y, y_pred)
+        print("y_pred shape:",y_pred.shape)
+        print("Y shape:",Y.shape)
+        y_pred = y_pred.reshape((-1, 1))
+        mse = mean_squared_error(Y, y_pred)
+        r2 = r2_score(Y, y_pred)
+        rmse = mse
+        print("mse:",mse)
+        print("r2_score:",r2)
+
         return [rmse],[expression],None,y_pred
 
     else:
@@ -696,6 +705,10 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
 
 
         Y_pred = lasso_model.predict(y_all)
+        print("Y_pred shape:",Y_pred.shape)
+        print("Y_true shape:",Y.shape)
+
+        y_pred = Y_pred.reshape((-1, 1))
 
         mse = mean_squared_error(Y, Y_pred)
         # r2 = 0.0
@@ -704,7 +717,8 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
 
         # nmse = calculate_nmse(Y, Y_pred)
         # nmse = mse / np.var(Y)
-        rmse = calculate_rmse(Y, Y_pred)
+        # rmse = calculate_rmse(Y, Y_pred)
+        rmse = np.sqrt(mse)
 
 
         print("mse:",mse)
