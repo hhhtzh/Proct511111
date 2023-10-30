@@ -24,11 +24,13 @@ from keplar.operator.reinserter import KeplarReinserter
 from keplar.operator.selector import BingoSelector
 
 # data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
-data = Data("txt_pmlb", "datasets/pmlb/val/503_wind.txt", ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13","y"])
+data = Data("txt_pmlb", "datasets/pmlb/val/503_wind.txt",
+            ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13", "y"])
 
 data.read_file()
 data.set_xy("y")
 x = data.get_np_x()
+# print(np.shape(x))
 y = data.get_np_y()
 
 from transformers import BertModel, BertTokenizer
@@ -194,17 +196,27 @@ class PPOAgent:
 # 计算优势函数
 def calculate_advantages(rewards, dones, values):
     advantages = np.zeros_like(rewards, dtype=np.float32)
-    last_advantage = 0
-    last_value = 0
+    next_advantage = 0
+    next_value = 0
     print("奖励序列:", rewards)
     print("价值序列:", values)
     for t in reversed(range(len(rewards))):
         mask = 1 - dones[t]
-        delta = rewards[t] + 0.99 * last_value * mask - values[t]
-        advantages[t] = delta + 0.99 * 0.95 * last_advantage * mask
-        last_advantage = advantages[t]
-        last_value = values[t]
+        delta = rewards[t] + 0.99 * next_value * mask - values[t]
+        advantages[t] = delta + 0.99 * 0.95 * next_advantage * mask
+        next_advantage = advantages[t]
+        next_value = values[t]
     return advantages
+
+
+def calculate_advantages1(rewards, dones, values, old_value):
+    advantages = np.zeros_like(rewards, dtype=np.float32)
+    print("奖励序列:", rewards)
+    print("价值序列:", values)
+    for t in reversed(range(len(rewards))):
+        mask = 1 - dones[t]
+        advantages[t] = rewards[t] + 0.99 * values[t] * mask - old_value
+    return advantages, values[0]
 
 
 operators = ["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^']
@@ -295,6 +307,8 @@ for episode in range(num_episodes):
         # print("筛选后最好适应度:" + str(list2[0]) + ",平均适应度:" + str(list2[2]))
         pool_pop = population.copy()
         pool_pop.pop_type = "self"
+        for i in pool_pop.pop_list:
+            print(str(i.format()))
 
         # print(population.pop_type)
         for i in episode_actions:
@@ -316,10 +330,12 @@ for episode in range(num_episodes):
                 # state = np.array(vector)
                 # episode_states.append(state)
                 op_crossover.do(pool_pop)
+                for i in pool_pop.pop_list:
+                    print(str(i.format()))
 
             elif i == 1:
                 print("1")
-                # print("state_shape:", np.shape(episode_states))
+                print("state_shape:", np.shape(episode_states))
 
                 # expressions = []
                 # for i in pool_pop.pop_list:
@@ -334,6 +350,8 @@ for episode in range(num_episodes):
                 # state = np.array(vector)
                 # episode_states.append(state)
                 op_mutation.do(pool_pop)
+                for i in pool_pop.pop_list:
+                    print(str(i.format()))
             elif i == 2:
                 print("2")
                 # print("state_shape:", np.shape(episode_states))
@@ -350,6 +368,8 @@ for episode in range(num_episodes):
                 # state = np.array(vector)
                 # episode_states.append(state)
                 bg_crossover.do(pool_pop)
+                for i in pool_pop.pop_list:
+                    print(str(i.format()))
             elif i == 3:
                 print("3")
                 # print("state_shape:", np.shape(episode_states))
@@ -366,10 +386,12 @@ for episode in range(num_episodes):
                 # state = np.array(vector)
                 # episode_states.append(state)
                 bg_mutation.do(pool_pop)
+                for i in pool_pop.pop_list:
+                    print(str(i.format()))
 
             elif i == 4:
                 print("4")
-                # print("state_shape:", np.shape(episode_states))
+                print("state_shape:", np.shape(episode_states))
 
                 # expressions = []
                 # for i in pool_pop.pop_list:
@@ -384,9 +406,11 @@ for episode in range(num_episodes):
                 # state = np.array(vector)
                 # episode_states.append(state)
                 lr.do(pool_pop)
+                for i in pool_pop.pop_list:
+                    print(str(i.format()))
             elif i == 5:
                 print("5")
-                # print("state_shape:", np.shape(episode_states))
+                print("state_shape:", np.shape(episode_states))
                 # expressions = []
                 # for i in pool_pop.pop_list:
                 #     str_equ = i.format()
@@ -401,6 +425,8 @@ for episode in range(num_episodes):
                 # episode_states.append(state)
                 rein = KeplarReinserter(pool_pop, "self")
                 rein.do(population)
+                for i in pool_pop.pop_list:
+                    print(str(i.format()))
             else:
                 raise ValueError("出错了")
 
@@ -409,7 +435,7 @@ for episode in range(num_episodes):
         evaluator.do(population)
         new_list1 = ck.do(population)
         vl = None
-        ck.write_rl_json(population, episode_actions, vl, "RL6_test20")
+        ck.write_rl_json(population, episode_actions, vl, "RL6_test21")
         print("最好适应度:" + str(new_list1[0]) + ",平均适应度:" + str(new_list1[2]))
         reward = calculate_reward(list1, new_list1)
         list1 = new_list1

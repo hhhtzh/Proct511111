@@ -193,10 +193,13 @@ class OperonCreator(Creator):
         self.to_type = to_type
         self.pop_size = pop_size
         self.decimalPrecision = decimalPrecision
+        print(np.shape(np_x))
+        num_col = np_x.shape[1]
+        target_Name = "X" + str(num_col+1)
         np_y = np_y.reshape([-1, 1])
         self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
         self.target = self.ds.Variables[-1]
-        self.inputs = Operon.VariableCollection(v for v in self.ds.Variables if v.Name != self.target.Name)
+        self.inputs = Operon.VariableCollection(v for v in self.ds.Variables if v.Name != target_Name)
 
     def do(self, population=None):
         pset = Operon.PrimitiveSet()
@@ -218,10 +221,16 @@ class OperonCreator(Creator):
         pop.pop_type = "Operon"
 
         variable_list = self.ds.Variables
+        for var in variable_list:
+            print("==========" + str(var.Name))
+            print(str(var.Index))
+            print(str(var.Hash))
         for i in range(self.pop_size):
             tree = tree_initializer(rng)
             coeff_initializer(rng, tree)
             tree_list.append(tree)
+            print(Operon.InfixFormatter.Format(tree, self.ds, 10))
+
         pop.check_flag(self.to_type)
         trans_flag = pop.translate_flag
         pop.target_pop_list = tree_list
@@ -408,4 +417,3 @@ class WeightCreator(Creator):
 
     def do(self, population=None):
         pop_size = []
-

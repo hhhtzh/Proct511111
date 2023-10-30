@@ -16,13 +16,13 @@ from keplar.translator.translator import bingo_infixstr_to_func
 
 # json[operator][operator_list]=
 # data = Data("txt", "datasets/1.txt",["x","y"])
-# data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
+data = Data("txt", "datasets/2.txt", ["x0", "x1", "x2", "x3", "x4", "y"])
 # data = Data("txt", "datasets/vla/two/1.txt", ["x0", "x1", "y"])
-data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
+# data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 fit_list = []
 time_list = []
 data.read_file()
-# data.set_xy("y")
+data.set_xy("y")
 x = data.get_x()
 y = data.get_y()
 operators = ["+", "-", "*", "/", "sin", "exp", "cos", 'sqrt', 'log', 'sin', 'pow', 'exp', '^']

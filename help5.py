@@ -15,10 +15,11 @@ from keplar.data.data import Data
 from keplar.operator.evaluator import SingleBingoEvaluator
 
 # get some training data - see https://epistasislab.github.io/pmlb/
-D = fetch_data('1027_ESL', return_X_y=False, local_cache_dir='./datasets').to_numpy()
+D = fetch_data('503_wind', return_X_y=False).to_numpy()
 data = Data("pmlb", "1027_ESL", ["x1", "x2", "x3", 'y'])
 data.read_file()
 # initialize a dataset from a numpy array
+print(np.shape(D))
 ds = Operon.Dataset(D)
 variables = ds.Variables
 for var in variables:

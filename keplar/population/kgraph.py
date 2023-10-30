@@ -56,3 +56,7 @@ class KeplarGraphPopulation(Population):
                             temp = self.pop_graph[i][j]
                             self.pop_graph[i][j] = self.pop_graph[i][k]
                             self.pop_graph[i][k] = temp
+
+
+    def out_put(self):
+        

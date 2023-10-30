@@ -49,6 +49,8 @@ class SklearnLinearRegression(LinearRegression):
         if population.pop_type != 'self':
             raise ValueError("种群类型必须为Keplar")
         else:
+            new_expression = re.sub(r'X_(\d+)', lambda m: f'X_{int(m.group(1)) - 1}', new_expression)
+            print(new_expression)
             bingo_ind = AGraph(equation=new_expression)
             bingo_ind._update()
             kep_func, const_arr = bingo_infixstr_to_func(str(bingo_ind))
@@ -137,8 +139,12 @@ class SklearnOneIndividualLinearRegression(LinearRegression):
         equ1 = str(parent_.format())
         equ1 = re.sub(r"power", "^", equ1)
         equ1 = re.sub(r" pow ", " ^ ", equ1)
+        print(equ1)
+        # expression = re.sub(r'X_(\d+)', lambda m: f'X_{int(m.group(1)) - 1}', equ1)
         bingo_parent_1 = AGraph(equation=equ1)
         bingo_parent_1._update()
+        print(old_x)
+        print(str(bingo_parent_1))
         y1 = bingo_parent_1.evaluate_equation_at(old_x)
         y1 = np.array(y1).reshape(-1, 1)
         x=y1

@@ -146,6 +146,8 @@ class OperonEvaluator(Evaluator):
         self.training_p = training_p
         self.error_metric = error_metric
         np_y = np_y.reshape([-1, 1])
+        num_col = np_x.shape[1]
+        self.target_Name = "X" + str(num_col+1)
         self.ds = Operon.Dataset(np.hstack([np_x, np_y]))
         self.np_x = np_x
         self.np_y = np_y
@@ -169,7 +171,8 @@ class OperonEvaluator(Evaluator):
         else:
             ValueError("误差矩阵类型错误")
         target = self.ds.Variables[-1]
-        inputs = Operon.VariableCollection(v for v in self.ds.Variables if v.Name != target.Name)
+
+        inputs = Operon.VariableCollection(v for v in self.ds.Variables if v.Name != self.target_Name)
         rng = Operon.RomuTrio(random.randint(1, 1000000))
         training_range = Operon.Range(0, int(self.ds.Rows * self.training_p))
         test_range = Operon.Range(int(self.ds.Rows * self.training_p), self.ds.Rows)

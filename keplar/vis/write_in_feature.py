@@ -38,7 +38,7 @@ import argparse
 import os
 
 
-# from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens
+from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens
 
 
 sys.setrecursionlimit(10000)
