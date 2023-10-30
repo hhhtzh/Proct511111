@@ -67,10 +67,16 @@ if __name__ == '__main__':
         np_x = np.array(X_train)
         np_y = np.array(y_train)
 
-    mt = MTaylorGPAlg(1000, np_x, np_y, population=pop, NewSparseRegressionFlag=False)
+    mt = MTaylorGPAlg(1000, np_x, np_y, population=pop, NewSparseRegressionFlag=True)
 
     for i in range(1):
         mt.run()
+        # forual = "0.31"
+        # r2 = cal_r2(forual, sc_X, sc_y, X_test, y_test,scaler_X)
+        # rmse = cal_rmse(forual, sc_X, sc_y, X_test, y_test,scaler_X)
+        # print("r2:",r2)
+        # print("rmse:",rmse)
+        # print_stand(r2, rmse, forual, 2)
 
 
         r2 = cal_r2(mt.best_ind, sc_X, sc_y, X_test, y_test,scaler_X)

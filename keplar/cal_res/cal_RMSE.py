@@ -81,7 +81,9 @@ def calculate_rmse(formula,scaler_X,scaler_y, dataset):
 
 def cal_rmse(formula,scaler_X,scaler_y, X_test, y_test,sc_flag):
     # 定义变量
-    variables = [f'x_{i}' for i in range(len(data.dtype.names)-1)]
+    len_x = len(X_test[0])
+    print("len_x:", len_x)
+    variables = [f'x_{i}' for i in range(len_x)]
     x = symbols(' '.join(variables))
 
     # 将公式转换为可执行的函数
