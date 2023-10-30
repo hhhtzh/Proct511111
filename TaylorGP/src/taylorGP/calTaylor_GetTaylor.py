@@ -148,17 +148,17 @@ class Metrics:
     
     def _getTaylorPolyBest(self, varNum):
         if varNum == 1 or varNum == 2:
-            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,8)
-        elif varNum == 3 or varNum == 4:
             f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,6)
+        elif varNum == 3 or varNum == 4:
+            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,4)
         elif varNum == 5 or varNum == 6:
-            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,4)
-        elif varNum == 7 or varNum == 8:
-            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,4)
-        elif varNum < 12:
-            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,4)
-        elif varNum < 20:
             f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,3)
+        elif varNum == 7 or varNum == 8:
+            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,3)
+        elif varNum < 12:
+            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,2)
+        elif varNum < 20:
+            f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,2)
         else:    
             # mytaylor_num , f ,k= self._getTDatas(varNum,1)
             f_taylor ,k ,nmse,f_taylor_num,f2= self._CalTaylorNmse(varNum,2)
@@ -292,26 +292,26 @@ class Metrics:
         print("length=",length)
         print("count=",count)
         Taylor = 0
-        # Taylor = np.linalg.lstsq(A, b0, rcond=None)[0]
+        Taylor = np.linalg.lstsq(A, b0, rcond=None)[0]
         # Taylor = np.linalg.solve(A, b0)
 
 
                 # 创建Lasso回归模型
-        lasso_model = Lasso(alpha=0.01)  # alpha是正则化强度，可以调整以控制稀疏性
+        # lasso_model = Lasso(alpha=0.01)  # alpha是正则化强度，可以调整以控制稀疏性
 
         # 训练模型
-        lasso_model.fit(A, b0)
+        # lasso_model.fit(A, b0)
 
         # 获取稀疏系数
-        Taylor_sparse = lasso_model.coef_
+        # Taylor_sparse = lasso_model.coef_
 
         # 打印稀疏系数
         # print("稀疏系数:", Taylor_sparse)
 
         # Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
-        Taylor = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])
+        # Taylor = np.insert(Taylor_sparse, 0, self.expantionPoint[-1])
 
-        # Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
+        Taylor = np.insert(Taylor, 0, self.expantionPoint[-1])  
 
         # transform the Taylor to the string of sympy ,and return the string f
         f=str(Taylor[0]) 
@@ -334,7 +334,7 @@ class Metrics:
         if k == 2:
             print("k=2,f=",f)
 
-        return Taylor.tolist()[:length],f,k
+        return Taylor.tolist()[:length+1],f,k
 
 
     def judge_Low_polynomial(self, lowLine=7, varNum=1):

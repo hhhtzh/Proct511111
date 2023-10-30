@@ -34,10 +34,12 @@ if __name__ == '__main__':
     args = argparser.parse_args()
     print("file name : ", args.name)
 
-    X,y = fetch_data("feynman_I_12_5", return_X_y=True,local_cache_dir="./pmlb/datasets/")
+    X,y = fetch_data(args.name, return_X_y=True,local_cache_dir="/home/friday/Documents/pmlb/datasets/")
     print("read data success!")
     # X,y = fetch_data(args.name, return_X_y=True)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+    print("X_train shape:", X_train.shape)
 
     pop = Population(128)
     fit_list = []
@@ -47,9 +49,9 @@ if __name__ == '__main__':
     rmse_list = []
 
     if "feynman" in args.name:
-        scaler_X = True
-    else:
         scaler_X = False
+    else:
+        scaler_X = True
 
     if scaler_X:
         sc_X = StandardScaler()
@@ -85,7 +87,7 @@ if __name__ == '__main__':
         time_pd = pd.DataFrame({'MTaylor(with new sparse)': time_list})
         R2_pd = pd.DataFrame({'MTaylor(with new sparse)': R2_list})
         rmse_pd = pd.DataFrame({'MTaylor(with new sparse)': rmse_list})
-        time_pd.to_csv(r"zjw_result/" + args.name + "_time.csv", sep=',', mode="a")
-        equ_pd.to_csv(r"zjw_result/" + args.name + "_equ.csv", sep=',', mode="a")
-        R2_pd.to_csv(r"zjw_result/" + args.name + "_R2.csv", sep=',', mode="a")
-        rmse_pd.to_csv(r"zjw_result/" + args.name + "_rmse.csv", sep=',', mode="a")
+        time_pd.to_csv(r"res/" + args.name + "_time.csv", sep=',', mode="a")
+        equ_pd.to_csv(r"res/" + args.name + "_equ.csv", sep=',', mode="a")
+        R2_pd.to_csv(r"res/" + args.name + "_R2.csv", sep=',', mode="a")
+        rmse_pd.to_csv(r"res/" + args.name + "_rmse.csv", sep=',', mode="a")

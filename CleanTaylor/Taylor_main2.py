@@ -15,6 +15,7 @@ import math
 
 
 
+
 def _calY(f, _x=None, X=None, varNum=None):
     y_pred = []
     len1, len2 = 0, 0
@@ -63,7 +64,7 @@ def GBasedSR(_x,X,Y,Gen,SR_method="gplearn"):
     #                        parsimony_coefficient=0.01, random_state=0)
 
     est_gp = SymbolicRegressor(population_size=100,
-                               generations=20, stopping_criteria=0.01,
+                               generations=200, stopping_criteria=0.01,
                                  p_crossover=0.7, p_subtree_mutation=0.1,
                                     p_hoist_mutation=0.05, p_point_mutation=0.1,
                                     max_samples=0.9, verbose=1,
@@ -238,6 +239,10 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
 
 
     Y_pred = lasso_model.predict(y_all)
+    y_pred = Y_pred.reshape((-1, 1))
+    print("y_pred shape:",y_pred.shape)
+    print("Y shape:",Y.shape)
+
 
     mse = mean_squared_error(Y, Y_pred)
     # r2 = 0.0
@@ -246,7 +251,8 @@ def CalTaylorFeaturesGraph(taylor_num,f_taylor,_x,X,Y,population,Gen,Pop,repeatN
 
     nmse = calculate_nmse(Y, Y_pred)
     # nmse = mse / np.var(Y)
-    rmse = calculate_rmse(Y, Y_pred)
+    # rmse = calculate_rmse(Y, Y_pred)
+    rmse = np.sqrt(mse)
 
     print("mse:",mse)
     print("r2_score:",r2)
@@ -345,18 +351,247 @@ def cal_master(filename):
 
 
 
+def cal_x222(filename):
+    X_Y = np.loadtxt(filename,dtype=np.float64,skiprows=1)
 
+    X,Y = np.split(X_Y, (-1,), axis=1)
 
+    # X, Y = np.split(X_Y, (-1,), axis=1)
 
+    print("X.shape:",X.shape)
+    print("Y.shape:",Y.shape)
+    # 构建设计矩阵
+    A = np.vstack([X, X**2, X**3]).T
 
-    
+    # 最小二乘法求解
+    coefficients, residuals, rank, singular_values = np.linalg.lstsq(A, Y, rcond=None)
+    a, b, c = coefficients
 
+    # 预测值
+    Y_pred = a * X + b * X**2 + c * X**3
 
+    # 计算 MSE
+    mse = mean_squared_error(Y, Y_pred)
 
+    # 计算 R^2
+    r2 = r2_score(Y, Y_pred)
+
+    # 打印结果
+    print("拟合系数:")
+    print("a =", a)
+    print("b =", b)
+    print("c =", c)
+    print("MSE =", mse)
+    print("R^2 =", r2)
+
+def cal_x22(filename):
+    X_Y = np.loadtxt(filename, dtype=np.float64, skiprows=1)
+
+    X, Y = np.split(X_Y, (-1,), axis=1)
+
+    print("X.shape:", X.shape)
+    print("Y.shape:", Y.shape)
+
+    # 构建设计矩阵
+    A = np.vstack([X[:, 0], X[:, 0]**2, X[:, 0]**3, X[:, 1], X[:, 1]**2, X[:, 1]**3]).T
+
+    # 最小二乘法求解
+    coefficients, residuals, rank, singular_values = np.linalg.lstsq(A, Y, rcond=None)
+    a, b, c, d, e, f = coefficients
+
+    # 预测值
+    Y_pred = a * X[:, 0] + b * X[:, 0]**2 + c * X[:, 0]**3 + d * X[:, 1] + e * X[:, 1]**2 + f * X[:, 1]**3
+
+    # 计算 MSE
+    mse = mean_squared_error(Y, Y_pred)
+
+    # 计算 R^2
+    r2 = r2_score(Y, Y_pred)
+
+    # 打印结果
+    print("拟合系数:")
+    print("a =", a)
+    print("b =", b)
+    print("c =", c)
+    print("d =", d)
+    print("e =", e)
+    print("f =", f)
+    print("MSE =", mse)
+    print("R^2 =", r2)
+
+def cal_x212(filename):
+    X_Y = np.loadtxt(filename, dtype=np.float64, skiprows=1)
+
+    X, Y = np.split(X_Y, (-1,), axis=1)
+
+    print("X.shape:", X.shape)
+    print("Y.shape:", Y.shape)
+
+    # 构建设计矩阵
+    A = np.vstack([
+        X[:, 0], X[:, 0]**2, X[:, 0]**3, X[:, 0]**4, X[:, 0]**5, X[:, 0]**6,
+        X[:, 1], X[:, 1]**2, X[:, 1]**3, X[:, 1]**4, X[:, 1]**5, X[:, 1]**6
+    ]).T
+
+    # 最小二乘法求解
+    coefficients, residuals, rank, singular_values = np.linalg.lstsq(A, Y, rcond=None)
+    a, b, c, d, e, f, g, h, i, j, k, l = coefficients
+
+    # 预测值
+    Y_pred = (a * X[:, 0] + b * X[:, 0]**2 + c * X[:, 0]**3 + d * X[:, 0]**4 + e * X[:, 0]**5 + f * X[:, 0]**6 +
+              g * X[:, 1] + h * X[:, 1]**2 + i * X[:, 1]**3 + j * X[:, 1]**4 + k * X[:, 1]**5 + l * X[:, 1]**6)
+
+    # 计算 MSE
+    mse = mean_squared_error(Y, Y_pred)
+
+    # 计算 R^2
+    r2 = r2_score(Y, Y_pred)
+
+    # 打印结果
+    print("拟合系数:")
+    print("a =", a)
+    print("b =", b)
+    print("c =", c)
+    print("d =", d)
+    print("e =", e)
+    print("f =", f)
+    print("g =", g)
+    print("h =", h)
+    print("i =", i)
+    print("j =", j)
+    print("k =", k)
+    print("l =", l)
+    print("MSE =", mse)
+    print("R^2 =", r2)
+
+from sklearn.linear_model import Lasso
+
+def cal_x23(filename):
+    X_Y = np.loadtxt(filename, dtype=np.float64, skiprows=1)
+
+    X, Y = np.split(X_Y, (-1,), axis=1)
+
+    print("X.shape:", X.shape)
+    print("Y.shape:", Y.shape)
+
+    # 构建设计矩阵
+    A = np.vstack([
+        X[:, 0], X[:, 0]**2, X[:, 0]**3, X[:, 0]**4, X[:, 0]**5, X[:, 0]**6,
+        X[:, 1], X[:, 1]**2, X[:, 1]**3, X[:, 1]**4, X[:, 1]**5, X[:, 1]**6
+    ]).T
+
+    # Lasso 回归拟合
+    lasso = Lasso(alpha=0.1)  # 设置 alpha 参数
+    lasso.fit(A, Y)
+    coefficients = lasso.coef_
+
+    # 预测值
+    Y_pred = np.dot(A, coefficients)
+
+    # 计算 MSE
+    mse = mean_squared_error(Y, Y_pred)
+
+    # 计算 R^2
+    r2 = r2_score(Y, Y_pred)
+
+    # 打印结果
+    print("拟合系数:")
+    for i, coef in enumerate(coefficients):
+        print(f"coefficients[{i}] =", coef)
+    print("MSE =", mse)
+    print("R^2 =", r2)
+
+import numpy as np
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+
+def polynomial_regression(filename, degree):
+    X_Y = np.loadtxt(filename, dtype=np.float64, skiprows=1)
+
+    X, Y = np.split(X_Y, (-1,), axis=1)
+
+    print("X.shape:", X.shape)
+    print("Y.shape:", Y.shape)
+
+    # 创建多项式特征
+    poly_features = PolynomialFeatures(degree=degree)
+    X_poly = poly_features.fit_transform(X)
+
+    # 线性回归拟合
+    lin_reg = LinearRegression()
+    lin_reg.fit(X_poly, Y)
+
+    # 预测值
+    Y_pred = lin_reg.predict(X_poly)
+
+    # 计算 MSE
+    mse = mean_squared_error(Y, Y_pred)
+
+    # 计算 R^2
+    r2 = r2_score(Y, Y_pred)
+
+    # 打印结果
+    print("拟合系数:")
+    # for i, coef in enumerate(lin_reg.coef_[0]):
+    #     print(f"coefficients[{i}] =", coef)
+    print("degree:",degree)
+    print("MSE =", mse)
+    print("R^2 =", r2)
+
+def cal_x21(filename, degree):
+    X_Y = np.loadtxt(filename, dtype=np.float64, skiprows=1)
+
+    X, Y = np.split(X_Y, (-1,), axis=1)
+
+    print("X.shape:", X.shape)
+    print("Y.shape:", Y.shape)
+
+    # 生成多项式特征
+    X_poly = generate_polynomial_features(X, degree)
+
+    # 线性回归拟合
+    model = LinearRegression()
+    model.fit(X_poly, Y)
+
+    # 预测值
+    Y_pred = model.predict(X_poly)
+
+    # 计算 MSE
+    mse = mean_squared_error(Y, Y_pred)
+
+    # 计算 R^2
+    r2 = r2_score(Y, Y_pred)
+
+    # 打印结果
+    print("拟合系数:")
+    print("degree =", degree)
+    print("Coefficients:", model.coef_)
+    print("Coefficients length :", model.coef_.shape)
+
+    print("MSE =", mse)
+    print("R^2 =", r2)
+
+def generate_polynomial_features(X, degree):
+    n_samples, n_features = X.shape
+    X_poly = np.ones((n_samples, 1))
+
+    for d in range(1, degree + 1):
+        for feature in range(n_features):
+            X_poly = np.column_stack((X_poly, np.power(X[:, feature], d)))
+
+    return X_poly
 if __name__ == '__main__':
     sys.setrecursionlimit(300)
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--fileName', default='example.tsv', type=str)
     args = argparser.parse_args()
     print(args.fileName)
-    cal_master(args.fileName)
+    # cal_master(args.fileName)
+    # cal_x2(args.fileName)
+    for i in range(1,9):
+        cal_master(args.fileName)
+
+    # cal_x2(args.fileName)
+        # cal_x21(args.fileName, i)
+        # polynomial_regression(args.fileName, i)
+    # polynomial_regression(args.fileName, 1)
