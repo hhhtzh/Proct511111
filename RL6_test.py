@@ -131,6 +131,7 @@ class PPOAgent:
         self.critic_optimizer = Adam(learning_rate=0.001)
         self.clip_epsilon = clip_epsilon
         self.gamma = gamma
+        self.old_value = 0
 
     def get_action(self, state):
         state = tf.convert_to_tensor([state], dtype=tf.float32)
@@ -170,7 +171,8 @@ class PPOAgent:
                 ratio = tf.where(tf.math.is_nan(ratio), 0.0, ratio)
                 print("reward:", rewards)
                 print("states", states)
-                advantages = calculate_advantages(rewards, dones, self.critic_network(states))
+                # advantages = calculate_advantages(rewards, dones, self.critic_network(states))
+                advantages,self.old_value = calculate_advantages1(rewards, dones, self.critic_network(states), self.old_value)
                 advantages = tf.where(tf.math.is_inf(advantages), 999.0, advantages)
 
                 # 将nan替换为0
