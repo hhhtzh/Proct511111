@@ -13,6 +13,7 @@ import sympy as sp
 from sklearn.linear_model import Lasso
 from sklearn.metrics import mean_squared_error, r2_score
 import math
+from operon.sklearn import SymbolicRegressor
 
 
 
@@ -53,38 +54,40 @@ def calculate_rmse(observed, predicted):
     return rmse
 
 def GBasedSR(_x,X,Y,Gen,SR_method="gplearn"):
-    est_gp = SymbolicRegressor(population_size=1,
-                           generations=200, stopping_criteria=0.01,
-                           p_crossover=0, p_subtree_mutation=0.2,
-                           p_hoist_mutation=0.3, p_point_mutation=0.5,
-                           max_samples=0.9, verbose=1,
-                           parsimony_coefficient=0.01, random_state=0)
+    if SR_method == "gplearn":
+        est_gp = SymbolicRegressor(population_size=1,
+                            generations=200, stopping_criteria=0.01,
+                            p_crossover=0, p_subtree_mutation=0.2,
+                            p_hoist_mutation=0.3, p_point_mutation=0.5,
+                            max_samples=0.9, verbose=1,
+                            parsimony_coefficient=0.01, random_state=0)
 
-    # est_gp = SymbolicRegressor(population_size=100,
-    #                            generations=200, stopping_criteria=0.01,
-    #                              p_crossover=0.7, p_subtree_mutation=0.1,
-    #                                 p_hoist_mutation=0.05, p_point_mutation=0.1,
-    #                                 max_samples=0.9, verbose=1,
-    #                                 parsimony_coefficient=0.01, random_state=0)
-                            
+        # est_gp = SymbolicRegressor(population_size=100,
+        #                            generations=200, stopping_criteria=0.01,
+        #                              p_crossover=0.7, p_subtree_mutation=0.1,
+        #                                 p_hoist_mutation=0.05, p_point_mutation=0.1,
+        #                                 max_samples=0.9, verbose=1,
+        #                                 parsimony_coefficient=0.01, random_state=0)
                                 
+                                    
 
-    est_gp.fit(X, Y)
+        est_gp.fit(X, Y)
 
-    best_fitness = est_gp._program.raw_fitness_
-    print("best_fitness:",best_fitness)
+        best_fitness = est_gp._program.raw_fitness_
+        print("best_fitness:",best_fitness)
 
-    best_str = est_gp._program.__str__()
-    print("best_str:",best_str)
+        best_str = est_gp._program.__str__()
+        print("best_str:",best_str)
 
-    y_pred = est_gp.predict(X)
+        y_pred = est_gp.predict(X)
 
-    print("y_pred shape:",y_pred.shape)
+        print("y_pred shape:",y_pred.shape)
 
-    expression = sp.expand(est_gp._program.get_expression())
+        expression = sp.expand(est_gp._program.get_expression())
 
-    print("expression:",expression)
-
+        print("expression:",expression)
+    elif SR_method =="Operon":
+        pass
 
 
     return y_pred,expression
