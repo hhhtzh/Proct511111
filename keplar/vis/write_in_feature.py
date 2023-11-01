@@ -14,7 +14,7 @@
 # # 将合并后的 DataFrame 写入 feather 文件
 # ft1.to_feather("feynman_results.feather")
 # print(ft1)
-
+import numpy
 # import pandas as pd
 # ft1 = pd.read_feather("feynman_results.feather")
 # # 创建要追加的新数据行
@@ -37,13 +37,11 @@ import sys
 import argparse
 import os
 
-
 from bingo.symbolic_regression.agraph.string_parsing import eq_string_to_infix_tokens
-
 
 sys.setrecursionlimit(10000)
 argparser = argparse.ArgumentParser()
-argparser.add_argument("--dataset", type=str, default="620_fri_c1_1000_25")
+argparser.add_argument("--dataset", type=str, default="594_fri_c2_100_5")
 
 args = argparser.parse_args()
 fileName_whitout_ext = args.dataset
@@ -70,9 +68,9 @@ else:
     ft = pd.read_feather("pmlb_results.feather")
 #
 #
-time = pd.read_csv("../../res/"+fileName_whitout_ext+"_time.csv")
-equ = pd.read_csv("../../res/"+fileName_whitout_ext+"_equ.csv")
-fit = pd.read_csv("../../res/"+fileName_whitout_ext+"_R2.csv")
+time = pd.read_csv("../../res/" + fileName_whitout_ext + "_time.csv")
+equ = pd.read_csv("../../res/" + fileName_whitout_ext + "_equ.csv")
+fit = pd.read_csv("../../res/" + fileName_whitout_ext + "_R2.csv")
 
 print(equ)
 time1 = time.iloc[:, -1]
@@ -84,9 +82,10 @@ for i in equ1:
 
 for i in range(len(time1)):
     ms = 0
-    for j in equ1[i]:
-        if j in ['+', '-', '*', '/', '**']:
-            ms += 1
+    if not isinstance(equ1[i], numpy.float64):
+        for j in equ1[i]:
+            if j in ['+', '-', '*', '/', '**']:
+                ms += 1
     print(float(fit1[i]))
     new_row_data = {
         "dataset": fileName_whitout_ext,
