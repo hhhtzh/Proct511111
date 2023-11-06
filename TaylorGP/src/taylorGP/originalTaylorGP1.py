@@ -508,31 +508,51 @@ def GBasedSR(_x,X,Y,Gen,SR_method="gplearn"):
     #                        p_hoist_mutation=0.3, p_point_mutation=0.5,
     #                        max_samples=0.9, verbose=1,
     #                        parsimony_coefficient=0.01, random_state=0)
+    if SR_method == "gplearn":
 
-    est_gp = SymbolicRegressor(population_size=100,
-                               generations=200, stopping_criteria=0.01,
-                                 p_crossover=0.7, p_subtree_mutation=0.1,
-                                    p_hoist_mutation=0.05, p_point_mutation=0.1,
-                                    max_samples=0.9, verbose=1,
-                                    parsimony_coefficient=0.01, random_state=0)
-                            
+        est_gp = SymbolicRegressor(population_size=100,
+                                generations=200, stopping_criteria=0.01,
+                                    p_crossover=0.7, p_subtree_mutation=0.1,
+                                        p_hoist_mutation=0.05, p_point_mutation=0.1,
+                                        max_samples=0.9, verbose=1,
+                                        parsimony_coefficient=0.01, random_state=0)
                                 
+                                    
 
-    est_gp.fit(X, Y)
+        est_gp.fit(X, Y)
 
-    best_fitness = est_gp._program.fitness_
-    print("best_fitness:",best_fitness)
+        best_fitness = est_gp._program.fitness_
+        print("best_fitness:",best_fitness)
 
-    best_str = est_gp._program.__str__()
-    print("best_str:",best_str)
+        best_str = est_gp._program.__str__()
+        print("best_str:",best_str)
 
-    y_pred = est_gp.predict(X)
+        y_pred = est_gp.predict(X)
 
-    print("y_pred shape:",y_pred.shape)
+        print("y_pred shape:",y_pred.shape)
 
-    expression = sp.expand(est_gp._program.get_expression())
+        expression = sp.expand(est_gp._program.get_expression())
 
-    print("expression:",expression)
+        print("expression:",expression)
+    
+    elif SR_method == "Operon":
+        x = X
+        y = Y
+        data = None
+        x_shape = np.shape(x[0])[0]
+        evaluator = OperonEvaluator("RMSE", x, y, 0.7, True, "Operon")
+        crossover = OperonCrossover(x, y, "Operon")
+        mutation = OperonMutation(1, 1, 1, 0.5, x, y, 10, 50, "balanced", "Operon")
+        reinsert = OperonReinserter(None, "ReplaceWorst", 10, "Operon", x, y)
+        op_up_list = [mutation, crossover]
+        op_down_list = [reinsert]
+        eva_list = [evaluator]
+        op_alg = OperonAlg(100, op_up_list, op_down_list, eva_list,  1e-5, 128, 16, x, y, data, x_shape)
+        for i in range(1):
+            op_alg.run()
+        
+        tops_fit = op_alg.best_fit
+        tops_str = str(op_alg.model_string)
 
     # expression = sp.re(expression)
 
