@@ -20,6 +20,14 @@ class Data:
                 self.pd_data = pd.read_csv(self.file_path)
             except:
                 raise ValueError('csv路径错误')
+
+        elif self.type=="feynman_csv":
+            try:
+                self.pd_data = pd.read_csv(self.file_path)
+                self.pd_data.columns = self.names
+            except:
+                raise ValueError('csv路径错误')
+
         elif self.type == "txt":
             self.pd_data = pd.DataFrame(
                 pd.read_table(self.file_path, sep='  ', header=None, engine='python', names=self.names))
@@ -86,6 +94,7 @@ class Data:
             raise ValueError("数据集xy未设置")
 
     def set_xy(self, str_y):
+        print(self.pd_data.columns)
         self.y = np.array(self.pd_data.loc[:, str_y])
         dt = pd.DataFrame(self.pd_data)
         self.x = np.array(dt.drop(labels=str_y, axis=1))

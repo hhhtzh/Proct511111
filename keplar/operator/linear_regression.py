@@ -134,20 +134,28 @@ class SklearnOneIndividualLinearRegression(LinearRegression):
         model = sklr()
         old_x = self.data.get_np_x()
         y = self.data.get_np_y()
-        [parent_num]=np.random.randint(low=0, high=population.get_pop_size() - 1, size=1)
-        parent_= population.pop_list[parent_num]
+        for i in population.pop_list:
+            for j in i.func:
+                if j == 3014:
+                    raise ValueError("在这出错")
+        [parent_num] = np.random.randint(low=0, high=population.get_pop_size() - 1, size=1)
+        parent_ = population.pop_list[parent_num]
+        for i in population.pop_list[parent_num].func:
+            if (i == '3014'):
+                raise ValueError("在这出错")
         equ1 = str(parent_.format())
         equ1 = re.sub(r"power", "^", equ1)
         equ1 = re.sub(r" pow ", " ^ ", equ1)
+        print(parent_.func)
         print(equ1)
-        # expression = re.sub(r'X_(\d+)', lambda m: f'X_{int(m.group(1)) - 1}', equ1)
+        expression = re.sub(r'X_(\d+)', lambda m: f'X_{int(m.group(1)) - 1}', equ1)
         bingo_parent_1 = AGraph(equation=equ1)
         bingo_parent_1._update()
         print(old_x)
         print(str(bingo_parent_1))
         y1 = bingo_parent_1.evaluate_equation_at(old_x)
         y1 = np.array(y1).reshape(-1, 1)
-        x=y1
+        x = y1
         print(x)
         print(y)
         non_nan_indices = ~np.isnan(x).any(axis=1)
@@ -156,6 +164,10 @@ class SklearnOneIndividualLinearRegression(LinearRegression):
         non_inf_indices = ~np.isinf(x_cleaned).any(axis=1)
         x_cleaned = x_cleaned[non_inf_indices]
         y_cleaned = y_cleaned[non_inf_indices]
+        print(x_cleaned)
+        print(y_cleaned)
+        if x_cleaned.shape[0] == 0 or y_cleaned.shape[0] == 0:
+            return
         model.fit(x_cleaned, y_cleaned)
         # 获取截距和系数
         intercept = model.intercept_

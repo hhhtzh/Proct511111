@@ -57,13 +57,19 @@ class BingoMutation(Mutation):
         if population.pop_type != "Bingo":
             parent_num = np.random.randint(
                 low=0, high=population.get_pop_size() - 1)
+            for i in population.pop_list:
+                for j in i.func:
+                    if j == '3014':
+                        raise ValueError("在这出错")
             bingo_parent = population.pop_list[parent_num]
             equ = bingo_parent.format()
+            print(bingo_parent.func)
             equ = re.sub(" power ", " ^ ", equ)
-            # print(equ)
+            print(equ)
             bingo_parent = AGraph(equation=equ)
             bingo_parent._update()
             bingo_child = mutation(bingo_parent)
+            print(str(bingo_child))
             if self.to_type != "Bingo":
                 equ = str(bingo_child)
                 func, const_arr = bingo_infixstr_to_func(equ)
@@ -122,8 +128,10 @@ class OperonMutation(Mutation):
 
     def do(self, population):
         target = self.ds.Variables[-1]
+        num_col = self.np_x.shape[1]
+        target_Name = "X" + str(num_col+1)
         inputs = Operon.VariableCollection(
-            v for v in self.ds.Variables if v.Name != target.Name)
+            v for v in self.ds.Variables if v.Name != target_Name)
         pset = Operon.PrimitiveSet()
         pset.SetConfig(
             Operon.PrimitiveSet.TypeCoherent)
@@ -165,6 +173,9 @@ class OperonMutation(Mutation):
             for i in population.pop_list:
                 op_tree = \
                     to_op(i, self.np_x, self.np_y)
+                for node in op_tree.Nodes:
+                    print(node.Name)
+                    print(node.HashValue)
                 new_tree_list.append(mutation(rng, op_tree))
                 population.target_pop_list = new_tree_list
                 population.set_pop_size(len(new_tree_list))
@@ -178,6 +189,11 @@ class OperonMutation(Mutation):
                         var_s = self.ds.Variables
                         func, const_arr = trans_op(op_tree, var_s)
                         kep_ind = Individual(func, const_arr)
+                        for i in func:
+                            if i=='3014':
+                                print(kep_ind.format())
+                                print(Operon.InfixFormatter.Format(op_tree, self.ds, 5))
+                                raise ValueError("在这出错")
                         kep_ind_list.append(kep_ind)
                     population.pop_list = kep_ind_list
                     population.pop_size = len(population.pop_list)
@@ -186,6 +202,7 @@ class OperonMutation(Mutation):
 class OperonGraphMutation(OperonMutation):
     def __init__(self, onepoint_p, changevar_p, changefunc_p, replace_p, np_x, np_y, maxD, maxL, tree_type, to_type):
         super().__init__(onepoint_p, changevar_p, changefunc_p, replace_p, np_x, np_y, maxD, maxL, tree_type, to_type)
+
     def do(self, population):
         target = self.ds.Variables[-1]
         inputs = Operon.VariableCollection(
@@ -243,6 +260,9 @@ class OperonGraphMutation(OperonMutation):
                     for op_tree in population.target_pop_list:
                         var_s = self.ds.Variables
                         func, const_arr = trans_op(op_tree, var_s)
+                        for i in func:
+                            if i == '3014':
+                                raise ValueError("在这出错")
                         kep_ind = Individual(func, const_arr)
                         kep_ind_list.append(kep_ind)
                     population.pop_list = kep_ind_list

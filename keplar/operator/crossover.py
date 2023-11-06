@@ -246,3 +246,8 @@ class GplearnCrossover(Crossover):
     def do(self, population):
         if population.pop_type != "Gplearn":
             gp_pop = to_gp(population.pop_list)
+
+
+class KeplarGraphCrossover(Crossover):
+    def __init__(self):
+        super().__init__()

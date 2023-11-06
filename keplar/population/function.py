@@ -115,3 +115,6 @@ _function_map = {'add': add2,
                  'sin': sin1,
                  'cos': cos1,
                  'tan': tan1}
+
+
+action_map={0:'0:OperonCrossover',1:'1:OperonMutation',2:'2:BingoCrossover',3:'3:BingoMutation',4:'4:SklearnOneIndividualLinearRegression',5:'5:KeplarReinserter'}

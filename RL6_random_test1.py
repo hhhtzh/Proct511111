@@ -23,17 +23,16 @@ from keplar.operator.mutation import OperonMutation, BingoMutation
 from keplar.operator.reinserter import KeplarReinserter
 from keplar.operator.selector import BingoSelector
 
-# data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
-data = Data("txt_pmlb", "datasets/pmlb/val/503_wind.txt",
-            ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13", "y"])
+data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
+# data = Data("txt_pmlb", "datasets/pmlb/val/503_wind.txt",
+#             ["x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12", "x13", "y"])
 
 # data = Data("feynman_csv", "datasets/feynman/mydataver/feynman-i.13.12.csv", ["x0", "x1", "x2", "x3", "y"])
 # data_name="feynman-i.13.12"
-# data_name="pmlb_1027"
-data_name="pmlb_503"
+data_name="pmlb_1027"
 data.read_file()
 # print(data.get_np_ds().col)
-data.set_xy("y")
+# data.set_xy("y")
 x = data.get_np_x()
 # print(np.shape(x))
 y = data.get_np_y()
@@ -296,8 +295,8 @@ for episode in range(num_episodes):
         episode_actions = []
         while not done:
             # print("不变的state:" + str(state))
-            action = agent.get_action(state)
-            # print(action)
+            [action] = np.random.randint(low=0, high=6, size=1)
+            print(action)
             # next_state = np.random.rand(6)  # 模拟环境返回下一个状态，这里使用随机生成的示例状态
             if action == 5:
                 done = True
@@ -315,10 +314,10 @@ for episode in range(num_episodes):
         # print("筛选后最好适应度:" + str(list2[0]) + ",平均适应度:" + str(list2[2]))
         pool_pop = population.copy()
         pool_pop.pop_type = "self"
-        for i in pool_pop.pop_list:
-            for j in i.func:
-                if j == '3014':
-                    raise ValueError("在这出错")
+        # for i in pool_pop.pop_list:
+        #     for j in i.func:
+        #         if j == '3014':
+        #             raise ValueError("在这出错")
 
         # print(population.pop_type)
         for i in episode_actions:
@@ -461,29 +460,29 @@ for episode in range(num_episodes):
         evaluator.do(population)
         new_list1 = ck.do(population)
         vl = None
-        ck.write_rl_json(population, episode_actions, vl, data_name,"RL6_test30")
+        ck.write_rl_json(population, episode_actions, vl, data_name,"RL6_random_test4")
         print("最好适应度:" + str(new_list1[0]) + ",平均适应度:" + str(new_list1[2]))
-        reward = calculate_reward(list1, new_list1)
-        list1 = new_list1
-        episode_rewards = []
-        for _ in range(len(episode_actions)):
-            episode_rewards.append(reward)
-        for _ in range(len(episode_actions)):
-            episode_length.append(0)
-        episode_states = []
-        for _ in range(len(episode_actions)):
-            episode_states.append(state)
-        episode_probs.append(agent.actor_network(np.array([state], dtype=np.float32))[0, action])
+        # reward = calculate_reward(list1, new_list1)
+        # list1 = new_list1
+        # episode_rewards = []
+        # for _ in range(len(episode_actions)):
+        #     episode_rewards.append(reward)
+        # for _ in range(len(episode_actions)):
+        #     episode_length.append(0)
+        # episode_states = []
+        # for _ in range(len(episode_actions)):
+        #     episode_states.append(state)
+        # episode_probs.append(agent.actor_network(np.array([state], dtype=np.float32))[0, action])
 
         # state = next_state
 
         # 计算优势函数并训练Agent
-        print("reward_shape:", np.shape(episode_rewards))
-        print("length_shape:", np.shape(episode_length))
-        # advantages = calculate_advantages(episode_rewards, episode_length,
-        #                                   agent.critic_network(np.array(episode_states, dtype=np.float32)))
-        print("epsode_actions:", episode_actions)
-        print("state_shape:", np.shape(episode_states))
-        vl = agent.train(episode_states, episode_actions, episode_rewards, episode_length, episode_probs)
+        # print("reward_shape:", np.shape(episode_rewards))
+        # print("length_shape:", np.shape(episode_length))
+        # # advantages = calculate_advantages(episode_rewards, episode_length,
+        # #                                   agent.critic_network(np.array(episode_states, dtype=np.float32)))
+        # print("epsode_actions:", episode_actions)
+        # print("state_shape:", np.shape(episode_states))
+        # vl = agent.train(episode_states, episode_actions, episode_rewards, episode_length, episode_probs)
 
 # 最后，您可以使用训练好的Agent来生成动作序列。

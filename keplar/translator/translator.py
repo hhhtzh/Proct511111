@@ -844,9 +844,9 @@ def to_op(ind, np_x, np_y):
     var_hash_dict = {}
     variables = ds.Variables
     for var in variables:
-        # print(var.Index)
-        # print(var.Name)
-        # print(var.Hash)
+        print(var.Index)
+        print(var.Name)
+        print(var.Hash)
         hash_ = var.Hash
         var_hash_dict[var.Index] = var.Hash
         # print(len(list_postfix))

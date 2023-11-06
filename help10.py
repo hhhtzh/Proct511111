@@ -17,11 +17,21 @@ from keplar.operator.evaluator import OperonSingleEvaluator
 import re
 
 # 输入的字符串表达式
-expression = "X_0 + X_1 + X_2"
+# expression = "X_0 + X_1 + X_2"
+#
+# # 使用正则表达式查找匹配 "X_a" 的部分，并进行替换
+# expression = re.sub(r'X_(\d+)', lambda m: f'X_{int(m.group(1)) - 1}', expression)
+#
+# # 打印替换后的表达式
+# print(expression)
+import pandas as pd
 
-# 使用正则表达式查找匹配 "X_a" 的部分，并进行替换
-expression = re.sub(r'X_(\d+)', lambda m: f'X_{int(m.group(1)) - 1}', expression)
+# 创建一个示例的DataFrame
+data = {'A': [1, 2, 3], 'B': [4, 5, 6]}
+df = pd.DataFrame(data)
 
-# 打印替换后的表达式
-print(expression)
+# 添加列标签（header）
+df.columns = ['Column1', 'Column2']
 
+# 打印DataFrame
+print(df)
