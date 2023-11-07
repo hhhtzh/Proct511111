@@ -74,16 +74,22 @@ def readfile(file):
 rd_arr1 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_random_test4.json")
 rd_arr2 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_random_test5.json")
 rd_arr3 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_random_test6.json")
+rd_arr4 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_random_test7.json")
 arr1 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_test29.json")
 arr2 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_test31.json")
-arr3= pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_test32.json")
+arr3 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_test32.json")
+arr4 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_test33.json")
+arr5 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_test34.json")
 
 fit_rl_arr1 = []
 fit_rd_arr1 = []
-fit_rl_arr2=[]
-fit_rd_arr2=[]
-fit_rl_arr3=[]
-fit_rd_arr3=[]
+fit_rl_arr2 = []
+fit_rd_arr2 = []
+fit_rl_arr3 = []
+fit_rd_arr3 = []
+fit_rl_arr4 = []
+fit_rd_arr4 = []
+fit_rl_arr5=  []
 turning_points = find_turning_points(arr1, 169)
 for i in range(170):
     tk = "data_gen" + str(i + 1)
@@ -93,8 +99,9 @@ for i in range(170):
     fit_rd_arr2.append(rd_arr2[tk]["history_best_fit"])
     fit_rl_arr3.append(arr3[tk]["history_best_fit"])
     fit_rd_arr3.append(rd_arr3[tk]["history_best_fit"])
-
-
+    fit_rl_arr4.append(arr4[tk]["history_best_fit"])
+    fit_rd_arr4.append(rd_arr4[tk]["history_best_fit"])
+    fit_rl_arr5.append(arr5[tk]["history_best_fit"])
 
 # fit_rl_arr1 = np.array(fit_rl_arr1)
 # fit_rd_arr1 = np.array(fit_rd_arr1)
@@ -108,14 +115,17 @@ x = np.arange(0, 170, 1)
 # plt.plot(x, meancol[0:250:1], label='KeplarOperon', color='blue')
 plt.plot(x, fit_rl_arr1[0:170:1], label='Random_baseline', color='red')
 plt.plot(x, fit_rd_arr1[0:170:1], label='Keplar_PPO_RL', color='green')
-plt.plot(x, fit_rl_arr2[0:170:1],  color='green')
-plt.plot(x, fit_rd_arr2[0:170:1],  color='red')
-plt.plot(x,fit_rl_arr3[0:170:1],color='green')
-plt.plot(x, fit_rd_arr3[0:170:1],  color='red')
+plt.plot(x, fit_rl_arr2[0:170:1], color='green')
+plt.plot(x, fit_rd_arr2[0:170:1], color='red')
+plt.plot(x, fit_rl_arr3[0:170:1], color='green')
+plt.plot(x, fit_rd_arr3[0:170:1], color='red')
+plt.plot(x, fit_rl_arr4[0:170:1], color='green')
+plt.plot(x, fit_rd_arr4[0:170:1], color='red')
+plt.plot(x, fit_)
 plt.legend(loc='best')
 plt.xlabel('Generation')
 plt.ylabel('TrainFitness(RMSE)')
-plt.title(str(arr1["data_gen1"]["dataset"])+' x_dim=4 epoch=10')
+plt.title(str(arr1["data_gen1"]["dataset"]) + ' x_dim=4 epoch=10')
 # print_actions_info(turning_points, rl_arr, arr3)
 if arr1["data_gen1"]["dataset"] != rd_arr1["data_gen1"]["dataset"]:
     raise ValueError("数据集不匹配")

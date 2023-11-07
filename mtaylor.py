@@ -30,11 +30,11 @@ def print_stand(r2,rmse,fitness,elapse_time):
 if __name__ == '__main__':
     sys.setrecursionlimit(10000)
     argparser = argparse.ArgumentParser()
-    argparser.add_argument("--name", type=str, default="feynman_I_12_5")
+    argparser.add_argument("--name", type=str, default="192_vineyard")
     args = argparser.parse_args()
     print("file name : ", args.name)
 
-    X,y = fetch_data(args.name, return_X_y=True,local_cache_dir="/home/friday/Documents/pmlb/datasets/")
+    X,y = fetch_data(args.name, return_X_y=True,local_cache_dir="/home/tzh/PycharmProjects/pythonProjectAR5/datasets")
     print("read data success!")
     # X,y = fetch_data(args.name, return_X_y=True)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)

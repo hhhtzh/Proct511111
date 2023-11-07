@@ -64,7 +64,7 @@ class TaylorStatistic(Statistic):
                         if list_equ[token - 1] == "-":
                             this_num = this_num * (-1)
                     i = token + 2
-                    while list_equ[i] != "+" and list_equ[i] != "-":
+                    while i<len(list_equ) and list_equ[i] != "+" and list_equ[i] != "-":
                         i += 1
                     now_list = list_equ[token + 2:i]
                     now_str = ''.join(now_list)

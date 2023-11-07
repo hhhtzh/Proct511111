@@ -460,7 +460,7 @@ for episode in range(num_episodes):
         evaluator.do(population)
         new_list1 = ck.do(population)
         vl = None
-        ck.write_rl_json(population, episode_actions, vl, data_name,"RL6_random_test6")
+        ck.write_rl_json(population, episode_actions, vl, data_name,"RL6_random_test7")
         print("最好适应度:" + str(new_list1[0]) + ",平均适应度:" + str(new_list1[2]))
         # reward = calculate_reward(list1, new_list1)
         # list1 = new_list1
