@@ -80,6 +80,7 @@ arr2 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_test3
 arr3 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_test32.json")
 arr4 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_test33.json")
 arr5 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_test34.json")
+arr6 = pd.read_json("/home/tzh/PycharmProjects/pythonProjectAR5/result/RL6_test35.json")
 
 fit_rl_arr1 = []
 fit_rd_arr1 = []
@@ -90,6 +91,7 @@ fit_rd_arr3 = []
 fit_rl_arr4 = []
 fit_rd_arr4 = []
 fit_rl_arr5=  []
+fit_rl_arr6= []
 turning_points = find_turning_points(arr1, 169)
 for i in range(170):
     tk = "data_gen" + str(i + 1)
@@ -102,6 +104,7 @@ for i in range(170):
     fit_rl_arr4.append(arr4[tk]["history_best_fit"])
     fit_rd_arr4.append(rd_arr4[tk]["history_best_fit"])
     fit_rl_arr5.append(arr5[tk]["history_best_fit"])
+    fit_rl_arr6.append(arr6[tk]["history_best_fit"])
 
 # fit_rl_arr1 = np.array(fit_rl_arr1)
 # fit_rd_arr1 = np.array(fit_rd_arr1)
@@ -121,7 +124,8 @@ plt.plot(x, fit_rl_arr3[0:170:1], color='green')
 plt.plot(x, fit_rd_arr3[0:170:1], color='red')
 plt.plot(x, fit_rl_arr4[0:170:1], color='green')
 plt.plot(x, fit_rd_arr4[0:170:1], color='red')
-plt.plot(x, fit_)
+plt.plot(x, fit_rl_arr5[0:170:1], color='green')
+plt.plot(x, fit_rl_arr6[0:170:1], color='green')
 plt.legend(loc='best')
 plt.xlabel('Generation')
 plt.ylabel('TrainFitness(RMSE)')

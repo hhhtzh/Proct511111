@@ -41,7 +41,7 @@ y = data.get_np_y()
 from transformers import BertModel, BertTokenizer
 
 # 指定本地模型路径
-model_path = "model/bert-base-uncased"
+model_path = "/home/tzh/model/bert-base-uncased"
 
 # 加载本地模型
 model = BertModel.from_pretrained(model_path)
@@ -461,7 +461,7 @@ for episode in range(num_episodes):
         evaluator.do(population)
         new_list1 = ck.do(population)
         vl = None
-        ck.write_rl_json(population, episode_actions, vl, data_name,"RL6_test34")
+        ck.write_rl_json(population, episode_actions, vl, data_name,"RL6_test35")
         print("最好适应度:" + str(new_list1[0]) + ",平均适应度:" + str(new_list1[2]))
         reward = calculate_reward(list1, new_list1)
         list1 = new_list1
