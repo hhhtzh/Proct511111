@@ -129,7 +129,7 @@ class OperonMutation(Mutation):
     def do(self, population):
         target = self.ds.Variables[-1]
         num_col = self.np_x.shape[1]
-        target_Name = "X" + str(num_col+1)
+        target_Name = "X" + str(num_col + 1)
         inputs = Operon.VariableCollection(
             v for v in self.ds.Variables if v.Name != target_Name)
         pset = Operon.PrimitiveSet()
@@ -173,10 +173,17 @@ class OperonMutation(Mutation):
             for i in population.pop_list:
                 op_tree = \
                     to_op(i, self.np_x, self.np_y)
+                has_sqrt = False
                 for node in op_tree.Nodes:
                     print(node.Name)
                     print(node.HashValue)
-                new_tree_list.append(mutation(rng, op_tree))
+                    if str(node.Name) == "sqrt":
+                        has_sqrt = True
+                        break
+                if has_sqrt:
+                    new_tree_list.append(op_tree)
+                else:
+                    new_tree_list.append(mutation(rng, op_tree))
                 population.target_pop_list = new_tree_list
                 population.set_pop_size(len(new_tree_list))
                 if self.to_type == "Operon":
@@ -190,7 +197,7 @@ class OperonMutation(Mutation):
                         func, const_arr = trans_op(op_tree, var_s)
                         kep_ind = Individual(func, const_arr)
                         for i in func:
-                            if i=='3014':
+                            if i == '3014':
                                 print(kep_ind.format())
                                 print(Operon.InfixFormatter.Format(op_tree, self.ds, 5))
                                 raise ValueError("在这出错")

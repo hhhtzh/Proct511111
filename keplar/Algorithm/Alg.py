@@ -272,9 +272,10 @@ class KeplarOperonAlg(Alg):
                   f"最佳个体适应度为{now_error}" + f"最佳个体为{best_ind}")
             now_elapse = time.time() - t
             str1 = str(now_elapse) + " " + str(self.population.history_best_fit) + "\n"
-            file = open("result/pmlb_1027_keplaroperon_generation.txt", "a+")
+            file = open("result/pmlb_1027_keplaroperon_generation8.txt", "a+")
             file.write(str1)
             file.close()
+            # write_jason()
         best_ind = str(self.get_best_individual())
 
         print("迭代结束，共迭代" + f"{self.age}代" +

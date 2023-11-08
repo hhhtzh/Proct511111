@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -29,7 +31,7 @@ data = Data("pmlb", "1027_ESL", ["x0", "x1", "x2", "x3", 'y'])
 
 # data = Data("feynman_csv", "datasets/feynman/mydataver/feynman-i.13.12.csv", ["x0", "x1", "x2", "x3", "y"])
 # data_name="feynman-i.13.12"
-data_name="pmlb_1027"
+data_name = "pmlb_1027"
 # data_name="pmlb_503"
 data.read_file()
 # print(data.get_np_ds().col)
@@ -41,7 +43,7 @@ y = data.get_np_y()
 from transformers import BertModel, BertTokenizer
 
 # 指定本地模型路径
-model_path = "/home/tzh/model/bert-base-uncased"
+model_path = "model/bert-base-uncased"
 
 # 加载本地模型
 model = BertModel.from_pretrained(model_path)
@@ -261,12 +263,13 @@ num_actions = 6  # 五个离散
 agent = PPOAgent(num_actions)
 
 # 定义训练参数
-num_episodes = 1000
+num_episodes = 10
 generation_num = 1000
 
 # 在每个episode中生成动作序列并训练Agent
 for episode in range(num_episodes):
     episode_states, episode_actions, episode_rewards, episode_length, episode_probs = [], [], [], [], []
+    t = time.time()
     for _ in range(generation_num):
         done = False
         # state = np.random.rand(6)  # 初始状态，这里使用随机生成的示例状态
@@ -458,10 +461,12 @@ for episode in range(num_episodes):
 
         # print(population.pop_type)
         # print(population.pop_list)
+        now_elapse = time.time() - t
         evaluator.do(population)
         new_list1 = ck.do(population)
         vl = None
-        ck.write_rl_json(population, episode_actions, vl, data_name,"RL6_test35")
+        ck.write_rl_json(population, episode_actions, vl, data_name, "RL6_test4"+str(episode),
+                         "operator_sequence_ReinforceLearning_algorithm", str(now_elapse))
         print("最好适应度:" + str(new_list1[0]) + ",平均适应度:" + str(new_list1[2]))
         reward = calculate_reward(list1, new_list1)
         list1 = new_list1

@@ -41,7 +41,7 @@ class CheckPopulation(Operator):
             mean_fit = np.mean(np_fit)
             return [best_fit, worest_fit, mean_fit, max_length, min_length, mean_length]
 
-    def write_rl_json(self, population, action_seq, value_seq,data_name,file_name):
+    def write_rl_json(self, population, action_seq, value_seq,data_name,file_name,alg_name,time):
         length_list = []
         fit_list = []
         if population.pop_type != "self":
@@ -78,9 +78,11 @@ class CheckPopulation(Operator):
         state_list = [best_fit, worest_fit, mean_fit, max_length, min_length, mean_length, best_ind]
         self.generation += 1
         data = {
+            "algorihtm":str(alg_name),
             "dataset":str(data_name),
             "generation": int(self.generation),
             "best_fit": float(state_list[0]),
+            "elapse_time":str(time),
             "worest_fit": float(state_list[1]),
             "mean_fit": float(state_list[2]),
             "best_ind": state_list[6],
@@ -135,7 +137,7 @@ class CheckPopulation(Operator):
         # 调用函数创建或更新 JSON 文件
         create_or_update_json(file_path, outer_key, data_to_write)
 
-    def write_jason(self, population, file_name):
+    def write_jason(self, population, file_name,data_name,alg_name):
         length_list = []
         fit_list = []
         if population.pop_type != "self":
@@ -171,6 +173,8 @@ class CheckPopulation(Operator):
         state_list = [best_fit, worest_fit, mean_fit, max_length, min_length, mean_length, best_ind]
         self.generation += 1
         data = {
+            "algorithm": str(alg_name),
+            "data_name": str(data_name),
             "generation": int(self.generation),
             "best_fit": float(state_list[0]),
             "worest_fit": float(state_list[1]),
